@@ -1,0 +1,16 @@
+name: LolBans
+version: ${project.version}
+main: me.zacherycoleman.lolbans.Main
+api-version: 1.13
+authors: [Zachery Coleman, Justasic]
+description: A ban system for minecraft, nothing fancy
+website: https://github.com/notzachery
+commands:
+  ban:
+    description: Ban a player
+  unban:
+    description: Unban a payer
+  history:
+    description: Get history of users punishments
+  clearhistory:
+    description: Clear history of a player

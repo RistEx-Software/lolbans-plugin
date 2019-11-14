@@ -1,0 +1,7 @@
+dbhost: localhost
+dbport: 3306
+dbname: dbname
+dbusername: dbusername
+dbpassword: dbpasswd
+DiscordWebhook: https://discordapp.com/api/webhooks/643282351543287838/gV5G4p2Zk2MOsynnMaSZ5jHPlZcEPRGBwEZy1dzWFHABm3gPreiqAaeEMaZ5VYY3CGno
+NetworkName: Fully Toasted Networks
