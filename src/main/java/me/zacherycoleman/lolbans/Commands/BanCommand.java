@@ -120,10 +120,7 @@ public class BanCommand implements CommandExecutor
                         // Kick the player first
 
                         if (target instanceof Player)
-                            if (bantime != null)
-                                self.KickPlayer(sender.getName(), (Player)target, banid, reason, bantime.toString());
-                            else
-                                self.KickPlayer(sender.getName(), (Player)target, banid, reason, "NULL");
+                            self.KickPlayer(sender.getName(), (Player)target, banid, reason, bantime);
                     
                         // Log to console.
                         Bukkit.getConsoleSender().sendMessage(String.format("\u00A7c%s \u00A77has banned \u00A7c%s\u00A77: \u00A7c%s\u00A77%s\u00A7r", 

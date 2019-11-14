@@ -3,8 +3,12 @@ package me.zacherycoleman.lolbans.Utils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import me.zacherycoleman.lolbans.Main;
+
 public class User
 {
+    Main self = Main.getPlugin(Main.class);
+    
     private Player pl;
 
     public User(Player pl)

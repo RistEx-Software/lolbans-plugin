@@ -21,19 +21,14 @@ public class ConnectionListeners implements Listener
     {
         try 
         {
-            PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM BannedPlayers WHERE UUID = ? AND (Expiry IS NOT NULL AND Expiry >= NOW())");
+            PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM BannedPlayers WHERE UUID = ? AND (Expiry IS NULL OR Expiry >= NOW())");
             pst.setString(1, event.getPlayer().getUniqueId().toString());
             
             ResultSet result = pst.executeQuery();
 
-            // Remove the ban if it has expired (There will also be a thread running for this, but this is so when they join (if the thread hasn't already unbanned them) will unban them)
-            PreparedStatement pst2 = self.connection.prepareStatement("DELETE * FROM BannedPlayers WHERE UUID = ? AND (Expiry IS NOT NULL AND Expiry >= NOW())");
-            pst2.setString(1, event.getPlayer().getUniqueId().toString());
-            pst2.executeUpdate();
-
             if (result.next())
             {
-                self.KickPlayer(result.getString("Executioner"), event.getPlayer(), result.getString("BanID"), result.getString("Reason"), result.getString("Expriry"));
+                self.KickPlayer(result.getString("Executioner"), event.getPlayer(), result.getString("BanID"), result.getString("Reason"), result.getTimestamp("Expiry"));
                 event.setJoinMessage("");
             }
         } 

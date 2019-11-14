@@ -25,6 +25,7 @@ package me.zacherycoleman.lolbans;
  */
 
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.ChatColor;
@@ -35,7 +36,9 @@ import me.zacherycoleman.lolbans.Commands.BanCommand;
 import me.zacherycoleman.lolbans.Commands.HistoryCommand;
 import me.zacherycoleman.lolbans.Commands.UnbanCommand;
 import me.zacherycoleman.lolbans.Listeners.ConnectionListeners;
+import me.zacherycoleman.lolbans.Runnables.QueryRunnable;
 import me.zacherycoleman.lolbans.Utils.DiscordUtil;
+import me.zacherycoleman.lolbans.Utils.TimeUtil;
 
 import java.sql.*;
 import java.util.UUID;
@@ -47,6 +50,7 @@ public final class Main extends JavaPlugin
     private String dbusername = "";
     private String dbpassword = "";
     private Integer dbport = 3306;
+    private QueryRunnable CheckThread;
 
     public String DiscordWebhook = "";
     public String NetworkName = "";
@@ -128,7 +132,7 @@ public final class Main extends JavaPlugin
         return null;
     }
 
-    public void KickPlayer(String sender, Player target, String BanID, String reason, String BanTime)
+    public void KickPlayer(String sender, Player target, String BanID, String reason, Timestamp BanTime)
     {
         StringBuilder builder = new StringBuilder();
 
@@ -140,8 +144,8 @@ public final class Main extends JavaPlugin
         builder.append(ChatColor.GRAY);
         builder.append(target.getName());
         builder.append(ChatColor.RED);
-        if (BanTime == "NULL")
-            builder.append(" is indefinitely suspended from ");
+        if (BanTime == null)
+            builder.append(" is INDEFINITELY suspended from ");
         else
             builder.append(" is temporarily suspended from ");
         builder.append(ChatColor.GRAY);
@@ -158,13 +162,13 @@ public final class Main extends JavaPlugin
         builder.append("Reason: ");
         builder.append(ChatColor.WHITE);
         builder.append(reason);
-        if (BanTime != "NULL")
+        if (BanTime != null)
         {
             builder.append("\n");
             builder.append(ChatColor.GRAY);
             builder.append("Expiry: ");
             builder.append(ChatColor.WHITE);
-            builder.append(BanTime);
+            builder.append(TimeUtil.TimeString(BanTime));
         }
         
     
@@ -215,8 +219,8 @@ public final class Main extends JavaPlugin
             this.openConnection();
 
             // Ensure Our tables are created.
-            PreparedStatement ps2 = this.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedHistory (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, UnbanReason TEXT, UnbanExecutioner varchar(17), TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)");
-            PreparedStatement ps = this.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedPlayers (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)");
+            PreparedStatement ps2 = this.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedHistory (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, UnbanReason TEXT, UnbanExecutioner varchar(17), TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)");
+            PreparedStatement ps = this.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedPlayers (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)");
             ps.execute();
             ps2.execute();
         }
@@ -228,13 +232,21 @@ public final class Main extends JavaPlugin
         this.getCommand("ban").setExecutor(new BanCommand());
         this.getCommand("unban").setExecutor(new UnbanCommand());
         this.getCommand("history").setExecutor(new HistoryCommand());
+        this.getCommand("h").setExecutor(new HistoryCommand());
         this.getCommand("clearhistory").setExecutor(new HistoryCommand());
+        this.getCommand("ch").setExecutor(new HistoryCommand());
+
+        // Schedule a repeating task to delete expired bans.
+        // TODO: Make config option.
+        this.CheckThread = new QueryRunnable();
+        this.CheckThread.runTaskTimerAsynchronously(this, 0L, 1200L);
     }
 
     @Override
     public void onDisable()
     {
         // Plugin shutdown logic
+        CheckThread.cancel();
         try 
         {
             this.connection.close();

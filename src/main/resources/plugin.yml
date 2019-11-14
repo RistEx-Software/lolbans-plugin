@@ -14,3 +14,7 @@ commands:
     description: Get history of users punishments
   clearhistory:
     description: Clear history of a player
+  h:
+    description: Get history of users punishments
+  ch:
+    description: Clear history of a player
