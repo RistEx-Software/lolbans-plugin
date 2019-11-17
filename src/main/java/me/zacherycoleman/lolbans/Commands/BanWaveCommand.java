@@ -12,6 +12,7 @@ import org.bukkit.OfflinePlayer;
 import me.zacherycoleman.lolbans.Main;
 import me.zacherycoleman.lolbans.Runnables.BanWaveRunnable;
 import me.zacherycoleman.lolbans.Utils.BanID;
+import me.zacherycoleman.lolbans.Utils.Configuration;
 import me.zacherycoleman.lolbans.Utils.DiscordUtil;
 import me.zacherycoleman.lolbans.Utils.TimeUtil;
 import me.zacherycoleman.lolbans.Utils.User;
@@ -39,19 +40,19 @@ public class BanWaveCommand implements CommandExecutor
 
                 if (target == null)
                 {
-                    sender.sendMessage(String.format(self.Prefix + ChatColor.RED + "Player \"%s\" does not exist!", args[0]));
+                    sender.sendMessage(String.format(Configuration.Prefix + ChatColor.RED + "Player \"%s\" does not exist!", args[0]));
                     return true;
                 }
 
                 if (!(sender instanceof ConsoleCommandSender) && target.getUniqueId().equals(((Player) sender).getUniqueId()))
                 {
-                    sender.sendMessage(self.Prefix + ChatColor.RED + "You cannot add yourself to the ban wave.");
+                    sender.sendMessage(Configuration.Prefix + ChatColor.RED + "You cannot add yourself to the ban wave.");
                     return true;
                 }
 
                 if (User.IsPlayerInWave(target))
                 {
-                    sender.sendMessage(String.format(self.Prefix + "Player \"%s\" is already in the ban wave!", target.getName()));
+                    sender.sendMessage(String.format(Configuration.Prefix + "Player \"%s\" is already in the ban wave!", target.getName()));
                     return true;
                 }
 
@@ -83,7 +84,7 @@ public class BanWaveCommand implements CommandExecutor
                 sender.sendMessage(ChatColor.RED + target.getName() + " has been added to the next ban wave.");
 
                 // Log to console.
-                Bukkit.getConsoleSender().sendMessage(String.format(self.Prefix + "\u00A7c%s \u00A77has added \u00A7c%s\u00A77 to the banwave: \u00A7c%s\u00A77%s\u00A7r", 
+                Bukkit.getConsoleSender().sendMessage(String.format(Configuration.Prefix + "\u00A7c%s \u00A77has added \u00A7c%s\u00A77 to the banwave: \u00A7c%s\u00A77%s\u00A7r", 
                 sender.getName(), target.getName(), reason, (silent ? " [silent]" : "")));
 
                 // Send to Discord.
@@ -117,7 +118,7 @@ public class BanWaveCommand implements CommandExecutor
         OfflinePlayer target = User.FindPlayerByBanID(args[0]);
         if (target == null)
         {
-            sender.sendMessage(String.format(self.Prefix + "Player \"%s\" does not exist!", args[0]));
+            sender.sendMessage(String.format(Configuration.Prefix + "Player \"%s\" does not exist!", args[0]));
             return true;
         }
 
@@ -150,7 +151,7 @@ public class BanWaveCommand implements CommandExecutor
 
     private boolean BanWaveExecute(CommandSender sender, Command command, String label, String[] args)
     {
-        sender.sendMessage(self.Prefix + ChatColor.GRAY + "Starting ban wave.");
+        sender.sendMessage(Configuration.Prefix + ChatColor.GRAY + "Starting ban wave.");
         BanWaveRunnable bwr = new BanWaveRunnable();
         bwr.sender = sender;
         bwr.runTaskAsynchronously(self);

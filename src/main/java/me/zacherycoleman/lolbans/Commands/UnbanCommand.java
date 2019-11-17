@@ -10,6 +10,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import me.zacherycoleman.lolbans.Main;
+import me.zacherycoleman.lolbans.Utils.Configuration;
 import me.zacherycoleman.lolbans.Utils.DiscordUtil;
 import me.zacherycoleman.lolbans.Utils.User;
 
@@ -98,17 +99,17 @@ public class UnbanCommand implements CommandExecutor
                             //"&c%banner% &7has banned &c%player%&7: &c%reason%"
                             if (silent)
                             {
-                                self.SilentUnbanAnnouncment = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("SilentUnbanAnnouncment").replace("%player%", target.getName())
+                                Configuration.SilentUnbanAnnouncment = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("SilentUnbanAnnouncment").replace("%player%", target.getName())
                                 .replace("%reason%", reason).replace("%banner%", sender.getName()));
 
-                                p.sendMessage(self.SilentUnbanAnnouncment);
+                                p.sendMessage(Configuration.SilentUnbanAnnouncment);
                             }
                             else
                             {
-                                self.UnbanAnnouncment = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("UnbanAnnouncment").replace("%player%", target.getName())
+                                Configuration.UnbanAnnouncment = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("UnbanAnnouncment").replace("%player%", target.getName())
                                 .replace("%reason%", reason).replace("%banner%", sender.getName()));
 
-                                p.sendMessage(self.UnbanAnnouncment);
+                                p.sendMessage(Configuration.UnbanAnnouncment);
                             }
                         }
                         return true;

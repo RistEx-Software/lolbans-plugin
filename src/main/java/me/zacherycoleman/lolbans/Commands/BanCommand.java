@@ -12,6 +12,7 @@ import org.bukkit.OfflinePlayer;
 
 import me.zacherycoleman.lolbans.Main;
 import me.zacherycoleman.lolbans.Utils.BanID;
+import me.zacherycoleman.lolbans.Utils.Configuration;
 import me.zacherycoleman.lolbans.Utils.DiscordUtil;
 import me.zacherycoleman.lolbans.Utils.TimeUtil;
 import me.zacherycoleman.lolbans.Utils.User;
@@ -73,7 +74,7 @@ public class BanCommand implements CommandExecutor
                                 bantime = new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
                             else
                             {
-                                sender.sendMessage(ChatColor.RED + "Invalid ban time Syntax");
+                                sender.sendMessage(Configuration.Prefix + Configuration.InvalidSyntax);
                                 return false;
                             }
                         }
@@ -121,9 +122,18 @@ public class BanCommand implements CommandExecutor
                             User.KickPlayer(sender.getName(), (Player)target, banid, reason, bantime);
                     
                         // Log to console.
-                        Bukkit.getConsoleSender().sendMessage(String.format("\u00A7c%s \u00A77has banned \u00A7c%s\u00A77: \u00A7c%s\u00A77%s\u00A7r", 
-                        sender.getName(), target.getName(), reason, (silent ? " [silent]" : "")));
-
+                        if (silent)
+                        {
+                            Configuration.BanAnnouncment = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("BanAnnouncment").replace("%player%", target.getName()));
+                            Bukkit.getConsoleSender().sendMessage(Configuration.SilentBanAnnouncment);
+                        }
+                        else
+                        {
+                            Configuration.BanAnnouncment = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("BanAnnouncment").replace("%player%", target.getName())
+                            .replace("%reason%", reason).replace("%banner%", sender.getName()));
+                            Bukkit.getConsoleSender().sendMessage(Configuration.BanAnnouncment);
+                        }
+                            
                         // Post that to the database.
                         for (Player p : Bukkit.getOnlinePlayers())
                         {
@@ -132,17 +142,17 @@ public class BanCommand implements CommandExecutor
 
                             if (silent)
                             {
-                                self.SilentBanAnnouncment = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("SilentBanAnnouncment").replace("%player%", target.getName())
+                                Configuration.SilentBanAnnouncment = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("SilentBanAnnouncment").replace("%player%", target.getName())
                                 .replace("%reason%", reason).replace("%banner%", sender.getName()));
 
-                                p.sendMessage(self.SilentBanAnnouncment);                                
+                                p.sendMessage(Configuration.SilentBanAnnouncment);                                
                             }
                             else
                             {
-                                self.BanAnnouncment = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("BanAnnouncment").replace("%player%", target.getName())
+                                Configuration.BanAnnouncment = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("BanAnnouncment").replace("%player%", target.getName())
                                 .replace("%reason%", reason).replace("%banner%", sender.getName()));
 
-                                p.sendMessage(self.BanAnnouncment);                                
+                                p.sendMessage(Configuration.BanAnnouncment);                                
                             }
 
                             //p.sendMessage(String.format("\u00A7c%s \u00A77has banned \u00A7c%s\u00A77: \u00A7c%s\u00A77%s\u00A7r", 

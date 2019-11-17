@@ -63,7 +63,7 @@ public class DiscordUtil
         String Color = BanID.replaceAll("[^0-9]","");
 
         // https://crafatar.com/renders/head/e296a7d7-7c25-4d90-894b-feba23665a98?overlay
-        String fuckingjava = "https://crafatar.com/renders/head/" + TargetUUID + "?overlay";        
+        String fuckingjava = "https://crafatar.com/renders/head/" + TargetUUID + "?overlay&default=MHF_Steve";        
         DiscordEmbed de = DiscordEmbed.builder()
                 .color(Integer.parseInt(Color))
                 .title(sender + " banned " + target + st) // We are creating a embed with this title...
@@ -71,10 +71,10 @@ public class DiscordUtil
                 // Maybe a link to the ban id if a website is configured?
                 .footer(FooterEmbed.builder() // with a fancy footer...
                         .text(target) // this footer will have the text "TemmieWebhook!"...
-                        .icon_url(fuckingjava) // with this icon on the footer
+                        .icon_url("https://crafatar.com/avatars/" + TargetUUID + "?overlay") // with this icon on the footer
                 .build()) // and now we build the footer...
                 .thumbnail(ThumbnailEmbed.builder() // with a fancy thumbnail...
-                        .url("https://crafatar.com/avatars/" + TargetUUID + "?overlay") // with this thumbnail...
+                        .url(fuckingjava) // with this thumbnail...
                         //.height(64) // not too big because we don't want to flood the user chats with a huge image, right?
                         .build()) // and now we build the thumbnail...
                 //.url("https://github.com/MrPowerGamerBR/TemmieWebhook") // that, when clicked, goes to the TemmieWebhook repo...
@@ -102,7 +102,7 @@ public class DiscordUtil
     {
         TemmieWebhook temmie = new TemmieWebhook(Webhook);
         String st = silent ? " [Silent]" : "";
-        String fuckingjava = "https://crafatar.com/renders/head/" + TargetUUID + "?overlay";
+        String fuckingjava = "https://crafatar.com/renders/head/" + TargetUUID + "?overlay&default=MHF_Steve";
         String Color = BanID.replaceAll("[^0-9]","");
         
         DiscordEmbed de = DiscordEmbed.builder()

@@ -12,7 +12,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import me.zacherycoleman.lolbans.Main;
-import me.zacherycoleman.lolbans.Utils.BoxDrawer;
 import net.md_5.bungee.api.ChatColor;
 
 public class User
@@ -129,18 +128,16 @@ public class User
         //StringBuilder builder = new StringBuilder();
 
         //%player% %reason% %banner% %timetoexpire% %banid%
-        BoxDrawer bd = new BoxDrawer();
+        if (BanTime != null)
+        Configuration.TempBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("TempBanMessage").replace("%player%", target.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%timetoexpire%", BanTime.toString()).replace("%banid%", "#"+BanID));
+        Configuration.PermBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("PermBanMessage").replace("%player%", target.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%banid%", "#"+BanID));
+
+       // bd.AddString(Configuration.PermBanMessage);
 
         if (BanTime != null)
-            self.TempBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("TempBanMessage").replace("%player%", target.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%timetoexpire%", BanTime.toString()).replace("%banid%", "#"+BanID));
-        self.PermBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("PermBanMessage").replace("%player%", target.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%banid%", "#"+BanID));
-
-        bd.AddString(self.PermBanMessage);
-
-        if (BanTime != null)
-            target.kickPlayer(self.TempBanMessage);
+            target.kickPlayer(Configuration.TempBanMessage);
         else
-            target.kickPlayer(bd.RenderBox());  
+            target.kickPlayer(Configuration.PermBanMessage);
     }
 
 }
