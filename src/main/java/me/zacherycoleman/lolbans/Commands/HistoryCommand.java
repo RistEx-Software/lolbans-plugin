@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 
 import me.zacherycoleman.lolbans.Main;
 import me.zacherycoleman.lolbans.Utils.TimeUtil;
+import me.zacherycoleman.lolbans.Utils.User;
+
 import java.util.Arrays;
 import java.sql.*;
 
@@ -95,7 +97,7 @@ public class HistoryCommand implements CommandExecutor
 
                 // Because java and SQL are both stupid, we need two of these to output the right executioner in the history command
                 String ExecUnbanArr2[] = this.GetStringOrDefault(result, "UnbanExecutioners2", "N/A").split(",");
-                String ExecUnbans2 = String.join(", ", Arrays.copyOfRange(ExecUnbanArr2, 0, ExecUnbanArr2.length));
+                String ExecUnbans2 = String.join(", ", Arrays.copyOfRange(ExecUnbanArr2, 0, ExecUnbanArr2.length - 1));
 
                 String ExecUnbans = String.join(", ", Arrays.copyOfRange(ExecUnbanArr, 0, ExecUnbanArr.length - 1));
 
@@ -104,7 +106,7 @@ public class HistoryCommand implements CommandExecutor
                 sender.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "------------------------------");
                 sender.sendMessage(ChatColor.RED + "Name: " + ChatColor.GRAY + target.getName() + ChatColor.DARK_GRAY  + " [" + target.getUniqueId().toString() + "]");
                 
-                boolean IsBanned = self.IsPlayerBanned(target);
+                boolean IsBanned = User.IsPlayerBanned(target);
 
                 if (biarr.length >= 2)
                     sender.sendMessage(String.format(ChatColor.RED + "BanID(s): " + ChatColor.GRAY 
@@ -124,7 +126,7 @@ public class HistoryCommand implements CommandExecutor
                 else
                     sender.sendMessage(String.format(ChatColor.RED + "Executioner(s): " + ChatColor.GRAY + LatestExec));
 
-                sender.sendMessage(String.format(ChatColor.RED + "Times Banned: " + ChatColor.GRAY + biarr.length));
+                sender.sendMessage(String.format(ChatColor.RED + "Times Banned: " + ChatColor.GRAY + (biarr.length - 1)));
                 if (IsBanned)
                 {
                     Timestamp ts = result.getTimestamp("Expiry");

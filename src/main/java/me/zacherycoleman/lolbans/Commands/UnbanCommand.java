@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 
 import me.zacherycoleman.lolbans.Main;
 import me.zacherycoleman.lolbans.Utils.DiscordUtil;
+import me.zacherycoleman.lolbans.Utils.User;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -36,7 +37,7 @@ public class UnbanCommand implements CommandExecutor
                     {
                         String reason = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length )) : args[1];
                         reason = reason.replace(",", "");
-                        OfflinePlayer target = self.FindPlayerByBanID(args[0]);
+                        OfflinePlayer target = User.FindPlayerByBanID(args[0]);
 
                         if (target == null)
                         {
@@ -44,15 +45,16 @@ public class UnbanCommand implements CommandExecutor
                             return true;
                         }
 
-                        if (!self.IsPlayerBanned(target))
+                        if (!User.IsPlayerBanned(target))
                         {
-                            sender.sendMessage(String.format(ChatColor.RED + "Player/ID \"%s\" is not banned", target));
+                            sender.sendMessage(String.format(ChatColor.RED + "Player/ID \"%s\" is not banned", target.getName()));
                             return true;
                         }
                     
                         // Prepare our reason for unbanning
                         boolean silent = reason.contains("-s");
                         reason = reason.replace("-s", "").trim();
+
 
                         // Preapre a statement
                         // We need to get the latest banid first.
@@ -61,6 +63,14 @@ public class UnbanCommand implements CommandExecutor
                         pst2.setString(2, reason);
                         pst2.setString(3, sender.getName());
                         pst2.executeUpdate();
+
+                        
+                        PreparedStatement pst3 = self.connection.prepareStatement("SELECT BanID FROM BannedPlayers WHERE UUID = ?");
+                        pst3.setString(1, target.getUniqueId().toString());
+        
+                        ResultSet result = pst3.executeQuery();
+                        result.next();
+                        String BanID = result.getString("BanID");
 
                         // Preapre a statement
                         PreparedStatement pst = self.connection.prepareStatement("DELETE FROM BannedPlayers WHERE UUID = ?");
@@ -72,16 +82,34 @@ public class UnbanCommand implements CommandExecutor
                         sender.getName(), target.getName(), reason, (silent ? " [silent]" : "")));
 
                         // Send to Discord.
-                        DiscordUtil.Send(":hammer: **%s** unbanned **%s** for: **%s**%s", sender.getName(), target.getName(), reason, (silent ? " [silent]" : ""));
+                        if (sender instanceof ConsoleCommandSender)
+                            DiscordUtil.SendUnban(sender.getName().toString(), target.getName(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", target.getUniqueId().toString(), reason, BanID, silent);
+                        else
+                        DiscordUtil.SendUnban(sender.getName().toString(), target.getName(), ((OfflinePlayer) sender).getUniqueId().toString(), target.getUniqueId().toString(), reason, BanID, silent);
 
+
+   
                         // Post that to the database.
                         for (Player p : Bukkit.getOnlinePlayers())
                         {
                             if (silent && (!p.hasPermission("lolbans.alerts") && !p.isOp()))
                                 continue;
 
-                            p.sendMessage(String.format("\u00A7c%s \u00A77has unbanned \u00A7c%s\u00A77: \u00A7c%s\u00A77%s\u00A7r", 
-                                                        sender.getName(), target.getName(), reason, (silent ? " [silent]" : "")));
+                            //"&c%banner% &7has banned &c%player%&7: &c%reason%"
+                            if (silent)
+                            {
+                                self.SilentUnbanAnnouncment = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("SilentUnbanAnnouncment").replace("%player%", target.getName())
+                                .replace("%reason%", reason).replace("%banner%", sender.getName()));
+
+                                p.sendMessage(self.SilentUnbanAnnouncment);
+                            }
+                            else
+                            {
+                                self.UnbanAnnouncment = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("UnbanAnnouncment").replace("%player%", target.getName())
+                                .replace("%reason%", reason).replace("%banner%", sender.getName()));
+
+                                p.sendMessage(self.UnbanAnnouncment);
+                            }
                         }
                         return true;
                     }

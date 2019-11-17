@@ -1,7 +1,8 @@
 package me.zacherycoleman.lolbans.Utils; // Zachery's package owo
 
-
 import javax.net.ssl.HttpsURLConnection;
+import javax.xml.soap.MessageFactory;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,6 +10,18 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.util.Arrays;
+
+import com.mrpowergamerbr.temmiewebhook.DiscordEmbed;
+import com.mrpowergamerbr.temmiewebhook.DiscordMessage;
+import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
+import com.mrpowergamerbr.temmiewebhook.embed.FieldEmbed;
+import com.mrpowergamerbr.temmiewebhook.embed.FooterEmbed;
+import com.mrpowergamerbr.temmiewebhook.embed.ThumbnailEmbed;
+
+import org.bukkit.Server;
+import org.bukkit.entity.Player;
 
 /*
                _   ___      ___   _ 
@@ -39,60 +52,218 @@ import java.nio.charset.StandardCharsets;
     　　　▀█▄▄▄█▀　　　　　　▀█▄▄▄█▀
                         
 */
-public class DiscordUtil
+public class DiscordUtil 
 {
     public static String Webhook = "";
 
-    public static void Send(String message, Object... args)
+    public static void Send(String sender, String target, String SenderUUID, String TargetUUID, String reason, String BanID, Timestamp bantime, Boolean silent)
     {
-        // I have no idea what any of this does, it just works...
-        try
-        {
-            URLConnection con = new URL(DiscordUtil.Webhook).openConnection();
+        String st = silent ? " [Silent]" : "";
+        TemmieWebhook temmie = new TemmieWebhook(Webhook);
+        String Color = BanID.replaceAll("[^0-9]","");
+
+        // https://crafatar.com/renders/head/e296a7d7-7c25-4d90-894b-feba23665a98?overlay
+        String fuckingjava = "https://crafatar.com/renders/head/" + TargetUUID + "?overlay";        
+        DiscordEmbed de = DiscordEmbed.builder()
+                .color(Integer.parseInt(Color))
+                .title(sender + " banned " + target + st) // We are creating a embed with this title...
+                .description(reason) // with this description...
+                // Maybe a link to the ban id if a website is configured?
+                .footer(FooterEmbed.builder() // with a fancy footer...
+                        .text(target) // this footer will have the text "TemmieWebhook!"...
+                        .icon_url(fuckingjava) // with this icon on the footer
+                .build()) // and now we build the footer...
+                .thumbnail(ThumbnailEmbed.builder() // with a fancy thumbnail...
+                        .url("https://crafatar.com/avatars/" + TargetUUID + "?overlay") // with this thumbnail...
+                        //.height(64) // not too big because we don't want to flood the user chats with a huge image, right?
+                        .build()) // and now we build the thumbnail...
+                //.url("https://github.com/MrPowerGamerBR/TemmieWebhook") // that, when clicked, goes to the TemmieWebhook repo...
+                .fields(Arrays.asList( // with fields...
+                        FieldEmbed.builder()
+                        .name("BanID")
+                        .value("#" + BanID)
+                        .build(),
+                        FieldEmbed.builder()
+                        .name("Expires")
+                        .value(bantime != null ? TimeUtil.TimeString(bantime) : "Indefinite")
+                        .build() ))
+                .build(); // and finally, we build the embed
             
-            HttpsURLConnection https = (HttpsURLConnection)con;
-            https.setRequestMethod("POST");
-            https.setRequestProperty("User-Agent", "Mozilla/5.0");
-            https.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-            https.setDoOutput(true);
+        DiscordMessage dm = DiscordMessage.builder()
+                .username(sender) // We are creating a message with the username "LolBans"...
+                .avatarUrl("https://crafatar.com/avatars/" + SenderUUID) // with this avatar...
+                .embeds(Arrays.asList(de)) // with the our embed...
+                .build(); // and now we build the message!
             
-            String out = "{\"content\":\"" + String.format(message, args) + "\"}";
+        temmie.sendMessage(dm);
+    }
 
-            https.setFixedLengthStreamingMode(out.length());
-            https.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            https.connect();
+    public static void SendUnban(String sender, String target, String SenderUUID, String TargetUUID, String reason, String BanID, Boolean silent)
+    {
+        TemmieWebhook temmie = new TemmieWebhook(Webhook);
+        String st = silent ? " [Silent]" : "";
+        String fuckingjava = "https://crafatar.com/renders/head/" + TargetUUID + "?overlay";
+        String Color = BanID.replaceAll("[^0-9]","");
+        
+        DiscordEmbed de = DiscordEmbed.builder()
+                .title(sender + " un-banned " + target + st) // We are creating a embed with this title...
+                .description(reason) // with this description...
+                .color(Integer.parseInt(Color))
+                // Maybe a link to the ban id if a website is configured?
+                //.url("https://github.com/MrPowerGamerBR/TemmieWebhook") // that, when clicked, goes to the TemmieWebhook repo...
+                .footer(FooterEmbed.builder() // with a fancy footer...
+                    .text(target) // this footer will have the text "TemmieWebhook!"...
+                    .icon_url("https://crafatar.com/avatars/" + TargetUUID + "?overlay") // with this icon on the footer
+                .build()) // and now we build the footer...
 
-            try
-            {
-                try
-                {
-                    DataOutputStream os = new DataOutputStream(con.getOutputStream());
+                .thumbnail(ThumbnailEmbed.builder() // with a fancy thumbnail...
+                .url(fuckingjava) // with this thumbnail...
+                //.height(64) // not too big because we don't want to flood the user chats with a huge image, right?
+                .build()) // and now we build the thumbnail...
+                .build(); // and finally, we build the embed
+            
+        DiscordMessage dm = DiscordMessage.builder()
+                .username(sender) // We are creating a message with the username "LolBans"...
+                .avatarUrl("https://crafatar.com/avatars/" + SenderUUID + "?&overlay") // with this avatar...
+                .embeds(Arrays.asList(de)) // with the our embed...
+                .build(); // and now we build the message!
+            
+        temmie.sendMessage(dm);
+    }
 
-                    try
-                    {
-                        os.write(out.getBytes(StandardCharsets.UTF_8));
-                        os.flush();
-                        os.close();
-                    }
-                    finally
-                    {
-                        if (os != null)
-                            os.close();
-                    }
-                }
-                catch (Throwable throwable)
-                {
-                    throw throwable;
-                }
-            }
-            catch (Throwable exception)
-            {
-                exception.printStackTrace();
-            }
-        }
-        catch(IOException ex)
-        {
-            ex.printStackTrace();
-        }
+    public static void SendBanWave(String message, String ptbqa)
+    {
+        TemmieWebhook temmie = new TemmieWebhook(Webhook);
+        DiscordEmbed de = DiscordEmbed.builder()
+                .title(message) // We are creating a embed with this title...
+                .description("The following users are being banned! \n" + ptbqa)
+                .color(255)
+                // Maybe a link to the ban id if a website is configured?
+                //.url("https://github.com/MrPowerGamerBR/TemmieWebhook") // that, when clicked, goes to the TemmieWebhook repo...
+                //ntbq
+
+                .footer(FooterEmbed.builder() // with a fancy footer...
+                    .text("LolBans") // this footer will have the text "TemmieWebhook!"...
+                .build()) // and now we build the footer...
+                .build(); // and finally, we build the embed
+                
+            
+        DiscordMessage dm = DiscordMessage.builder()
+        .username("BanWave") // We are creating a message with the username "LolBans"...
+        .avatarUrl("https://crafatar.com/avatars/" + "f78a4d8d-d51b-4b39-98a3-230f2de0c670" + "?&overlay") // with this avatar
+        .embeds(Arrays.asList(de)) // with the our embed...
+        .build(); // and now we build the message!
+        
+        temmie.sendMessage(dm);
+    }
+    
+    public static void SendBanWaveAdd(String sender, String target, String TargetUUID, String SenderUUID, String reason, String BanID)
+    {
+        TemmieWebhook temmie = new TemmieWebhook(Webhook);
+        String fuckingjava = "https://crafatar.com/renders/head/" + TargetUUID + "?overlay";
+        String Color = BanID.replaceAll("[^0-9]","");
+        
+        DiscordEmbed de = DiscordEmbed.builder()
+                .title(sender + " has added " + target + " to the ban wave") // We are creating a embed with this title...
+                .color(Integer.parseInt(Color))
+                // Maybe a link to the ban id if a website is configured?
+                //.url("https://github.com/MrPowerGamerBR/TemmieWebhook") // that, when clicked, goes to the TemmieWebhook repo...
+                .footer(FooterEmbed.builder() // with a fancy footer...
+                    .text(target) // this footer will have the text "TemmieWebhook!"...
+                    .icon_url("https://crafatar.com/avatars/" + TargetUUID + "?overlay") // with this icon on the footer
+                .build()) // and now we build the footer...
+                .description(reason) // with this description...
+                // Maybe a link to the ban id if a website is configured?
+                .thumbnail(ThumbnailEmbed.builder() // with a fancy thumbnail...
+                        .url(fuckingjava) // with this thumbnail...
+                        //.height(64) // not too big because we don't want to flood the user chats with a huge image, right?
+                        .build()) // and now we build the thumbnail...
+                //.url("https://github.com/MrPowerGamerBR/TemmieWebhook") // that, when clicked, goes to the TemmieWebhook repo...
+                .fields(Arrays.asList( // with fields...
+                        FieldEmbed.builder()
+                        .name("BanID")
+                        .value("#" + BanID)
+                        .build(),
+                        FieldEmbed.builder()
+                        .name("Expires")
+                        .value("Indefinite")
+                        .build() ))
+                .build(); // and finally, we build the embed
+            
+        DiscordMessage dm = DiscordMessage.builder()
+                .username(sender) // We are creating a message with the username "LolBans"...
+                .avatarUrl("https://crafatar.com/avatars/" + SenderUUID) // with this avatar...
+                .embeds(Arrays.asList(de)) // with the our embed...
+                .build(); // and now we build the message!
+        
+        temmie.sendMessage(dm);
+    }
+
+    public static void Send(String title, int Color, String BanID, String targets, Object... args)
+    {
+        TemmieWebhook temmie = new TemmieWebhook(Webhook);
+        
+        DiscordEmbed de = DiscordEmbed.builder()
+                .color(Color)
+                .title(title) // We are creating a embed with this title...
+                .description(String.format(targets, args)) // with this description...
+                // Maybe a link to the ban id if a website is configured?
+                //.url("https://github.com/MrPowerGamerBR/TemmieWebhook") // that, when clicked, goes to the TemmieWebhook repo...
+                .fields(Arrays.asList( // with fields...
+                        FieldEmbed.builder()
+                        .name("BanID")
+                        .value("#" + BanID)
+                        .build(),
+                        FieldEmbed.builder()
+                        .build() ))
+                .build(); // and finally, we build the embed
+            
+    
+        
+    
+        DiscordMessage dm = DiscordMessage.builder()
+                .username("LolBans") // We are creating a message with the username "LolBans"...
+                .content("") // with no content because we are going to use the embed...
+                .avatarUrl("https://i.imgur.com/mKRAesS.png") // with this avatar...
+                .embeds(Arrays.asList(de)) // with the our embed...
+                .build(); // and now we build the message!
+            
+        temmie.sendMessage(dm);
+    }
+
+    public static void Send(String target, String BanID)
+    {
+        TemmieWebhook temmie = new TemmieWebhook(Webhook);
+        String Color = BanID.replaceAll("[^0-9]","");
+        
+        DiscordEmbed de = DiscordEmbed.builder()
+                .color(Integer.parseInt(Color))
+                .title(target + "'s ban has expired!") // We are creating a embed with this title...
+                .description("BanID: #" + BanID) // with this description...
+                // Maybe a link to the ban id if a website is configured?
+                //.url("https://github.com/MrPowerGamerBR/TemmieWebhook") // that, when clicked, goes to the TemmieWebhook repo...
+                .build(); // and finally, we build the embed
+            
+        DiscordMessage dm = DiscordMessage.builder()
+                .username("LolBans") // We are creating a message with the username "LolBans"...
+                .content("") // with no content because we are going to use the embed...
+                .avatarUrl("https://i.imgur.com/mKRAesS.png") // with this avatar...
+                .embeds(Arrays.asList(de)) // with the our embed...
+                .build(); // and now we build the message!
+            
+        temmie.sendMessage(dm);
+    }
+
+
+    public static void SendFormatted(String message, Object... args)
+    {
+        TemmieWebhook temmie = new TemmieWebhook(Webhook);
+        DiscordMessage dm = DiscordMessage.builder()
+                .username("LolBans") // We are creating a message with the username "Temmie"...
+                .content(message + args) // with this content...
+                .avatarUrl("https://i.imgur.com/mKRAesS.png") // with this avatar...
+                .build(); // and now we build the message!
+                
+        temmie.sendMessage(dm);
     }
 }

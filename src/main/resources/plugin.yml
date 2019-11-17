@@ -18,3 +18,5 @@ commands:
     description: Get history of users punishments
   ch:
     description: Clear history of a player
+  banwave:
+    description: add user to the banwave

@@ -1,7 +1,29 @@
 dbhost: localhost
 dbport: 3306
-dbname: dbname
-dbusername: dbusername
-dbpassword: dbpasswd
+dbname: mcdb
+dbusername: mc
+dbpassword: dbpw
+# Currently set to 1 minute (20 * number of seconds)
+# It's best to leave this alone unless you know what you
+# are doing with it.
+QueryUpdateLong: 30
 DiscordWebhook: https://discordapp.com/api/webhooks/643282351543287838/gV5G4p2Zk2MOsynnMaSZ5jHPlZcEPRGBwEZy1dzWFHABm3gPreiqAaeEMaZ5VYY3CGno
-NetworkName: Fully Toasted Networks
+Prefix: "&cLolBans> "
+# Draw a box around the ban message!
+# WARNING! If their window is smaller than the box length, it will text-wrap
+BanMessageBox: false
+# MESSAGES
+# BanMessage, %player% %reason% %banner% %timetoexpire% %banid%
+InvalidSyntax: "&cInvalid Syntax!"
+TempBanMessage: "&cThe account &7%player% &chas been TEMPORARILY suspended from &7My Network\n\n&cYou were banned by: &f%banner% \n&cReason: &f%reason%\n&cExpiry: &f%timetoexpire% \n\n&cBan ID: &f%banid%\n&7Sharing your Ban ID may affect the result of your appeal!"
+PermBanMessage: "&cThe account &7%player% &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f%banner% \n&cReason: &f%reason%\n\n&cBan ID: &f%banid%\n&7Sharing your Ban ID may affect the result of your appeal!"
+BanAnnouncment: "&c%banner% &7has banned &c%player%&7: &c%reason%"
+SilentBanAnnouncment: "&c%banner% &7has banned &c%player%&7: &c%reason% &8[SILENT]"
+UnbanAnnouncment: "&c%banner% &7has un-banned &c%player%&7: &c%reason%"
+SilentUnbanAnnouncment: "&c%banner% &7has un-banned &c%player%&7: &c%reason% &8[SILENT]"
+CannotBanSelf: "&cYes, you have permissions! You cannot ban yourself!"
+CannotAddSelf: "&cYou cannot add yourself to the banwave!"
+PlayerDoesntExist: "&cError! &7%player% &cdoesn't exist!"
+PlayerIsBanned: "&cError! &7%player% is already banned!"
+PlayerIsInBanWave: "&cError! &7%player% is already in the ban wave!"
+BannedPlayersInBanWave: "&cBanned &7%amount% &cplayer(s)!"
