@@ -20,6 +20,7 @@ public class Configuration
     public static String dbusername = "";
     public static String dbpassword = "";
     public static Integer dbport = 3306;
+    public static Integer MaxReconnects = 5;
 
     public static String DiscordWebhook;
     public static String Prefix;
@@ -60,6 +61,7 @@ public class Configuration
         Configuration.dbname = config.getString("dbname");
         Configuration.dbusername = config.getString("dbusername");
         Configuration.dbpassword = config.getString("dbpassword");
+        Configuration.MaxReconnects = config.getInt("MaxReconnects");
         DiscordUtil.Webhook = config.getString("DiscordWebhook");
         Configuration.TempBanMessage = config.getString("TempBanMessage");
         Configuration.PermBanMessage = config.getString("PermMessage");

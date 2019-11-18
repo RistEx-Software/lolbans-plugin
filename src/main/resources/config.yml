@@ -3,6 +3,8 @@ dbport: 3306
 dbname: mcdb
 dbusername: mc
 dbpassword: dbpw
+# Maximum number of times mysql will try to reconnect before giving up.
+MaxReconnects: 5
 # Currently set to 1 minute (20 * number of seconds)
 # It's best to leave this alone unless you know what you
 # are doing with it.

@@ -54,8 +54,8 @@ public final class Main extends JavaPlugin
                 return;
 
             connection =
-                    DriverManager.getConnection(String.format("jdbc:mysql://%s:%s/%s?autoReconnect=true&failOverReadOnly=false&maxReconnects=10", 
-                                    Configuration.dbhost, Configuration.dbport, Configuration.dbname), Configuration.dbusername, Configuration.dbpassword);
+                    DriverManager.getConnection(String.format("jdbc:mysql://%s:%s/%s?autoReconnect=true&failOverReadOnly=false&maxReconnects=%d", 
+                                    Configuration.dbhost, Configuration.dbport, Configuration.dbname, Configuration.MaxReconnects), Configuration.dbusername, Configuration.dbpassword);
         }
     }
 
@@ -74,13 +74,26 @@ public final class Main extends JavaPlugin
             this.getDataFolder().mkdirs();
             this.saveDefaultConfig();
             getLogger().info("the folder for lolbans was created successfully!");
+            getLogger().severe("Please configure lolbans and restart the server! :)");
+            // They're not gonna have their database setup, just exit. It stops us from having errors.
+            return;
         }
 
         try 
         {
             this.openConnection();
+        }
+        catch (SQLException e)
+        {
+            //e.printStackTrace();
+            getLogger().severe("Cannot connect to database, ensure your database is setup correctly and restart the server.");
+            // Just exit and let the user figure it out.
+            return;
+        }
 
-            // Ensure Our tables are created.
+        // Ensure Our tables are created.
+        try
+        {
             this.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedPlayers (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
             this.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedHistory (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, UnbanReason TEXT, UnbanExecutioner varchar(17), TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
             this.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BanWave (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
@@ -88,6 +101,8 @@ public final class Main extends JavaPlugin
         catch (SQLException e)
         {
             e.printStackTrace();
+            getLogger().severe("Cannot create database tables, please ensure your SQL user has the correct permissions.");
+            return;
         }
 
         Bukkit.getPluginManager().registerEvents(new ConnectionListeners(), this);
@@ -109,18 +124,19 @@ public final class Main extends JavaPlugin
     {
         // Plugin shutdown logic
         reloadConfig();
-        CheckThread.cancel();
-        try 
+        if (CheckThread != null)
+            CheckThread.cancel();
+        
+        if (this.connection != null)
         {
-            this.connection.close();
+            try 
+            {
+                this.connection.close();
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
         }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    public void KickPlayer(String string, Player player, String string2, String string3, Timestamp timestamp) 
-    {
     }
 }

@@ -115,6 +115,13 @@ public class TimeUtil
         }
     }
 
+    public static String Expires(Timestamp ts)
+    {
+        if (ts == null)
+            return "";
+        return TimeUtil.Expires(ts.getTime() / 1000L);
+    }
+
     public static String Expires(long expires)
     {
         long CurTime = TimeUtil.GetUnixTime();
