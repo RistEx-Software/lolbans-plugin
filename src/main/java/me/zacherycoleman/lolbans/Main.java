@@ -28,18 +28,26 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import me.zacherycoleman.lolbans.Commands.AcceptCommand;
 import me.zacherycoleman.lolbans.Commands.BanCommand;
 import me.zacherycoleman.lolbans.Commands.BanWaveCommand;
 import me.zacherycoleman.lolbans.Commands.HistoryCommand;
 import me.zacherycoleman.lolbans.Commands.UnbanCommand;
+import me.zacherycoleman.lolbans.Commands.WarnCommand;
 import me.zacherycoleman.lolbans.Listeners.ConnectionListeners;
+import me.zacherycoleman.lolbans.Listeners.MovementListener;
 import me.zacherycoleman.lolbans.Runnables.QueryRunnable;
 import me.zacherycoleman.lolbans.Utils.Configuration;
+import me.zacherycoleman.lolbans.Utils.User;
 
 import java.sql.*;
+import java.util.HashMap;
+import java.util.UUID;
 // welcome.
 public final class Main extends JavaPlugin
 {
+    public static HashMap<UUID, User> USERS = new HashMap<UUID, User>();
+    
     public Connection connection;
     private QueryRunnable CheckThread;
 
@@ -97,6 +105,7 @@ public final class Main extends JavaPlugin
             this.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedPlayers (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
             this.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedHistory (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, UnbanReason TEXT, UnbanExecutioner varchar(17), TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
             this.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BanWave (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
+            this.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Warnings (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, WarnID varchar(20) NOT NULL, Accepted boolean, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)").execute();
         }
         catch (SQLException e)
         {
@@ -106,6 +115,7 @@ public final class Main extends JavaPlugin
         }
 
         Bukkit.getPluginManager().registerEvents(new ConnectionListeners(), this);
+        Bukkit.getPluginManager().registerEvents(new MovementListener(), this);
         this.getCommand("ban").setExecutor(new BanCommand());
         this.getCommand("unban").setExecutor(new UnbanCommand());
         this.getCommand("history").setExecutor(new HistoryCommand());
@@ -113,6 +123,8 @@ public final class Main extends JavaPlugin
         this.getCommand("clearhistory").setExecutor(new HistoryCommand());
         this.getCommand("ch").setExecutor(new HistoryCommand());
         this.getCommand("banwave").setExecutor(new BanWaveCommand());
+        this.getCommand("warn").setExecutor(new WarnCommand());
+        this.getCommand("accept").setExecutor(new AcceptCommand());
 
         // Schedule a repeating task to delete expired bans.
         this.CheckThread = new QueryRunnable();

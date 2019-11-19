@@ -38,6 +38,9 @@ public class Configuration
     public static String PlayerIsBanned;
     public static String PlayerIsInBanWave;
     public static String BannedPlayersInBanWave;
+    public static String SilentWarnAnnouncment;
+    public static String WarnAnnouncment;
+    public static String WarnedMessage;
 
     public static Connection connection;
     public static YamlConfiguration LANG;
@@ -80,5 +83,8 @@ public class Configuration
         Configuration.PlayerIsBanned = config.getString("PlayerIsBanned"); 
         Configuration.PlayerIsInBanWave = config.getString("PlayerIsInBanWave"); 
         Configuration.BannedPlayersInBanWave = config.getString("BannedPlayersInBanWave");
+        Configuration.SilentWarnAnnouncment = config.getString("SilentWarnAnnouncment");
+        Configuration.WarnAnnouncment = config.getString("WarnAnnouncment");
+        Configuration.WarnedMessage = config.getString("WarnedMessage");
     }
 }

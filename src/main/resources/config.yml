@@ -17,8 +17,8 @@ BanMessageBox: false
 # MESSAGES
 # BanMessage, %player% %reason% %banner% %timetoexpire% %banid%
 InvalidSyntax: "&cInvalid Syntax!"
-TempBanMessage: "&cThe account &7%player% &chas been TEMPORARILY suspended from &7My Network\n\n&cYou were banned by: &f%banner% \n&cReason: &f%reason%\n&cExpiry: &f%timetoexpire% \n\n&cBan ID: &f%banid%\n&7Sharing your Ban ID may affect the result of your appeal!"
-PermBanMessage: "&cThe account &7%player% &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f%banner% \n&cReason: &f%reason%\n\n&cBan ID: &f%banid%\n&7Sharing your Ban ID may affect the result of your appeal!"
+TempBanMessage: "&cThe account &7%player% &chas been TEMPORARILY suspended from &7My Network\n\n&cYou were banned by: &f%banner% \n&cReason: &f%reason%\n&cExpiry: &f%timetoexpire% \n\n&cBan ID: &f#B-%banid%\n&7Sharing your Ban ID may affect the result of your appeal!"
+PermBanMessage: "&cThe account &7%player% &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f%banner% \n&cReason: &f%reason%\n\n&cBan ID: #B-&f%banid%\n&7Sharing your Ban ID may affect the result of your appeal!"
 BanAnnouncment: "&c%banner% &7has banned &c%player%&7: &c%reason%"
 SilentBanAnnouncment: "&c%banner% &7has banned &c%player%&7: &c%reason% &8[SILENT]"
 UnbanAnnouncment: "&c%banner% &7has un-banned &c%player%&7: &c%reason%"
@@ -29,3 +29,8 @@ PlayerDoesntExist: "&cError! &7%player% &cdoesn't exist!"
 PlayerIsBanned: "&cError! &7%player% is already banned!"
 PlayerIsInBanWave: "&cError! &7%player% is already in the ban wave!"
 BannedPlayersInBanWave: "&cBanned &7%amount% &cplayer(s)!"
+WarnAnnouncment: "&c%warner% &7has warned &c%player% &f: &c%reason%"
+SilentWarnAnnouncment: "&c%warner% &7has warned &c%player% &f: &c%reason% &8[SILENT]"
+WarnedMessage: "&c%warner% &7warned you: &c%reason% &7[#W-%warnid%]"
+# HistoryMessage: %player% %banner% %banreasons% %unbanreasons% %banids% %expiry% %latestbanreasons% %latestunbanreason% %latestbanner% %timesbanned% %currentlybanned% 
+HistoryMessage: "&8&m------------------------------\n \n&8&m------------------------------"

@@ -20,3 +20,7 @@ commands:
     description: Clear history of a player
   banwave:
     description: add user to the banwave
+  warn:
+    description: Warn a playe
+  accept:
+    description: accept a warning

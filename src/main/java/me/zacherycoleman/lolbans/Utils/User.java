@@ -16,6 +16,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class User
 {
+    public boolean IsWarn;
     static Main self = Main.getPlugin(Main.class);
     
     private Player pl;
@@ -40,11 +41,22 @@ public class User
         return this.pl.getName();
     }
 
-    // All voids after this.
-
-    public void sendMessage(String message)
+    public boolean IsWarn()
     {
-        this.pl.sendMessage(message);
+        return this.IsWarn;
+    }
+
+    // ALL VOIDS GO AFTER HERE
+
+    public void SetWarned(boolean IsWarn)
+    {
+        this.IsWarn = IsWarn;
+    }
+
+    public static void SendMessage(Player target, String message)
+    {
+        target.sendMessage(message);
+        //this.pl.sendMessage(message);
     }
 
     public static boolean IsPlayerInWave(OfflinePlayer user)
