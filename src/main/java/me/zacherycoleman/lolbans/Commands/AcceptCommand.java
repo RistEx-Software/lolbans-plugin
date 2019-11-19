@@ -36,11 +36,12 @@ public class AcceptCommand implements CommandExecutor
                 {
                     Main.USERS.get(player.getUniqueId()).SetWarned(false);
                     // Preapre a statement
-                    PreparedStatement pst = self.connection.prepareStatement("INSERT INTO Warnings (Accepted) VALUES (?)");
-                    pst.setBoolean(6, true);
+                    PreparedStatement pst3 = self.connection.prepareStatement("UPDATE Warnings SET Accepted = true WHERE UUID = ?");
+                    pst3.setString(1, player.getUniqueId().toString());
+                    pst3.executeUpdate();
 
                     // Commit to the database.
-                    pst.executeUpdate();
+                    pst3.executeUpdate();
                     sender.sendMessage(ChatColor.GREEN + "Thank you for accepting, you may move!");
                 }
                 catch (SQLException e)
