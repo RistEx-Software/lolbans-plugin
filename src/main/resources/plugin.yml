@@ -4,23 +4,44 @@ main: me.zacherycoleman.lolbans.Main
 api-version: 1.13
 authors: [Zachery Coleman, Justasic]
 description: A ban system for minecraft, nothing fancy
+permission-message: &noperms "§cError: §fAccess Denied!"
 website: https://github.com/notzachery
 commands:
+  box:
+    description: debug.
   ban:
     description: Ban a player
+    usage: |
+          Syntax Error!
+          Use /ban <player> <ban time|*> <reason> 
   unban:
     description: Unban a payer
+    usage: |
+        Syntax Error!
+        Use /unban <player> <reason>
   history:
     description: Get history of users punishments
+    usage: |
+        Syntax Error!
+        Use /history <player>
   clearhistory:
     description: Clear history of a player
+    usage: |
+        Syntax Error!
+        Use /clearhistory <player>
   h:
     description: Get history of users punishments
   ch:
     description: Clear history of a player
   banwave:
     description: add user to the banwave
+    usage: |
+        Syntax Error!
+        Use /banwave <add|remove|enforce> [player]
   warn:
-    description: Warn a playe
+    description: Warn a player
+    usage: |
+        Syntax Error!
+        Use /warn <player> [-s] <reason>
   accept:
     description: accept a warning

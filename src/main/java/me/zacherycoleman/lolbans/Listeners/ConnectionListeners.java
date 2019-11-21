@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -48,8 +49,8 @@ public class ConnectionListeners implements Listener
 
             if (result2.next()) 
             {
-                //System.out.println(result2.getString("Reason"));
-                //System.out.println(event.getPlayer());
+                System.out.println(result2.getString("Reason"));
+                System.out.println(event.getPlayer());
                 PreparedStatement pst3 = self.connection.prepareStatement("UPDATE Warnings SET Accepted = true WHERE UUID = ?");
                 pst3.setString(1, event.getPlayer().getUniqueId().toString());
                 pst3.executeUpdate();
@@ -68,10 +69,11 @@ public class ConnectionListeners implements Listener
     @EventHandler
     public void OnPlayerDisconnect(PlayerQuitEvent event)
     {
+        UUID PlayerUUID = event.getPlayer().getUniqueId();
         try 
         {
             PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM BannedPlayers WHERE UUID = ? AND (Expiry IS NULL OR Expiry >= NOW())");
-            pst.setString(1, event.getPlayer().getUniqueId().toString());
+            pst.setString(1, PlayerUUID.toString());
             
             ResultSet result = pst.executeQuery();
 
@@ -84,16 +86,13 @@ public class ConnectionListeners implements Listener
         {
             e.printStackTrace();
         }
-        Main.USERS.get(event.getPlayer().getUniqueId()).SetWarned(false);
 
-        Main.USERS.remove(event.getPlayer().getUniqueId());
+        Main.USERS.remove(PlayerUUID);
     }
 
     @EventHandler
     public void OnPlayerKick(PlayerKickEvent event)
     {
-        Main.USERS.get(event.getPlayer().getUniqueId()).SetWarned(false);
-
         Main.USERS.remove(event.getPlayer().getUniqueId());
     }
 }

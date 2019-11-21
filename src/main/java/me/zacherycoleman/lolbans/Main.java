@@ -34,11 +34,14 @@ import me.zacherycoleman.lolbans.Commands.BanWaveCommand;
 import me.zacherycoleman.lolbans.Commands.HistoryCommand;
 import me.zacherycoleman.lolbans.Commands.UnbanCommand;
 import me.zacherycoleman.lolbans.Commands.WarnCommand;
+import me.zacherycoleman.lolbans.Commands.BoxCommand;
 import me.zacherycoleman.lolbans.Listeners.ConnectionListeners;
 import me.zacherycoleman.lolbans.Listeners.MovementListener;
+import me.zacherycoleman.lolbans.Listeners.PlayerEventListener;
 import me.zacherycoleman.lolbans.Runnables.QueryRunnable;
 import me.zacherycoleman.lolbans.Utils.Configuration;
 import me.zacherycoleman.lolbans.Utils.User;
+import me.zacherycoleman.lolbans.Hacks.Hacks;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -71,7 +74,6 @@ public final class Main extends JavaPlugin
     public void onEnable()
     {    
         // Plugin startup logic
-
         new Configuration(this.getConfig());
         
         // Creating config folder, and adding config to it.
@@ -116,6 +118,9 @@ public final class Main extends JavaPlugin
 
         Bukkit.getPluginManager().registerEvents(new ConnectionListeners(), this);
         Bukkit.getPluginManager().registerEvents(new MovementListener(), this);
+        //Bukkit.getPluginManager().registerEvents(new PlayerEventListener(), this);
+
+        // Register commands
         this.getCommand("ban").setExecutor(new BanCommand());
         this.getCommand("unban").setExecutor(new UnbanCommand());
         this.getCommand("history").setExecutor(new HistoryCommand());
@@ -126,19 +131,33 @@ public final class Main extends JavaPlugin
         this.getCommand("warn").setExecutor(new WarnCommand());
         this.getCommand("accept").setExecutor(new AcceptCommand());
 
+        // DEBUG
+        this.getCommand("box").setExecutor(new BoxCommand());
+
+        // Used if the admin does /reload confirm
+        for (Player p : Bukkit.getOnlinePlayers())
+            Main.USERS.put(p.getUniqueId(), new User(p));
+
         // Schedule a repeating task to delete expired bans.
         this.CheckThread = new QueryRunnable();
         this.CheckThread.runTaskTimerAsynchronously(this, 20L, Configuration.QueryUpdateLong * 20L);
+
+        // Run our hacks
+        Hacks.HackIn();
     }
 
     @Override
     public void onDisable()
     {
-        // Plugin shutdown logic
+        // Unregister our hacks.
+        Hacks.GetCaught();
+        // Save our config values
         reloadConfig();
+        // Terminate our thread.
         if (CheckThread != null)
             CheckThread.cancel();
         
+        // Close the database connection (if open)
         if (this.connection != null)
         {
             try 
