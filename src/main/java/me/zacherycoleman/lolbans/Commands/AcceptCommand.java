@@ -9,9 +9,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 
 import me.zacherycoleman.lolbans.Main;
 import me.zacherycoleman.lolbans.Utils.Configuration;
+import me.zacherycoleman.lolbans.Utils.User;
 
 public class AcceptCommand implements CommandExecutor 
 {    
@@ -22,7 +25,7 @@ public class AcceptCommand implements CommandExecutor
     {
         if(!(sender instanceof Player))
         {
-            sender.sendMessage("" + Configuration.Prefix + ChatColor.RED + "You have to be a user to these commands.");
+            sender.sendMessage(Configuration.Prefix + ChatColor.RED + "You have to be a user to these commands.");
         }
         else
         {
@@ -31,10 +34,11 @@ public class AcceptCommand implements CommandExecutor
             // Getting command name
             if (command.getName().equalsIgnoreCase("accept") && Main.USERS.get(player.getUniqueId()) != null && Main.USERS.get(player.getUniqueId()).IsWarn()) 
             {
-                
                 try
                 {
-                    Main.USERS.get(player.getUniqueId()).SetWarned(false);
+                    User u = Main.USERS.get(player.getUniqueId());
+                    // Unset them warned locally
+                    u.SetWarned(false, null, null);
                     // Preapre a statement
                     PreparedStatement pst3 = self.connection.prepareStatement("UPDATE Warnings SET Accepted = true WHERE UUID = ?");
                     pst3.setString(1, player.getUniqueId().toString());
@@ -49,8 +53,9 @@ public class AcceptCommand implements CommandExecutor
                     e.printStackTrace();
                     sender.sendMessage(ChatColor.RED + "An internal error occured while attempting to execute this command.");
                 }
-
             }
+            else
+                self.getLogger().info("Not accept!");
         }
         return false;
     }

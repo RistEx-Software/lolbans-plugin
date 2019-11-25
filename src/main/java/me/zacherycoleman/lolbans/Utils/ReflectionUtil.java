@@ -25,8 +25,16 @@ public class ReflectionUtil
 
             Field modifiersField = Field.class.getDeclaredField("modifiers");
             modifiersField.setAccessible(true);
-            if ((f.getModifiers() & Modifier.FINAL) == 1)
+            if (!modifiersField.isAccessible())
+                throw new IllegalAccessException("Cannot set field as accessible");
+
+            if (Modifier.isFinal(f.getModifiers()))
+            {
                 modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
+
+                if (Modifier.isFinal(f.getModifiers()))
+                    throw new IllegalAccessException("Cannot set field as non-final. Is this assigned final?");
+            }
 
             f.set(o, newValue);
         } 

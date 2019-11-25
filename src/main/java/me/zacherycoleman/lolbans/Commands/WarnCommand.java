@@ -28,12 +28,6 @@ public class WarnCommand implements CommandExecutor
 {
     private static Main self = Main.getPlugin(Main.class);
 
-    public void SpawnBox(Player target)
-    {
-        //Location loc = target.getLocation();
-        
-    }
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
@@ -91,13 +85,14 @@ public class WarnCommand implements CommandExecutor
 
                         if (target.isOnline())
                         {
-                            Main.USERS.get(target.getUniqueId()).SetWarned(true);
-                            User.SendMessage((Player) target, Configuration.WarnedMessage);
+                            User u = Main.USERS.get(target.getUniqueId());
+                            u.SetWarned(true, ((Player)target).getLocation(), Configuration.WarnedMessage);
+                            u.SendMessage(Configuration.WarnedMessage);
 
                             // Send them a box as well. This will disallow them from sending move events.
                             // However, client-side enforcement is not guaranteed so we also enforce the
                             // same thing using the MovementListener, this just helps stop rubberbanding.
-                            this.SpawnBox((Player)target);
+                            u.SpawnBox(true, null);
                         }
                     
                         // Log to console.
@@ -117,7 +112,7 @@ public class WarnCommand implements CommandExecutor
                         // Post that to the database.
                         for (Player p : Bukkit.getOnlinePlayers())
                         {
-                            if (silent && (!p.hasPermission("lolbans.alerts") && !p.isOp()))
+                            if (silent && (!p.hasPermission("lolbans.alerts") && !p.isOp() && p == target))
                                 continue;
 
                             if (silent)

@@ -10,6 +10,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 
 import me.zacherycoleman.lolbans.Main;
 import net.md_5.bungee.api.ChatColor;
@@ -20,6 +22,8 @@ public class User
     static Main self = Main.getPlugin(Main.class);
     
     private Player pl;
+    private Location WarnLocation;
+    private String WarnMessage;
 
     public User(Player pl)
     {
@@ -36,6 +40,16 @@ public class User
         return this.pl.getLocation();
     }
 
+    public Location GetWarnLocation()
+    {
+        return this.WarnLocation;
+    }
+
+    public String GetWarnMessage()
+    {
+        return this.WarnMessage;
+    }
+
     public String getName()
     {
         return this.pl.getName();
@@ -48,16 +62,68 @@ public class User
 
     // ALL VOIDS GO AFTER HERE
 
-    public void SetWarned(boolean IsWarn)
+    public void SetWarned(boolean IsWarn, Location warnLocation, String WarnMessage)
     {
         this.IsWarn = IsWarn;
+        if (!IsWarn)
+            this.SpawnBox(false, Material.AIR.createBlockData());
+        this.WarnLocation = warnLocation;
+        this.WarnMessage = WarnMessage;
     }
 
-    public static void SendMessage(Player target, String message)
+    public void SendMessage(String message)
     {
-        target.sendMessage(message);
-        //this.pl.sendMessage(message);
+        //target.sendMessage(message);
+        this.pl.sendMessage(message);
     }
+
+    public void SpawnBox(boolean teleport, BlockData BlockType)
+    {
+        if (BlockType == null)
+            BlockType = Material.BARRIER.createBlockData();
+        Location loc = this.GetWarnLocation();
+        // Create a barrier block.
+        //BlockData BlockType = Material.GLASS.createBlockData();
+
+        // We must first ensure the player is actually in a safe space to
+        // lock them down on. We do this by finding the ground, then teleporting
+        // them both to the ground and the center of the block.
+        // If we don't find the ground and teleport them there, then the player is
+        // considered to be "flying" and can be kicked as such.
+        Location TeleportLoc = this.pl.getWorld().getHighestBlockAt(loc.getBlockX(), loc.getBlockZ()).getLocation();
+        // Preserve the player's pitch/yaw values
+        TeleportLoc.setPitch(loc.getPitch());
+        TeleportLoc.setYaw(loc.getYaw());
+        // Add to get to center of the block
+        TeleportLoc.add(0.5, 0, 0.5);
+        // Teleport.
+        if (teleport)
+            this.pl.teleport(TeleportLoc);
+
+        // Set the block under them
+        //this.pl.sendBlockChange(TeleportLoc.subtract(0, 1, 0), BlockType);
+        // Turns out that setting the block can cause client desyncs.
+        TeleportLoc.subtract(0, 1, 0);
+        // set the block above them
+        this.pl.sendBlockChange(TeleportLoc.add(0, 3, 0), BlockType);
+
+        // Reset our TeleportLoc.
+        TeleportLoc.subtract(0, 2, 0);
+
+        // Now set the blocks to all sides of them.
+        this.pl.sendBlockChange(TeleportLoc.add(1, 0, 0), BlockType);
+        this.pl.sendBlockChange(TeleportLoc.add(0, 1, 0), BlockType);
+
+        this.pl.sendBlockChange(TeleportLoc.subtract(2, 0, 0), BlockType);
+        this.pl.sendBlockChange(TeleportLoc.subtract(0, 1, 0), BlockType);
+
+        this.pl.sendBlockChange(TeleportLoc.add(1, 0, 1), BlockType);
+        this.pl.sendBlockChange(TeleportLoc.add(0, 1, 0), BlockType);
+
+        this.pl.sendBlockChange(TeleportLoc.subtract(0, 0, 2), BlockType);
+        this.pl.sendBlockChange(TeleportLoc.subtract(0, 1, 0), BlockType);
+    }
+
 
     public static boolean IsPlayerInWave(OfflinePlayer user)
     {
@@ -141,7 +207,7 @@ public class User
 
         //%player% %reason% %banner% %timetoexpire% %banid%
         if (BanTime != null)
-        Configuration.TempBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("TempBanMessage").replace("%player%", target.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%timetoexpire%", BanTime.toString()).replace("%banid%", "#"+BanID));
+            Configuration.TempBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("TempBanMessage").replace("%player%", target.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%timetoexpire%", BanTime.toString()).replace("%banid%", "#"+BanID));
         Configuration.PermBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("PermBanMessage").replace("%player%", target.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%banid%", "#"+BanID));
 
        // bd.AddString(Configuration.PermBanMessage);

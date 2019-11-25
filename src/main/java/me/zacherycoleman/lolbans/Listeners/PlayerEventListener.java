@@ -4,80 +4,32 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerCommandSendEvent;
 import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.PlayerInventory;
 
 import me.zacherycoleman.lolbans.Main;
 import me.zacherycoleman.lolbans.Utils.Configuration;
 import me.zacherycoleman.lolbans.Utils.User;
 
-public class PlayerEventListener implements Listener
+public class PlayerEventListener
 {
-    public void SpawnBox(Player target)
-    {
-        Location loc = target.getLocation();
-        // Create a barrier block.
-        BlockData BlockType = Material.BARRIER.createBlockData();
-        //BlockData BlockType = Material.GLASS.createBlockData();
-
-        // We must first ensure the player is actually in a safe space to
-        // lock them down on. We do this by finding the ground, then teleporting
-        // them both to the ground and the center of the block.
-        // If we don't find the ground and teleport them there, then the player is
-        // considered to be "flying" and can be kicked as such.
-        Location TeleportLoc = target.getWorld().getHighestBlockAt(loc.getBlockX(), loc.getBlockZ()).getLocation();
-        // Preserve the player's pitch/yaw values
-        TeleportLoc.setPitch(loc.getPitch());
-        TeleportLoc.setYaw(loc.getYaw());
-        // Add to get to center of the block
-        TeleportLoc.add(0.5, 0, 0.5);
-        // Teleport.
-        target.teleport(TeleportLoc);
-
-        /*
-        // The blocks we need to spawn is as below. We need to spawn 2 blocks in the 
-              | X |
-          | X | P | X |
-              | X |
-
-              Location.add(x, y, z)
-
-              Y - Up
-              X - strafe
-              Z - Walk
-        */
-
-        // Set the block under them
-        target.sendBlockChange(TeleportLoc.subtract(0, 1, 0), BlockType);
-        // set the block above them
-        target.sendBlockChange(TeleportLoc.add(0, 3, 0), BlockType);
-
-        // Reset our TeleportLoc.
-        TeleportLoc.subtract(0, 2, 0);
-
-        // Now set the blocks to all sides of them.
-        target.sendBlockChange(TeleportLoc.add(1, 0, 0), BlockType);
-        target.sendBlockChange(TeleportLoc.add(0, 1, 0), BlockType);
-
-        target.sendBlockChange(TeleportLoc.subtract(2, 0, 0), BlockType);
-        target.sendBlockChange(TeleportLoc.subtract(0, 1, 0), BlockType);
-
-        target.sendBlockChange(TeleportLoc.add(1, 0, 1), BlockType);
-        target.sendBlockChange(TeleportLoc.add(0, 1, 0), BlockType);
-
-        target.sendBlockChange(TeleportLoc.subtract(0, 0, 2), BlockType);
-        target.sendBlockChange(TeleportLoc.subtract(0, 1, 0), BlockType);
-    }
-
-    public void OnPlayerEvent(PlayerEvent event)
+    public static void OnPlayerEvent(PlayerEvent event)
     {
         User u = Main.USERS.get(event.getPlayer().getUniqueId());
         // Ignore players not warned
-        if (!u.IsWarn())
+        if (u == null || !u.IsWarn())
             return;
 
         if (event instanceof PlayerMoveEvent)
@@ -86,7 +38,7 @@ public class PlayerEventListener implements Listener
             Player p = E.getPlayer();
 
             // Put them in a box
-            SpawnBox(p);
+            u.SpawnBox(false, null);
             
             Location from = E.getFrom();
             Location to = E.getTo();
@@ -108,12 +60,60 @@ public class PlayerEventListener implements Listener
             return;
         }
 
-
         // If they're trying to do literally anything, cancel it.
         if (event instanceof Cancellable)
         {
-            Cancellable c = (Cancellable)event;
-            c.setCancelled(true);
+            // Ignore these events, they're critical to this event working.
+            if (event instanceof PlayerKickEvent || event instanceof PlayerCommandPreprocessEvent || event instanceof PlayerCommandSendEvent)
+                return;
+
+            // Remind the player they're in a warned state.
+            if (event instanceof AsyncPlayerChatEvent || event instanceof PlayerInventory)
+                u.SendMessage(u.GetWarnMessage());
+
+            // Cancel everything else.
+            ((Cancellable)event).setCancelled(true);
+        }
+    }
+
+    // Cancel most events that involve the player (they may not attack or damage people/entities)
+    public static void OnEntityEvent(EntityEvent event)
+    {
+        Entity e = event.getEntity();
+
+        // Ensure the player is not an entity of some kind. They're currently exempt.
+        if (e instanceof Player)
+        {
+            User u = Main.USERS.get(((Player)e).getUniqueId());
+            // Ignore players not warned
+            if (u == null || !u.IsWarn())
+                return;
+
+            if (event instanceof Cancellable)
+            {
+                u.SendMessage(u.GetWarnMessage());
+                ((Cancellable)event).setCancelled(true);
+            }
+        }
+
+        // Ensure the player is not being affected in some way by a few events
+        if (event instanceof EntityDamageByEntityEvent)
+        {
+            Entity damager = ((EntityDamageByEntityEvent)event).getDamager();
+
+            if (damager instanceof Player)
+            {
+                User u = Main.USERS.get(((Player)damager).getUniqueId());
+                // Ignore players not warned
+                if (u == null || !u.IsWarn())
+                    return;
+    
+                if (event instanceof Cancellable)
+                {
+                    u.SendMessage(u.GetWarnMessage());
+                    ((EntityDamageByEntityEvent)event).setCancelled(true);
+                }
+            }
         }
     }
 }

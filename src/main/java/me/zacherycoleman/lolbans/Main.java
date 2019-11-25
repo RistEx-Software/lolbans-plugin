@@ -34,7 +34,6 @@ import me.zacherycoleman.lolbans.Commands.BanWaveCommand;
 import me.zacherycoleman.lolbans.Commands.HistoryCommand;
 import me.zacherycoleman.lolbans.Commands.UnbanCommand;
 import me.zacherycoleman.lolbans.Commands.WarnCommand;
-import me.zacherycoleman.lolbans.Commands.BoxCommand;
 import me.zacherycoleman.lolbans.Listeners.ConnectionListeners;
 import me.zacherycoleman.lolbans.Listeners.MovementListener;
 import me.zacherycoleman.lolbans.Listeners.PlayerEventListener;
@@ -117,8 +116,7 @@ public final class Main extends JavaPlugin
         }
 
         Bukkit.getPluginManager().registerEvents(new ConnectionListeners(), this);
-        Bukkit.getPluginManager().registerEvents(new MovementListener(), this);
-        //Bukkit.getPluginManager().registerEvents(new PlayerEventListener(), this);
+        //Bukkit.getPluginManager().registerEvents(new MovementListener(), this);
 
         // Register commands
         this.getCommand("ban").setExecutor(new BanCommand());
@@ -131,9 +129,6 @@ public final class Main extends JavaPlugin
         this.getCommand("warn").setExecutor(new WarnCommand());
         this.getCommand("accept").setExecutor(new AcceptCommand());
 
-        // DEBUG
-        this.getCommand("box").setExecutor(new BoxCommand());
-
         // Used if the admin does /reload confirm
         for (Player p : Bukkit.getOnlinePlayers())
             Main.USERS.put(p.getUniqueId(), new User(p));
@@ -143,7 +138,7 @@ public final class Main extends JavaPlugin
         this.CheckThread.runTaskTimerAsynchronously(this, 20L, Configuration.QueryUpdateLong * 20L);
 
         // Run our hacks
-        Hacks.HackIn();
+        Hacks.HackIn(this);
     }
 
     @Override

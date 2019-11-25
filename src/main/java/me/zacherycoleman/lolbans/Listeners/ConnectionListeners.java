@@ -40,8 +40,7 @@ public class ConnectionListeners implements Listener
                 User.KickPlayer(result.getString("Executioner"), event.getPlayer(), result.getString("BanID"), result.getString("Reason"), BanTime);
             }
 
-            PreparedStatement pst2 = self.connection.prepareStatement(
-                "SELECT * FROM Warnings WHERE UUID = ? AND Accepted = ?");
+            PreparedStatement pst2 = self.connection.prepareStatement("SELECT * FROM Warnings WHERE UUID = ? AND Accepted = ?");
             pst2.setString(1, event.getPlayer().getUniqueId().toString());
             pst2.setBoolean(2, false);
 
