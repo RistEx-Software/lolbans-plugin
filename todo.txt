@@ -1,0 +1,3 @@
+banlist (command, and web, duh)
+report function, ingame and web.
+ipbans

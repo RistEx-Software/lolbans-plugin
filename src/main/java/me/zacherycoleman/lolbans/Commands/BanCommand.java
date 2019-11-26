@@ -13,6 +13,7 @@ import org.bukkit.OfflinePlayer;
 import me.zacherycoleman.lolbans.Main;
 import me.zacherycoleman.lolbans.Utils.BanID;
 import me.zacherycoleman.lolbans.Utils.Configuration;
+import me.zacherycoleman.lolbans.Utils.DatabaseUtil;
 import me.zacherycoleman.lolbans.Utils.DiscordUtil;
 import me.zacherycoleman.lolbans.Utils.TimeUtil;
 import me.zacherycoleman.lolbans.Utils.User;
@@ -83,39 +84,13 @@ public class BanCommand implements CommandExecutor
                         boolean silent = reason.contains("-s");
                         reason = reason.replace("-s", "").trim();
 
-                        // Get the latest ID of the banned players to generate a BanID form it.
-                        ResultSet ids = self.connection.createStatement().executeQuery("SELECT MAX(id) FROM BannedPlayers");
-                        int id = 1;
-                        if (ids.next())
-                        {
-                            if (!ids.wasNull())
-                                id = ids.getInt(1);
-                        }
-                        String banid = BanID.GenerateID(id);
-                        
-                        // Preapre a statement
-                        PreparedStatement pst = self.connection.prepareStatement("INSERT INTO BannedPlayers (UUID, PlayerName, Reason, Executioner, BanID, Expiry) VALUES (?, ?, ?, ?, ?, ?)");
-                        pst.setString(1, target.getUniqueId().toString());
-                        pst.setString(2, target.getName());
-                        pst.setString(3, reason);
-                        pst.setString(4, sender.getName());
-                        pst.setString(5, banid);
-                        pst.setTimestamp(6, bantime);
+                        String banid = BanID.GenerateID(DatabaseUtil.GenID());                       
 
-                        // Commit to the database.
-                        pst.executeUpdate();
-                        
+                        // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
+                        DatabaseUtil.InsertBan(target.getUniqueId().toString(), target.getName(), reason, sender.getName(), banid, bantime);
+
                         // Add everything to the history DB
-                        PreparedStatement pst2 = self.connection.prepareStatement("INSERT INTO BannedHistory (UUID, PlayerName, Reason, Executioner, BanID, Expiry) VALUES (?, ?, ?, ?, ?, ?)");
-                        pst2.setString(1, target.getUniqueId().toString());
-                        pst2.setString(2, target.getName());
-                        pst2.setString(3, reason);
-                        pst2.setString(4, sender.getName());
-                        pst2.setString(5, banid);
-                        pst2.setTimestamp(6, bantime);
-
-                        // Commit to the database.
-                        pst2.executeUpdate();
+                        DatabaseUtil.InsertHistory(target.getUniqueId().toString(), target.getName(), reason, sender.getName(), banid, bantime);
 
                         // Kick the player first
                         if (target instanceof Player)
@@ -178,7 +153,7 @@ public class BanCommand implements CommandExecutor
                         return false; // Show syntax.
                     }
                 }
-                catch (SQLException e)
+                catch (Exception e)
                 {
                     e.printStackTrace();
                     sender.sendMessage("\u00A7CThe server encountered an error, please try again later.");

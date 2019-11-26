@@ -207,8 +207,8 @@ public class User
 
         //%player% %reason% %banner% %timetoexpire% %banid%
         if (BanTime != null)
-            Configuration.TempBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("TempBanMessage").replace("%player%", target.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%timetoexpire%", BanTime.toString()).replace("%banid%", "#"+BanID));
-        Configuration.PermBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("PermBanMessage").replace("%player%", target.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%banid%", "#"+BanID));
+            Configuration.TempBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("TempBanMessage").replace("%player%", target.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%timetoexpire%", BanTime.toString()).replace("%banid%", BanID));
+        Configuration.PermBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("PermBanMessage").replace("%player%", target.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%banid%", BanID));
 
        // bd.AddString(Configuration.PermBanMessage);
 

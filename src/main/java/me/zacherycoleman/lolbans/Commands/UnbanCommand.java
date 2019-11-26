@@ -56,7 +56,6 @@ public class UnbanCommand implements CommandExecutor
                         boolean silent = reason.contains("-s");
                         reason = reason.replace("-s", "").trim();
 
-
                         // Preapre a statement
                         // We need to get the latest banid first.
                         PreparedStatement pst2 = self.connection.prepareStatement("UPDATE BannedHistory INNER JOIN (SELECT BanID AS LatestBanID, UUID as bUUID FROM BannedPlayers WHERE UUID = ?) tm SET UnbanReason = ?, UnbanExecutioner = ? WHERE UUID = tm.bUUID AND BanID = tm.LatestBanID");
