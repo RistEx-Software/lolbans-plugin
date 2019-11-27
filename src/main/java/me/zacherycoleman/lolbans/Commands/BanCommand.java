@@ -57,7 +57,7 @@ public class BanCommand implements CommandExecutor
 
                         if (!(sender instanceof ConsoleCommandSender) && target.getUniqueId().equals(((Player) sender).getUniqueId()))
                         {
-                            sender.sendMessage("Yes. You have permissions. You cannot ban yourself.");
+                            sender.sendMessage(Configuration.CannotBanSelf);
                             return true;
                         }
 
@@ -84,7 +84,7 @@ public class BanCommand implements CommandExecutor
                         boolean silent = reason.contains("-s");
                         reason = reason.replace("-s", "").trim();
 
-                        String banid = BanID.GenerateID(DatabaseUtil.GenID());                       
+                        String banid = BanID.GenerateID(DatabaseUtil.GenID());             
 
                         // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
                         DatabaseUtil.InsertBan(target.getUniqueId().toString(), target.getName(), reason, sender.getName(), banid, bantime);
@@ -109,7 +109,6 @@ public class BanCommand implements CommandExecutor
                             Bukkit.getConsoleSender().sendMessage(Configuration.BanAnnouncment);
                         }
                             
-                        // Post that to the database.
                         for (Player p : Bukkit.getOnlinePlayers())
                         {
                             if (silent && (!p.hasPermission("lolbans.alerts") && !p.isOp()))

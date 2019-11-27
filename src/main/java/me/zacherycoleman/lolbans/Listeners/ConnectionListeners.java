@@ -39,27 +39,27 @@ public class ConnectionListeners implements Listener
             PreparedStatement pst = self.connection.prepareStatement(
                     "SELECT * FROM BannedPlayers WHERE UUID = ? AND (Expiry IS NULL OR Expiry >= NOW())");
             pst.setString(1, event.getUniqueId().toString());
-
             ResultSet result = pst.executeQuery();
 
-            Timestamp BanTime = result.getTimestamp("Expiry");
-            String reason = result.getString("Reason");
-            String sender = result.getString("Executioner");
-            String BanID = result.getString("BanID");
-
-            if (BanTime != null)
-                Configuration.TempBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("TempBanMessage").replace("%player%", event.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%timetoexpire%", BanTime.toString()).replace("%banid%", BanID));
-            
-            Configuration.PermBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("PermBanMessage").replace("%player%", event.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%banid%", BanID));
-
-            if (result.next()) 
+            if (result.next())
             {
+
+                Timestamp BanTime = result.getTimestamp("Expiry");
+                String reason = result.getString("Reason");
+                String sender = result.getString("Executioner");
+                String BanID = result.getString("BanID");
+
+                if (BanTime != null)
+                    Configuration.TempBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("TempBanMessage").replace("%player%", event.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%timetoexpire%", BanTime.toString()).replace("%banid%", BanID));
+                Configuration.PermBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("PermBanMessage").replace("%player%", event.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%banid%", BanID));
+
                 //User.KickPlayer(result.getString("Executioner"), event.getPlayer(), result.getString("BanID"), result.getString("Reason"), BanTime);
                 // We have to use this instead, because PreLogin doesn't return a player, because they havn't loaded into the world yet
                 if (BanTime != null)
                     event.disallow(Result.KICK_BANNED, Configuration.TempBanMessage);
                 else
                     event.disallow(Result.KICK_BANNED, Configuration.PermBanMessage);
+            
             }
 
             PreparedStatement pst2 = self.connection.prepareStatement("SELECT * FROM Warnings WHERE UUID = ? AND Accepted = ?");
@@ -75,7 +75,8 @@ public class ConnectionListeners implements Listener
                 PreparedStatement pst3 = self.connection.prepareStatement("UPDATE Warnings SET Accepted = true WHERE UUID = ?");
                 pst3.setString(1, event.getUniqueId().toString());
                 pst3.executeUpdate();
-                event.disallow(Result.KICK_OTHER, "You were warned!\n Reason " + result2.getString("Reason") + "\nBy rejoning you acknowledge that you've been warned!");
+                Configuration.WarnKickMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("WarnKickMessage").replace("%reason%", result2.getString("Reason")));
+                event.disallow(Result.KICK_OTHER, Configuration.WarnKickMessage);
             }
         } 
         catch (SQLException e) 

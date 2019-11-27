@@ -14,7 +14,7 @@ import me.zacherycoleman.lolbans.Main;
 public class DatabaseUtil
 {
 
-    public static void InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
+    public static void InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime) throws SQLException
     {
         Main self = Main.getPlugin(Main.class);
 
@@ -35,23 +35,24 @@ public class DatabaseUtil
                     InsertBan.setString(4, Executioner);
                     InsertBan.setString(5, BanID);
                     InsertBan.setTimestamp(6, BanTime);
-                    InsertBan.executeQuery();
+                    InsertBan.executeUpdate();
                 } 
                 catch (SQLException e) 
                 {
                     e.printStackTrace();
+                    return;
                 }
                 
             }
         });
     }
 
-    public static void InsertHistory(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
+    public static void InsertHistory(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime) throws SQLException
     {
         Main self = Main.getPlugin(Main.class);
 
-        Bukkit.getScheduler().runTaskAsynchronously(self, new Runnable(){
-        
+        Bukkit.getScheduler().runTaskAsynchronously(self, new Runnable()
+        {
             @Override
             public void run() 
             {
@@ -72,13 +73,14 @@ public class DatabaseUtil
                 catch (SQLException e) 
                 {
                     e.printStackTrace();
+                    return;
                 }
                 
             }
         });
     }
 
-    public static int GenID()
+    public static int GenID() throws SQLException
     {
         Main self = Main.getPlugin(Main.class);
 

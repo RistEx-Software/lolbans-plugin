@@ -41,6 +41,7 @@ public class Configuration
     public static String SilentWarnAnnouncment;
     public static String WarnAnnouncment;
     public static String WarnedMessage;
+    public static String WarnKickMessage;
 
     public static Connection connection;
     public static YamlConfiguration LANG;
@@ -86,5 +87,6 @@ public class Configuration
         Configuration.SilentWarnAnnouncment = config.getString("SilentWarnAnnouncment");
         Configuration.WarnAnnouncment = config.getString("WarnAnnouncment");
         Configuration.WarnedMessage = config.getString("WarnedMessage");
+        Configuration.WarnKickMessage = config.getString("WarnKickMessage");
     }
 }

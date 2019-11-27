@@ -9,7 +9,7 @@ MaxReconnects: 5
 # It's best to leave this alone unless you know what you
 # are doing with it.
 QueryUpdateLong: 30
-DiscordWebhook: https://discordapp.com/api/webhooks/643282351543287838/gV5G4p2Zk2MOsynnMaSZ5jHPlZcEPRGBwEZy1dzWFHABm3gPreiqAaeEMaZ5VYY3CGno
+DiscordWebhook: https://discordapp.com/api/webhooks/645266026694574097/UCUHIg3jfnd5Y8C58Csl2sEVMwn4x-NpWB2xiOlKNbzKI-SBvqXixJWKLyJyZEVP0icp
 Prefix: "&cLolBans> "
 # Draw a box around the ban message!
 # WARNING! If their window is smaller than the box length, it will text-wrap
@@ -18,7 +18,7 @@ BanMessageBox: false
 # BanMessage, %player% %reason% %banner% %timetoexpire% %banid%
 InvalidSyntax: "&cInvalid Syntax!"
 TempBanMessage: "&cThe account &7%player% &chas been TEMPORARILY suspended from &7My Network\n\n&cYou were banned by: &f%banner% \n&cReason: &f%reason%\n&cExpiry: &f%timetoexpire% \n\n&cBan ID: &f#B-%banid%\n&7Sharing your Ban ID may affect the result of your appeal!"
-PermBanMessage: "&cThe account &7%player% &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f%banner% \n&cReason: &f%reason%\n\n&cBan ID: #B-&f%banid%\n&7Sharing your Ban ID may affect the result of your appeal!"
+PermBanMessage: "&cThe account &7%player% &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f%banner% \n&cReason: &f%reason%\n\n&cBan ID: &f#B-%banid%\n&7Sharing your Ban ID may affect the result of your appeal!"
 BanAnnouncment: "&c%banner% &7has banned &c%player%&7: &c%reason%"
 SilentBanAnnouncment: "&c%banner% &7has banned &c%player%&7: &c%reason% &8[SILENT]"
 UnbanAnnouncment: "&c%banner% &7has un-banned &c%player%&7: &c%reason%"
@@ -32,5 +32,6 @@ BannedPlayersInBanWave: "&cBanned &7%amount% &cplayer(s)!"
 WarnAnnouncment: "&c%warner% &7has warned &c%player% &f: &c%reason%"
 SilentWarnAnnouncment: "&c%warner% &7has warned &c%player% &f: &c%reason% &8[SILENT]"
 WarnedMessage: "&c%warner% &7warned you: &c%reason% &7[#W-%warnid%]"
+WarnKickMessage: "&cYou have been warned!\n\n&cReason: %reason%\n\n&7By rejoining you acknowledge that you've been warned!"
 # HistoryMessage: %player% %banner% %banreasons% %unbanreasons% %banids% %expiry% %latestbanreasons% %latestunbanreason% %latestbanner% %timesbanned% %currentlybanned% 
 HistoryMessage: "&8&m------------------------------\n \n&8&m------------------------------"
