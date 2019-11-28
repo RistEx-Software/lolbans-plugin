@@ -14,7 +14,6 @@ import me.zacherycoleman.lolbans.Utils.User;
 
 public class MovementListener implements Listener
 {
-
     @EventHandler
     public void OnPlayerMove(PlayerMoveEvent E)
     {

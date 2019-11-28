@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
@@ -19,6 +20,8 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import me.zacherycoleman.lolbans.Main;
 import me.zacherycoleman.lolbans.Utils.Configuration;
 import me.zacherycoleman.lolbans.Utils.User;
+import me.zacherycoleman.lolbans.Utils.TimeUtil;
+import me.zacherycoleman.lolbans.Utils.TranslationUtil;
 
 public class ConnectionListeners implements Listener 
 {
@@ -50,16 +53,41 @@ public class ConnectionListeners implements Listener
                 String BanID = result.getString("BanID");
 
                 if (BanTime != null)
-                    Configuration.TempBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("TempBanMessage").replace("%player%", event.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%timetoexpire%", BanTime.toString()).replace("%banid%", BanID));
-                Configuration.PermBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("PermBanMessage").replace("%player%", event.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%banid%", BanID));
+                {
+                    // Old code.
+                    // Configuration.TempBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("TempBanMessage").replace("%player%", event.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%timetoexpire%", BanTime.toString()).replace("%banid%", BanID));
 
-                //User.KickPlayer(result.getString("Executioner"), event.getPlayer(), result.getString("BanID"), result.getString("Reason"), BanTime);
-                // We have to use this instead, because PreLogin doesn't return a player, because they havn't loaded into the world yet
-                if (BanTime != null)
-                    event.disallow(Result.KICK_BANNED, Configuration.TempBanMessage);
+                    String TempBanMessage = TranslationUtil.Translate(self.getConfig().getString("TempBanMessage"), "&",
+                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                        {{
+                            put("player", event.getName());
+                            put("reason", reason);
+                            put("banner", sender);
+                            put("timetoexpire", TimeUtil.Expires(BanTime));
+                            put("banid", BanID);
+                        }}
+                    );
+
+                    // We have to use this instead, because PreLogin doesn't return a player, because they havn't loaded into the world yet
+                    event.disallow(Result.KICK_BANNED, TempBanMessage);
+                }
                 else
-                    event.disallow(Result.KICK_BANNED, Configuration.PermBanMessage);
-            
+                {
+                    // Old Code.
+                    //Configuration.PermBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("PermBanMessage").replace("%player%", event.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%banid%", BanID));
+                    String PermBanMessage = TranslationUtil.Translate(self.getConfig().getString("PermBanMessage"), "&",
+                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                        {{
+                            put("player", event.getName());
+                            put("reason", reason);
+                            put("banner", sender);
+                            put("banid", BanID);
+                        }}
+                    );
+                    event.disallow(Result.KICK_BANNED, PermBanMessage);
+                }
+                // Old code.
+                //User.KickPlayer(result.getString("Executioner"), event.getPlayer(), result.getString("BanID"), result.getString("Reason"), BanTime);
             }
 
             PreparedStatement pst2 = self.connection.prepareStatement("SELECT * FROM Warnings WHERE UUID = ? AND Accepted = ?");

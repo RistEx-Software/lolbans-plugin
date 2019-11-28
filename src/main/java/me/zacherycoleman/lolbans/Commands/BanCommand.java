@@ -23,6 +23,9 @@ import java.util.Arrays;
 import java.time.Duration;
 import java.lang.Long;
 import java.util.Optional;
+import java.util.concurrent.Future;
+
+import javax.lang.model.util.ElementScanner6;
 
 
 public class BanCommand implements CommandExecutor
@@ -84,13 +87,30 @@ public class BanCommand implements CommandExecutor
                         boolean silent = reason.contains("-s");
                         reason = reason.replace("-s", "").trim();
 
-                        String banid = BanID.GenerateID(DatabaseUtil.GenID());             
+                        String banid = BanID.GenerateID(DatabaseUtil.GenID());
+
+                        Future<Boolean> HistorySuccess = DatabaseUtil.InsertHistory(target.getUniqueId().toString(), target.getName(), reason, sender, banid, bantime);
+                        Future<Boolean> BanSuccess = DatabaseUtil.InsertBan(target.getUniqueId().toString(), target.getName(), reason, sender, banid, bantime);
+
+                        sender.sendMessage("lmao");
 
                         // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
-                        DatabaseUtil.InsertBan(target.getUniqueId().toString(), target.getName(), reason, sender.getName(), banid, bantime);
+                        if (BanSuccess.get())
+                            self.getLogger().info("msg");
+                        else
+                        {
+                            sender.sendMessage("\u00A7CThe server encountered an error, please try again later.3");
+                            return true;
+                        }
 
                         // Add everything to the history DB
-                        DatabaseUtil.InsertHistory(target.getUniqueId().toString(), target.getName(), reason, sender.getName(), banid, bantime);
+                        if (HistorySuccess.get())
+                            self.getLogger().info("msg2");
+                        else
+                        {
+                            sender.sendMessage("\u00A7CThe server encountered an error, please try again later.4");
+                            return true;
+                        }
 
                         // Kick the player first
                         if (target instanceof Player)
