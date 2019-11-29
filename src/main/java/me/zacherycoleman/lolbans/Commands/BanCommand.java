@@ -92,21 +92,15 @@ public class BanCommand implements CommandExecutor
                         Future<Boolean> HistorySuccess = DatabaseUtil.InsertHistory(target.getUniqueId().toString(), target.getName(), reason, sender, banid, bantime);
                         Future<Boolean> BanSuccess = DatabaseUtil.InsertBan(target.getUniqueId().toString(), target.getName(), reason, sender, banid, bantime);
 
-                        sender.sendMessage("lmao");
-
                         // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
-                        if (BanSuccess.get())
-                            self.getLogger().info("msg");
-                        else
+                        if (!BanSuccess.get())
                         {
                             sender.sendMessage("\u00A7CThe server encountered an error, please try again later.3");
                             return true;
                         }
 
                         // Add everything to the history DB
-                        if (HistorySuccess.get())
-                            self.getLogger().info("msg2");
-                        else
+                        if (!HistorySuccess.get())
                         {
                             sender.sendMessage("\u00A7CThe server encountered an error, please try again later.4");
                             return true;

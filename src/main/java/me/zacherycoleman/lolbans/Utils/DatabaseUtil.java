@@ -30,7 +30,6 @@ public class DatabaseUtil
             @Override
             public Boolean call()
             {
-                System.out.println("Inside INSERT BAN!");
                 //This is where you should do your database interaction
                 try 
                 {
@@ -55,9 +54,8 @@ public class DatabaseUtil
             }
         });
 
-        System.out.println("Inserting into bukkit scheduler!");
-        
-        Bukkit.getScheduler().runTaskAsynchronously(self, t);
+        self.pool.execute(t);
+
         return (Future<Boolean>)t;
     }
 
@@ -94,7 +92,7 @@ public class DatabaseUtil
             }
         });
 
-        Bukkit.getScheduler().runTaskAsynchronously(self, t);
+        self.pool.execute(t);
 
         return (Future<Boolean>)t;
     }

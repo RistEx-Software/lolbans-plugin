@@ -54,16 +54,13 @@ public class ConnectionListeners implements Listener
 
                 if (BanTime != null)
                 {
-                    // Old code.
-                    // Configuration.TempBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("TempBanMessage").replace("%player%", event.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%timetoexpire%", BanTime.toString()).replace("%banid%", BanID));
-
                     String TempBanMessage = TranslationUtil.Translate(self.getConfig().getString("TempBanMessage"), "&",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
                             put("player", event.getName());
                             put("reason", reason);
                             put("banner", sender);
-                            put("timetoexpire", TimeUtil.Expires(BanTime));
+                            put("expires", TimeUtil.Expires(BanTime));
                             put("banid", BanID);
                         }}
                     );
@@ -73,8 +70,6 @@ public class ConnectionListeners implements Listener
                 }
                 else
                 {
-                    // Old Code.
-                    //Configuration.PermBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("PermBanMessage").replace("%player%", event.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%banid%", BanID));
                     String PermBanMessage = TranslationUtil.Translate(self.getConfig().getString("PermBanMessage"), "&",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
@@ -86,25 +81,35 @@ public class ConnectionListeners implements Listener
                     );
                     event.disallow(Result.KICK_BANNED, PermBanMessage);
                 }
-                // Old code.
-                //User.KickPlayer(result.getString("Executioner"), event.getPlayer(), result.getString("BanID"), result.getString("Reason"), BanTime);
+                // Just return and don't execute queries, they're being kicked anyway.
+                return;
             }
 
+            // Check to make sure they don't have any pending and unacknowledged warnings.
             PreparedStatement pst2 = self.connection.prepareStatement("SELECT * FROM Warnings WHERE UUID = ? AND Accepted = ?");
             pst2.setString(1, event.getUniqueId().toString());
             pst2.setBoolean(2, false);
 
             ResultSet result2 = pst2.executeQuery();
-
             if (result2.next()) 
             {
-                System.out.println(result2.getString("Reason"));
-                System.out.println(event.getName());
+                // Set that their warning was acknowledged 
                 PreparedStatement pst3 = self.connection.prepareStatement("UPDATE Warnings SET Accepted = true WHERE UUID = ?");
                 pst3.setString(1, event.getUniqueId().toString());
                 pst3.executeUpdate();
-                Configuration.WarnKickMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("WarnKickMessage").replace("%reason%", result2.getString("Reason")));
-                event.disallow(Result.KICK_OTHER, Configuration.WarnKickMessage);
+
+                String WarnKickMessage = TranslationUtil.Translate(self.getConfig().getString("PermBanMessage"), "&",
+                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                    {{
+                        put("player", result2.getString("PlayerName"));
+                        put("reason", result2.getString("Reason"));
+                        put("issuer", result2.getString("Executioner"));
+                        put("warnid", result2.getString("WarnID"));
+                    }}
+                );
+                
+                // 👋
+                event.disallow(Result.KICK_OTHER, WarnKickMessage);
             }
         } 
         catch (SQLException e) 

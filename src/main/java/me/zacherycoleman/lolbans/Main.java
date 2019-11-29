@@ -45,10 +45,17 @@ import me.zacherycoleman.lolbans.Hacks.Hacks;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 // welcome.
 public final class Main extends JavaPlugin
 {
     public static HashMap<UUID, User> USERS = new HashMap<UUID, User>();
+    // For some reason using Futures with the Bukkit Async scheduler doesn't work.
+    // Instead of relying on dumb bukkit APIs to get tasks done, we use a thread pool of
+    // our own control to get whatever we want done.
+    public static ExecutorService pool = Executors.newFixedThreadPool(3);
     
     public Connection connection;
     private QueryRunnable CheckThread;
