@@ -71,9 +71,9 @@ public class Configuration
         DiscordUtil.Webhook = config.getString("Discord.Webhook");
         
         // Messages
+        Configuration.Prefix = config.getString("Prefix").replace("&", "§");
         Configuration.TempBanMessage = config.getString("TempBanMessage");
         Configuration.PermBanMessage = config.getString("PermMessage");
-        Configuration.Prefix = config.getString("Prefix").replace("&", "§");
         Configuration.CannotBanSelf = config.getString("CannotBanSelf");
         Configuration.BanAnnouncment = config.getString("BanAnnouncment");
         Configuration.SilentUnbanAnnouncment = config.getString("BanAnnouncment");

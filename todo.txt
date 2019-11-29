@@ -1,3 +1,31 @@
-banlist (command, and web, duh)
-report function, ingame and web.
-ipbans
+
+Basis of plugin design: https://www.spigotmc.org/resources/litebans-%C2%BB-50-off-%C2%AB-black-friday-sale.3715/
+
+1. IP bans using CIDRs
+2. Hover text (JSON)
+3. Staff history and mass unbans to undo (optionally within time range)
+4. Mass unbans
+5. Unreasonable ban warnings before executing a ban which can affect a large number of players.
+6. Website functionality (banning, unbanning, comments, disputes, etc.)
+7. Fix silent ban argument (easy)
+8. Ensure targets can be names, uuids, ip addresses, or ip address ranges (CIDRs).
+9. Server scopes (to allow for per-server punishments)
+10. Freeze command (since warn already does this.)
+11. /dupeip, /iphistory, /ipreport
+12. /kick history tracking -- support cross-server kicking
+13. GeoIP support
+14. Lockdown support (incl., per-server lockdowns)
+15. Timezones???
+16. /broadcast (including cross-server)
+17. ALL THE PERMISSION NODESSSSSSSSS~~~~
+18. /mute, /mutechat
+19. /prunehistory 
+20. Player-side /report functionality
+21. /staffhistory
+22. Make User.FindPlayerByBanID async with FutureTask
+23. Ensure multithreaded/asynchronous database queries for most/all things (we don't ever want to hang the main thread).
+
+
+# WAYYYYY FUTURE:
+1. Cross-server compatibility (lol)
+2. Cross-database compatibility
