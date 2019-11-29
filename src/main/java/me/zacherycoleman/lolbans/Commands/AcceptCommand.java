@@ -32,7 +32,7 @@ public class AcceptCommand implements CommandExecutor
             Player player = (Player) sender;
 
             // Getting command name
-            if (command.getName().equalsIgnoreCase("accept") && Main.USERS.get(player.getUniqueId()) != null && Main.USERS.get(player.getUniqueId()).IsWarn()) 
+            if (Main.USERS.get(player.getUniqueId()) != null && Main.USERS.get(player.getUniqueId()).IsWarn()) 
             {
                 try
                 {

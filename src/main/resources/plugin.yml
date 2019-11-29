@@ -7,13 +7,11 @@ description: A ban system for minecraft, nothing fancy
 permission-message: &noperms "§cError: §fAccess Denied!"
 website: https://github.com/notzachery
 commands:
-  box:
-    description: debug.
   ban:
     description: Ban a player
     usage: |
           Syntax Error!
-          Use /ban <player> <ban time|*> <reason> 
+          Use /ban <player> <ban time|*> <reason>
   unban:
     description: Unban a payer
     usage: |
@@ -24,15 +22,13 @@ commands:
     usage: |
         Syntax Error!
         Use /history <player>
+    aliases: [h]
   clearhistory:
     description: Clear history of a player
     usage: |
         Syntax Error!
         Use /clearhistory <player>
-  h:
-    description: Get history of users punishments
-  ch:
-    description: Clear history of a player
+    aliases: [ch]
   banwave:
     description: add user to the banwave
     usage: |

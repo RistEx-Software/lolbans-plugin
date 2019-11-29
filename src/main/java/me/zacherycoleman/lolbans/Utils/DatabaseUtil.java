@@ -1,13 +1,9 @@
 package me.zacherycoleman.lolbans.Utils;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
-
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,15 +12,87 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import me.zacherycoleman.lolbans.Runnables.QueryRunnable;
 import me.zacherycoleman.lolbans.Main;
 
 public class DatabaseUtil
 {
+    private static Main self = Main.getPlugin(Main.class);
+    private static QueryRunnable CheckThread;
+
+    public static boolean InitializeDatabase()
+    {
+        try 
+        {
+            DatabaseUtil.OpenConnection();
+        }
+        catch (SQLException e)
+        {
+            //e.printStackTrace();
+            self.getLogger().severe("Cannot connect to database, ensure your database is setup correctly and restart the server.");
+            // Just exit and let the user figure it out.
+            return false;
+        }
+
+        // Ensure Our tables are created.
+        try
+        {
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedPlayers (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedHistory (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, UnbanReason TEXT, UnbanExecutioner varchar(17), TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BanWave (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Warnings (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, WarnID varchar(20) NOT NULL, Accepted boolean, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)").execute();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            self.getLogger().severe("Cannot create database tables, please ensure your SQL user has the correct permissions.");
+            return false;
+        }
+
+        // Schedule a repeating task to delete expired bans.
+        DatabaseUtil.CheckThread = new QueryRunnable();
+        DatabaseUtil.CheckThread.runTaskTimerAsynchronously(self, 20L, Configuration.QueryUpdateLong * 20L);
+        return true;
+    }
+
+    public static void Terminate()
+    {
+        // Terminate our thread.
+        if (CheckThread != null)
+            CheckThread.cancel();
+
+        // Close the database connection (if open)
+        if (self.connection != null)
+        {
+            try 
+            {
+                self.connection.close();
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void OpenConnection() throws SQLException
+    {
+        if (self.connection != null && !self.connection.isClosed())
+            return;
+
+        synchronized (self)
+        {
+            if (self.connection != null && !self.connection.isClosed())
+                return;
+
+            self.connection =
+                    DriverManager.getConnection(String.format("jdbc:mysql://%s:%s/%s?autoReconnect=true&failOverReadOnly=false&maxReconnects=%d", 
+                                    Configuration.dbhost, Configuration.dbport, Configuration.dbname, Configuration.MaxReconnects), Configuration.dbusername, Configuration.dbpassword);
+        }
+    }
 
     public static Future<Boolean> InsertBan(String UUID, String PlayerName, String Reason, CommandSender Executioner, String BanID, Timestamp BanTime) throws SQLException
     {
-        Main self = Main.getPlugin(Main.class);
-
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
         {
             @Override
@@ -61,8 +129,6 @@ public class DatabaseUtil
 
     public static Future<Boolean> InsertHistory(String UUID, String PlayerName, String Reason, CommandSender Executioner, String BanID, Timestamp BanTime) throws SQLException
     {
-        Main self = Main.getPlugin(Main.class);
-        
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
         {
             @Override
@@ -99,8 +165,6 @@ public class DatabaseUtil
 
     public static int GenID() throws SQLException
     {
-        Main self = Main.getPlugin(Main.class);
-
         // Get the latest ID of the banned players to generate a BanID form it.
         ResultSet ids = self.connection.createStatement().executeQuery("SELECT MAX(id) FROM BannedPlayers");
         int id = 1;
@@ -111,18 +175,4 @@ public class DatabaseUtil
         }
         return id;
     }
-    
-    /* 
-    // Add everything to the history DB
-    PreparedStatement pst2 = self.connection.prepareStatement("INSERT INTO BannedHistory (UUID, PlayerName, Reason, Executioner, BanID, Expiry) VALUES (?, ?, ?, ?, ?, ?)");
-    pst2.setString(1, target.getUniqueId().toString());
-    pst2.setString(2, target.getName());
-    pst2.setString(3, reason);
-    pst2.setString(4, sender.getName());
-    pst2.setString(5, banid);
-    pst2.setTimestamp(6, bantime);
-
-    // Commit to the database.
-    pst2.executeUpdate();
-        */
 }

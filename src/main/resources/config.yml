@@ -1,37 +1,50 @@
-dbhost: localhost
-dbport: 3306
-dbname: mcdb
-dbusername: mc
-dbpassword: dbpw
-# Maximum number of times mysql will try to reconnect before giving up.
-MaxReconnects: 5
-# Currently set to 1 minute (20 * number of seconds)
-# It's best to leave this alone unless you know what you
-# are doing with it.
-QueryUpdateLong: 30
-DiscordWebhook: https://discordapp.com/api/webhooks/645266026694574097/UCUHIg3jfnd5Y8C58Csl2sEVMwn4x-NpWB2xiOlKNbzKI-SBvqXixJWKLyJyZEVP0icp
+database:
+  host: localhost
+  port: 3306
+  name: mcdb
+  username: mc
+  password: dbpw
+  # Maximum number of times mysql will try to reconnect before giving up.
+  MaxReconnects: 5
+  # Currently set to 1 minute (20 * number of seconds)
+  # It's best to leave this alone unless you know what you
+  # are doing with it.
+  QueryUpdate: 30
+
+Discord:
+  Webhook: https://discordapp.com/api/webhooks/645266026694574097/UCUHIg3jfnd5Y8C58Csl2sEVMwn4x-NpWB2xiOlKNbzKI-SBvqXixJWKLyJyZEVP0icp
+  # Example: mod banned iZachery for abusing villagers [SILENT] [#B-BF7BD5C85]
+  UseSimplifiedMessage: false
+  SimplifiedMessage: ":hammer: {BANNER} banned {PLAYER} for {REASON} {BANID}"
+  SimplifiedMessageSilent: ":hammer: {BANNER} banned {PLAYER} for {REASON} [SILENT] {BANID}"
+
 Prefix: "&cLolBans> "
+InvalidSyntax: "&cInvalid Syntax!"
+
 # Draw a box around the ban message!
 # WARNING! If their window is smaller than the box length, it will text-wrap
-BanMessageBox: false
+# Removed due to how minecraft handles whitespace.................
+# BanMessageBox: false
 # MESSAGES
-# BanMessage, %player% %reason% %banner% %timetoexpire% %banid%
-InvalidSyntax: "&cInvalid Syntax!"
-TempBanMessage: "&cThe account &7%player% &chas been TEMPORARILY suspended from &7My Network\n\n&cYou were banned by: &f%banner% \n&cReason: &f%reason%\n&cExpiry: &f%timetoexpire% \n\n&cBan ID: &f#B-%banid%\n&7Sharing your Ban ID may affect the result of your appeal!"
-PermBanMessage: "&cThe account &7%player% &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f%banner% \n&cReason: &f%reason%\n\n&cBan ID: &f#B-%banid%\n&7Sharing your Ban ID may affect the result of your appeal!"
-BanAnnouncment: "&c%banner% &7has banned &c%player%&7: &c%reason%"
-SilentBanAnnouncment: "&c%banner% &7has banned &c%player%&7: &c%reason% &8[SILENT]"
-UnbanAnnouncment: "&c%banner% &7has un-banned &c%player%&7: &c%reason%"
-SilentUnbanAnnouncment: "&c%banner% &7has un-banned &c%player%&7: &c%reason% &8[SILENT]"
+# BanMessage, {PLAYER} {REASON} {BANNER} {EXPIRY} {BANID}
+# fullexpiry ex: (January 1, 2019 12:30:00 (1 year 2 months 1 week 29 days 55 minutes 10 seconds))
+# expiryduration ex: (1 year 2 months 1 week 29 days 55 minutes 10 seconds)
+# dateexpiry ex: (January 1, 2019 12:30:00)
+TempBanMessage: "&cThe account &7{PLAYER} &chas been TEMPORARILY suspended from &7My Network &cuntil &7 {DATEEXPIRY}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#B-{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+PermBanMessage: "&cThe account &7{PLAYER} &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#B-{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+BanAnnouncement: "&c{BANNER} &7has banned &c{PLAYER}&7: &c{REASON}"
+SilentBanAnnouncement: "&c{BANNER} &7has banned &c{PLAYER}&7: &c{REASON} &8[SILENT]"
+UnbanAnnouncment: "&c{BANNER} &7has un-banned &c{PLAYER}&7: &c{REASON}"
+SilentUnbanAnnouncment: "&c{BANNER} &7has un-banned &c{PLAYER}&7: &c{REASON} &8[SILENT]"
 CannotBanSelf: "&cYes, you have permissions! You cannot ban yourself!"
 CannotAddSelf: "&cYou cannot add yourself to the banwave!"
-PlayerDoesntExist: "&cError! &7%player% &cdoesn't exist!"
-PlayerIsBanned: "&cError! &7%player% is already banned!"
-PlayerIsInBanWave: "&cError! &7%player% is already in the ban wave!"
-BannedPlayersInBanWave: "&cBanned &7%amount% &cplayer(s)!"
-WarnAnnouncment: "&c%warner% &7has warned &c%player% &f: &c%reason%"
-SilentWarnAnnouncment: "&c%warner% &7has warned &c%player% &f: &c%reason% &8[SILENT]"
-WarnedMessage: "&c%warner% &7warned you: &c%reason% &7[#W-%warnid%]"
-WarnKickMessage: "&cYou have been warned!\n\n&cReason: %reason%\n\n&7By rejoining you acknowledge that you've been warned!"
-# HistoryMessage: %player% %banner% %banreasons% %unbanreasons% %banids% %expiry% %latestbanreasons% %latestunbanreason% %latestbanner% %timesbanned% %currentlybanned% 
+PlayerDoesntExist: "&cError! &7{PLAYER} &cdoesn't exist!"
+PlayerIsBanned: "&cError! &7{PLAYER} is already banned!"
+PlayerIsInBanWave: "&cError! &7{PLAYER} is already in the ban wave!"
+BannedPlayersInBanWave: "&cBanned &7{AMOUNT} &cplayer(s)!"
+WarnAnnouncment: "&c{WARNER} &7has warned &c{PLAYER} &f: &c{REASON}"
+SilentWarnAnnouncment: "&c{WARNER} &7has warned &c{PLAYER} &f: &c{REASON} &8[SILENT]"
+WarnedMessage: "&c{WARNER} &7warned you: &c{REASON} &7[#W-{WARNID}]"
+WarnKickMessage: "&cYou have been warned!\n\n&cReason: {REASON}\n\n&7By rejoining you acknowledge that you've been warned!"
+# HistoryMessage: {PLAYER} {BANNER} %banreasons% %unbanreasons% %banids% %expiry% %latestbanreasons% %latestunbanreason% %latestbanner% %timesbanned% %currentlybanned% 
 HistoryMessage: "&8&m------------------------------\n \n&8&m------------------------------"

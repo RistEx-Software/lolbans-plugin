@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -203,19 +204,20 @@ public class User
 
     public static void KickPlayer(String sender, Player target, String BanID, String reason, Timestamp BanTime)
     {
-        //StringBuilder builder = new StringBuilder();
+        String KickMessage = TranslationUtil.Translate(self.getConfig().getString(BanTime != null ? "TempBanMessage" : "PermBanMessage"), "&",
+            new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+            {{
+                put("player", target.getName());
+                put("reason", reason);
+                put("banner", sender);
+                put("fullexpiry", BanTime != null ? String.format("%s (%s)", TimeUtil.TimeString(BanTime), TimeUtil.Expires(BanTime)) : "Never");
+                put("expiryduration", BanTime != null ? TimeUtil.Expires(BanTime) : "Never");
+                put("dateexpiry", BanTime != null ? TimeUtil.TimeString(BanTime) : "Never");
+                put("BanID", BanID);
+            }}
+        );
 
-        //%player% %reason% %banner% %timetoexpire% %banid%
-        if (BanTime != null)
-            Configuration.TempBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("TempBanMessage").replace("%player%", target.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%timetoexpire%", BanTime.toString()).replace("%banid%", BanID));
-        Configuration.PermBanMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("PermBanMessage").replace("%player%", target.getName()).replace("%reason%", reason).replace("%banner%", sender).replace("%banid%", BanID));
-
-       // bd.AddString(Configuration.PermBanMessage);
-
-        if (BanTime != null)
-            target.kickPlayer(Configuration.TempBanMessage);
-        else
-            target.kickPlayer(Configuration.PermBanMessage);
+        target.kickPlayer(KickMessage);
     }
 
 }

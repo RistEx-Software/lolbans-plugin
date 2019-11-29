@@ -27,8 +27,6 @@ public class Configuration
     public static String TempBanMessage;
     public static String PermBanMessage;
     public static Long QueryUpdateLong;
-    public static String BanAnnouncment;
-    public static String SilentBanAnnouncment;
     public static String UnbanAnnouncment;
     public static String SilentUnbanAnnouncment;
     public static String CannotBanSelf;
@@ -60,18 +58,21 @@ public class Configuration
 
     public void Reload(FileConfiguration config)
     {
-        Configuration.dbhost = config.getString("dbhost");
-        Configuration.dbport = config.getInt("dbport");
-        Configuration.dbname = config.getString("dbname");
-        Configuration.dbusername = config.getString("dbusername");
-        Configuration.dbpassword = config.getString("dbpassword");
-        Configuration.MaxReconnects = config.getInt("MaxReconnects");
-        DiscordUtil.Webhook = config.getString("DiscordWebhook");
+        // Database
+        Configuration.dbhost = config.getString("database.host");
+        Configuration.dbport = config.getInt("database.port");
+        Configuration.dbname = config.getString("database.name");
+        Configuration.dbusername = config.getString("database.username");
+        Configuration.dbpassword = config.getString("database.password");
+        Configuration.MaxReconnects = config.getInt("database.MaxReconnects");
+        Configuration.QueryUpdateLong = config.getLong("database.QueryUpdate");
+
+        // Discord
+        DiscordUtil.Webhook = config.getString("Discord.Webhook");
+        
+        // Messages
         Configuration.TempBanMessage = config.getString("TempBanMessage");
         Configuration.PermBanMessage = config.getString("PermMessage");
-        Configuration.QueryUpdateLong = config.getLong("QueryUpdateLong");
-
-        // Messages
         Configuration.Prefix = config.getString("Prefix").replace("&", "§");
         Configuration.CannotBanSelf = config.getString("CannotBanSelf");
         Configuration.BanAnnouncment = config.getString("BanAnnouncment");

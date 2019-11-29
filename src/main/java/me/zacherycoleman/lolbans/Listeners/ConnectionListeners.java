@@ -60,7 +60,9 @@ public class ConnectionListeners implements Listener
                             put("player", event.getName());
                             put("reason", reason);
                             put("banner", sender);
-                            put("expires", TimeUtil.Expires(BanTime));
+                            put("fullexpiry", BanTime != null ? String.format("%s (%s)", TimeUtil.TimeString(BanTime), TimeUtil.Expires(BanTime)) : "Never");
+                            put("expiryduration", BanTime != null ? TimeUtil.Expires(BanTime) : "Never");
+                            put("dateexpiry", BanTime != null ? TimeUtil.TimeString(BanTime) : "Never");
                             put("banid", BanID);
                         }}
                     );
