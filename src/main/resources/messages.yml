@@ -42,6 +42,10 @@ Warn:
   WarnKickMessage: "&cYou have been warned!\n\n&cReason: {REASON}\n\n&7By rejoining you acknowledge that you've been warned!"
   AcceptMessage: "&aThank you for accepting, you may resume your gameplay!"
 
+IPBan:
+  IPBanPermMessage: "&cThe IP &7{IPADDRESS} &chas been TEMPORARILY suspended from &7My Network &cuntil &7 {DATEEXPIRY}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#B-{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+  IPBanTempMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#B-{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+
 History:
   # HistoryMessage: {PLAYER} {BANNER} %banreasons% %unbanreasons% %banids% %expiry% %latestbanreasons% %latestunbanreason% %latestbanner% %timesbanned% %currentlybanned% 
   HistoryMessage: "&8&m------------------------------\n \n&8&m------------------------------"

@@ -39,10 +39,13 @@ import me.zacherycoleman.lolbans.Listeners.PlayerEventListener;
 import me.zacherycoleman.lolbans.Utils.Configuration;
 import me.zacherycoleman.lolbans.Utils.DatabaseUtil;
 import me.zacherycoleman.lolbans.Utils.User;
+import me.zacherycoleman.lolbans.Utils.CIDRBan;
 import me.zacherycoleman.lolbans.Hacks.Hacks;
 
 import java.sql.Connection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Vector;
 import java.util.UUID;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
@@ -52,6 +55,7 @@ import java.util.concurrent.Executors;
 public final class Main extends JavaPlugin
 {
     public static HashMap<UUID, User> USERS = new HashMap<UUID, User>();
+    public static List<CIDRBan> BannedCIDRs = new Vector<CIDRBan>();
     // For some reason using Futures with the Bukkit Async scheduler doesn't work.
     // Instead of relying on dumb bukkit APIs to get tasks done, we use a thread pool of
     // our own control to get whatever we want done.
