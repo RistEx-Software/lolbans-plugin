@@ -16,12 +16,15 @@ import me.zacherycoleman.lolbans.Utils.Configuration;
 import me.zacherycoleman.lolbans.Utils.DiscordUtil;
 import me.zacherycoleman.lolbans.Utils.TimeUtil;
 import me.zacherycoleman.lolbans.Utils.User;
+import me.zacherycoleman.lolbans.Utils.Messages;
+import me.zacherycoleman.lolbans.Utils.DatabaseUtil;
 
 import java.sql.*;
 import java.util.Arrays;
 import java.time.Duration;
 import java.lang.Long;
 import java.util.Optional;
+import java.util.TreeMap;
 
 public class BanWaveCommand implements CommandExecutor
 {
@@ -39,36 +42,23 @@ public class BanWaveCommand implements CommandExecutor
                 OfflinePlayer target = User.FindPlayerByBanID(args[0]);
 
                 if (target == null)
-                {
-                    sender.sendMessage(String.format(Configuration.Prefix + ChatColor.RED + "Player \"%s\" does not exist!", args[0]));
-                    return true;
-                }
+                    return User.NoSuchPlayer(sender, args[0], true);
 
                 if (!(sender instanceof ConsoleCommandSender) && target.getUniqueId().equals(((Player) sender).getUniqueId()))
                 {
-                    sender.sendMessage(Configuration.Prefix + ChatColor.RED + "You cannot add yourself to the ban wave.");
+                    sender.sendMessage(Messages.Prefix + Messages.GetMessages().Translate("Banwave.CannotAddSelf", null));
                     return true;
                 }
 
                 if (User.IsPlayerInWave(target))
-                {
-                    sender.sendMessage(String.format(Configuration.Prefix + "Player \"%s\" is already in the ban wave!", target.getName()));
-                    return true;
-                }
+                    return User.PlayerOnlyVariableMessage("Banwave.PlayerIsInBanWave", sender, target.getName(), true);
 
                 // Prepare our reason
                 boolean silent = reason.contains("-s");
                 reason = reason.replace("-s", "").trim();
 
                 // Get the latest ID of the banned players to generate a BanID form it.
-                ResultSet ids = self.connection.createStatement().executeQuery("SELECT MAX(id) FROM BanWave");
-                int id = 1;
-                if (ids.next())
-                {
-                    if (!ids.wasNull())
-                        id = ids.getInt(1);
-                }
-                String banid = BanID.GenerateID(id);
+                String banid = BanID.GenerateID(DatabaseUtil.GenID());
                 
                 // Preapre a statement
                 PreparedStatement pst = self.connection.prepareStatement("INSERT INTO BanWave (UUID, PlayerName, Reason, Executioner, BanID) VALUES (?, ?, ?, ?, ?)");
@@ -81,30 +71,28 @@ public class BanWaveCommand implements CommandExecutor
                 // Commit to the database.
                 pst.executeUpdate();
 
-                sender.sendMessage(ChatColor.RED + target.getName() + " has been added to the next ban wave.");
+                // Reply to the sender that we added the message.
+                User.PlayerOnlyVariableMessage("Banwave.AddedToWave", sender, target.getName(), false);
 
                 // Log to console.
-                Bukkit.getConsoleSender().sendMessage(String.format(Configuration.Prefix + "\u00A7c%s \u00A77has added \u00A7c%s\u00A77 to the banwave: \u00A7c%s\u00A77%s\u00A7r", 
+                // TODO: Log to everyone with the alert permission?
+                Bukkit.getConsoleSender().sendMessage(String.format(Messages.Prefix + "\u00A7c%s \u00A77has added \u00A7c%s\u00A77 to the banwave: \u00A7c%s\u00A77%s\u00A7r", 
                 sender.getName(), target.getName(), reason, (silent ? " [silent]" : "")));
 
                 // Send to Discord.
-
-                //String sender, String target, String TargetUUID, String SenderUUID, String reason, String BanID
                 DiscordUtil.SendBanWaveAdd(sender.getName(), target.getName(), target.getUniqueId().toString(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", reason, banid);
-                
-
                 return true;
             }
             else
             {
-                sender.sendMessage("\u00A7CInvalid Syntax!");
+                sender.sendMessage(Messages.InvalidSyntax);
                 return false; // Show syntax.
             }
         }
         catch (SQLException e)
         {
             e.printStackTrace();
-            sender.sendMessage("\u00A7CThe server encountered an error, please try again later.");
+            sender.sendMessage(Messages.ServerError);
             return true;
         }
     }
@@ -117,18 +105,11 @@ public class BanWaveCommand implements CommandExecutor
         // Check and make sure the user actually exists.
         OfflinePlayer target = User.FindPlayerByBanID(args[0]);
         if (target == null)
-        {
-            sender.sendMessage(String.format(Configuration.Prefix + "Player \"%s\" does not exist!", args[0]));
-            return true;
-        }
-
+            return User.NoSuchPlayer(sender, args[0], true);
 
         // Check if they're banned normally
         if (!User.IsPlayerInWave(target))
-        {
-            sender.sendMessage(String.format("%s is not part of any ban waves.", target.getName()));
-            return true;
-        }
+            return User.PlayerOnlyVariableMessage("Banwave.PlayerNotInBanWave", sender, target.getName(), true);
 
         try
         {
@@ -137,21 +118,21 @@ public class BanWaveCommand implements CommandExecutor
             fuckingdumb.setString(1, target.getUniqueId().toString());
             fuckingdumb.executeUpdate();
 
-            sender.sendMessage(String.format("%s has been removed from the next ban wave.", target.getName()));
+            User.PlayerOnlyVariableMessage("Banwave.RemovedFromWave", sender, target.getName(), false);
             return true;
             
         }
         catch (SQLException ex)
         {
             ex.printStackTrace();
-            sender.sendMessage("The server encountered an error.");
+            sender.sendMessage(Messages.ServerError);
             return true;
         }
     }
 
     private boolean BanWaveExecute(CommandSender sender, Command command, String label, String[] args)
     {
-        sender.sendMessage(Configuration.Prefix + ChatColor.GRAY + "Starting ban wave.");
+        User.PlayerOnlyVariableMessage("Banwave.BanwaveStart", sender, sender.getName(), false);
         BanWaveRunnable bwr = new BanWaveRunnable();
         bwr.sender = sender;
         bwr.runTaskAsynchronously(self);

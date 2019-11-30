@@ -62,7 +62,7 @@ public class TranslationUtil
     public static String TranslateVariables(String message, Map<String, String> Variables)
     {
         // If it doesn't have the starting char for variables, skip it.
-        if (!message.contains("{"))
+        if (!message.contains("{") || Variables == null)
             return message;
 
         String retstr = message;
@@ -93,18 +93,4 @@ public class TranslationUtil
         retstr = TranslationUtil.TranslateVariables(retstr, Variables);
         return retstr;
     }
-
-/*     String whatever()
-    {
-        String MyStr = "{PLAYER} &4has been banned by &7{Executioner}:&4 {reason}";
-
-        String endstr = TranslationUtil.Translate(MyStr, "&", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-        {{
-            put("Player", "Justasic");
-            put("Executioner", "Zachery");
-            put("Reason", "lmao fucking fag");
-        }});
-
-        return endstr;
-    } */
 }

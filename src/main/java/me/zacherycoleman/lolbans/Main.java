@@ -35,7 +35,6 @@ import me.zacherycoleman.lolbans.Commands.HistoryCommand;
 import me.zacherycoleman.lolbans.Commands.UnbanCommand;
 import me.zacherycoleman.lolbans.Commands.WarnCommand;
 import me.zacherycoleman.lolbans.Listeners.ConnectionListeners;
-import me.zacherycoleman.lolbans.Listeners.MovementListener;
 import me.zacherycoleman.lolbans.Listeners.PlayerEventListener;
 import me.zacherycoleman.lolbans.Utils.Configuration;
 import me.zacherycoleman.lolbans.Utils.DatabaseUtil;
@@ -93,7 +92,6 @@ public final class Main extends JavaPlugin
             return;
 
         Bukkit.getPluginManager().registerEvents(new ConnectionListeners(), this);
-        //Bukkit.getPluginManager().registerEvents(new MovementListener(), this);
 
         // Register commands
         this.getCommand("ban").setExecutor(new BanCommand());

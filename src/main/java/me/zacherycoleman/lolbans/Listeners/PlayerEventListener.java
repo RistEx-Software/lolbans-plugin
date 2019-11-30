@@ -1,5 +1,7 @@
 package me.zacherycoleman.lolbans.Listeners;
 
+import java.util.TreeMap;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
@@ -22,6 +24,7 @@ import org.bukkit.inventory.PlayerInventory;
 import me.zacherycoleman.lolbans.Main;
 import me.zacherycoleman.lolbans.Utils.Configuration;
 import me.zacherycoleman.lolbans.Utils.User;
+import me.zacherycoleman.lolbans.Utils.Messages;
 
 public class PlayerEventListener
 {
@@ -54,7 +57,13 @@ public class PlayerEventListener
             if (Math.floor(to.getX()) != x || Math.floor(to.getZ()) != z || Math.floor(to.getY()) != y)
             {
                 E.setCancelled(true);
-                p.sendMessage(Configuration.Prefix + "§cYou have been warned, you may not move!\n" + Configuration.Prefix + " Please acknowledge that you've been warned by typing /accept.");
+                // TODO: Add {ISSUER}, {PLAYER}, and {REASON} to this message.
+                p.sendMessage(Messages.GetMessages().Translate("Warn.WarnedOnAction", 
+                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                    {{
+                        put("prefix", Messages.Prefix);
+                    }}
+                ));
             }
             // Exit
             return;

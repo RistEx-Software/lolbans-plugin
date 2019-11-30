@@ -13,6 +13,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.command.CommandSender;
 
 import me.zacherycoleman.lolbans.Main;
 import net.md_5.bungee.api.ChatColor;
@@ -218,6 +219,28 @@ public class User
         );
 
         target.kickPlayer(KickMessage);
+    }
+
+
+    /************************************************************************
+     * Convenience functions to make the code cleaner.
+     */
+
+    public static boolean NoSuchPlayer(CommandSender sender, String PlayerName, boolean ret)
+    {
+        return User.PlayerOnlyVariableMessage("PlayerDoesntExist", sender, PlayerName, ret);
+    }
+
+    public static boolean PlayerOnlyVariableMessage(String MessageName, CommandSender sender, String PlayerName, boolean ret)
+    {
+        sender.sendMessage(Messages.Prefix + Messages.GetMessages().Translate(MessageName,
+            new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+            {{
+                put("player", PlayerName);
+                put("prefix", Messages.Prefix);
+            }}
+        ));
+        return ret;
     }
 
 }

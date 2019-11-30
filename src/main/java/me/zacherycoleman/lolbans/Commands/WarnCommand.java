@@ -16,9 +16,13 @@ import me.zacherycoleman.lolbans.Utils.Configuration;
 import me.zacherycoleman.lolbans.Utils.DiscordUtil;
 import me.zacherycoleman.lolbans.Utils.TimeUtil;
 import me.zacherycoleman.lolbans.Utils.User;
+import me.zacherycoleman.lolbans.Utils.Messages;
+import me.zacherycoleman.lolbans.Utils.DatabaseUtil;
 
 import java.sql.*;
 import java.util.Arrays;
+import java.util.TreeMap;
+import java.util.Map;
 import java.time.Duration;
 import java.lang.Long;
 import java.util.Optional;
@@ -43,30 +47,20 @@ public class WarnCommand implements CommandExecutor
                     // just incase someone, magically has a 1 char name........
                     if (!(args.length < 1 || args == null))
                     {
-                        String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length )) : args[1];
+                        String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length)) : args[1];
                         reason = reason.replace(",", "");
                         OfflinePlayer target = User.FindPlayerByBanID(args[0]);
 
                         if (target == null)
-                        {
-                            sender.sendMessage(String.format("Player \"%s\" does not exist!", args[0]));
-                            return true;
-                        }
+                            return User.NoSuchPlayer(sender, args[0], true);
 
                         // Prepare our reason
                         boolean silent = reason.contains("-s");
                         reason = reason.replace("-s", "").trim();
-
+                        final String FuckingJava = new String(reason);
 
                         // Get the latest ID of the banned players to generate a BanID form it.
-                        ResultSet ids = self.connection.createStatement().executeQuery("SELECT MAX(id) FROM BannedPlayers");
-                        int id = 1;
-                        if (ids.next())
-                        {
-                            if (!ids.wasNull())
-                                id = ids.getInt(1);
-                        }
-                        String warnid = BanID.GenerateID(id);
+                        String warnid = BanID.GenerateID(DatabaseUtil.GenID());
 
                         // Preapre a statement
                         PreparedStatement pst = self.connection.prepareStatement("INSERT INTO Warnings (UUID, PlayerName, Reason, Executioner, WarnID, Accepted) VALUES (?, ?, ?, ?, ?, ?)");
@@ -79,15 +73,24 @@ public class WarnCommand implements CommandExecutor
 
                         // Commit to the database.
                         pst.executeUpdate();
-                            
-                        Configuration.WarnedMessage = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("WarnedMessage").replace("%player%", target.getName())
-                            .replace("%reason%", reason).replace("%warnid%", warnid).replace("%warner%", sender.getName()));
 
+                        Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                        {{
+                            put("player", target.getName());
+                            put("reason", FuckingJava);
+                            put("warnid", warnid);
+                            put("warner", sender.getName());
+                        }};
+                            
+                        String WarnedMessage = Messages.GetMessages().Translate("Warn.WarnedMessage", Variables);
+                        String WarnAnnouncement = Messages.GetMessages().Translate(silent ? "SilentWarnAnnouncment" : "WarnAnnouncment", Variables);
+
+                        // Send a message to the player
                         if (target.isOnline())
                         {
                             User u = Main.USERS.get(target.getUniqueId());
-                            u.SetWarned(true, ((Player)target).getLocation(), Configuration.WarnedMessage);
-                            u.SendMessage(Configuration.WarnedMessage);
+                            u.SetWarned(true, ((Player)target).getLocation(), WarnedMessage);
+                            u.SendMessage(WarnedMessage);
 
                             // Send them a box as well. This will disallow them from sending move events.
                             // However, client-side enforcement is not guaranteed so we also enforce the
@@ -96,40 +99,15 @@ public class WarnCommand implements CommandExecutor
                         }
                     
                         // Log to console.
-                        if (silent)
-                        {
-                            Configuration.SilentWarnAnnouncment = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("SilentWarnAnnouncment").replace("%player%", target.getName())
-                            .replace("%reason%", reason).replace("%warner%", sender.getName()));
-                            Bukkit.getConsoleSender().sendMessage(Configuration.SilentWarnAnnouncment);
-                        }
-                        else
-                        {
-                            Configuration.WarnAnnouncment = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("WarnAnnouncment").replace("%player%", target.getName())
-                            .replace("%reason%", reason).replace("%warner%", sender.getName()));
-                            Bukkit.getConsoleSender().sendMessage(Configuration.WarnAnnouncment);
-                        }
+                        Bukkit.getConsoleSender().sendMessage(WarnAnnouncement);
                             
-                        // Post that to the database.
+                        // Send the message to all online players.
                         for (Player p : Bukkit.getOnlinePlayers())
                         {
                             if (silent && (!p.hasPermission("lolbans.alerts") && !p.isOp() && p == target))
                                 continue;
 
-                            if (silent)
-                            {
-                                Configuration.SilentWarnAnnouncment = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("SilentWarnAnnouncment").replace("%player%", target.getName())
-                                .replace("%reason%", reason).replace("%warner%", sender.getName()));
-                                p.sendMessage(Configuration.SilentWarnAnnouncment);
-                            }
-                            else
-                            {
-                                Configuration.WarnAnnouncment = ChatColor.translateAlternateColorCodes('&', self.getConfig().getString("WarnAnnouncment").replace("%player%", target.getName())
-                                .replace("%reason%", reason).replace("%warner%", sender.getName()));
-                                p.sendMessage(Configuration.WarnAnnouncment);
-                            }
-
-                            //p.sendMessage(String.format("\u00A7c%s \u00A77has banned \u00A7c%s\u00A77: \u00A7c%s\u00A77%s\u00A7r", 
-                            //                            sender.getName(), target.getName(), reason, (silent ? " [SILENT]" : "")));
+                            p.sendMessage(WarnAnnouncement);
                         }
 
                         // Send to Discord. (New method)
@@ -146,14 +124,14 @@ public class WarnCommand implements CommandExecutor
                     }
                     else
                     {
-                        sender.sendMessage("\u00A7CInvalid Syntax!");
+                        sender.sendMessage(Messages.InvalidSyntax);
                         return false; // Show syntax.
                     }
                 }
                 catch (SQLException e)
                 {
                     e.printStackTrace();
-                    sender.sendMessage("\u00A7CThe server encountered an error, please try again later.");
+                    sender.sendMessage(Messages.ServerError);
                     return true;
                 }
             }

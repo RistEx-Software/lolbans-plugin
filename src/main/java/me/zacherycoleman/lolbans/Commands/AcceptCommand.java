@@ -15,6 +15,7 @@ import org.bukkit.block.data.BlockData;
 import me.zacherycoleman.lolbans.Main;
 import me.zacherycoleman.lolbans.Utils.Configuration;
 import me.zacherycoleman.lolbans.Utils.User;
+import me.zacherycoleman.lolbans.Utils.Messages;
 
 public class AcceptCommand implements CommandExecutor 
 {    
@@ -24,9 +25,7 @@ public class AcceptCommand implements CommandExecutor
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) 
     {
         if(!(sender instanceof Player))
-        {
-            sender.sendMessage(Configuration.Prefix + ChatColor.RED + "You have to be a user to these commands.");
-        }
+            return User.PlayerOnlyVariableMessage("UserRequired", sender, sender.getName(), true);
         else
         {
             Player player = (Player) sender;
@@ -46,16 +45,14 @@ public class AcceptCommand implements CommandExecutor
 
                     // Commit to the database.
                     pst3.executeUpdate();
-                    sender.sendMessage(ChatColor.GREEN + "Thank you for accepting, you may move!");
+                    User.PlayerOnlyVariableMessage("Warn.AcceptMessage", sender, sender.getName(), false);
                 }
                 catch (SQLException e)
                 {
                     e.printStackTrace();
-                    sender.sendMessage(ChatColor.RED + "An internal error occured while attempting to execute this command.");
+                    sender.sendMessage(Messages.ServerError);
                 }
             }
-            else
-                self.getLogger().info("Not accept!");
         }
         return false;
     }

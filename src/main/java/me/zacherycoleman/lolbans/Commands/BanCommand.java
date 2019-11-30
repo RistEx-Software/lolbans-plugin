@@ -18,6 +18,7 @@ import me.zacherycoleman.lolbans.Utils.DiscordUtil;
 import me.zacherycoleman.lolbans.Utils.TimeUtil;
 import me.zacherycoleman.lolbans.Utils.TranslationUtil;
 import me.zacherycoleman.lolbans.Utils.User;
+import me.zacherycoleman.lolbans.Utils.Messages;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -53,22 +54,13 @@ public class BanCommand implements CommandExecutor
                     Timestamp bantime = null;
 
                     if (target == null)
-                    {
-                        sender.sendMessage(String.format("Player \"%s\" does not exist!", args[0]));
-                        return true;
-                    }
+                        return User.NoSuchPlayer(sender, args[0], true);
 
                     if (!(sender instanceof ConsoleCommandSender) && target.getUniqueId().equals(((Player) sender).getUniqueId()))
-                    {
-                        sender.sendMessage(Configuration.CannotBanSelf);
-                        return true;
-                    }
+                        return User.PlayerOnlyVariableMessage("Ban.CannotBanSelf", sender, target.getName(), true);
 
                     if (User.IsPlayerBanned(target))
-                    {
-                        sender.sendMessage(String.format("Player \"%s\" is already banned!", target.getName()));
-                        return true;
-                    }
+                        return User.PlayerOnlyVariableMessage("Ban.PlayerIsBanned", sender, target.getName(), true);
 
                     // Parse ban time.
                     if (!args[1].trim().contentEquals("0") && !args[1].trim().contentEquals("*"))
@@ -78,7 +70,7 @@ public class BanCommand implements CommandExecutor
                             bantime = new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
                         else
                         {
-                            sender.sendMessage(Configuration.Prefix + Configuration.InvalidSyntax);
+                            sender.sendMessage(Messages.InvalidSyntax);
                             return false;
                         }
                     }
@@ -109,7 +101,7 @@ public class BanCommand implements CommandExecutor
 
 
                     // Format our messages.
-                    String BanAnnouncement = TranslationUtil.Translate(self.getConfig().getString(silent ? "SilentBanAnnouncement" : "BanAnnouncement"), "&",
+                    String BanAnnouncement = Messages.GetMessages().Translate(silent ? "SilentBanAnnouncement" : "BanAnnouncement",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
                             put("player", target.getName());
@@ -130,12 +122,30 @@ public class BanCommand implements CommandExecutor
                         p.sendMessage(BanAnnouncement);
                     }
 
+                    String SimplifiedMessage = Messages.GetMessages().Translate(silent ? "SimplifiedMessageSilent" : "SimplifiedMessage",
+                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                        {{
+                            put("player", target.getName());
+                            put("reason", FuckingJava);
+                            put("banner", sender.getName());
+                            put("banid", banid);
+                        }}
+                    );
+
                     // Send to Discord. (New method)
-                    DiscordUtil.Send(sender.getName().toString(), target.getName(),
-                            // if they're the console, use a hard-defined UUID instead of the player's UUID.
-                            (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((Entity) sender).getUniqueId().toString(), 
-                            target.getUniqueId().toString(), reason, banid, bantime, silent);
-                    return true;
+                    if (DiscordUtil.UseSimplifiedMessage == true)
+                    {
+                        DiscordUtil.SendFormatted(SimplifiedMessage);
+                        return true;
+                    }
+                    else
+                    {
+                        DiscordUtil.Send(sender.getName().toString(), target.getName(),
+                                // if they're the console, use a hard-defined UUID instead of the player's UUID.
+                                (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((Entity) sender).getUniqueId().toString(), 
+                                target.getUniqueId().toString(), reason, banid, bantime, silent);
+                        return true;
+                    }
                 }
                 else
                 {

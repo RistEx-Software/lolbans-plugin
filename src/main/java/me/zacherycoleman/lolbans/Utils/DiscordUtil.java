@@ -28,33 +28,16 @@ import org.bukkit.entity.Player;
               | | | \ \ /\ / / | | |
               | |_| |\ V  V /| |_| |
                \__,_| \_/\_/  \__,_|
-
-    　　　　　　　　　　▄█▀█▀█▄
-    　　　　　　　　▄█▀　　█　　▀█▄
-    　　　　　　　▄█▀　　　　　　　▀█▄
-    　　　　　　　█　　　　　　　　　　　█
-    　　　　　　　█　　　　　　　　　　　█
-    　　　　　　　▀█▄▄　　█　　　▄█▀
-    　　　　　　　　　█　　▄▀▄　　█
-    　　　　　　　　　█　▀　　　▀　█
-    　　　　　　　　　█　　　　　　　█
-    　　　　　　　　　█　　　　　　　█
-    　　　　　　　　　█　　　　 　　 █
-    　　　　　　　　　█　　　　　　　█
-    　　　　　　　　　█　　　　　　　█
-    　　　▄█▀▀█▄█　　　　　　　█▄█▀█▄
-    　▄█▀▀　　　　▀　　　　　　　　　　　　▀▀█
-    █▀　　　　　　　　　　　　　　　　　　　　　　▀█
-    █　　　　　　　　　　　　　　　　　　　　　　　　█
-    █　　　　　　　　　　　▄█▄　　　　　　　　　　█
-    ▀█　　　　　　　　　█▀　▀█　　　　　　　　█▀
-    　▀█▄　　　　　　█▀　　　▀█　　　　　▄█▀
-    　　　▀█▄▄▄█▀　　　　　　▀█▄▄▄█▀
-                        
 */
 public class DiscordUtil 
 {
-    public static String Webhook = "";
+    public static String Webhook;
+    public static Boolean UseSimplifiedMessage;
+    public static String SimplifiedMessage;
+    public static String SimplifiedMessageUnban;
+    public static String SimplifiedMessageSilent;
+    public static String SimplifiedMessageSilentUnban;
+    public static String WebhookProfilePicture;
 
         //sender.getName().toString(), target.getName(), 
         //((Entity) sender).getUniqueId().toString(), target.getUniqueId().toString(), reason, silent
@@ -264,7 +247,7 @@ public class DiscordUtil
                 DiscordMessage dm = DiscordMessage.builder()
                         .username("LolBans") // We are creating a message with the username "LolBans"...
                         .content("") // with no content because we are going to use the embed...
-                        .avatarUrl("https://i.imgur.com/mKRAesS.png") // with this avatar...
+                        .avatarUrl(DiscordUtil.WebhookProfilePicture) // with this avatar...
                         .embeds(Arrays.asList(de)) // with the our embed...
                         .build(); // and now we build the message!
                         
@@ -287,7 +270,7 @@ public class DiscordUtil
                 DiscordMessage dm = DiscordMessage.builder()
                         .username("LolBans") // We are creating a message with the username "LolBans"...
                         .content("") // with no content because we are going to use the embed...
-                        .avatarUrl("https://i.imgur.com/mKRAesS.png") // with this avatar...
+                        .avatarUrl(DiscordUtil.WebhookProfilePicture) // with this avatar...
                         .embeds(Arrays.asList(de)) // with the our embed...
                         .build(); // and now we build the message!
                         
@@ -301,7 +284,7 @@ public class DiscordUtil
                 DiscordMessage dm = DiscordMessage.builder()
                         .username("LolBans") // We are creating a message with the username "Temmie"...
                         .content(message + args) // with this content...
-                        .avatarUrl("https://i.imgur.com/mKRAesS.png") // with this avatar...
+                        .avatarUrl(DiscordUtil.WebhookProfilePicture) // with this avatar...
                         .build(); // and now we build the message!
                         
                 temmie.sendMessage(dm);

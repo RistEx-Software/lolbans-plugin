@@ -29,3 +29,4 @@ Basis of plugin design: https://www.spigotmc.org/resources/litebans-%C2%BB-50-of
 # WAYYYYY FUTURE:
 1. Cross-server compatibility (lol)
 2. Cross-database compatibility
+

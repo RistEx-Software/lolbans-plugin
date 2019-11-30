@@ -22,28 +22,7 @@ public class Configuration
     public static Integer dbport = 3306;
     public static Integer MaxReconnects = 5;
 
-    public static String DiscordWebhook;
-    public static String Prefix;
-    public static String TempBanMessage;
-    public static String PermBanMessage;
     public static Long QueryUpdateLong;
-    public static String UnbanAnnouncment;
-    public static String SilentUnbanAnnouncment;
-    public static String CannotBanSelf;
-    public static String InvalidSyntax;
-    public static String CannotAddSelf;
-    public static String PlayerDoesntExist;
-    public static String PlayerIsBanned;
-    public static String PlayerIsInBanWave;
-    public static String BannedPlayersInBanWave;
-    public static String SilentWarnAnnouncment;
-    public static String WarnAnnouncment;
-    public static String WarnedMessage;
-    public static String WarnKickMessage;
-
-    public static Connection connection;
-    public static YamlConfiguration LANG;
-    public static File LANG_FILE;
 
     public Configuration(FileConfiguration config)
     {
@@ -69,25 +48,11 @@ public class Configuration
 
         // Discord
         DiscordUtil.Webhook = config.getString("Discord.Webhook");
-        
-        // Messages
-        Configuration.Prefix = config.getString("Prefix").replace("&", "§");
-        Configuration.TempBanMessage = config.getString("TempBanMessage");
-        Configuration.PermBanMessage = config.getString("PermMessage");
-        Configuration.CannotBanSelf = config.getString("CannotBanSelf");
-        Configuration.BanAnnouncment = config.getString("BanAnnouncment");
-        Configuration.SilentUnbanAnnouncment = config.getString("BanAnnouncment");
-        Configuration.UnbanAnnouncment = config.getString("UnbanAnnouncment");
-        Configuration.SilentUnbanAnnouncment = config.getString("SilentUnbanAnnouncment");
-        Configuration.InvalidSyntax = config.getString("InvalidSyntax");
-        Configuration.CannotAddSelf = config.getString("CannotAddSelf");
-        Configuration.PlayerDoesntExist = config.getString("PlayerDoesntExist");
-        Configuration.PlayerIsBanned = config.getString("PlayerIsBanned"); 
-        Configuration.PlayerIsInBanWave = config.getString("PlayerIsInBanWave"); 
-        Configuration.BannedPlayersInBanWave = config.getString("BannedPlayersInBanWave");
-        Configuration.SilentWarnAnnouncment = config.getString("SilentWarnAnnouncment");
-        Configuration.WarnAnnouncment = config.getString("WarnAnnouncment");
-        Configuration.WarnedMessage = config.getString("WarnedMessage");
-        Configuration.WarnKickMessage = config.getString("WarnKickMessage");
+        DiscordUtil.UseSimplifiedMessage = config.getBoolean("Discord.UseSimplifiedMessage");
+/*         DiscordUtil.SimplifiedMessage = config.getString("Discord.SimplifiedMessage");
+        DiscordUtil.SimplifiedMessageUnban = config.getString("Discord.SimplifiedMessageUnban");
+        DiscordUtil.SimplifiedMessageSilent = config.getString("Discord.SimplifiedMessageSilent");
+        DiscordUtil.SimplifiedMessageSilentUnban = config.getString("Discord.SimplifiedMessageUnbanSilent"); */
+        DiscordUtil.WebhookProfilePicture = config.getString("Discord.WebhookProfilePicture");
     }
 }
