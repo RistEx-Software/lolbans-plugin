@@ -1,19 +1,17 @@
 package me.zacherycoleman.lolbans.Utils;
 
 import java.sql.*;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
-
-import org.bukkit.Bukkit;
+import me.zacherycoleman.lolbans.Main;
+import me.zacherycoleman.lolbans.Runnables.QueryRunnable;
+import me.zacherycoleman.lolbans.Utils.Configuration;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import me.zacherycoleman.lolbans.Runnables.QueryRunnable;
-import me.zacherycoleman.lolbans.Main;
+
 
 public class DatabaseUtil
 {
@@ -41,7 +39,7 @@ public class DatabaseUtil
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedHistory (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, UnbanReason TEXT, UnbanExecutioner varchar(17), TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BanWave (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Warnings (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, WarnID varchar(20) NOT NULL, Accepted boolean, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)").execute();
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS IPBans (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, IPAddress varblob(16) NOT NULL, CIDR INT NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS IPBans (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, BanID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
         }
         catch (SQLException e)
         {
@@ -90,6 +88,31 @@ public class DatabaseUtil
                     DriverManager.getConnection(String.format("jdbc:mysql://%s:%s/%s?autoReconnect=true&failOverReadOnly=false&maxReconnects=%d", 
                                     Configuration.dbhost, Configuration.dbport, Configuration.dbname, Configuration.MaxReconnects), Configuration.dbusername, Configuration.dbpassword);
         }
+    }
+
+    public static Future<Optional<ResultSet>> ExecuteLater(PreparedStatement statement)
+    {
+        FutureTask<Optional<ResultSet>> t = new FutureTask<>(new Callable<Optional<ResultSet>>()
+        {
+            @Override
+            public Optional<ResultSet> call()
+            {
+                //This is where you should do your database interaction
+                try 
+                {
+                    return Optional.ofNullable(statement.executeQuery());
+                } 
+                catch (SQLException e) 
+                {
+                    e.printStackTrace();
+                    return Optional.ofNullable(null);
+                }
+            }
+        });
+
+        self.pool.execute(t);
+
+        return t;
     }
 
     public static Future<Boolean> InsertBan(String UUID, String PlayerName, String Reason, CommandSender Executioner, String BanID, Timestamp BanTime) throws SQLException

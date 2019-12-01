@@ -1,13 +1,12 @@
 package me.zacherycoleman.lolbans.Runnables;
 
-import java.net.InetAddress;
+import inet.ipaddr.IPAddressString;
 import java.net.UnknownHostException;
-
 import java.sql.*;
-import org.bukkit.scheduler.BukkitRunnable;
-import me.zacherycoleman.lolbans.Utils.DiscordUtil;
 import me.zacherycoleman.lolbans.Main;
-import me.zacherycoleman.lolbans.Utils.CIDRBan;
+import me.zacherycoleman.lolbans.Utils.DiscordUtil;
+import org.bukkit.scheduler.BukkitRunnable;
+
 
 public class QueryRunnable extends BukkitRunnable
 {
@@ -36,34 +35,22 @@ public class QueryRunnable extends BukkitRunnable
             rs = self.connection.prepareStatement("SELECT * IPBans").executeQuery();
             while (rs.next())
             {
-                try 
-                {
-                    Blob ipaddress = rs.getBlob("IPAddress");
-                    // Convert the ipaddress to an InetAddress
-                    InetAddress addr = InetAddress.getByAddress(ipaddress.getBytes(0L, (int)ipaddress.length()));
+                IPAddressString addr = new IPAddressString(rs.getString("IPAddress"));
 
-                    // Try and find our address.
-                    CIDRBan cb = new CIDRBan(addr, rs.getInt("CIDR"));
-                    boolean found = false;
-                    for (CIDRBan c : Main.BannedCIDRs)
-                    {
-                        if (c.compare(cb))
-                        {
-                            found = true;
-                            break;
-                        }
+                // Try and find our address.
+                boolean found = false;
+                for (IPAddressString cb : Main.BannedAddresses)
+                {
+                    if (cb.compareTo(addr) == 0)
+                    { 
+                        found = true;
+                        break;
                     }
+                }
 
-                    // Add our banned cidr range if not found.
-                    if (!found)
-                        Main.BannedCIDRs.add(cb);
-                }
-                catch (UnknownHostException e)
-                {
-                    // Maybe unnecessary?
-                    e.printStackTrace();
-                    continue;
-                }
+                // Add our banned cidr range if not found.
+                if (!found)
+                    Main.BannedAddresses.add(addr);
             }
         }
         catch(SQLException e)

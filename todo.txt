@@ -24,9 +24,13 @@ Basis of plugin design: https://www.spigotmc.org/resources/litebans-%C2%BB-50-of
 21. /staffhistory
 22. Make User.FindPlayerByBanID async with FutureTask
 23. Ensure multithreaded/asynchronous database queries for most/all things (we don't ever want to hang the main thread).
-
+24. Check to make sure an IP ban is not part of an already-banned CIDR range.
+25. Support IP bans by hostname
+26. Regex Name Bans.
+27. REST api for website.
 
 # WAYYYYY FUTURE:
 1. Cross-server compatibility (lol)
 2. Cross-database compatibility
-
+3. Allow shell-command executed ip bans to use for iptables and similar command line firewalls.
+4. Inventory GUI

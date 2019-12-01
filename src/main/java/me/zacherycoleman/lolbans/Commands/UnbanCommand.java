@@ -46,7 +46,7 @@ public class UnbanCommand implements CommandExecutor
                         return User.NoSuchPlayer(sender, args[0], true);
                     
                     if (!User.IsPlayerBanned(target))
-                        return User.PlayerOnlyVariableMessage("Banwave.PlayerIsNotBanned", sender, target.getName(), true);
+                        return User.PlayerOnlyVariableMessage("Ban.PlayerIsNotBanned", sender, target.getName(), true);
                     
                     // Prepare our reason for unbanning
                     boolean silent = reason.contains("-s");
