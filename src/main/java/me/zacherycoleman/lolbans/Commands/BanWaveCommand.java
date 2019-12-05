@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
@@ -56,17 +57,22 @@ public class BanWaveCommand implements CommandExecutor
                 // Prepare our reason
                 boolean silent = reason.contains("-s");
                 reason = reason.replace("-s", "").trim();
+                int i = 1;
 
                 // Get the latest ID of the banned players to generate a BanID form it.
                 String banid = BanID.GenerateID(DatabaseUtil.GenID());
                 
                 // Preapre a statement
-                PreparedStatement pst = self.connection.prepareStatement("INSERT INTO BanWave (UUID, PlayerName, Reason, Executioner, BanID) VALUES (?, ?, ?, ?, ?)");
-                pst.setString(1, target.getUniqueId().toString());
-                pst.setString(2, target.getName());
-                pst.setString(3, reason);
-                pst.setString(4, sender.getName());
-                pst.setString(5, banid);
+                PreparedStatement pst = self.connection.prepareStatement("INSERT INTO BanWave (UUID, PlayerName, IPAddress, Reason, Executioner, BanID) VALUES (?, ?, ?, ?, ?, ?)");
+                pst.setString(i++, target.getUniqueId().toString());
+                pst.setString(i++, target.getName());
+                if (target.isOnline())
+                    pst.setString(i++, ((Player)target).getAddress().getAddress().getHostAddress());
+                else
+                    pst.setString(i++, "UNKNOWN");
+                pst.setString(i++, reason);
+                pst.setString(i++, sender.getName());
+                pst.setString(i++, banid);
 
                 // Commit to the database.
                 pst.executeUpdate();
@@ -89,7 +95,7 @@ public class BanWaveCommand implements CommandExecutor
                 return false; // Show syntax.
             }
         }
-        catch (SQLException e)
+        catch (SQLException | InvalidConfigurationException e)
         {
             e.printStackTrace();
             sender.sendMessage(Messages.ServerError);

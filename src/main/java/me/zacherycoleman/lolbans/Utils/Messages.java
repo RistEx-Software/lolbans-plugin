@@ -71,24 +71,8 @@ public class Messages
 
         // Messages
         Messages.Prefix = this.CustomConfig.getString("Prefix").replace("&", "\u00A7");
-        //Messages.TempBanMessage = this.CustomConfig.getString("Ban.TempBanMessage");
-        //Messages.PermBanMessage = this.CustomConfig.getString("Ban.PermBanMessage");
-        //Messages.CannotBanSelf = this.CustomConfig.getString("Ban.CannotBanSelf");
-        //Messages.BanAnnouncment = this.CustomConfig.getString("Ban.BanAnnouncment");
-        //Messages.UnbanAnnouncment = this.CustomConfig.getString("Ban.UnbanAnnouncment");
-        //Messages.SilentUnbanAnnouncment = this.CustomConfig.getString("Ban.SilentUnbanAnnouncment");
         Messages.InvalidSyntax = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("InvalidSyntax"));
         Messages.ServerError = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("ServerError"));
-        Messages.BanwaveStart = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("BanwaveStart"));
-        //Messages.CannotAddSelf = this.CustomConfig.getString("Banwave.CannotAddSelf");
-        //Messages.PlayerDoesntExist = this.CustomConfig.getString("PlayerDoesntExist");
-        //Messages.PlayerIsBanned = this.CustomConfig.getString("Ban.PlayerIsBanned"); 
-        //Messages.PlayerIsInBanWave = this.CustomConfig.getString("Banwave.PlayerIsInBanWave"); 
-        //Messages.BannedPlayersInBanWave = this.CustomConfig.getString("Banwave.BannedPlayersInBanWave");
-        //Messages.SilentWarnAnnouncment = this.CustomConfig.getString("Warn.SilentWarnAnnouncment");
-        //Messages.WarnAnnouncment = this.CustomConfig.getString("Warn.WarnAnnouncment");
-        //Messages.WarnedMessage = this.CustomConfig.getString("Warn.WarnedMessage");
-        //Messages.WarnKickMessage = this.CustomConfig.getString("Warn.WarnKickMessage");
     }
 
     public FileConfiguration GetConfig()
@@ -96,8 +80,12 @@ public class Messages
         return this.CustomConfig;
     }
 
-    public String Translate(String ConfigNode, Map<String, String> Variables)
+    public String Translate(String ConfigNode, Map<String, String> Variables) throws InvalidConfigurationException
     {
-        return TranslationUtil.Translate(this.CustomConfig.getString(ConfigNode), "&", Variables);
+        String ConfigMessage = this.CustomConfig.getString(ConfigNode);
+        if (ConfigMessage == null)
+            throw new InvalidConfigurationException("Configuration Node is invalid or does not exist: " + ConfigNode);
+
+        return TranslationUtil.Translate(ConfigMessage, "&", Variables);
     }
 }

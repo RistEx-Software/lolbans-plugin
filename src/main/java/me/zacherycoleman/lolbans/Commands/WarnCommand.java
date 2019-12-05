@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
@@ -58,18 +59,23 @@ public class WarnCommand implements CommandExecutor
                         boolean silent = reason.contains("-s");
                         reason = reason.replace("-s", "").trim();
                         final String FuckingJava = new String(reason);
+                        int i = 1;
 
                         // Get the latest ID of the banned players to generate a BanID form it.
                         String warnid = BanID.GenerateID(DatabaseUtil.GenID());
 
                         // Preapre a statement
-                        PreparedStatement pst = self.connection.prepareStatement("INSERT INTO Warnings (UUID, PlayerName, Reason, Executioner, WarnID, Accepted) VALUES (?, ?, ?, ?, ?, ?)");
-                        pst.setString(1, target.getUniqueId().toString());
-                        pst.setString(2, target.getName());
-                        pst.setString(3, reason);
-                        pst.setString(4, sender.getName());
-                        pst.setString(5, warnid);
-                        pst.setBoolean(6, false);
+                        PreparedStatement pst = self.connection.prepareStatement("INSERT INTO Warnings (UUID, PlayerName, IPAddress, Reason, Executioner, WarnID, Accepted) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                        pst.setString(i++, target.getUniqueId().toString());
+                        pst.setString(i++, target.getName());
+                        if (target.isOnline())
+                            pst.setString(i++, ((Player)target).getAddress().toString());
+                        else
+                            pst.setString(i++, "UNKNOWN");
+                        pst.setString(i++, reason);
+                        pst.setString(i++, sender.getName());
+                        pst.setString(i++, warnid);
+                        pst.setBoolean(i++, false);
 
                         // Commit to the database.
                         pst.executeUpdate();
@@ -128,7 +134,7 @@ public class WarnCommand implements CommandExecutor
                         return false; // Show syntax.
                     }
                 }
-                catch (SQLException e)
+                catch (SQLException | InvalidConfigurationException e)
                 {
                     e.printStackTrace();
                     sender.sendMessage(Messages.ServerError);

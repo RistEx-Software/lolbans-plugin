@@ -50,8 +50,8 @@ public class BanWaveRunnable extends BukkitRunnable
             PreparedStatement PlayersToBanQuery = self.connection.prepareStatement("SELECT * FROM BanWave");
             // Array of users to be banned.
             PreparedStatement PlayersToBanQueryArr = self.connection.prepareStatement("SELECT PlayerName, GROUP_CONCAT(PlayerName) AS PlayerNames FROM BanWave");
-            PreparedStatement BanBatchQuery = self.connection.prepareStatement("INSERT INTO BannedPlayers (UUID, PlayerName, Reason, Executioner, BanID) VALUES (?, ?, ?, ?, ?)");
-            PreparedStatement BanHistoryQuery = self.connection.prepareStatement("INSERT INTO BannedHistory (UUID, PlayerName, Reason, Executioner, BanID) VALUES (?, ?, ?, ?, ?)");
+            PreparedStatement BanBatchQuery = self.connection.prepareStatement("INSERT INTO BannedPlayers (UUID, PlayerName, IPAddress, Reason, Executioner, BanID) VALUES (?, ?, ?, ?, ?, ?)");
+            PreparedStatement BanHistoryQuery = self.connection.prepareStatement("INSERT INTO BannedHistory (UUID, PlayerName, IPAddress, Reason, Executioner, BanID) VALUES (?, ?, ?, ?, ?, ?)");
             
             List<BannedUser> BannedPlayers = new ArrayList<BannedUser>();
             ResultSet ptbqr = PlayersToBanQueryArr.executeQuery();
@@ -69,23 +69,27 @@ public class BanWaveRunnable extends BukkitRunnable
                 ResultSet PlayersToBan = PlayersToBanQuery.executeQuery();
                 while (PlayersToBan.next())
                 {
-
+                    int i = 1;
                     OfflinePlayer op = Bukkit.getOfflinePlayer(UUID.fromString(PlayersToBan.getString("UUID")));
                     BannedUser bp = new BannedUser(op, PlayersToBan.getString("Executioner"), PlayersToBan.getString("BanID"), PlayersToBan.getString("Reason"));
                     BannedPlayers.add(bp);
 
-                    BanBatchQuery.setString(1, PlayersToBan.getString("UUID"));
-                    BanBatchQuery.setString(2, PlayersToBan.getString("PlayerName"));
-                    BanBatchQuery.setString(3, bp.BanReason);
-                    BanBatchQuery.setString(4, bp.Executioner);
-                    BanBatchQuery.setString(5, bp.BanID);
+                    BanBatchQuery.setString(i++, PlayersToBan.getString("UUID"));
+                    BanBatchQuery.setString(i++, PlayersToBan.getString("PlayerName"));
+                    BanBatchQuery.setString(i++, PlayersToBan.getString("IPAddress"));
+                    BanBatchQuery.setString(i++, bp.BanReason);
+                    BanBatchQuery.setString(i++, bp.Executioner);
+                    BanBatchQuery.setString(i++, bp.BanID);
                     BanBatchQuery.addBatch();
 
-                    BanHistoryQuery.setString(1, PlayersToBan.getString("UUID"));
-                    BanHistoryQuery.setString(2, PlayersToBan.getString("PlayerName"));
-                    BanHistoryQuery.setString(3, PlayersToBan.getString("Reason"));
-                    BanHistoryQuery.setString(4, PlayersToBan.getString("Executioner"));
-                    BanHistoryQuery.setString(5, PlayersToBan.getString("BanID"));
+                    i = 1;
+
+                    BanHistoryQuery.setString(i++, PlayersToBan.getString("UUID"));
+                    BanHistoryQuery.setString(i++, PlayersToBan.getString("PlayerName"));
+                    BanHistoryQuery.setString(i++, PlayersToBan.getString("IPAddress"));
+                    BanHistoryQuery.setString(i++, PlayersToBan.getString("Reason"));
+                    BanHistoryQuery.setString(i++, PlayersToBan.getString("Executioner"));
+                    BanHistoryQuery.setString(i++, PlayersToBan.getString("BanID"));
                     BanHistoryQuery.addBatch();
                 }
 

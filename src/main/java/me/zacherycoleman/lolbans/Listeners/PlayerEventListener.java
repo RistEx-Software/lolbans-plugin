@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityEvent;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerCommandSendEvent;
@@ -58,12 +59,19 @@ public class PlayerEventListener
             {
                 E.setCancelled(true);
                 // TODO: Add {ISSUER}, {PLAYER}, and {REASON} to this message.
-                p.sendMessage(Messages.GetMessages().Translate("Warn.WarnedOnAction", 
-                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                    {{
-                        put("prefix", Messages.Prefix);
-                    }}
-                ));
+                try
+                {
+                    p.sendMessage(Messages.GetMessages().Translate("Warn.WarnedOnAction", 
+                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                        {{
+                            put("prefix", Messages.Prefix);
+                        }}
+                    ));
+                }
+                catch (InvalidConfigurationException ex)
+                {
+                    ex.printStackTrace();
+                }
             }
             // Exit
             return;

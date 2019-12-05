@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import me.zacherycoleman.lolbans.Main;
 import me.zacherycoleman.lolbans.Utils.TimeUtil;
 import me.zacherycoleman.lolbans.Utils.User;
+import me.zacherycoleman.lolbans.Utils.Messages;
 
 import java.util.Arrays;
 import java.sql.*;
@@ -123,14 +124,14 @@ public class HistoryCommand implements CommandExecutor
             }
             else
             {
-                sender.sendMessage("\u00A7CInvalid Syntax!");
+                sender.sendMessage(Messages.InvalidSyntax);
                 return false; // Show syntax.
             }
         }
         catch (SQLException e)
         {
             e.printStackTrace();
-            sender.sendMessage("\u00A7CThe server encountered an error, please try again later.");
+            sender.sendMessage(Messages.ServerError);
             return true;
         }
     }
@@ -168,14 +169,14 @@ public class HistoryCommand implements CommandExecutor
             }
             else
             {
-                sender.sendMessage("\u00A7CInvalid Syntax!");
+                sender.sendMessage(Messages.InvalidSyntax);
                 return false; // Show syntax.
             }
         }
         catch (SQLException e)
         {
             e.printStackTrace();
-            sender.sendMessage("\u00A7CThe server encountered an error, please try again later.");
+            sender.sendMessage(Messages.ServerError);
             return true;
         }
         return false;

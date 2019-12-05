@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 
 import me.zacherycoleman.lolbans.Main;
@@ -84,7 +85,7 @@ public class UnbanCommand implements CommandExecutor
                             continue;
 
                         //"&c%banner% &7has banned &c%player%&7: &c%reason%"
-
+                
                         String UnbanAnnouncementMessage = Messages.GetMessages().Translate(silent ? "SilentUnbanAnnouncment" : "UnbanAnnouncment",
                             new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                             {{
@@ -141,7 +142,7 @@ public class UnbanCommand implements CommandExecutor
                     return false; // Show syntax.
                 }
             }
-            catch (SQLException e)
+            catch (SQLException | InvalidConfigurationException e)
             {
                 e.printStackTrace();
                 sender.sendMessage(Messages.ServerError);

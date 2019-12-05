@@ -85,8 +85,8 @@ public class BanCommand implements CommandExecutor
                     String banid = BanID.GenerateID(DatabaseUtil.GenID());
 
                     // Execute queries to get the bans.
-                    Future<Boolean> HistorySuccess = DatabaseUtil.InsertHistory(target.getUniqueId().toString(), target.getName(), reason, sender, banid, bantime);
-                    Future<Boolean> BanSuccess = DatabaseUtil.InsertBan(target.getUniqueId().toString(), target.getName(), reason, sender, banid, bantime);
+                    Future<Boolean> HistorySuccess = DatabaseUtil.InsertHistory(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, banid, bantime);
+                    Future<Boolean> BanSuccess = DatabaseUtil.InsertBan(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, banid, bantime);
 
                     // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
                     if (!BanSuccess.get() || !HistorySuccess.get())
@@ -101,7 +101,7 @@ public class BanCommand implements CommandExecutor
 
 
                     // Format our messages.
-                    String BanAnnouncement = Messages.GetMessages().Translate(silent ? "SilentBanAnnouncement" : "BanAnnouncement",
+                    String BanAnnouncement = Messages.GetMessages().Translate(silent ? "Ban.SilentBanAnnouncement" : "Ban.BanAnnouncement",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
                             put("player", target.getName());

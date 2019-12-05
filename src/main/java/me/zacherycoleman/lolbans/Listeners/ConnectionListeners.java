@@ -18,6 +18,7 @@ import me.zacherycoleman.lolbans.Utils.TranslationUtil;
 import me.zacherycoleman.lolbans.Utils.User;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -166,12 +167,17 @@ public class ConnectionListeners implements Listener
                     
                     // 👋
                     event.disallow(Result.KICK_OTHER, WarnKickMessage);
+
+                    // Now accept the warning
+                    PreparedStatement pst3 = self.connection.prepareStatement("UPDATE Warnings SET Accepted = true WHERE UUID = ?");
+                    pst3.setString(1, event.getUniqueId().toString());
+                    pst3.executeUpdate();
                 }
             }
 
             // They're not banned and have no pending warnings, allow them to connect or other plugins to perform their actions.
         }
-        catch (SQLException | InterruptedException | ExecutionException ex)
+        catch (SQLException | InterruptedException | ExecutionException | InvalidConfigurationException ex)
         {
             ex.printStackTrace();
             // Kick if there was a server error.
