@@ -89,7 +89,7 @@ public class WarnCommand implements CommandExecutor
                         }};
                             
                         String WarnedMessage = Messages.GetMessages().Translate("Warn.WarnedMessage", Variables);
-                        String WarnAnnouncement = Messages.GetMessages().Translate(silent ? "SilentWarnAnnouncment" : "WarnAnnouncment", Variables);
+                        String WarnAnnouncement = Messages.GetMessages().Translate(silent ? "Warn.SilentWarnAnnouncment" : "Warn.WarnAnnouncment", Variables);
 
                         // Send a message to the player
                         if (target.isOnline())

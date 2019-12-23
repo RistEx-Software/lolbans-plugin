@@ -86,7 +86,7 @@ public class UnbanCommand implements CommandExecutor
 
                         //"&c%banner% &7has banned &c%player%&7: &c%reason%"
                 
-                        String UnbanAnnouncementMessage = Messages.GetMessages().Translate(silent ? "SilentUnbanAnnouncment" : "UnbanAnnouncment",
+                        String UnbanAnnouncementMessage = Messages.GetMessages().Translate(silent ? "Ban.SilentUnbanAnnouncment" : "Ban.UnbanAnnouncment",
                             new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                             {{
                                 put("player", target.getName());

@@ -132,7 +132,7 @@ public class ConnectionListeners implements Listener
                         put("dateexpiry", BanTime != null ? TimeUtil.TimeString(BanTime) : "Never");
                         put("banid", result.getString("BanID"));
                     }};
-
+                    //(String message, String ColorChars, Map<String, String> Variables)
                     event.disallow(Result.KICK_BANNED, Messages.GetMessages().Translate(BanTime != null ? "Ban.TempBanMessage" : "Ban.PermBanMessage", Variables));
                     return;
                 }

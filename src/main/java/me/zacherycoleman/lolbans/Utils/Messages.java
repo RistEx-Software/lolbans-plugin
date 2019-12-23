@@ -23,6 +23,8 @@ public class Messages
     public static String PermBanMessage;
     public static String CannotBanSelf;
     public static String BanAnnouncment;
+    public static String SilentBanAnnouncement;
+    public static String BanAnnouncement;
     public static String UnbanAnnouncment;
     public static String SilentUnbanAnnouncment;
     public static String InvalidSyntax;
@@ -35,6 +37,8 @@ public class Messages
     public static String WarnAnnouncment;
     public static String WarnedMessage;
     public static String WarnKickMessage;
+    public static String SimplifiedMessageSilent;
+    public static String SimplifiedMessage;
 
     // Initialized by our GetMessages() function.
     protected Messages()
@@ -72,7 +76,12 @@ public class Messages
         // Messages
         Messages.Prefix = this.CustomConfig.getString("Prefix").replace("&", "\u00A7");
         Messages.InvalidSyntax = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("InvalidSyntax"));
-        Messages.ServerError = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("ServerError"));
+        Messages.SimplifiedMessageSilent = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimplifiedMessageSilent"));
+        Messages.SimplifiedMessage = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimplifiedMessage"));
+        Messages.SilentBanAnnouncement = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Ban.SilentBanAnnouncement"));
+        Messages.BanAnnouncement = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Ban.BanAnnouncement"));
+        Messages.UnbanAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Ban.UnbanAnnouncment"));
+        Messages.SilentUnbanAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Ban.SilentUnbanAnnouncment"));
     }
 
     public FileConfiguration GetConfig()
@@ -85,7 +94,6 @@ public class Messages
         String ConfigMessage = this.CustomConfig.getString(ConfigNode);
         if (ConfigMessage == null)
             throw new InvalidConfigurationException("Configuration Node is invalid or does not exist: " + ConfigNode);
-
         return TranslationUtil.Translate(ConfigMessage, "&", Variables);
     }
 }

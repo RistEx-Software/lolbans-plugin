@@ -208,7 +208,7 @@ public class User
     {
         try
         {
-
+            // (String message, String ColorChars, Map<String, String> Variables)
             String KickMessage = Messages.GetMessages().Translate(BanTime != null ? "Ban.TempBanMessage" : "Ban.PermBanMessage",
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
@@ -243,7 +243,7 @@ public class User
     {
         try 
         {
-            sender.sendMessage(Messages.Prefix + Messages.GetMessages().Translate(MessageName,
+            sender.sendMessage(Messages.GetMessages().Translate(MessageName,
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("player", PlayerName);

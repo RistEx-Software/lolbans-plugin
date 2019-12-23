@@ -122,7 +122,7 @@ public class BanCommand implements CommandExecutor
                         p.sendMessage(BanAnnouncement);
                     }
 
-                    String SimplifiedMessage = Messages.GetMessages().Translate(silent ? "SimplifiedMessageSilent" : "SimplifiedMessage",
+                    String SimplifiedMessage = Messages.GetMessages().Translate(silent ? "Discord.SimplifiedMessageSilent" : "Discord.SimplifiedMessage",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
                             put("player", target.getName());

@@ -16,12 +16,12 @@ public class TranslationUtil
         {
             // If it's not a number between 0 through 9, check if it's A through F
             // If we are lower case, switch to upper and compare that way.
-            if (ch > 97)
+            if (ch >= 97)
                 ch -= 32;
 
             // if they're greater than 70 (aka 'F') but less than 65 (aka 'A')
             // then it's not valid hexidecimal.
-            if (ch > 70 || ch < 65)
+            if (ch > 71 || ch < 63)
                 return false;
         }
         

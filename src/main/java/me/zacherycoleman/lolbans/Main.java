@@ -106,7 +106,6 @@ public final class Main extends JavaPlugin
         this.getCommand("banwave").setExecutor(new BanWaveCommand());
         this.getCommand("warn").setExecutor(new WarnCommand());
         this.getCommand("accept").setExecutor(new AcceptCommand());
-
         // Used if the admin does /reload confirm
         for (Player p : Bukkit.getOnlinePlayers())
             Main.USERS.put(p.getUniqueId(), new User(p));

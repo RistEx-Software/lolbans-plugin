@@ -33,6 +33,7 @@ public class PlayerEventListener
     {
         User u = Main.USERS.get(event.getPlayer().getUniqueId());
         // Ignore players not warned
+
         if (u == null || !u.IsWarn())
             return;
 
@@ -40,7 +41,6 @@ public class PlayerEventListener
         {
             PlayerMoveEvent E = (PlayerMoveEvent)event;
             Player p = E.getPlayer();
-
             // Put them in a box
             u.SpawnBox(false, null);
             
