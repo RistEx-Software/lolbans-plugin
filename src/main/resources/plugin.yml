@@ -12,6 +12,11 @@ commands:
     usage: |
           Syntax Error!
           Use /ban <player> <ban time|*> <reason>
+  kick:
+    description: Ban a player
+    usage: |
+          Syntax Error!
+          Use /kick <player> <reason>
   mute:
     description: mute a player
     usage: |

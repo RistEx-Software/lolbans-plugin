@@ -245,6 +245,27 @@ public class User
         }
     }
 
+    public static void KickPlayer(String sender, Player target, String KickID, String reason)
+    {
+        try
+        {
+            // (String message, String ColorChars, Map<String, String> Variables)
+            String KickMessage = Messages.GetMessages().Translate("Kick.KickMessage",
+                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                {{
+                    put("player", target.getName());
+                    put("reason", reason);
+                    put("KICKER", sender);
+                    put("kickid", KickID);
+                }}
+            );
+            target.kickPlayer(KickMessage);
+        }
+        catch (InvalidConfigurationException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
     /************************************************************************
      * Convenience functions to make the code cleaner.
@@ -253,6 +274,11 @@ public class User
     public static boolean NoSuchPlayer(CommandSender sender, String PlayerName, boolean ret)
     {
         return User.PlayerOnlyVariableMessage("PlayerDoesntExist", sender, PlayerName, ret);
+    }
+
+    public static boolean PlayerIsOffline(CommandSender sender, String PlayerName, boolean ret)
+    {
+        return User.PlayerOnlyVariableMessage("PlayerIsOffline", sender, PlayerName, ret);
     }
 
     public static boolean PlayerOnlyVariableMessage(String MessageName, CommandSender sender, String PlayerName, boolean ret)

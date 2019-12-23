@@ -4,10 +4,12 @@ Discord:
   SimplifiedMessageSilent: ":hammer: **{BANNER}** banned **{PLAYER}** for **{REASON}** *[SILENT] {BANID}*"
   SimplifiedMessageSilentUnban: ":hammer: **{BANNER}** un-banned **{PLAYER}** for **{REASON}** *[SILENT] {BANID}*"
 
-Prefix: "&cLolBans> "
+Prefix: "&c<LolBans> "
 InvalidSyntax: "{PREFIX}&cInvalid Syntax!"
+InvalidArguments: "{PREFIX}&cInvalid Arguments!"
 ServerError: "{PREFIX}&cThe server encountered an error, please try again later."
 PlayerDoesntExist: "{PREFIX}&cError! &7{PLAYER} &cdoesn't exist!"
+PlayerIsOffline: "{PREFIX}&cError! &7{PLAYER} &cis offline!"
 UserRequired: "{PREFIX}&cYou have to be a user to these commands."
 
 # MESSAGES
@@ -45,6 +47,12 @@ Mute:
   SilentMuteAnnouncement: "&c{MUTER} &7has muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}] &8[SILENT]"
   SilentUnmuteAnnouncment: "&c{UNMUTER} &7has un-muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}] &8[SILENT]"
   UnmuteAnnouncment: "&c{UNMUTER} &7has un-muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}]"
+
+Kick:
+  KickMessage: "&cYou were kicked from &7My Network\n\n&cYou were kicked by: &f{KICKER}\n&cReason: &f{REASON}"
+  KickAnnouncement: "&c{KICKER} &7kicked &c{PLAYER}&7: &c{REASON}"
+  SilentKickAnnouncement: "&c{KICKER} &7kicked &c{PLAYER}&7: &c{REASON} &8[SILENT]"
+  CannotKickSelf: "{PREFIX}&cYou may not kick yourself!"
 
 Warn:
   WarnAnnouncment: "&c{WARNER} &7has warned &c{PLAYER} &f: &c{REASON}"

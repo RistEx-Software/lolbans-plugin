@@ -32,6 +32,7 @@ import me.zacherycoleman.lolbans.Commands.AcceptCommand;
 import me.zacherycoleman.lolbans.Commands.BanCommand;
 import me.zacherycoleman.lolbans.Commands.BanWaveCommand;
 import me.zacherycoleman.lolbans.Commands.HistoryCommand;
+import me.zacherycoleman.lolbans.Commands.KickCommand;
 import me.zacherycoleman.lolbans.Commands.MuteCommand;
 import me.zacherycoleman.lolbans.Commands.UnbanCommand;
 import me.zacherycoleman.lolbans.Commands.UnmuteCommand;
@@ -112,6 +113,7 @@ public final class Main extends JavaPlugin
         this.getCommand("accept").setExecutor(new AcceptCommand());
         this.getCommand("mute").setExecutor(new MuteCommand());
         this.getCommand("unmute").setExecutor(new UnmuteCommand());
+        this.getCommand("kick").setExecutor(new KickCommand());
         
         // Used if the admin does /reload confirm
         for (Player p : Bukkit.getOnlinePlayers())
