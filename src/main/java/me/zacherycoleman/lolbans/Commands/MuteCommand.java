@@ -31,7 +31,7 @@ import java.util.concurrent.Future;
 import javax.lang.model.util.ElementScanner6;
 
 
-public class BanCommand implements CommandExecutor
+public class MuteCommand implements CommandExecutor
 {
     private static Main self = Main.getPlugin(Main.class);
 
@@ -39,7 +39,7 @@ public class BanCommand implements CommandExecutor
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
         boolean SenderHasPerms = (sender instanceof ConsoleCommandSender || 
-                                 (!(sender instanceof ConsoleCommandSender) && (((Player)sender).hasPermission("lolbans.ban") || ((Player)sender).isOp())));
+                                 (!(sender instanceof ConsoleCommandSender) && (((Player)sender).hasPermission("lolbans.mute") || ((Player)sender).isOp())));
         
         if (SenderHasPerms)
         {
@@ -51,23 +51,23 @@ public class BanCommand implements CommandExecutor
                     String reason = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length )) : args[1];
                     reason = reason.replace(",", "");
                     OfflinePlayer target = User.FindPlayerByBanID(args[0]);
-                    Timestamp bantime = null;
+                    Timestamp mutetime = null;
 
                     if (target == null)
                         return User.NoSuchPlayer(sender, args[0], true);
 
                     if (!(sender instanceof ConsoleCommandSender) && target.getUniqueId().equals(((Player) sender).getUniqueId()))
-                        return User.PlayerOnlyVariableMessage("Ban.CannotBanSelf", sender, target.getName(), true);
+                        return User.PlayerOnlyVariableMessage("Mute.CannotMuteSelf", sender, target.getName(), true);
 
-                    if (User.IsPlayerBanned(target))
-                        return User.PlayerOnlyVariableMessage("Ban.PlayerIsBanned", sender, target.getName(), true);
+                    if (User.IsPlayerMuted(target))
+                        return User.PlayerOnlyVariableMessage("Mute.PlayerIsMuted", sender, target.getName(), true);
 
                     // Parse ban time.
                     if (!args[1].trim().contentEquals("0") && !args[1].trim().contentEquals("*"))
                     {
                         Optional<Long> dur = TimeUtil.Duration(args[1]);
                         if (dur.isPresent())
-                            bantime = new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
+                        mutetime = new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
                         else
                         {
                             sender.sendMessage(Messages.InvalidSyntax);
@@ -79,18 +79,17 @@ public class BanCommand implements CommandExecutor
                     boolean silent = reason.contains("-s");
                     reason = reason.replace("-s", "").trim();
                     // Because dumbfuck java and it's "ItS nOt FiNaL"
-                    // but really? what the fuck java? Now I have to have all of these "fuckingjava" strings.. thanks.......
                     final String FuckingJava = new String(reason);
-                    final String FuckingJava2 = new String(bantime != null ? String.format("%s (%s)", TimeUtil.TimeString(bantime), TimeUtil.Expires(bantime)) : "Never");
-                    final String FuckingJava3 = new String(bantime != null ? TimeUtil.Expires(bantime) : "Never");
-                    final String FuckingJava4 = new String(bantime != null ? TimeUtil.TimeString(bantime) : "Never");
+                    final String FuckingJava2 = new String(mutetime != null ? String.format("%s (%s)", TimeUtil.TimeString(mutetime), TimeUtil.Expires(mutetime)) : "Never");
+                    final String FuckingJava3 = new String(mutetime != null ? TimeUtil.Expires(mutetime) : "Never");
+                    final String FuckingJava4 = new String(mutetime != null ? TimeUtil.TimeString(mutetime) : "Never");
 
                     // Get our ban id based on the latest id in the database.
-                    String banid = BanID.GenerateID(DatabaseUtil.GenID());
+                    String muteid = BanID.GenerateID(DatabaseUtil.GenID());
 
                     // Execute queries to get the bans.
-                    Future<Boolean> HistorySuccess = DatabaseUtil.InsertHistory(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, banid, bantime);
-                    Future<Boolean> BanSuccess = DatabaseUtil.InsertBan(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, banid, bantime);
+                    Future<Boolean> HistorySuccess = DatabaseUtil.InsertMuteHistory(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, muteid, mutetime);
+                    Future<Boolean> BanSuccess = DatabaseUtil.InsertMute(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, muteid, mutetime);
 
                     // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
                     if (!BanSuccess.get() || !HistorySuccess.get())
@@ -100,19 +99,38 @@ public class BanCommand implements CommandExecutor
                     }
 
                     // Kick the player first, they're officially banned.
-                    if (target instanceof Player)
-                        User.KickPlayer(sender.getName(), (Player)target, banid, reason, bantime);
+                    //if (target instanceof Player)
+                    //    User.KickPlayer(sender.getName(), (Player)target, muteid, reason, bantime);
+                    // TODO: Send mute message?
+                    String YouWereMuted = Messages.GetMessages().Translate("Mute.YouWereMuted",
+                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                    {{
+                        put("prefix", Messages.Prefix);
+                        put("player", target.getName());
+                        put("reason", FuckingJava);
+                        put("muter", sender.getName());
+                        put("muteid", muteid);
+                        put("fullexpiry", FuckingJava2);
+                        put("expiryduration", FuckingJava3);
+                        put("dateexpiry", FuckingJava4);
+                    }}
+                    );
 
+                    if (target instanceof Player)
+                    {
+                        Player target2 = (Player) target;
+                        target2.sendMessage(YouWereMuted);
+                    }
 
                     // Format our messages.
-                    String BanAnnouncement = Messages.GetMessages().Translate(silent ? "Ban.SilentBanAnnouncement" : "Ban.BanAnnouncement",
+                    String MuteAnnouncement = Messages.GetMessages().Translate(silent ? "Mute.SilentMuteAnnouncement" : "Mute.MuteAnnouncement",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
                             put("prefix", Messages.Prefix);
                             put("player", target.getName());
                             put("reason", FuckingJava);
-                            put("banner", sender.getName());
-                            put("banid", banid);
+                            put("muter", sender.getName());
+                            put("muteid", muteid);
                             put("fullexpiry", FuckingJava2);
                             put("expiryduration", FuckingJava3);
                             put("dateexpiry", FuckingJava4);
@@ -120,7 +138,7 @@ public class BanCommand implements CommandExecutor
                     );
 
                     // Send it to the console.
-                    Bukkit.getConsoleSender().sendMessage(BanAnnouncement);
+                    Bukkit.getConsoleSender().sendMessage(MuteAnnouncement);
                 
                     // Send messages to all players (if not silent) or only to admins (if silent)
                     for (Player p : Bukkit.getOnlinePlayers())
@@ -128,20 +146,16 @@ public class BanCommand implements CommandExecutor
                         if (silent && (!p.hasPermission("lolbans.alerts") && !p.isOp()))
                             continue;
 
-                        p.sendMessage(BanAnnouncement);
+                        p.sendMessage(MuteAnnouncement);
                     }
 
                     String SimplifiedMessage = Messages.GetMessages().Translate(silent ? "Discord.SimplifiedMessageSilent" : "Discord.SimplifiedMessage",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
-                            put("prefix", Messages.Prefix);
                             put("player", target.getName());
                             put("reason", FuckingJava);
                             put("banner", sender.getName());
-                            put("banid", banid);
-                            put("fullexpiry", FuckingJava2);
-                            put("expiryduration", FuckingJava3);
-                            put("dateexpiry", FuckingJava4);
+                            put("muteid", muteid);
                         }}
                     );
 
@@ -153,10 +167,10 @@ public class BanCommand implements CommandExecutor
                     }
                     else
                     {
-                        DiscordUtil.Send(sender.getName().toString(), target.getName(),
+                        DiscordUtil.SendMute(sender.getName().toString(), target.getName(),
                                 // if they're the console, use a hard-defined UUID instead of the player's UUID.
                                 (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((Entity) sender).getUniqueId().toString(), 
-                                target.getUniqueId().toString(), reason, banid, bantime, silent);
+                                target.getUniqueId().toString(), reason, muteid, mutetime, silent);
                         return true;
                     }
                 }

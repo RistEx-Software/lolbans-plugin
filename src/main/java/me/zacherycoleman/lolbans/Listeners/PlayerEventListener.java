@@ -1,6 +1,14 @@
 package me.zacherycoleman.lolbans.Listeners;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,12 +32,16 @@ import org.bukkit.inventory.PlayerInventory;
 
 import me.zacherycoleman.lolbans.Main;
 import me.zacherycoleman.lolbans.Utils.Configuration;
+import me.zacherycoleman.lolbans.Utils.DatabaseUtil;
 import me.zacherycoleman.lolbans.Utils.User;
 import me.zacherycoleman.lolbans.Utils.Messages;
+import me.zacherycoleman.lolbans.Utils.TimeUtil;
 
-public class PlayerEventListener
+public class PlayerEventListener 
 {
-    public static void OnPlayerEvent(PlayerEvent event)
+    private static Main self = Main.getPlugin(Main.class);
+
+    public static void OnPlayerEvent(PlayerEvent event) throws InterruptedException, ExecutionException, InvalidConfigurationException
     {
         User u = Main.USERS.get(event.getPlayer().getUniqueId());
         // Ignore players not warned

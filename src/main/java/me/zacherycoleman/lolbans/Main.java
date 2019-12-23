@@ -32,8 +32,11 @@ import me.zacherycoleman.lolbans.Commands.AcceptCommand;
 import me.zacherycoleman.lolbans.Commands.BanCommand;
 import me.zacherycoleman.lolbans.Commands.BanWaveCommand;
 import me.zacherycoleman.lolbans.Commands.HistoryCommand;
+import me.zacherycoleman.lolbans.Commands.MuteCommand;
 import me.zacherycoleman.lolbans.Commands.UnbanCommand;
+import me.zacherycoleman.lolbans.Commands.UnmuteCommand;
 import me.zacherycoleman.lolbans.Commands.WarnCommand;
+import me.zacherycoleman.lolbans.Listeners.AsyncChatListener;
 import me.zacherycoleman.lolbans.Listeners.ConnectionListeners;
 import me.zacherycoleman.lolbans.Listeners.PlayerEventListener;
 import me.zacherycoleman.lolbans.Utils.Configuration;
@@ -97,6 +100,7 @@ public final class Main extends JavaPlugin
             return;
 
         Bukkit.getPluginManager().registerEvents(new ConnectionListeners(), this);
+        Bukkit.getPluginManager().registerEvents(new AsyncChatListener(), this);
 
         // Register commands
         this.getCommand("ban").setExecutor(new BanCommand());
@@ -106,6 +110,9 @@ public final class Main extends JavaPlugin
         this.getCommand("banwave").setExecutor(new BanWaveCommand());
         this.getCommand("warn").setExecutor(new WarnCommand());
         this.getCommand("accept").setExecutor(new AcceptCommand());
+        this.getCommand("mute").setExecutor(new MuteCommand());
+        this.getCommand("unmute").setExecutor(new UnmuteCommand());
+        
         // Used if the admin does /reload confirm
         for (Player p : Bukkit.getOnlinePlayers())
             Main.USERS.put(p.getUniqueId(), new User(p));

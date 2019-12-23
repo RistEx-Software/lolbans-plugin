@@ -27,6 +27,18 @@ public class QueryRunnable extends BukkitRunnable
 
             self.connection.prepareStatement("DELETE FROM BannedPlayers WHERE Expiry IS NOT NULL AND Expiry <= NOW()").executeUpdate();
 
+            PreparedStatement ps2 = self.connection.prepareStatement("SELECT * FROM MutedPlayers WHERE Expiry IS NOT NULL AND Expiry <= NOW()");
+            ResultSet rs2 = ps2.executeQuery();
+
+            while (rs2.next())
+            {
+                String name = rs2.getString("PlayerName"), id = rs2.getString("MuteID");
+                self.getLogger().info(String.format("Expiring mute on %s (#%s)", name, id));
+                DiscordUtil.Send2(name, id);
+            }
+
+            self.connection.prepareStatement("DELETE FROM MutedPlayers WHERE Expiry IS NOT NULL AND Expiry <= NOW()").executeUpdate();
+
             /*******************************************************************************
              * Ensure our IP ban list is up to date.
              */

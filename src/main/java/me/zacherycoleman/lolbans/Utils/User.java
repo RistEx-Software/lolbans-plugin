@@ -160,6 +160,22 @@ public class User
         return false;
     }
 
+    public static boolean IsPlayerMuted(OfflinePlayer user)
+    {
+        try 
+        {
+            PreparedStatement ps = self.connection.prepareStatement("SELECT 1 FROM MutedPlayers WHERE UUID = ? LIMIT 1");
+            ps.setString(1, user.getUniqueId().toString());
+
+            return ps.executeQuery().next();
+        }
+        catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
     public static OfflinePlayer FindPlayerByBanID(String BanID)
     {
         // Try stupid first. If the BanID is just a nickname, then avoid DB queries.

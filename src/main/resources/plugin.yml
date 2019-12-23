@@ -12,11 +12,21 @@ commands:
     usage: |
           Syntax Error!
           Use /ban <player> <ban time|*> <reason>
+  mute:
+    description: mute a player
+    usage: |
+          Syntax Error!
+          Use /mute <player> <mute time|*> <reason>
   unban:
     description: Unban a payer
     usage: |
         Syntax Error!
         Use /unban <player> <reason>
+  unmute:
+    description: Unban a payer
+    usage: |
+        Syntax Error!
+        Use /unmute <player> <reason>
   history:
     description: Get history of users punishments
     usage: |

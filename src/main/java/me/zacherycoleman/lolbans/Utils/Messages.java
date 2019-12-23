@@ -39,6 +39,8 @@ public class Messages
     public static String WarnKickMessage;
     public static String SimplifiedMessageSilent;
     public static String SimplifiedMessage;
+    public static String SilentUnmuteAnnouncment;
+    public static String UnmuteAnnouncment;
 
     // Initialized by our GetMessages() function.
     protected Messages()
@@ -82,6 +84,8 @@ public class Messages
         Messages.BanAnnouncement = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Ban.BanAnnouncement"));
         Messages.UnbanAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Ban.UnbanAnnouncment"));
         Messages.SilentUnbanAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Ban.SilentUnbanAnnouncment"));
+        Messages.SilentUnmuteAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Mute.SilentUnmuteAnnouncment"));
+        Messages.UnmuteAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Mute.UnmuteAnnouncment"));
     }
 
     public FileConfiguration GetConfig()
