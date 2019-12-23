@@ -92,6 +92,7 @@ public class UnbanCommand implements CommandExecutor
                                 put("player", target.getName());
                                 put("reason", FuckingJava);
                                 put("banner", sender.getName());
+                                put("banid", BanID);
                             }}
                         );
 

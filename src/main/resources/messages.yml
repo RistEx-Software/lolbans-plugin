@@ -16,12 +16,12 @@ UserRequired: "{PREFIX}&cYou have to be a user to these commands."
 # expiryduration ex: (1 year 2 months 1 week 29 days 55 minutes 10 seconds)
 # dateexpiry ex: (January 1, 2019 12:30:00)
 Ban:
-  TempBanMessage: "&cThe account &7{PLAYER} &chas been TEMPORARILY suspended from &7My Network &cuntil &7 {DATEEXPIRY}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#B-{BANID}\n&7If you think this is a mistake contact us at yourwebsite.com!"
-  PermBanMessage: "&cThe account &7{PLAYER} &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#B-{BANID}\n&7If you think this is a mistake contact us at yourwebsite.com!"
-  BanAnnouncement: "&c{BANNER} &7has banned &c{PLAYER}&7: &c{REASON} &8[{BANID}]"
-  SilentBanAnnouncement: "&c{BANNER} &7has banned &c{PLAYER}&7: &c{REASON} &8[SILENT] &8[#{BANID}]"
-  UnbanAnnouncment: "&c{BANNER} &7has un-banned &c{PLAYER}&7: &c{REASON} &8[{BANID}]"
-  SilentUnbanAnnouncment: "&c{BANNER} &7has un-banned &c{PLAYER}&7: &c{REASON} &8[SILENT] &8[#{BANID}]"
+  TempBanMessage: "&cThe account &7{PLAYER} &chas been TEMPORARILY suspended from &7My Network &cuntil &7 {DATEEXPIRY}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#{BANID}\n&7If you think this is a mistake contact us at yourwebsite.com!"
+  PermBanMessage: "&cThe account &7{PLAYER} &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{BANID}\n&7If you think this is a mistake contact us at yourwebsite.com!"
+  BanAnnouncement: "&c{BANNER} &7has banned &c{PLAYER}&7: &c{REASON} &7[#{BANID}]"
+  SilentBanAnnouncement: "&c{BANNER} &7has banned &c{PLAYER}&7: &c{REASON} &7[#{BANID}] &8[SILENT]"
+  UnbanAnnouncment: "&c{BANNER} &7has un-banned &c{PLAYER}&7: &c{REASON} &7[{BANID}]"
+  SilentUnbanAnnouncment: "&c{BANNER} &7has un-banned &c{PLAYER}&7: &c{REASON} &7[#{BANID}] &8[SILENT]"
   CannotBanSelf: "{PREFIX}&cYes, you have permissions! You cannot ban yourself!"
   PlayerIsBanned: "{PREFIX}&cError! &7{PLAYER} is already banned!"
   PlayerIsNotBanned: "{PREFIX}&cError! &7{PLAYER} is not banned!"
@@ -44,7 +44,7 @@ Mute:
   MuteAnnouncement: "&c{MUTER} &7has muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}]"
   SilentMuteAnnouncement: "&c{MUTER} &7has muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}] &8[SILENT]"
   SilentUnmuteAnnouncment: "&c{UNMUTER} &7has un-muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}] &8[SILENT]"
-  UnmuteAnnouncment: "&c{UNMUTER} &7has un-muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}] &8[SILENT]"
+  UnmuteAnnouncment: "&c{UNMUTER} &7has un-muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}]"
 
 Warn:
   WarnAnnouncment: "&c{WARNER} &7has warned &c{PLAYER} &f: &c{REASON}"
