@@ -39,7 +39,7 @@ public class UnbanCommand implements CommandExecutor
                 if (!(args.length < 2 || args == null))
                 {
                     String reason = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length )) : args[1];
-                    reason = reason.replace(",", "");
+                    reason = reason.replace(",", "").trim();
                     // Because dumbfuck java and it's "ItS nOt FiNaL"
                     OfflinePlayer target = User.FindPlayerByBanID(args[0]);
                     
@@ -50,8 +50,10 @@ public class UnbanCommand implements CommandExecutor
                         return User.PlayerOnlyVariableMessage("Ban.PlayerIsNotBanned", sender, target.getName(), true);
                     
                     // Prepare our reason for unbanning
-                    boolean silent = reason.contains("-s");
-                    reason = reason.replace("-s", "").trim();
+                    boolean silent = false;
+                    if (args.length > 2)
+                        silent = args[1].equalsIgnoreCase("-s");
+
                     final String FuckingJava = new String(reason);
                     
                     // Preapre a statement

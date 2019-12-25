@@ -49,7 +49,7 @@ public class MuteCommand implements CommandExecutor
                 if (!(args.length < 2 || args == null))
                 {
                     String reason = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length )) : args[1];
-                    reason = reason.replace(",", "");
+                    reason = reason.replace(",", "").trim();
                     OfflinePlayer target = User.FindPlayerByBanID(args[0]);
                     Timestamp mutetime = null;
 
@@ -76,8 +76,10 @@ public class MuteCommand implements CommandExecutor
                     }
 
                     // Prepare our reason
-                    boolean silent = reason.contains("-s");
-                    reason = reason.replace("-s", "").trim();
+                    boolean silent = false;
+                    if (args.length > 3)
+                        silent = args[2].equalsIgnoreCase("-s");
+
                     // Because dumbfuck java and it's "ItS nOt FiNaL"
                     final String FuckingJava = new String(reason);
                     final String FuckingJava2 = new String(mutetime != null ? String.format("%s (%s)", TimeUtil.TimeString(mutetime), TimeUtil.Expires(mutetime)) : "Never");
@@ -94,7 +96,7 @@ public class MuteCommand implements CommandExecutor
                     // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
                     if (!BanSuccess.get() || !HistorySuccess.get())
                     {
-                        sender.sendMessage("\u00A7CThe server encountered an error, please try again later.");
+                        sender.sendMessage(Messages.ServerError);
                         return true;
                     }
 
@@ -103,23 +105,29 @@ public class MuteCommand implements CommandExecutor
                     //    User.KickPlayer(sender.getName(), (Player)target, muteid, reason, bantime);
                     // TODO: Send mute message?
                     String YouWereMuted = Messages.GetMessages().Translate("Mute.YouWereMuted",
-                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                    {{
-                        put("prefix", Messages.Prefix);
-                        put("player", target.getName());
-                        put("reason", FuckingJava);
-                        put("muter", sender.getName());
-                        put("muteid", muteid);
-                        put("fullexpiry", FuckingJava2);
-                        put("expiryduration", FuckingJava3);
-                        put("dateexpiry", FuckingJava4);
-                    }}
+                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                        {{
+                            put("prefix", Messages.Prefix);
+                            put("player", target.getName());
+                            put("reason", FuckingJava);
+                            put("muter", sender.getName());
+                            put("muteid", muteid);
+                            put("fullexpiry", FuckingJava2);
+                            put("expiryduration", FuckingJava3);
+                            put("dateexpiry", FuckingJava4);
+                        }}
                     );
 
                     if (target instanceof Player)
                     {
                         Player target2 = (Player) target;
                         target2.sendMessage(YouWereMuted);
+                    }
+                    else
+                    {
+                        // You cannot mute console.
+                        sender.sendMessage(Messages.GetMessages().GetConfig().getString("Mute.CannotMuteConsole"));
+                        return true;
                     }
 
                     // Format our messages.
@@ -176,14 +184,14 @@ public class MuteCommand implements CommandExecutor
                 }
                 else
                 {
-                    sender.sendMessage("\u00A7CInvalid Syntax!");
+                    sender.sendMessage(Messages.InvalidSyntax);
                     return false; // Show syntax.
                 }
             }
             catch (Exception e)
             {
                 e.printStackTrace();
-                sender.sendMessage("\u00A7CThe server encountered an error, please try again later.");
+                sender.sendMessage(Messages.ServerError);
                 return true;
             }
         }

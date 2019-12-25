@@ -39,7 +39,7 @@ public class BanWaveCommand implements CommandExecutor
             if (!(args.length < 2 || args == null))
             {
                 String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length )) : args[1];
-                reason = reason.replace(",", "");
+                reason = reason.replace(",", "").trim();
                 OfflinePlayer target = User.FindPlayerByBanID(args[0]);
 
                 if (target == null)
@@ -54,15 +54,17 @@ public class BanWaveCommand implements CommandExecutor
                 if (User.IsPlayerInWave(target))
                     return User.PlayerOnlyVariableMessage("Banwave.PlayerIsInBanWave", sender, target.getName(), true);
 
+
+                final String FuckingJava = new String(reason);
+
                 // Prepare our reason
-                boolean silent = reason.contains("-s");
-                reason = reason.replace("-s", "").trim();
-                int i = 1;
+                boolean silent = args.length > 2 ? args[1].equalsIgnoreCase("-s") : false;
 
                 // Get the latest ID of the banned players to generate a BanID form it.
                 String banid = BanID.GenerateID(DatabaseUtil.GenID());
-                
+                    
                 // Preapre a statement
+                int i = 1;
                 PreparedStatement pst = self.connection.prepareStatement("INSERT INTO BanWave (UUID, PlayerName, IPAddress, Reason, Executioner, BanID) VALUES (?, ?, ?, ?, ?, ?)");
                 pst.setString(i++, target.getUniqueId().toString());
                 pst.setString(i++, target.getName());
@@ -82,8 +84,20 @@ public class BanWaveCommand implements CommandExecutor
 
                 // Log to console.
                 // TODO: Log to everyone with the alert permission?
-                Bukkit.getConsoleSender().sendMessage(String.format(Messages.Prefix + "\u00A7c%s \u00A77has added \u00A7c%s\u00A77 to the banwave: \u00A7c%s\u00A77%s\u00A7r", 
-                sender.getName(), target.getName(), reason, (silent ? " [silent]" : "")));
+                // FIXME: Silents?
+                // Format our messages.
+                String BanWaveAnnouncement = Messages.GetMessages().Translate(silent ? "BanWave.AddedToWave" : "BanWave.AddedToWave",
+                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                    {{
+                        put("prefix", Messages.Prefix);
+                        put("player", target.getName());
+                        put("reason", FuckingJava);
+                        put("banner", sender.getName());
+                        put("banid", banid);
+                        put("silent", (silent ? " [silent]" : ""));
+                    }}
+                );
+                Bukkit.getConsoleSender().sendMessage(BanWaveAnnouncement);
 
                 // Send to Discord.
                 DiscordUtil.SendBanWaveAdd(sender.getName(), target.getName(), target.getUniqueId().toString(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", reason, banid);

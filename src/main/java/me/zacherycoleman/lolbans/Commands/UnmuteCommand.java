@@ -39,7 +39,7 @@ public class UnmuteCommand implements CommandExecutor
                 if (!(args.length < 2 || args == null))
                 {
                     String reason = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length )) : args[1];
-                    reason = reason.replace(",", "");
+                    reason = reason.replace(",", "").trim();
                     // Because dumbfuck java and it's "ItS nOt FiNaL"
                     OfflinePlayer target = User.FindPlayerByBanID(args[0]);
                     
@@ -50,10 +50,9 @@ public class UnmuteCommand implements CommandExecutor
                         return User.PlayerOnlyVariableMessage("Mute.PlayerIsNotMuted", sender, target.getName(), true);
                     
                     // Prepare our reason for unbanning
-                    boolean silent = reason.contains("-s");
-                    reason = reason.replace("-s", "").trim();
+                    boolean silent = args.length > 2 ? args[1].equalsIgnoreCase("-s") : false;
+
                     final String FuckingJava = new String(reason);
-                    
                     // Preapre a statement
                     // We need to get the latest banid first.
                     PreparedStatement pst2 = self.connection.prepareStatement("UPDATE MutedHistory INNER JOIN (SELECT MuteID AS LatestMuteID, UUID as bUUID FROM MutedPlayers WHERE UUID = ?) tm SET UnmuteReason = ?, UnmuteExecutioner = ? WHERE UUID = tm.bUUID AND MuteID = tm.LatestMuteID");
@@ -75,8 +74,20 @@ public class UnmuteCommand implements CommandExecutor
                     pst.executeUpdate();
 
                     // Log to console.
-                    Bukkit.getConsoleSender().sendMessage(String.format("\u00A7c%s \u00A77has unmuted \u00A7c%s\u00A77: \u00A7c%s\u00A77%s\u00A7r", 
-                    sender.getName(), target.getName(), reason, (silent ? " [silent]" : "")));
+                    // Format our messages.
+                    String UnmuteMessage = Messages.GetMessages().Translate("Mute.YouWereUnMuted",
+                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                        {{
+                            put("prefix", Messages.Prefix);
+                            put("player", target.getName());
+                            put("reason", FuckingJava);
+                            put("muter", sender.getName());
+                            put("muteid", MuteID);
+                            put("silent", (silent ? " [silent]" : ""));
+                        }}
+                    );
+
+                    Bukkit.getConsoleSender().sendMessage(UnmuteMessage);
 
                     // Post that to the database.
                     for (Player p : Bukkit.getOnlinePlayers())

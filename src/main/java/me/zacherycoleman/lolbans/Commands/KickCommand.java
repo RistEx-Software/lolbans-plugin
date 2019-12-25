@@ -54,7 +54,7 @@ public class KickCommand implements CommandExecutor
                             return User.PlayerOnlyVariableMessage("InvalidArguments", sender, target.getName(), true);
 
                         String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length)) : args[1];
-                        reason = reason.replace(",", "");
+                        reason = reason.replace(",", "").trim();
 
                         if (target == null)
                             return User.NoSuchPlayer(sender, args[0], true);
@@ -66,8 +66,11 @@ public class KickCommand implements CommandExecutor
                             return User.PlayerOnlyVariableMessage("Kick.CannotKickSelf", sender, target.getName(), true);
 
                         // Prepare our reason
-                        boolean silent = reason.contains("-s");
-                        reason = reason.replace("-s", "").trim();
+                        boolean silent = false;
+                        if (args.length > 2)
+                            silent = args[1].equalsIgnoreCase("-s");
+
+
                         final String FuckingJava = new String(reason);
                         int i = 1;
 
@@ -126,7 +129,6 @@ public class KickCommand implements CommandExecutor
                         }
 
                         return true;
-
                     }
                     else
                     {

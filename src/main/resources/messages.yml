@@ -40,6 +40,7 @@ Mute:
   YouWereMuted: "{PREFIX}&cYou &7were muted by &c{MUTER} &7for: &c{REASON} &7[#{MUTEID}]\n&7Your mute expires on: &c{dateexpiry}&7!"
   YouWereUnMuted: "{PREFIX}&cYou &7were un-muted by &c{UNMUTER} &7for: &c{REASON} &7[#{MUTEID}]"
   YouAreMuted: "{PREFIX}&cYou are muted and may not speak.\n&7Your mute expires on: &c{dateexpiry}&7! &7[#{MUTEID}]"
+  CannotMuteConsole: "{PREFIX}&cThe CONSOLE cannot be muted."
   CannotMuteSelf: "{PREFIX}&cYes, you have permissions! You cannot mute yourself!"
   PlayerIsMuted: "{PREFIX}&cError! &7{PLAYER} is already muted!"
   PlayerIsNotMuted: "{PREFIX}&cError! &7{PLAYER} is not muted!"

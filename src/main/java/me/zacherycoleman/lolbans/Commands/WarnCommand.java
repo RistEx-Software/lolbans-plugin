@@ -49,15 +49,14 @@ public class WarnCommand implements CommandExecutor
                     if (!(args.length < 1 || args == null))
                     {
                         String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length)) : args[1];
-                        reason = reason.replace(",", "");
+                        reason = reason.replace(",", "").trim();
                         OfflinePlayer target = User.FindPlayerByBanID(args[0]);
 
                         if (target == null)
                             return User.NoSuchPlayer(sender, args[0], true);
 
                         // Prepare our reason
-                        boolean silent = reason.contains("-s");
-                        reason = reason.replace("-s", "").trim();
+                        boolean silent = args.length > 2 ? args[1].equalsIgnoreCase("-s") : false;
                         final String FuckingJava = new String(reason);
                         int i = 1;
 

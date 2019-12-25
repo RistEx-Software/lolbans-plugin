@@ -48,8 +48,8 @@ public class BanCommand implements CommandExecutor
                 // just incase someone, magically has a 1 char name........
                 if (!(args.length < 2 || args == null))
                 {
-                    String reason = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length )) : args[1];
-                    reason = reason.replace(",", "");
+                    String reason = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length)) : args[1];
+                    reason = reason.replace(",", "").trim();
                     OfflinePlayer target = User.FindPlayerByBanID(args[0]);
                     Timestamp bantime = null;
 
@@ -76,8 +76,8 @@ public class BanCommand implements CommandExecutor
                     }
 
                     // Prepare our reason
-                    boolean silent = reason.contains("-s");
-                    reason = reason.replace("-s", "").trim();
+                    boolean silent = args.length > 3 ? args[2].equalsIgnoreCase("-s") : false;
+
                     // Because dumbfuck java and it's "ItS nOt FiNaL"
                     // but really? what the fuck java? Now I have to have all of these "fuckingjava" strings.. thanks.......
                     final String FuckingJava = new String(reason);
@@ -95,7 +95,7 @@ public class BanCommand implements CommandExecutor
                     // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
                     if (!BanSuccess.get() || !HistorySuccess.get())
                     {
-                        sender.sendMessage("\u00A7CThe server encountered an error, please try again later.");
+                        sender.sendMessage(Messages.ServerError);
                         return true;
                     }
 
@@ -162,14 +162,14 @@ public class BanCommand implements CommandExecutor
                 }
                 else
                 {
-                    sender.sendMessage("\u00A7CInvalid Syntax!");
+                    sender.sendMessage(Messages.InvalidSyntax);
                     return false; // Show syntax.
                 }
             }
             catch (Exception e)
             {
                 e.printStackTrace();
-                sender.sendMessage("\u00A7CThe server encountered an error, please try again later.");
+                sender.sendMessage(Messages.ServerError);
                 return true;
             }
         }
