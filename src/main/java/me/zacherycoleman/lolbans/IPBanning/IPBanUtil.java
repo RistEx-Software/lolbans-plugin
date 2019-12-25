@@ -8,6 +8,7 @@ import java.sql.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
@@ -68,6 +69,51 @@ public class IPBanUtil
 
 		self.pool.execute(t);
 
+		return t;
+	}
+
+	// Check if a UUID's currently connecting IP address matches one which has
+	// already been banned, making their account an alternate account.
+	// This can enforce additional bans or help identify alts
+	public static Future<UUID> CheckAlts(InetAddress address)
+	{
+		FutureTask<UUID> t = new FutureTask<>(new Callable<UUID>()
+		{
+			@Override
+			public UUID call()
+			{
+				HostName hn = new HostName(address);
+				if (!hn.isAddress())
+					return null;
+
+				try
+				{
+					// Now query the database for ALL ip addresses and we have to check each one.
+					// TODO: Left outter join BanWaves too?
+					ResultSet results = self.connection.prepareStatement("SELECT UUID,IPAddress FROM BannedPlayers").executeQuery();
+
+					// Iterate the results and check to see if anyone matches.
+					while (results.next())
+					{
+						HostName h = new HostName(results.getString("IPAddress"));
+						if (!h.isAddress())
+							continue;
+
+						// They match (either part of a CIDR or an exact address)
+						if (h.asAddressString().contains(hn.asAddressString()))
+							return UUID.fromString(results.getString("UUID"));
+					}
+				}
+				catch (SQLException ex)
+				{
+					ex.printStackTrace();
+				}
+
+				return null;
+			}
+		});
+
+		self.pool.execute(t);
 		return t;
 	}
 

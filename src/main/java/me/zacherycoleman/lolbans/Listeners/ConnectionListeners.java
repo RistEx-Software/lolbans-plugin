@@ -10,13 +10,17 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import me.zacherycoleman.lolbans.IPBanning.IPBanUtil;
 import me.zacherycoleman.lolbans.Main;
+import me.zacherycoleman.lolbans.Utils.BroadcastUtil;
 import me.zacherycoleman.lolbans.Utils.Configuration;
 import me.zacherycoleman.lolbans.Utils.DatabaseUtil;
 import me.zacherycoleman.lolbans.Utils.Messages;
 import me.zacherycoleman.lolbans.Utils.TimeUtil;
 import me.zacherycoleman.lolbans.Utils.TranslationUtil;
 import me.zacherycoleman.lolbans.Utils.User;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
@@ -78,6 +82,7 @@ public class ConnectionListeners implements Listener
             Future<Optional<ResultSet>> BanRecord = DatabaseUtil.ExecuteLater(BanStatement);
             Future<Optional<ResultSet>> WarnRecord = DatabaseUtil.ExecuteLater(WarnStatement);
             Future<Optional<ResultSet>> IPBanRecord = IPBanUtil.IsBanned(event.getAddress());
+            Future<UUID> AltRecords  = IPBanUtil.CheckAlts(event.getAddress());
 
 
             // While we run those queries, lets check to see if they match any CIDRs
@@ -112,7 +117,6 @@ public class ConnectionListeners implements Listener
 
 
             // Now we wait for the ban record to return
-            // TODO: Maybe do timeouts instead of waiting forever?
             Optional<ResultSet> BanResult = BanRecord.get();
             // The query was successful.
             if (BanResult.isPresent())
@@ -173,6 +177,22 @@ public class ConnectionListeners implements Listener
                     pst3.setString(1, event.getUniqueId().toString());
                     pst3.executeUpdate();
                 }
+            }
+
+            // Check to make sure they're not an ALT account
+            // TODO: Add config option to kick/ban alts
+            UUID altaccount = AltRecords.get();
+            if (altaccount != null)
+            {
+                OfflinePlayer p = Bukkit.getOfflinePlayer(altaccount);
+                // Send a message to all ops with broadcast perms.
+                BroadcastUtil.BroadcastOps(Messages.GetMessages().Translate("IPBans.IPAltNotification", 
+                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) 
+                    {{
+                        put("player", event.getName());
+                        put("bannedplayer", p.getName());
+                    }}
+                ));
             }
 
             // They're not banned and have no pending warnings, allow them to connect or other plugins to perform their actions.

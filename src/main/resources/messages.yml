@@ -68,6 +68,7 @@ Warn:
 IPBan:
   IPBanPermMessage: "&cThe IP &7{IPADDRESS} &chas been TEMPORARILY suspended from &7My Network &cuntil &7 {DATEEXPIRY}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#B-{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
   IPBanTempMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#B-{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+  IPAltNotification: "&e[WARNING]&c {PLAYER} may be an alt account for {BANNEDPLAYER}."
 
 History:
   HistoryMessage: "Some long thing here {History.kljahdfjklasdfkjlashdf} (exluding the unban section) blah blah blah blah blah"
