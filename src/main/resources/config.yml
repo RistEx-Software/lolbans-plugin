@@ -1,6 +1,9 @@
 General:
   # Kick connecting players if the server encounters an error
   KickConnectionError: true
+  # Allow anyone who has been /op'ed to bypass all permission checks
+  # (effectively making them have the same control as console)
+  OpsBypassPermissions: false
 
 database:
   host: localhost

@@ -16,6 +16,7 @@ import me.zacherycoleman.lolbans.Utils.DiscordUtil;
 import me.zacherycoleman.lolbans.Utils.TranslationUtil;
 import me.zacherycoleman.lolbans.Utils.User;
 import me.zacherycoleman.lolbans.Utils.Messages;
+import me.zacherycoleman.lolbans.Utils.PermissionUtil;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -28,158 +29,153 @@ public class UnmuteCommand implements CommandExecutor
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        boolean SenderHasPerms = (sender instanceof ConsoleCommandSender || 
-                                 (!(sender instanceof ConsoleCommandSender) && (((Player)sender).hasPermission("lolbans.unmute") || ((Player)sender).isOp())));
-        
-        if (SenderHasPerms)
+        if (!PermissionUtil.Check(sender, "lolbans.unmute"))
+            return true;
+
+        try 
         {
-            try 
+            // just incase someone, magically has a 1 char name........
+            if (!(args.length < 2 || args == null))
             {
-                // just incase someone, magically has a 1 char name........
-                if (!(args.length < 2 || args == null))
-                {
-                    String reason = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length )) : args[1];
-                    reason = reason.replace(",", "").trim();
-                    // Because dumbfuck java and it's "ItS nOt FiNaL"
-                    OfflinePlayer target = User.FindPlayerByBanID(args[0]);
-                    
-                    if (target == null)
-                        return User.NoSuchPlayer(sender, args[0], true);
-                    
-                    if (!User.IsPlayerMuted(target))
-                        return User.PlayerOnlyVariableMessage("Mute.PlayerIsNotMuted", sender, target.getName(), true);
-                    
-                    // Prepare our reason for unbanning
-                    boolean silent = args.length > 2 ? args[1].equalsIgnoreCase("-s") : false;
-
-                    final String FuckingJava = new String(reason);
-                    // Preapre a statement
-                    // We need to get the latest banid first.
-                    PreparedStatement pst2 = self.connection.prepareStatement("UPDATE MutedHistory INNER JOIN (SELECT MuteID AS LatestMuteID, UUID as bUUID FROM MutedPlayers WHERE UUID = ?) tm SET UnmuteReason = ?, UnmuteExecutioner = ? WHERE UUID = tm.bUUID AND MuteID = tm.LatestMuteID");
-                    pst2.setString(1, target.getUniqueId().toString());
-                    pst2.setString(2, reason);
-                    pst2.setString(3, sender.getName());
-                    pst2.executeUpdate();
-                    
-                    PreparedStatement pst3 = self.connection.prepareStatement("SELECT MuteID FROM MutedPlayers WHERE UUID = ?");
-                    pst3.setString(1, target.getUniqueId().toString());
-    
-                    ResultSet result = pst3.executeQuery();
-                    result.next();
-                    String MuteID = result.getString("MuteID");
-
-                    // Preapre a statement
-                    PreparedStatement pst = self.connection.prepareStatement("DELETE FROM MutedPlayers WHERE UUID = ?");
-                    pst.setString(1, target.getUniqueId().toString());
-                    pst.executeUpdate();
-
-                    // Log to console.
-                    // Format our messages.
-                    String UnmuteMessage = Messages.GetMessages().Translate("Mute.YouWereUnMuted",
-                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                        {{
-                            put("prefix", Messages.Prefix);
-                            put("player", target.getName());
-                            put("reason", FuckingJava);
-                            put("muter", sender.getName());
-                            put("muteid", MuteID);
-                            put("silent", (silent ? " [silent]" : ""));
-                        }}
-                    );
-
-                    Bukkit.getConsoleSender().sendMessage(UnmuteMessage);
-
-                    // Post that to the database.
-                    for (Player p : Bukkit.getOnlinePlayers())
-                    {
-                        if (silent && (!p.hasPermission("lolbans.alerts") && !p.isOp()))
-                            continue;
-
-                        //"&c%banner% &7has banned &c%player%&7: &c%reason%"
+                String reason = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length )) : args[1];
+                reason = reason.replace(",", "").trim();
+                // Because dumbfuck java and it's "ItS nOt FiNaL"
+                OfflinePlayer target = User.FindPlayerByBanID(args[0]);
                 
-                        String UnbanAnnouncementMessage = Messages.GetMessages().Translate(silent ? "Mute.SilentUnmuteAnnouncment" : "Mute.UnmuteAnnouncment",
-                            new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                            {{
-                                put("prefix", Messages.Prefix);
-                                put("player", target.getName());
-                                put("reason", FuckingJava);
-                                put("unmuter", sender.getName());
-                                put("muteid", MuteID);
-                            }}
-                        );
+                if (target == null)
+                    return User.NoSuchPlayer(sender, args[0], true);
+                
+                if (!User.IsPlayerMuted(target))
+                    return User.PlayerOnlyVariableMessage("Mute.PlayerIsNotMuted", sender, target.getName(), true);
+                
+                // Prepare our reason for unbanning
+                boolean silent = args.length > 2 ? args[1].equalsIgnoreCase("-s") : false;
 
-                        p.sendMessage(UnbanAnnouncementMessage);
-                    }
+                final String FuckingJava = new String(reason);
+                // Preapre a statement
+                // We need to get the latest banid first.
+                PreparedStatement pst2 = self.connection.prepareStatement("UPDATE MutedHistory INNER JOIN (SELECT MuteID AS LatestMuteID, UUID as bUUID FROM MutedPlayers WHERE UUID = ?) tm SET UnmuteReason = ?, UnmuteExecutioner = ? WHERE UUID = tm.bUUID AND MuteID = tm.LatestMuteID");
+                pst2.setString(1, target.getUniqueId().toString());
+                pst2.setString(2, reason);
+                pst2.setString(3, sender.getName());
+                pst2.executeUpdate();
+                
+                PreparedStatement pst3 = self.connection.prepareStatement("SELECT MuteID FROM MutedPlayers WHERE UUID = ?");
+                pst3.setString(1, target.getUniqueId().toString());
 
-                    String YouWereUnMuted = Messages.GetMessages().Translate("Mute.YouWereUnMuted",
+                ResultSet result = pst3.executeQuery();
+                result.next();
+                String MuteID = result.getString("MuteID");
+
+                // Preapre a statement
+                PreparedStatement pst = self.connection.prepareStatement("DELETE FROM MutedPlayers WHERE UUID = ?");
+                pst.setString(1, target.getUniqueId().toString());
+                pst.executeUpdate();
+
+                // Log to console.
+                // Format our messages.
+                String UnmuteMessage = Messages.GetMessages().Translate("Mute.YouWereUnMuted",
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
                         put("prefix", Messages.Prefix);
                         put("player", target.getName());
                         put("reason", FuckingJava);
-                        put("unmuter", sender.getName());
+                        put("muter", sender.getName());
                         put("muteid", MuteID);
+                        put("silent", (silent ? " [silent]" : ""));
                     }}
+                );
+
+                Bukkit.getConsoleSender().sendMessage(UnmuteMessage);
+
+                // Post that to the database.
+                for (Player p : Bukkit.getOnlinePlayers())
+                {
+                    if (silent && (!p.hasPermission("lolbans.alerts") && !p.isOp()))
+                        continue;
+
+                    //"&c%banner% &7has banned &c%player%&7: &c%reason%"
+            
+                    String UnbanAnnouncementMessage = Messages.GetMessages().Translate(silent ? "Mute.SilentUnmuteAnnouncment" : "Mute.UnmuteAnnouncment",
+                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                        {{
+                            put("prefix", Messages.Prefix);
+                            put("player", target.getName());
+                            put("reason", FuckingJava);
+                            put("unmuter", sender.getName());
+                            put("muteid", MuteID);
+                        }}
                     );
 
-                    if (target instanceof Player)
-                    {
-                        Player target2 = (Player) target;
-                        target2.sendMessage(YouWereUnMuted);
-                    }
-
-                    /* 
-                    // Send to Discord.
-                    if (sender instanceof ConsoleCommandSender)
-                        DiscordUtil.SendUnban(sender.getName().toString(), target.getName(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", target.getUniqueId().toString(), reason, BanID, silent);
-                    else
-                        DiscordUtil.SendUnban(sender.getName().toString(), target.getName(), ((OfflinePlayer) sender).getUniqueId().toString(), target.getUniqueId().toString(), reason, BanID, silent);
-                    */ 
-
-                    // ":hammer: **{BANNER}** un-banned **{PLAYER}** for **{REASON}** *[SILENT] {BANID}*"
-                    // Send to Discord. (New method)
-                    //String SimplifiedMessageSilentUnban = DiscordUtil.SimplifiedMessageSilentUnban;
-                    //String SimplifiedMessageUnban = DiscordUtil.SimplifiedMessageUnban;
-
-                    if (DiscordUtil.UseSimplifiedMessage == true)
-                    {
-                        String SimplifiedMessageUnban = TranslationUtil.Translate(self.getConfig().getString(silent ? "SimplifiedMessageSilentUnban" : "SimplifiedMessageUnban"), "&",
-                            new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                            {{
-                                put("player", target.getName());
-                                put("reason", FuckingJava);
-                                put("banner", sender.getName());
-                                put("banid", MuteID);
-                            }}
-                        );
-
-                        DiscordUtil.SendFormatted(SimplifiedMessageUnban, sender.getName());
-                        return true;
-                    }
-                    else
-                    {
-                        DiscordUtil.SendUnmute(sender.getName().toString(), target.getName(),
-                                // if they're the console, use a hard-defined UUID instead of the player's UUID.
-                                (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((OfflinePlayer) sender).getUniqueId().toString(),
-                                target.getUniqueId().toString(), reason, MuteID, silent);
-                        return true;
-                    }
+                    p.sendMessage(UnbanAnnouncementMessage);
                 }
 
+                String YouWereUnMuted = Messages.GetMessages().Translate("Mute.YouWereUnMuted",
+                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                {{
+                    put("prefix", Messages.Prefix);
+                    put("player", target.getName());
+                    put("reason", FuckingJava);
+                    put("unmuter", sender.getName());
+                    put("muteid", MuteID);
+                }}
+                );
+
+                if (target instanceof Player)
+                {
+                    Player target2 = (Player) target;
+                    target2.sendMessage(YouWereUnMuted);
+                }
+
+                /* 
+                // Send to Discord.
+                if (sender instanceof ConsoleCommandSender)
+                    DiscordUtil.SendUnban(sender.getName().toString(), target.getName(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", target.getUniqueId().toString(), reason, BanID, silent);
+                else
+                    DiscordUtil.SendUnban(sender.getName().toString(), target.getName(), ((OfflinePlayer) sender).getUniqueId().toString(), target.getUniqueId().toString(), reason, BanID, silent);
+                */ 
+
+                // ":hammer: **{BANNER}** un-banned **{PLAYER}** for **{REASON}** *[SILENT] {BANID}*"
+                // Send to Discord. (New method)
+                //String SimplifiedMessageSilentUnban = DiscordUtil.SimplifiedMessageSilentUnban;
+                //String SimplifiedMessageUnban = DiscordUtil.SimplifiedMessageUnban;
+
+                if (DiscordUtil.UseSimplifiedMessage == true)
+                {
+                    String SimplifiedMessageUnban = TranslationUtil.Translate(self.getConfig().getString(silent ? "SimplifiedMessageSilentUnban" : "SimplifiedMessageUnban"), "&",
+                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                        {{
+                            put("player", target.getName());
+                            put("reason", FuckingJava);
+                            put("banner", sender.getName());
+                            put("banid", MuteID);
+                        }}
+                    );
+
+                    DiscordUtil.SendFormatted(SimplifiedMessageUnban, sender.getName());
+                    return true;
+                }
                 else
                 {
-                    sender.sendMessage(Messages.InvalidSyntax);
-                    return false; // Show syntax.
+                    DiscordUtil.SendUnmute(sender.getName().toString(), target.getName(),
+                            // if they're the console, use a hard-defined UUID instead of the player's UUID.
+                            (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((OfflinePlayer) sender).getUniqueId().toString(),
+                            target.getUniqueId().toString(), reason, MuteID, silent);
+                    return true;
                 }
             }
-            catch (SQLException | InvalidConfigurationException e)
+
+            else
             {
-                e.printStackTrace();
-                sender.sendMessage(Messages.ServerError);
-                return true;
+                sender.sendMessage(Messages.InvalidSyntax);
+                return false; // Show syntax.
             }
         }
-        // They're denied perms, just return.
-        return true;
+        catch (SQLException | InvalidConfigurationException e)
+        {
+            e.printStackTrace();
+            sender.sendMessage(Messages.ServerError);
+            return true;
+        }
     }
 }

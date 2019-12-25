@@ -19,6 +19,7 @@ import me.zacherycoleman.lolbans.Utils.TimeUtil;
 import me.zacherycoleman.lolbans.Utils.TranslationUtil;
 import me.zacherycoleman.lolbans.Utils.User;
 import me.zacherycoleman.lolbans.Utils.Messages;
+import me.zacherycoleman.lolbans.Utils.PermissionUtil;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -38,10 +39,7 @@ public class BanCommand implements CommandExecutor
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        boolean SenderHasPerms = (sender instanceof ConsoleCommandSender || 
-                                 (!(sender instanceof ConsoleCommandSender) && (((Player)sender).hasPermission("lolbans.ban") || ((Player)sender).isOp())));
-        
-        if (SenderHasPerms)
+        if (PermissionUtil.Check(sender, "lolbans.ban"))
         {
             try 
             {

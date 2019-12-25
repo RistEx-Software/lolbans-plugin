@@ -19,6 +19,7 @@ import me.zacherycoleman.lolbans.Utils.TimeUtil;
 import me.zacherycoleman.lolbans.Utils.User;
 import me.zacherycoleman.lolbans.Utils.Messages;
 import me.zacherycoleman.lolbans.Utils.DatabaseUtil;
+import me.zacherycoleman.lolbans.Utils.PermissionUtil;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -33,6 +34,9 @@ public class BanWaveCommand implements CommandExecutor
 
     private boolean BanWaveAdd(CommandSender sender, Command command, String label, String[] args)
     {
+        if (!PermissionUtil.Check(sender, "lolbans.banwave.add"))
+            return true;
+
         try 
         {
             // just incase someone, magically has a 1 char name........
@@ -119,6 +123,9 @@ public class BanWaveCommand implements CommandExecutor
 
     private boolean BanWaveRemove(CommandSender sender, Command command, String label, String[] args)
     {
+        if (!PermissionUtil.Check(sender, "lolbans.banwave.remove"))
+            return true;
+
         String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length )) : args[1];
         reason = reason.replace(",", "");
 
@@ -152,6 +159,9 @@ public class BanWaveCommand implements CommandExecutor
 
     private boolean BanWaveExecute(CommandSender sender, Command command, String label, String[] args)
     {
+        if (!PermissionUtil.Check(sender, "lolbans.banwave.enforce"))
+            return true;
+
         User.PlayerOnlyVariableMessage("Banwave.BanwaveStart", sender, sender.getName(), false);
         BanWaveRunnable bwr = new BanWaveRunnable();
         bwr.sender = sender;
@@ -162,43 +172,33 @@ public class BanWaveCommand implements CommandExecutor
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        boolean SenderHasPerms = (sender instanceof ConsoleCommandSender || 
-                                 (!(sender instanceof ConsoleCommandSender) && (((Player)sender).hasPermission("lolbans.banwave") || ((Player)sender).isOp())));
-        
-        if (command.getName().equalsIgnoreCase("banwave"))
-        {
-            if (SenderHasPerms)
-            {
-                //System.out.println("User has perms, args: " + String.join(" ", args));
-                // Invalid arguments.
-                if (args.length < 1)
-                    return false;
-
-                String SubCommand = args[0];
-                String[] Subargs = Arrays.copyOfRange(args, 1, args.length);
-
-                //System.out.println("Subcommand: " + SubCommand + " subargs: " + String.join(" ", Subargs));
-
-                if (SubCommand.equalsIgnoreCase("add"))
-                {
-                    return this.BanWaveAdd(sender, command, label, Subargs);
-                }
-                else if (SubCommand.equalsIgnoreCase("remove") || SubCommand.equalsIgnoreCase("rm")) 
-                {
-                    return this.BanWaveRemove(sender, command, label, Subargs);
-                }
-                else if (SubCommand.equalsIgnoreCase("enforce") || SubCommand.equalsIgnoreCase("run") || 
-                    SubCommand.equalsIgnoreCase("start") || SubCommand.equalsIgnoreCase("exec") || SubCommand.equalsIgnoreCase("execute"))
-                {
-                    return this.BanWaveExecute(sender, command, label, Subargs);
-                }
-                // If they run a sub command we don't know
-                return false;
-            }
-            // They're denied perms, just return.
+        if (!PermissionUtil.Check(sender, "lolbans.banwave"))
             return true;
+        
+        //System.out.println("User has perms, args: " + String.join(" ", args));
+        // Invalid arguments.
+        if (args.length < 1)
+            return false;
+
+        String SubCommand = args[0];
+        String[] Subargs = Arrays.copyOfRange(args, 1, args.length);
+
+        //System.out.println("Subcommand: " + SubCommand + " subargs: " + String.join(" ", Subargs));
+
+        if (SubCommand.equalsIgnoreCase("add"))
+        {
+            return this.BanWaveAdd(sender, command, label, Subargs);
         }
-        // Invalid command.
+        else if (SubCommand.equalsIgnoreCase("remove") || SubCommand.equalsIgnoreCase("rm")) 
+        {
+            return this.BanWaveRemove(sender, command, label, Subargs);
+        }
+        else if (SubCommand.equalsIgnoreCase("enforce") || SubCommand.equalsIgnoreCase("run") || 
+            SubCommand.equalsIgnoreCase("start") || SubCommand.equalsIgnoreCase("exec") || SubCommand.equalsIgnoreCase("execute"))
+        {
+            return this.BanWaveExecute(sender, command, label, Subargs);
+        }
+        // If they run a sub command we don't know
         return false;
     }
 }

@@ -14,6 +14,7 @@ import me.zacherycoleman.lolbans.Main;
 import me.zacherycoleman.lolbans.Utils.TimeUtil;
 import me.zacherycoleman.lolbans.Utils.User;
 import me.zacherycoleman.lolbans.Utils.Messages;
+import me.zacherycoleman.lolbans.Utils.PermissionUtil;
 
 import java.util.Arrays;
 import java.sql.*;
@@ -187,8 +188,7 @@ public class HistoryCommand implements CommandExecutor
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
         // Check if the user has the perms.
-        boolean SenderHasPerms = (sender instanceof ConsoleCommandSender || 
-                                 (!(sender instanceof ConsoleCommandSender) && (((Player)sender).hasPermission("lolbans.history") || ((Player)sender).isOp())));
+        boolean SenderHasPerms = PermissionUtil.Check(sender, "lolbans.history");
         
         // Handle the History command
         if (command.getName().equalsIgnoreCase("history") || command.getName().equalsIgnoreCase("h"))

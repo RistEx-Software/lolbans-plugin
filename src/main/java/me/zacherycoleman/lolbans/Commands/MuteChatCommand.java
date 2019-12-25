@@ -19,6 +19,7 @@ import me.zacherycoleman.lolbans.Utils.TimeUtil;
 import me.zacherycoleman.lolbans.Utils.User;
 import me.zacherycoleman.lolbans.Utils.Messages;
 import me.zacherycoleman.lolbans.Utils.DatabaseUtil;
+import me.zacherycoleman.lolbans.Utils.PermissionUtil;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -36,10 +37,7 @@ public class MuteChatCommand implements CommandExecutor
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        boolean SenderHasPerms = (sender instanceof ConsoleCommandSender || 
-                                (!(sender instanceof ConsoleCommandSender) && (((Player)sender).hasPermission("lolbans.kick") || ((Player)sender).isOp())));
-
-        if (!SenderHasPerms)
+        if (!PermissionUtil.Check(sender, "lolbans.chatmute"))
             return true;
         
         // Nice toggle feature
