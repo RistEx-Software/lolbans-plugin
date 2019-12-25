@@ -27,6 +27,11 @@ commands:
     usage: |
         Syntax Error!
         Use /unban <player> <reason>
+  mutechat:
+    description: Mute the chat for all players (togglable)
+    usage: |
+        Syntax Error!
+        Use /mutechat
   unmute:
     description: Unban a payer
     usage: |

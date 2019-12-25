@@ -48,6 +48,8 @@ Mute:
   SilentMuteAnnouncement: "&c{MUTER} &7has muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}] &8[SILENT]"
   SilentUnmuteAnnouncment: "&c{UNMUTER} &7has un-muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}] &8[SILENT]"
   UnmuteAnnouncment: "&c{UNMUTER} &7has un-muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}]"
+  GlobalMuted: "&cThe chat is currently muted and you may not send messages."
+  GlobalUnmuted: "&aThe chat is now unmuted, you may now converse."
 
 Kick:
   KickMessage: "&cYou were kicked from &7My Network\n\n&cYou were kicked by: &f{KICKER}\n&cReason: &f{REASON}"

@@ -65,11 +65,13 @@ public final class Main extends JavaPlugin
     // Instead of relying on dumb bukkit APIs to get tasks done, we use a thread pool of
     // our own control to get whatever we want done.
     public static ExecutorService pool = Executors.newFixedThreadPool(3);
+
+    // Whether or not the chat has been muted globally.
+    public boolean ChatMuted = false;
     
     // Our database connection, here for legacy reasons (it should be in DatabaseUtil)
     public Connection connection;
     
-
     @Override
     public void onEnable()
     {    

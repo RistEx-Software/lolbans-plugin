@@ -20,7 +20,8 @@ import me.zacherycoleman.lolbans.Utils.DiscordUtil;
 import me.zacherycoleman.lolbans.Utils.Messages;
 import me.zacherycoleman.lolbans.Utils.TimeUtil;
 
-public class AsyncChatListener implements Listener {
+public class AsyncChatListener implements Listener 
+{
     private static Main self = Main.getPlugin(Main.class);
 
     @EventHandler
@@ -28,18 +29,17 @@ public class AsyncChatListener implements Listener {
     {
         try 
         {
-            PreparedStatement ps2 = self.connection.prepareStatement("SELECT * FROM MutedPlayers WHERE Expiry IS NOT NULL AND Expiry <= NOW()");
-            ResultSet rs2 = ps2.executeQuery();
-
-            while (rs2.next())
+            // Send a message to the user if the chat is muted globally
+            if (self.ChatMuted)
             {
-                String name = rs2.getString("PlayerName"), id = rs2.getString("MuteID");
-                self.getLogger().info(String.format("Expiring mute on %s (#%s)", name, id));
-                DiscordUtil.Send2(name, id);
+                if (event.getPlayer().hasPermission("lolbans.mute.bypass") || event.getPlayer().isOp())
+                    return;
+                event.setCancelled(true);
+                event.getPlayer().sendMessage(Messages.GetMessages().GetConfig().getString("Mute.GlobalMuted"));
+                return;
             }
 
-            self.connection.prepareStatement("DELETE FROM MutedPlayers WHERE Expiry IS NOT NULL AND Expiry <= NOW()").executeUpdate();
-
+            // Otherwise check if they're individually muted.
             PreparedStatement MuteStatement = self.connection.prepareStatement(
                     "SELECT * FROM MutedPlayers WHERE UUID = ? AND (Expiry IS NULL OR Expiry >= NOW())");
             MuteStatement.setString(1, event.getPlayer().getUniqueId().toString());

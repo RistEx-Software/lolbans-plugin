@@ -7,27 +7,25 @@ Basis of plugin design: https://www.spigotmc.org/resources/litebans-%C2%BB-50-of
 4. Mass unbans
 5. Unreasonable ban warnings before executing a ban which can affect a large number of players.
 6. Website functionality (banning, unbanning, comments, disputes, etc.)
-7. Fix silent ban argument (easy)
-8. Ensure targets can be names, uuids, ip addresses, or ip address ranges (CIDRs).
-9. Server scopes (to allow for per-server punishments)
-10. Freeze command (since warn already does this.)
-11. /dupeip, /iphistory, /ipreport
-12. /kick history tracking -- support cross-server kicking
-13. GeoIP support
-14. Lockdown support (incl., per-server lockdowns)
-15. Timezones???
-16. /broadcast (including cross-server)
-17. ALL THE PERMISSION NODESSSSSSSSS~~~~
-18. /mute, /mutechat
-19. /prunehistory 
-20. Player-side /report functionality
-21. /staffhistory
-22. Make User.FindPlayerByBanID async with FutureTask
-23. Ensure multithreaded/asynchronous database queries for most/all things (we don't ever want to hang the main thread).
-24. Check to make sure an IP ban is not part of an already-banned CIDR range.
-25. Support IP bans by hostname
-26. Regex Name Bans.
-27. REST api for website.
+7. Ensure targets can be names, uuids, ip addresses, or ip address ranges (CIDRs).
+8. Server scopes (to allow for per-server punishments)
+9. Freeze command (since warn already does this.)
+10. /dupeip, /iphistory, /ipreport
+11. /kick history tracking -- support cross-server kicking
+12. GeoIP support
+13. Lockdown support (incl., per-server lockdowns)
+14. Timezones???
+15. /broadcast (including cross-server)
+16. ALL THE PERMISSION NODESSSSSSSSS~~~~
+17. /prunehistory 
+18. Player-side /report functionality
+19. /staffhistory
+20. Make User.FindPlayerByBanID async with FutureTask
+21. Ensure multithreaded/asynchronous database queries for most/all things (we don't ever want to hang the main thread).
+22. Check to make sure an IP ban is not part of an already-banned CIDR range.
+23. Support IP bans by hostname
+24. Regex Name Bans.
+25. REST api for website.
 
 # WAYYYYY FUTURE:
 1. Cross-server compatibility (lol)

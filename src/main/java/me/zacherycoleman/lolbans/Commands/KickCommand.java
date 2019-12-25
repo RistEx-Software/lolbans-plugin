@@ -72,12 +72,12 @@ public class KickCommand implements CommandExecutor
 
 
                         final String FuckingJava = new String(reason);
-                        int i = 1;
-
+                        
                         // Get the latest ID of the banned players to generate a BanID form it.
                         String kickid = BanID.GenerateID(DatabaseUtil.GenID());
-
+                        
                         // Preapre a statement
+                        int i = 1;
                         PreparedStatement pst = self.connection.prepareStatement("INSERT INTO Kicks (UUID, PlayerName, IPAddress, Reason, Executioner, KickID) VALUES (?, ?, ?, ?, ?, ?)");
                         //CREATE TABLE IF NOT EXISTS Kicks (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT
                         // NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, KickID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)").execute();
