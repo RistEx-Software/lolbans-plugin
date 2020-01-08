@@ -89,10 +89,10 @@ public class MuteCommand implements CommandExecutor
 
                 // Execute queries to get the bans.
                 Future<Boolean> HistorySuccess = DatabaseUtil.InsertMuteHistory(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, muteid, mutetime);
-                Future<Boolean> BanSuccess = DatabaseUtil.InsertMute(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, muteid, mutetime);
+                Future<Boolean> MuteSuccess = DatabaseUtil.InsertMute(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, muteid, mutetime);
 
                 // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
-                if (!BanSuccess.get() || !HistorySuccess.get())
+                if (!MuteSuccess.get() || !HistorySuccess.get())
                 {
                     sender.sendMessage(Messages.ServerError);
                     return true;
@@ -121,7 +121,7 @@ public class MuteCommand implements CommandExecutor
                     Player target2 = (Player) target;
                     target2.sendMessage(YouWereMuted);
                 }
-                else
+                else if (!(target instanceof OfflinePlayer))
                 {
                     // You cannot mute console.
                     sender.sendMessage(Messages.GetMessages().GetConfig().getString("Mute.CannotMuteConsole"));

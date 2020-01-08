@@ -24,6 +24,8 @@ import me.zacherycoleman.lolbans.Utils.PermissionUtil;
 import java.sql.*;
 import java.util.Arrays;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.Map;
 import java.time.Duration;
 import java.lang.Long;
@@ -37,7 +39,7 @@ public class WarnCommand implements CommandExecutor
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        if (PermissionUtil.Check(sender, "lolbans.warn"))
+        if (!PermissionUtil.Check(sender, "lolbans.warn"))
             return true;
 
         try 
@@ -60,12 +62,13 @@ public class WarnCommand implements CommandExecutor
                 // Get the latest ID of the banned players to generate a BanID form it.
                 String warnid = BanID.GenerateID(DatabaseUtil.GenID());
 
+                /*
                 // Preapre a statement
                 PreparedStatement pst = self.connection.prepareStatement("INSERT INTO Warnings (UUID, PlayerName, IPAddress, Reason, Executioner, WarnID, Accepted) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 pst.setString(i++, target.getUniqueId().toString());
                 pst.setString(i++, target.getName());
                 if (target.isOnline())
-                    pst.setString(i++, ((Player)target).getAddress().toString());
+                    pst.setString(i++, ((Player)target).getAddress().getAddress().getHostAddress());
                 else
                     pst.setString(i++, "UNKNOWN");
                 pst.setString(i++, reason);
@@ -75,6 +78,16 @@ public class WarnCommand implements CommandExecutor
 
                 // Commit to the database.
                 pst.executeUpdate();
+                */
+                // InsertWarn
+                Future<Boolean> InsertWarn = DatabaseUtil.InsertWarn(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, warnid);
+
+                // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
+                if (!InsertWarn.get())
+                {
+                    sender.sendMessage(Messages.ServerError);
+                    return true;
+                }
 
                 Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
@@ -130,7 +143,7 @@ public class WarnCommand implements CommandExecutor
                 return false; // Show syntax.
             }
         }
-        catch (SQLException | InvalidConfigurationException e)
+        catch (SQLException | InvalidConfigurationException | InterruptedException | ExecutionException e)
         {
             e.printStackTrace();
             sender.sendMessage(Messages.ServerError);

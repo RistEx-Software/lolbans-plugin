@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import me.zacherycoleman.lolbans.Main;
 import me.zacherycoleman.lolbans.Utils.Configuration;
+import me.zacherycoleman.lolbans.Utils.DatabaseUtil;
 import me.zacherycoleman.lolbans.Utils.DiscordUtil;
 import me.zacherycoleman.lolbans.Utils.TranslationUtil;
 import me.zacherycoleman.lolbans.Utils.User;
@@ -21,6 +22,8 @@ import me.zacherycoleman.lolbans.Utils.PermissionUtil;
 import java.sql.*;
 import java.util.Arrays;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class UnbanCommand implements CommandExecutor
 {
@@ -54,15 +57,9 @@ public class UnbanCommand implements CommandExecutor
                     silent = args[1].equalsIgnoreCase("-s");
 
                 final String FuckingJava = new String(reason);
-                
+
                 // Preapre a statement
                 // We need to get the latest banid first.
-                PreparedStatement pst2 = self.connection.prepareStatement("UPDATE BannedHistory INNER JOIN (SELECT BanID AS LatestBanID, UUID as bUUID FROM BannedPlayers WHERE UUID = ?) tm SET UnbanReason = ?, UnbanExecutioner = ? WHERE UUID = tm.bUUID AND BanID = tm.LatestBanID");
-                pst2.setString(1, target.getUniqueId().toString());
-                pst2.setString(2, reason);
-                pst2.setString(3, sender.getName());
-                pst2.executeUpdate();
-                
                 PreparedStatement pst3 = self.connection.prepareStatement("SELECT BanID FROM BannedPlayers WHERE UUID = ?");
                 pst3.setString(1, target.getUniqueId().toString());
 
@@ -70,10 +67,15 @@ public class UnbanCommand implements CommandExecutor
                 result.next();
                 String BanID = result.getString("BanID");
 
-                // Preapre a statement
-                PreparedStatement pst = self.connection.prepareStatement("DELETE FROM BannedPlayers WHERE UUID = ?");
-                pst.setString(1, target.getUniqueId().toString());
-                pst.executeUpdate();
+                // Run the async task for the database
+                Future<Boolean> UnBan = DatabaseUtil.UnBan(target.getUniqueId().toString(), target.getName(), reason, sender);
+
+                // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
+                if (!UnBan.get())
+                {
+                    sender.sendMessage(Messages.ServerError);
+                    return true;
+                }
 
                 // Log to console.
                 Bukkit.getConsoleSender().sendMessage(String.format("\u00A7c%s \u00A77has unbanned \u00A7c%s\u00A77: \u00A7c%s\u00A77%s\u00A7r", 
@@ -144,7 +146,7 @@ public class UnbanCommand implements CommandExecutor
                 return false; // Show syntax.
             }
         }
-        catch (SQLException | InvalidConfigurationException e)
+        catch (SQLException | InvalidConfigurationException | InterruptedException | ExecutionException e)
         {
             e.printStackTrace();
             sender.sendMessage(Messages.ServerError);

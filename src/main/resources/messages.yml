@@ -22,7 +22,7 @@ Ban:
   PermBanMessage: "&cThe account &7{PLAYER} &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{BANID}\n&7If you think this is a mistake contact us at yourwebsite.com!"
   BanAnnouncement: "&c{BANNER} &7has banned &c{PLAYER}&7: &c{REASON} &7[#{BANID}]"
   SilentBanAnnouncement: "&c{BANNER} &7has banned &c{PLAYER}&7: &c{REASON} &7[#{BANID}] &8[SILENT]"
-  UnbanAnnouncment: "&c{BANNER} &7has un-banned &c{PLAYER}&7: &c{REASON} &7[{BANID}]"
+  UnbanAnnouncment: "&c{BANNER} &7has un-banned &c{PLAYER}&7: &c{REASON} &7[#{BANID}]"
   SilentUnbanAnnouncment: "&c{BANNER} &7has un-banned &c{PLAYER}&7: &c{REASON} &7[#{BANID}] &8[SILENT]"
   CannotBanSelf: "{PREFIX}&cYes, you have permissions! You cannot ban yourself!"
   PlayerIsBanned: "{PREFIX}&cError! &7{PLAYER} is already banned!"

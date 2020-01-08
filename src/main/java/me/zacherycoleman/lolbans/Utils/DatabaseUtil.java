@@ -156,6 +156,133 @@ public class DatabaseUtil
         return (Future<Boolean>)t;
     }
 
+    public static Future<Boolean> InsertWarn(String UUID, String PlayerName, String IPAddress, String Reason, CommandSender Executioner, String WarnID) throws SQLException
+    {
+        FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
+        {
+            @Override
+            public Boolean call()
+            {
+                //This is where you should do your database interaction
+                try 
+                {
+                    // Preapre a statement
+                    int i = 1;
+                    PreparedStatement pst = self.connection.prepareStatement("INSERT INTO Warnings (UUID, PlayerName, IPAddress, Reason, Executioner, WarnID, Accepted) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                    pst.setString(i++, UUID);
+                    pst.setString(i++, PlayerName);
+                    pst.setString(i++, IPAddress);
+                    pst.setString(i++, Reason);
+                    pst.setString(i++, Executioner.getName().toString());
+                    pst.setString(i++, WarnID);
+                    pst.setBoolean(i++, false);
+                    pst.executeUpdate();
+                } 
+                catch (SQLException e) 
+                {
+                    e.printStackTrace();
+                    Executioner.sendMessage(ChatColor.RED + "The server encountered an error, please try again later.1");
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        self.pool.execute(t);
+
+        return (Future<Boolean>)t;
+    }
+
+    public static Future<Boolean> UnBan(String UUID, String PlayerName, String Reason, CommandSender Executioner) throws SQLException
+    {
+        FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
+        {
+            @Override
+            public Boolean call()
+            {
+                //This is where you should do your database interaction
+                try 
+                {
+                    // Preapre a statement
+                    int i = 1;
+                    PreparedStatement pst2 = self.connection.prepareStatement("UPDATE BannedHistory INNER JOIN (SELECT BanID AS LatestBanID, UUID as bUUID FROM BannedPlayers WHERE UUID = ?) tm SET UnbanReason = ?, UnbanExecutioner = ? WHERE UUID = tm.bUUID AND BanID = tm.LatestBanID");
+                    pst2.setString(i++, UUID);
+                    pst2.setString(i++, Reason);
+                    pst2.setString(i++, Executioner.getName().toString());
+                    pst2.executeUpdate();
+
+                    int j = 1;
+                    // Preapre a statement
+                    PreparedStatement pst = self.connection.prepareStatement("DELETE FROM BannedPlayers WHERE UUID = ?");
+                    pst.setString(j++, UUID);
+                    pst.executeUpdate();
+                } 
+                catch (SQLException e) 
+                {
+                    e.printStackTrace();
+                    Executioner.sendMessage(ChatColor.RED + "The server encountered an error, please try again later.1");
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        self.pool.execute(t);
+
+        return (Future<Boolean>)t;
+    }
+
+    /*
+    PreparedStatement pst2 = self.connection.prepareStatement("UPDATE BannedHistory INNER JOIN (SELECT BanID AS LatestBanID, UUID as bUUID FROM BannedPlayers WHERE UUID = ?) tm SET UnbanReason = ?, UnbanExecutioner = ? WHERE UUID = tm.bUUID AND BanID = tm.LatestBanID");
+    pst2.setString(1, target.getUniqueId().toString());
+    pst2.setString(2, reason);
+    pst2.setString(3, sender.getName());
+    pst2.executeUpdate();
+
+    // Preapre a statement
+    PreparedStatement pst = self.connection.prepareStatement("DELETE FROM BannedPlayers WHERE UUID = ?");
+    pst.setString(1, target.getUniqueId().toString());
+    pst.executeUpdate();
+    */
+
+    public static Future<Boolean> UnMute(String UUID, String PlayerName, String Reason, CommandSender Executioner) throws SQLException
+    {
+        FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
+        {
+            @Override
+            public Boolean call()
+            {
+                //This is where you should do your database interaction
+                try 
+                {
+                    // Preapre a statement
+                    // We need to get the latest banid first.
+                    PreparedStatement pst2 = self.connection.prepareStatement("UPDATE MutedHistory INNER JOIN (SELECT MuteID AS LatestMuteID, UUID as bUUID FROM MutedPlayers WHERE UUID = ?) tm SET UnmuteReason = ?, UnmuteExecutioner = ? WHERE UUID = tm.bUUID AND MuteID = tm.LatestMuteID");
+                    pst2.setString(1, UUID);
+                    pst2.setString(2, Reason);
+                    pst2.setString(3, Executioner.getName().toString());
+                    pst2.executeUpdate();
+
+                    // Preapre a statement
+                    PreparedStatement pst = self.connection.prepareStatement("DELETE FROM MutedPlayers WHERE UUID = ?");
+                    pst.setString(1, UUID);
+                    pst.executeUpdate();
+                } 
+                catch (SQLException e) 
+                {
+                    e.printStackTrace();
+                    Executioner.sendMessage(ChatColor.RED + "The server encountered an error, please try again later.1");
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        self.pool.execute(t);
+
+        return (Future<Boolean>)t;
+    }
+
     public static Future<Boolean> InsertMute(String UUID, String PlayerName, String IPAddress, String Reason, CommandSender Executioner, String MuteID, Timestamp MuteTime) throws SQLException
     {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()

@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import me.zacherycoleman.lolbans.Main;
 import me.zacherycoleman.lolbans.Utils.Configuration;
+import me.zacherycoleman.lolbans.Utils.DatabaseUtil;
 import me.zacherycoleman.lolbans.Utils.DiscordUtil;
 import me.zacherycoleman.lolbans.Utils.TranslationUtil;
 import me.zacherycoleman.lolbans.Utils.User;
@@ -21,6 +22,8 @@ import me.zacherycoleman.lolbans.Utils.PermissionUtil;
 import java.sql.*;
 import java.util.Arrays;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class UnmuteCommand implements CommandExecutor
 {
@@ -52,14 +55,9 @@ public class UnmuteCommand implements CommandExecutor
                 boolean silent = args.length > 2 ? args[1].equalsIgnoreCase("-s") : false;
 
                 final String FuckingJava = new String(reason);
+                
                 // Preapre a statement
                 // We need to get the latest banid first.
-                PreparedStatement pst2 = self.connection.prepareStatement("UPDATE MutedHistory INNER JOIN (SELECT MuteID AS LatestMuteID, UUID as bUUID FROM MutedPlayers WHERE UUID = ?) tm SET UnmuteReason = ?, UnmuteExecutioner = ? WHERE UUID = tm.bUUID AND MuteID = tm.LatestMuteID");
-                pst2.setString(1, target.getUniqueId().toString());
-                pst2.setString(2, reason);
-                pst2.setString(3, sender.getName());
-                pst2.executeUpdate();
-                
                 PreparedStatement pst3 = self.connection.prepareStatement("SELECT MuteID FROM MutedPlayers WHERE UUID = ?");
                 pst3.setString(1, target.getUniqueId().toString());
 
@@ -67,11 +65,15 @@ public class UnmuteCommand implements CommandExecutor
                 result.next();
                 String MuteID = result.getString("MuteID");
 
-                // Preapre a statement
-                PreparedStatement pst = self.connection.prepareStatement("DELETE FROM MutedPlayers WHERE UUID = ?");
-                pst.setString(1, target.getUniqueId().toString());
-                pst.executeUpdate();
+                // Run the async task for the database
+                Future<Boolean> UnMute = DatabaseUtil.UnMute(target.getUniqueId().toString(), target.getName(), reason, sender);
 
+                // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
+                if (!UnMute.get())
+                {
+                    sender.sendMessage(Messages.ServerError);
+                    return true;
+                }
                 // Log to console.
                 // Format our messages.
                 String UnmuteMessage = Messages.GetMessages().Translate("Mute.YouWereUnMuted",
@@ -171,7 +173,7 @@ public class UnmuteCommand implements CommandExecutor
                 return false; // Show syntax.
             }
         }
-        catch (SQLException | InvalidConfigurationException e)
+        catch (SQLException | InvalidConfigurationException | InterruptedException | ExecutionException e)
         {
             e.printStackTrace();
             sender.sendMessage(Messages.ServerError);

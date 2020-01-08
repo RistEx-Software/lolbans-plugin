@@ -66,7 +66,7 @@ public class DiscordUtil
                     .fields(Arrays.asList( // with fields...
                         FieldEmbed.builder()
                         .name("WarnID")
-                        .value("#W-" + WarnID)
+                        .value("#" + WarnID)
                         .build() ))
                     .build(); // and finally, we build the embed
                 
