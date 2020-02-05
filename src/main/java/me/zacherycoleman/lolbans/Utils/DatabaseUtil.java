@@ -35,13 +35,13 @@ public class DatabaseUtil
         // Ensure Our tables are created.
         try
         {
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedPlayers (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, PunishID varchar(20) NOT NULL, TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS MutedPlayers (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, PunishID varchar(20) NOT NULL, TimeMuted TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedHistory (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, PunishID varchar(20) NOT NULL, UnbanReason TEXT, UnbanExecutioner varchar(17), TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS MutedHistory (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, PunishID varchar(20) NOT NULL, UnmuteReason TEXT, UnmuteExecutioner varchar(17), TimeMuted TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BanWave (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, PunishID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Warnings (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, PunishID varchar(20) NOT NULL, Accepted boolean, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)").execute();
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Kicks (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, PunishID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)").execute();
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedPlayers (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS MutedPlayers (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, TimeMuted TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedHistory (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, UnbanReason TEXT, UnbanExecutioner varchar(17), UnbanExecutionerUUID varchar(36), TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS MutedHistory (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, UnmuteReason TEXT, UnmuteExecutioner varchar(17), UnmuteExecutionerUUID varchar(36), TimeMuted TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BanWave (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Warnings (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, Accepted boolean, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)").execute();
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Kicks (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)").execute();
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS IPBans (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, IPAddress varchar(49) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, PunishID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS LinkConfirmations (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, Executioner varchar(17) NOT NULL, LinkID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NOT NULL)").execute();
         }
@@ -119,7 +119,7 @@ public class DatabaseUtil
         return t;
     }
 
-    public static Future<Boolean> InsertBan(String UUID, String PlayerName, String IPAddress, String Reason, CommandSender Executioner, String BanID, Timestamp BanTime) throws SQLException
+    public static Future<Boolean> InsertBan(String UUID, String PlayerName, String IPAddress, String Reason, CommandSender Executioner, String ExecutionerUUID, String BanID, Timestamp BanTime) throws SQLException
     {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
         {
@@ -132,12 +132,13 @@ public class DatabaseUtil
                     // Preapre a statement
                     int i = 1;
                     PreparedStatement InsertBan = self.connection
-                    .prepareStatement(String.format("INSERT INTO BannedPlayers (UUID, PlayerName, IPAddress, Reason, Executioner, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?, ?)"));
+                    .prepareStatement(String.format("INSERT INTO BannedPlayers (UUID, PlayerName, IPAddress, Reason, Executioner, ExecutionerUUID, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"));
                     InsertBan.setString(i++, UUID);
                     InsertBan.setString(i++, PlayerName);
                     InsertBan.setString(i++, IPAddress);
                     InsertBan.setString(i++, Reason);
                     InsertBan.setString(i++, Executioner.getName().toString());
+                    InsertBan.setString(i++, ExecutionerUUID);
                     InsertBan.setString(i++, BanID);
                     InsertBan.setTimestamp(i++, BanTime);
                     InsertBan.executeUpdate();
@@ -157,7 +158,7 @@ public class DatabaseUtil
         return (Future<Boolean>)t;
     }
 
-    public static Future<Boolean> InsertWarn(String UUID, String PlayerName, String IPAddress, String Reason, CommandSender Executioner, String WarnID) throws SQLException
+    public static Future<Boolean> InsertWarn(String UUID, String PlayerName, String IPAddress, String Reason, CommandSender Executioner, String ExecutionerUUID, String WarnID) throws SQLException
     {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
         {
@@ -169,12 +170,13 @@ public class DatabaseUtil
                 {
                     // Preapre a statement
                     int i = 1;
-                    PreparedStatement pst = self.connection.prepareStatement("INSERT INTO Warnings (UUID, PlayerName, IPAddress, Reason, Executioner, PunishID, Accepted) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                    PreparedStatement pst = self.connection.prepareStatement("INSERT INTO Warnings (UUID, PlayerName, IPAddress, Reason, Executioner, ExecutionerUUID, PunishID, Accepted) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                     pst.setString(i++, UUID);
                     pst.setString(i++, PlayerName);
                     pst.setString(i++, IPAddress);
                     pst.setString(i++, Reason);
                     pst.setString(i++, Executioner.getName().toString());
+                    pst.setString(i++, ExecutionerUUID);
                     pst.setString(i++, WarnID);
                     pst.setBoolean(i++, false);
                     pst.executeUpdate();
@@ -194,7 +196,7 @@ public class DatabaseUtil
         return (Future<Boolean>)t;
     }
 
-    public static Future<Boolean> UnBan(String UUID, String PlayerName, String Reason, CommandSender Executioner) throws SQLException
+    public static Future<Boolean> UnBan(String UUID, String PlayerName, String Reason, CommandSender Executioner, String ExecutionerUUID) throws SQLException
     {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
         {
@@ -206,10 +208,11 @@ public class DatabaseUtil
                 {
                     // Preapre a statement
                     int i = 1;
-                    PreparedStatement pst2 = self.connection.prepareStatement("UPDATE BannedHistory INNER JOIN (SELECT PunishID AS LatestBanID, UUID as bUUID FROM BannedPlayers WHERE UUID = ?) tm SET UnbanReason = ?, UnbanExecutioner = ? WHERE UUID = tm.bUUID AND PunishID = tm.LatestBanID");
+                    PreparedStatement pst2 = self.connection.prepareStatement("UPDATE BannedHistory INNER JOIN (SELECT PunishID AS LatestBanID, UUID as bUUID FROM BannedPlayers WHERE UUID = ?) tm SET UnbanReason = ?, UnbanExecutioner = ?, UnbanExecutionerUUID = ? WHERE UUID = tm.bUUID AND PunishID = tm.LatestBanID");
                     pst2.setString(i++, UUID);
                     pst2.setString(i++, Reason);
                     pst2.setString(i++, Executioner.getName().toString());
+                    pst2.setString(i++, ExecutionerUUID);
                     pst2.executeUpdate();
 
                     int j = 1;
@@ -246,7 +249,7 @@ public class DatabaseUtil
     pst.executeUpdate();
     */
 
-    public static Future<Boolean> UnMute(String UUID, String PlayerName, String Reason, CommandSender Executioner) throws SQLException
+    public static Future<Boolean> UnMute(String UUID, String PlayerName, String Reason, CommandSender Executioner, String ExecutionerUUID) throws SQLException
     {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
         {
@@ -258,10 +261,11 @@ public class DatabaseUtil
                 {
                     // Preapre a statement
                     // We need to get the latest banid first.
-                    PreparedStatement pst2 = self.connection.prepareStatement("UPDATE MutedHistory INNER JOIN (SELECT PunishID AS LatestMuteID, UUID as bUUID FROM MutedPlayers WHERE UUID = ?) tm SET UnmuteReason = ?, UnmuteExecutioner = ? WHERE UUID = tm.bUUID AND PunishID = tm.LatestMuteID");
+                    PreparedStatement pst2 = self.connection.prepareStatement("UPDATE MutedHistory INNER JOIN (SELECT PunishID AS LatestMuteID, UUID as bUUID FROM MutedPlayers WHERE UUID = ?) tm SET UnmuteReason = ?, UnmuteExecutioner = ?, UnmuteExecutionerUUID = ? WHERE UUID = tm.bUUID AND PunishID = tm.LatestMuteID");
                     pst2.setString(1, UUID);
                     pst2.setString(2, Reason);
                     pst2.setString(3, Executioner.getName().toString());
+                    pst2.setString(4, ExecutionerUUID);
                     pst2.executeUpdate();
 
                     // Preapre a statement
@@ -284,7 +288,7 @@ public class DatabaseUtil
         return (Future<Boolean>)t;
     }
 
-    public static Future<Boolean> InsertMute(String UUID, String PlayerName, String IPAddress, String Reason, CommandSender Executioner, String MuteID, Timestamp MuteTime) throws SQLException
+    public static Future<Boolean> InsertMute(String UUID, String PlayerName, String IPAddress, String Reason, CommandSender Executioner, String ExecutionerUUID, String MuteID, Timestamp MuteTime) throws SQLException
     {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
         {
@@ -297,12 +301,13 @@ public class DatabaseUtil
                     // Preapre a statement
                     int i = 1;
                     PreparedStatement InsertBan = self.connection
-                    .prepareStatement(String.format("INSERT INTO MutedPlayers (UUID, PlayerName, IPAddress, Reason, Executioner, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?, ?)"));
+                    .prepareStatement(String.format("INSERT INTO MutedPlayers (UUID, PlayerName, IPAddress, Reason, Executioner, ExecutionerUUID, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"));
                     InsertBan.setString(i++, UUID);
                     InsertBan.setString(i++, PlayerName);
                     InsertBan.setString(i++, IPAddress);
                     InsertBan.setString(i++, Reason);
                     InsertBan.setString(i++, Executioner.getName().toString());
+                    InsertBan.setString(i++, ExecutionerUUID);
                     InsertBan.setString(i++, MuteID);
                     InsertBan.setTimestamp(i++, MuteTime);
                     InsertBan.executeUpdate();
@@ -322,7 +327,7 @@ public class DatabaseUtil
         return (Future<Boolean>)t;
     }
 
-    public static Future<Boolean> InsertHistory(String UUID, String PlayerName, String IPAddress, String Reason, CommandSender Executioner, String BanID, Timestamp BanTime) throws SQLException
+    public static Future<Boolean> InsertHistory(String UUID, String PlayerName, String IPAddress, String Reason, CommandSender Executioner, String ExecutionerUUID, String BanID, Timestamp BanTime) throws SQLException
     {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
         {
@@ -335,12 +340,13 @@ public class DatabaseUtil
                     // Preapre a statement
                     int i = 1;
                     PreparedStatement pst = self.connection
-                    .prepareStatement(String.format("INSERT INTO BannedHistory (UUID, PlayerName, IPAddress, Reason, Executioner, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?, ?)"));
+                    .prepareStatement(String.format("INSERT INTO BannedHistory (UUID, PlayerName, IPAddress, Reason, Executioner, ExecutionerUUID, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"));
                     pst.setString(i++, UUID);
                     pst.setString(i++, PlayerName);
                     pst.setString(i++, IPAddress);
                     pst.setString(i++, Reason);
                     pst.setString(i++, Executioner.getName().toString());
+                    pst.setString(i++, ExecutionerUUID);
                     pst.setString(i++, BanID);
                     pst.setTimestamp(i++, BanTime);
                     pst.executeUpdate();
@@ -360,7 +366,7 @@ public class DatabaseUtil
         return (Future<Boolean>)t;
     }
 
-    public static Future<Boolean> InsertMuteHistory(String UUID, String PlayerName, String IPAddress, String Reason, CommandSender Executioner, String MuteID, Timestamp MuteTime) throws SQLException
+    public static Future<Boolean> InsertMuteHistory(String UUID, String PlayerName, String IPAddress, String Reason, CommandSender Executioner, String ExecutionerUUID, String MuteID, Timestamp MuteTime) throws SQLException
     {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
         {
@@ -373,12 +379,13 @@ public class DatabaseUtil
                     // Preapre a statement
                     int i = 1;
                     PreparedStatement pst = self.connection
-                    .prepareStatement(String.format("INSERT INTO MutedHistory (UUID, PlayerName, IPAddress, Reason, Executioner, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?, ?)"));
+                    .prepareStatement(String.format("INSERT INTO MutedHistory (UUID, PlayerName, IPAddress, Reason, Executioner, ExecutionerUUID, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"));
                     pst.setString(i++, UUID);
                     pst.setString(i++, PlayerName);
                     pst.setString(i++, IPAddress);
                     pst.setString(i++, Reason);
                     pst.setString(i++, Executioner.getName().toString());
+                    pst.setString(i++, ExecutionerUUID);
                     pst.setString(i++, MuteID);
                     pst.setTimestamp(i++, MuteTime);
                     pst.executeUpdate();
