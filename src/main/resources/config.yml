@@ -25,6 +25,19 @@ Discord:
   UseSimplifiedMessage: false
   WebhookProfilePicture: "https://i.imgur.com/mKRAesS.png"
 
+BanSettings:
+  # Prevents over-reaching bans 
+  insane:
+    # Allow bans with insane ipmasks (over-reaching IP/CIDR bans)
+    ipmasks: false
+
+    # What percentage of players on the server to trigger
+    # specifying an insane ban as. The default is 75.5%
+    # which means if you have 100 players on the server
+    # the ban will not be allowed if it will be banning
+    # 75 or more players.
+    trigger: 75.5
+
 WarningSettings:
   # Spawns a box around the player
   SpawnBox: true

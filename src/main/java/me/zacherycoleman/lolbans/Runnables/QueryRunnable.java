@@ -38,6 +38,7 @@ public class QueryRunnable extends BukkitRunnable
             }
 
             self.connection.prepareStatement("DELETE FROM MutedPlayers WHERE Expiry IS NOT NULL AND Expiry <= NOW()").executeUpdate();
+            self.connection.prepareStatement("DELETE FROM LinkConfirmations WHERE Expiry <= NOW()").executeUpdate();
 
             /*******************************************************************************
              * Ensure our IP ban list is up to date.

@@ -17,11 +17,7 @@ import me.zacherycoleman.lolbans.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-
-
 // Javadocs for IPAddress: https://seancfoley.github.io/IPAddress/IPAddress/apidocs/
-
-
 public class IPBanUtil 
 {
 	private static Main self = Main.getPlugin(Main.class);

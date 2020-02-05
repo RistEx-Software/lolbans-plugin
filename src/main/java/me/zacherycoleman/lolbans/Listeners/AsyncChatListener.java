@@ -66,7 +66,7 @@ public class AsyncChatListener implements Listener
                                 put("player", event.getPlayer().getName());
                                 put("reason", result.getString("Reason"));
                                 put("banner", result.getString("Executioner"));
-                                put("muteid", result.getString("MuteID"));
+                                put("muteid", result.getString("PunishID"));
                                 put("fullexpiry",MuteTime != null ? String.format("%s (%s)",TimeUtil.TimeString(MuteTime), TimeUtil.Expires(MuteTime)) : "Never");
                                 put("expiryduration", MuteTime != null ? TimeUtil.Expires(MuteTime) : "Never");
                                 put("dateexpiry", MuteTime != null ? TimeUtil.TimeString(MuteTime) : "Never");

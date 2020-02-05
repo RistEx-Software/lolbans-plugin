@@ -41,6 +41,16 @@ public class Messages
     public static String SimplifiedMessage;
     public static String SilentUnmuteAnnouncment;
     public static String UnmuteAnnouncment;
+    public static String TempIPBanMessage;
+    public static String PermIPBanMessage;
+    public static String IPBanAnnouncement;
+    public static String SilentIPBanAnnouncement;
+    public static String UnIPbanAnnouncement;
+    public static String SilentUnIPbanAnnouncement;
+    public static String CannotIPBanSelf;
+    public static String IPIsBanned;
+    public static String IPIsNotBanned;
+    public static String Insanity;
 
     // Initialized by our GetMessages() function.
     protected Messages()
@@ -86,6 +96,14 @@ public class Messages
         Messages.SilentUnbanAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Ban.SilentUnbanAnnouncment"));
         Messages.SilentUnmuteAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Mute.SilentUnmuteAnnouncment"));
         Messages.UnmuteAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Mute.UnmuteAnnouncment"));
+        //Messages.TempIPBanMessage = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.TempIPBanMessage"));
+        //Messages.PermIPBanMessage = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.PermIPBanMessage"));
+        //Messages.IPBanAnnouncement = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.IPBanAnnouncement"));
+        //Messages.SilentIPBanAnnouncement = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.SilentIPBanAnnouncement"));
+        //Messages.UnIPbanAnnouncement = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.UnIPbanAnnouncement"));
+        //Messages.SilentUnIPbanAnnouncement = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.SilentUnIPbanAnnouncement"));
+        //Messages.IPIsBanned = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.IPIsBanned"));
+        //Messages.Insanity = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.Insanity"));
     }
 
     public FileConfiguration GetConfig()

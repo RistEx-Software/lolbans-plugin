@@ -11,6 +11,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+
+import inet.ipaddr.IPAddress;
+
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
@@ -185,7 +188,7 @@ public class User
         
         try 
         {
-            PreparedStatement ps = self.connection.prepareStatement("SELECT UUID FROM BannedPlayers WHERE BanID = ? LIMIT 1");
+            PreparedStatement ps = self.connection.prepareStatement("SELECT UUID FROM BannedPlayers WHERE PunishID = ? LIMIT 1");
             ps.setString(1, BanID);
             ResultSet rs = ps.executeQuery();
             
@@ -197,7 +200,7 @@ public class User
                 // Try and query from history
                 if (op == null)
                 {
-                    ps = self.connection.prepareStatement("SELECT UUID FROM BannedHistory WHERE BanID = ? LIMIT 1");
+                    ps = self.connection.prepareStatement("SELECT UUID FROM BannedHistory WHERE PunishID = ? LIMIT 1");
                     ps.setString(1, BanID);
                     rs = ps.executeQuery();
 
@@ -245,6 +248,32 @@ public class User
         }
     }
 
+    public static void KickPlayer(String sender, Player target, String BanID, String reason, Timestamp BanTime, IPAddress IP)
+    {
+        try
+        {
+            // (String message, String ColorChars, Map<String, String> Variables)
+            String KickMessage = Messages.GetMessages().Translate(BanTime != null ? "IPBan.TempIPBanMessage" : "IPBan.PermIPBanMessage",
+                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                {{
+                    put("player", target.getName());
+                    put("reason", reason);
+                    put("banner", sender);
+                    put("fullexpiry", BanTime != null ? String.format("%s (%s)", TimeUtil.TimeString(BanTime), TimeUtil.Expires(BanTime)) : "Never");
+                    put("expiryduration", BanTime != null ? TimeUtil.Expires(BanTime) : "Never");
+                    put("dateexpiry", BanTime != null ? TimeUtil.TimeString(BanTime) : "Never");
+                    put("BanID", BanID);
+                    put("IPAddress", IP.toString());
+                }}
+            );
+            target.kickPlayer(KickMessage);
+        }
+        catch (InvalidConfigurationException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public static void KickPlayer(String sender, Player target, String KickID, String reason)
     {
         try
@@ -276,19 +305,24 @@ public class User
         return User.PlayerOnlyVariableMessage("PlayerDoesntExist", sender, PlayerName, ret);
     }
 
+    public static boolean IPIsBanned(CommandSender sender, String iPAddresString, boolean ret)
+    {
+        return User.PlayerOnlyVariableMessage("IPIsBanned", sender, iPAddresString, ret);
+    }
+
     public static boolean PlayerIsOffline(CommandSender sender, String PlayerName, boolean ret)
     {
         return User.PlayerOnlyVariableMessage("PlayerIsOffline", sender, PlayerName, ret);
     }
 
-    public static boolean PlayerOnlyVariableMessage(String MessageName, CommandSender sender, String PlayerName, boolean ret)
+    public static boolean PlayerOnlyVariableMessage(String MessageName, CommandSender sender, IPAddress thingy, boolean ret)
     {
         try 
         {
             sender.sendMessage(Messages.GetMessages().Translate(MessageName,
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
-                    put("player", PlayerName);
+                    put("player", thingy.toString());
                     put("prefix", Messages.Prefix);
                 }}
             ));
@@ -299,5 +333,10 @@ public class User
         }
         return ret;
     }
+
+	public static boolean PlayerOnlyVariableMessage(String messageName, CommandSender sender, String name,
+			boolean ret) {
+		return false;
+	}
 
 }

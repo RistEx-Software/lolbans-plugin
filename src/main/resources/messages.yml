@@ -12,6 +12,9 @@ PlayerDoesntExist: "{PREFIX}&cError! &7{PLAYER} &cdoesn't exist!"
 PlayerIsOffline: "{PREFIX}&cError! &7{PLAYER} &cis offline!"
 UserRequired: "{PREFIX}&cYou have to be a user to these commands."
 
+Link:
+  LinkedAccountMessage: "&Your Account Link Confirmation Code is {LINKID}"
+
 # MESSAGES
 # BanMessage, {PLAYER} {REASON} {BANNER} {EXPIRY} {BANID}
 # fullexpiry ex: (January 1, 2019 12:30:00 (1 year 2 months 1 week 29 days 55 minutes 10 seconds))
@@ -27,6 +30,19 @@ Ban:
   CannotBanSelf: "{PREFIX}&cYes, you have permissions! You cannot ban yourself!"
   PlayerIsBanned: "{PREFIX}&cError! &7{PLAYER} is already banned!"
   PlayerIsNotBanned: "{PREFIX}&cError! &7{PLAYER} is not banned!"
+
+IPBan:
+  TempIPBanMessage: ""
+  PermIPBanMessage: ""
+  IPBanAnnouncement: ""
+  SilentIPBanAnnouncement: ""
+  UnIPbanAnnouncement: "" 
+  SilentUnIPbanAnnouncement: ""
+  CannotIPBanSelf: ""
+  IPIsBanned: ""
+  IPIsNotBanned: ""
+  Insanity: ""
+
 
 Banwave:
   AddedToWave: "{PREFIX}&7{PLAYER} &chas been added to the next ban wave."
