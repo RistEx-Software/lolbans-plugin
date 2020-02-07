@@ -4,8 +4,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,6 +20,7 @@ import inet.ipaddr.IPAddress;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 
 import me.zacherycoleman.lolbans.Main;
@@ -163,6 +167,32 @@ public class User
         return false;
     }
 
+    public static boolean StaffHasHistory(CommandSender user)
+    {
+        try 
+        {
+            PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM BannedPlayers, BannedHistory, Warnings, MutedHistory, MutedPlayers, Kicks WHERE ExecutionerUUID = ? LIMIT 1");
+            
+            if (user instanceof Player)
+            {
+                OfflinePlayer user2 = (OfflinePlayer) user;
+                ps.setString(1, user2.getUniqueId().toString());
+            }
+            else if (user instanceof ConsoleCommandSender)
+            {
+                ps.setString(1, "console");
+            }
+            
+
+            return ps.executeQuery().next();
+        }
+        catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
     public static boolean IsPlayerMuted(OfflinePlayer user)
     {
         try 
@@ -179,6 +209,7 @@ public class User
         return false;
     }
 
+    // FIXME: Return a Future<> instead of an OfflinePlayer
     public static OfflinePlayer FindPlayerByBanID(String BanID)
     {
         // Try stupid first. If the BanID is just a nickname, then avoid DB queries.
@@ -188,34 +219,43 @@ public class User
         
         try 
         {
-            PreparedStatement ps = self.connection.prepareStatement("SELECT UUID FROM BannedPlayers WHERE PunishID = ? LIMIT 1");
-            ps.setString(1, BanID);
-            ResultSet rs = ps.executeQuery();
+            PreparedStatement bplay = self.connection.prepareStatement("SELECT UUID FROM BannedPlayers WHERE PunishID = ? LIMIT 1");
+            PreparedStatement bhist = self.connection.prepareStatement("SELECT UUID FROM BannedHistory WHERE PunishID = ? LIMIT 1");
+            bplay.setString(1, BanID);
+            bhist.setString(1, BanID);
+
+            Future<Optional<ResultSet>> bhres = DatabaseUtil.ExecuteLater(bhist);
+            Optional<ResultSet> bpres = DatabaseUtil.ExecuteLater(bplay).get();
             
-            if (rs.next())
+            if (bpres.isPresent())
             {
-                UUID uuid = UUID.fromString(rs.getString("UUID"));
-                op = Bukkit.getOfflinePlayer(uuid);
+                ResultSet res = bpres.get();
+                if (res.next())
+                {
+                    UUID uuid = UUID.fromString(res.getString("UUID"));
+                    op = Bukkit.getOfflinePlayer(uuid);
+                }
 
                 // Try and query from history
                 if (op == null)
                 {
-                    ps = self.connection.prepareStatement("SELECT UUID FROM BannedHistory WHERE PunishID = ? LIMIT 1");
-                    ps.setString(1, BanID);
-                    rs = ps.executeQuery();
-
-                    if (rs.next())
+                    Optional<ResultSet> opt = bhres.get();
+                    if (opt.isPresent())
                     {
-                        uuid = UUID.fromString(rs.getString("UUID"));
-                        op = Bukkit.getOfflinePlayer(uuid);
-                        return op;
+                        res = opt.get();
+                        if (res.next())
+                        {
+                            UUID uuid = UUID.fromString(res.getString("UUID"));
+                            op = Bukkit.getOfflinePlayer(uuid);
+                            return op;
+                        }
                     }
                 }
                 else
                     return op;
             }
         }
-        catch (SQLException ex)
+        catch (SQLException | InterruptedException | ExecutionException ex)
         {
             ex.printStackTrace();
         }

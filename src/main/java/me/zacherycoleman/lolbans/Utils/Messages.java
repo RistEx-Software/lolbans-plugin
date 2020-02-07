@@ -3,6 +3,7 @@ package me.zacherycoleman.lolbans.Utils; // Zachery's package owo
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Arrays;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -117,5 +118,15 @@ public class Messages
         if (ConfigMessage == null)
             throw new InvalidConfigurationException("Configuration Node is invalid or does not exist: " + ConfigNode);
         return TranslationUtil.Translate(ConfigMessage, "&", Variables);
+    }
+
+    public static String ConcatenateRest(String[] args, int offset, String delim)
+    {
+        return args.length > 1 ? String.join(delim, Arrays.copyOfRange(args, offset, args.length)) : args[1];
+    }
+
+    public static String ConcatenateRest(String[] args, int offset)
+    {
+        return Messages.ConcatenateRest(args, offset, " ");
     }
 }

@@ -33,8 +33,10 @@ import me.zacherycoleman.lolbans.Commands.Warn.WarnCommand;
 import me.zacherycoleman.lolbans.Commands.Ban.BanCommand;
 import me.zacherycoleman.lolbans.Commands.Ban.UnbanCommand;
 import me.zacherycoleman.lolbans.Commands.Ban.BanWaveCommand;
-import me.zacherycoleman.lolbans.Commands.Misc.HistoryCommand;
+import me.zacherycoleman.lolbans.Commands.History.HistoryCommand;
+import me.zacherycoleman.lolbans.Commands.Misc.BroadcastCommand;
 import me.zacherycoleman.lolbans.Commands.Misc.KickCommand;
+import me.zacherycoleman.lolbans.Commands.Misc.ReportCommand;
 import me.zacherycoleman.lolbans.Commands.Mute.UnmuteCommand;
 import me.zacherycoleman.lolbans.Commands.Mute.MuteCommand;
 import me.zacherycoleman.lolbans.Listeners.AsyncChatListener;
@@ -116,6 +118,8 @@ public final class Main extends JavaPlugin
         this.getCommand("mute").setExecutor(new MuteCommand());
         this.getCommand("unmute").setExecutor(new UnmuteCommand());
         this.getCommand("kick").setExecutor(new KickCommand());
+        this.getCommand("broadcast").setExecutor(new BroadcastCommand());
+        this.getCommand("report").setExecutor(new ReportCommand());
         
         // Used if the admin does /reload confirm
         for (Player p : Bukkit.getOnlinePlayers())

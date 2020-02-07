@@ -1,45 +1,32 @@
-package me.zacherycoleman.lolbans.Commands.Ban;
+package me.zacherycoleman.lolbans.Commands.History;
 
-import org.bukkit.Bukkit;
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.OfflinePlayer;
 
 import me.zacherycoleman.lolbans.Main;
-import me.zacherycoleman.lolbans.Utils.BanID;
-import me.zacherycoleman.lolbans.Utils.Configuration;
-import me.zacherycoleman.lolbans.Utils.DatabaseUtil;
-import me.zacherycoleman.lolbans.Utils.DiscordUtil;
-import me.zacherycoleman.lolbans.Utils.TimeUtil;
-import me.zacherycoleman.lolbans.Utils.TranslationUtil;
-import me.zacherycoleman.lolbans.Utils.User;
 import me.zacherycoleman.lolbans.Utils.Messages;
 import me.zacherycoleman.lolbans.Utils.PermissionUtil;
+import me.zacherycoleman.lolbans.Utils.TimeUtil;
+import me.zacherycoleman.lolbans.Utils.User;
 
-import java.sql.*;
-import java.util.Arrays;
-import java.time.Duration;
-import java.lang.Long;
-import java.util.Optional;
-import java.util.TreeMap;
-import java.util.concurrent.Future;
+public class StaffHistoryCommand implements CommandExecutor {
 
-import javax.lang.model.util.ElementScanner6;
-
-
-public class BanCommand implements CommandExecutor
-{
     private static Main self = Main.getPlugin(Main.class);
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) 
     {
-        if (PermissionUtil.Check(sender, "lolbans.ban"))
+        /*
+        if (PermissionUtil.Check(sender, "lolbans.staffhistory"))
         {
             try 
             {
@@ -64,10 +51,7 @@ public class BanCommand implements CommandExecutor
                     if (target == null)
                         return User.NoSuchPlayer(sender, args[0], true);
 
-                    if (!(sender instanceof ConsoleCommandSender) && target.getUniqueId().equals(((Player) sender).getUniqueId()))
-                        return User.PlayerOnlyVariableMessage("Ban.CannotBanSelf", sender, target.getName(), true);
-
-                    if (User.IsPlayerBanned(target))
+                    if (User.StaffHasHistory(sender))
                         return User.PlayerOnlyVariableMessage("Ban.PlayerIsBanned", sender, target.getName(), true);
 
 
@@ -184,7 +168,9 @@ public class BanCommand implements CommandExecutor
                 return true;
             }
         }
-        // They're denied perms, just return.
+        */
+
         return true;
     }
+
 }

@@ -61,3 +61,8 @@ commands:
         Use /warn <player> [-s] <reason>
   accept:
     description: accept a warning
+  broadcast:
+    description: Broadcast a message to all online players
+    usage: |
+      Syntax Error!
+      Use /broadcast <message>

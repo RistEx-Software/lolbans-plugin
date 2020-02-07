@@ -1,4 +1,4 @@
-package me.zacherycoleman.lolbans.Commands.Misc;
+package me.zacherycoleman.lolbans.Commands.History;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
