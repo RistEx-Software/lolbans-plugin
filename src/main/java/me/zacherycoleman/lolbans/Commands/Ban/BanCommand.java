@@ -50,6 +50,10 @@ public class BanCommand implements CommandExecutor
                     reason = reason.replace(",", "").trim();
                     OfflinePlayer target = User.FindPlayerByBanID(args[0]);
                     Timestamp bantime = null;
+
+                    // So, we need to get the UUID of punisher so we can display the icons on the website
+                    // but, because console doesn't have a UUID, we have to make on, so if it's console
+                    // that's executing the command, just make their uuid console, plus it's simple to type :P
                     String euuid = null;
 
                     if (sender instanceof ConsoleCommandSender)
@@ -58,6 +62,7 @@ public class BanCommand implements CommandExecutor
                     else if (sender instanceof Player)
                         euuid = ((Player) sender).getUniqueId().toString();
 
+                    // debugging
                     Long now = System.currentTimeMillis();
                     sender.sendMessage(ChatColor.GRAY + "Processing... please wait.");
 
@@ -139,7 +144,7 @@ public class BanCommand implements CommandExecutor
                         p.sendMessage(BanAnnouncement);
                     }
 
-                    String SimplifiedMessage = Messages.GetMessages().Translate(silent ? "Discord.SimplifiedMessageSilent" : "Discord.SimplifiedMessage",
+                    String SimplifiedMessage = Messages.GetMessages().Translate(silent ? "Discord.SimpMessageSilentBan" : "Discord.SimpMessageBan",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
                             put("prefix", Messages.Prefix);
@@ -152,6 +157,8 @@ public class BanCommand implements CommandExecutor
                             put("dateexpiry", FuckingJava4);
                         }}
                     );
+
+                    // debugging
                     Long later = System.currentTimeMillis();
                     Long thingy = later - now;
                     sender.sendMessage(ChatColor.GRAY + "Done! " + ChatColor.RED + thingy + "ms");

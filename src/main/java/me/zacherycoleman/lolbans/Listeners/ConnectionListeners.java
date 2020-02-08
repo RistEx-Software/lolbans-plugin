@@ -47,6 +47,7 @@ public class ConnectionListeners implements Listener
      * Our event listeners.
      */
 
+     // What are you doing here? I'm confused by it, I wont touch it.
     @EventHandler
     public void OnPlayerConnect(PlayerJoinEvent event) 
     {
@@ -120,7 +121,7 @@ public class ConnectionListeners implements Listener
                         put("fullexpiry", Expiry != null ? String.format("%s (%s)", TimeUtil.TimeString(Expiry), TimeUtil.Expires(Expiry)) : "Never");
                         put("expiryduration", Expiry != null ? TimeUtil.Expires(Expiry) : "Never");
                         put("dateexpiry", Expiry != null ? TimeUtil.TimeString(Expiry) : "Never");
-                        put("banid", result.getString("BanID"));
+                        put("banid", result.getString("PunishID"));
                     }};
 
                     IPBanMessage = Messages.GetMessages().Translate(Expiry != null ? "IPBan.IPBanTempMessage" : "IPBan.IPBanPermMessage", Variables);
@@ -197,7 +198,7 @@ public class ConnectionListeners implements Listener
                             put("player", result.getString("PlayerName"));
                             put("reason", result.getString("Reason"));
                             put("issuer", result.getString("Executioner"));
-                            put("warnid", result.getString("WarnID"));
+                            put("warnid", result.getString("PunishID"));
                         }}
                     );
                     

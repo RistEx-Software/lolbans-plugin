@@ -1,8 +1,16 @@
 Discord:
-  SimplifiedMessage: ":hammer: **{BANNER} banned **{PLAYER}** for **{REASON}** *{BANID}*"
-  SimplifiedMessageUnban: ":hammer: **{BANNER}** un-banned **{PLAYER}** for **{REASON}** *{BANID}*"
-  SimplifiedMessageSilent: ":hammer: **{BANNER}** banned **{PLAYER}** for **{REASON}** *[SILENT] {BANID}*"
-  SimplifiedMessageSilentUnban: ":hammer: **{BANNER}** un-banned **{PLAYER}** for **{REASON}** *[SILENT] {BANID}*"
+  SimpMessageBan: ":hammer: **{BANNER}** banned **{PLAYER}** for **{REASON}** [#*{BANID}*]"
+  SimpMessageUnban: ":hammer: **{BANNER}** un-banned **{PLAYER}** for **{REASON}** [#*{BANID}*]"
+  SimpMessageSilentBan: ":hammer: **{BANNER}** banned **{PLAYER}** for **{REASON}** *[SILENT]* [#*{BANID}*]"
+  SimpMessageSilentUnban: ":hammer: **{BANNER}** un-banned **{PLAYER}** for **{REASON}** *[SILENT]* [#*{BANID}*]"
+  SimpMessageMute: ":hammer: **{BANNER}** muted **{PLAYER}** for **{REASON}** [#*{MUTEID}*]"
+  SimpMessageUnmute: ":hammer: **{BANNER}** un-muted **{PLAYER}** for **{REASON}** [#*{MUTEID}*]"
+  SimpMessageSilentMute: ":hammer: **{BANNER}** muted **{PLAYER}** for **{REASON}** *[SILENT]* [#*{MUTEID}*]"
+  SimpMessageSilentUnmute: ":hammer: **{BANNER}** un-muted **{PLAYER}** for **{REASON}** *[SILENT]* [#*{MUTEID}*]"
+  SimpMessageKick: ":hammer: **{BANNER}** kicked **{PLAYER}** for **{REASON}** [#*{KICKID}*]"
+  SimpMessageSilentKick: ":hammer: **{BANNER}** kicked **{PLAYER}** for **{REASON}** *[SILENT]* [#*{KICKID}*]"
+  SimpMessageWarn: ":hammer: **{BANNER}** warned **{PLAYER}** for **{REASON}** [#*{WARNID}*]"
+  SimpMessageSilentWarn: ":hammer: **{BANNER}** warned **{PLAYER}** for **{REASON}** *[SILENT]* [#*{WARNID}*]"
 
 Prefix: "&c<LolBans> "
 InvalidSyntax: "{PREFIX}&cInvalid Syntax!"
@@ -14,6 +22,11 @@ UserRequired: "{PREFIX}&cYou have to be a user to these commands."
 
 Link:
   LinkedAccountMessage: "&Your Account Link Confirmation Code is {LINKID}"
+
+Report:
+  ReasonRequired: "{PREFIX}&cError! You must provide a reason for reporting {PLAYER}"
+  # {REASON} is also a possible config option.
+  ReportSuccess: "{PREFIX}&aThank you for reporting &7{PLAYER}&a!"
 
 # MESSAGES
 # BanMessage, {PLAYER} {REASON} {BANNER} {EXPIRY} {BANID}

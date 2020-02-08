@@ -54,5 +54,6 @@ public class Configuration
         DiscordUtil.SimplifiedMessageSilent = config.getString("Discord.SimplifiedMessageSilent");
         DiscordUtil.SimplifiedMessageSilentUnban = config.getString("Discord.SimplifiedMessageUnbanSilent"); */
         DiscordUtil.WebhookProfilePicture = config.getString("Discord.WebhookProfilePicture");
+        DiscordUtil.ReportWebhook = config.getString("Discord.ReportWebhook");
     }
 }

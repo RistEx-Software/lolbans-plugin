@@ -164,7 +164,7 @@ public class MuteCommand implements CommandExecutor
                     p.sendMessage(MuteAnnouncement);
                 }
 
-                String SimplifiedMessage = Messages.GetMessages().Translate(silent ? "Discord.SimplifiedMessageSilent" : "Discord.SimplifiedMessage",
+                String SimplifiedMessage = Messages.GetMessages().Translate(silent ? "Discord.SimpMessageSilentMute" : "Discord.SimpMessageMute",
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
                         put("player", target.getName());

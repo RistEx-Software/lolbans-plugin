@@ -46,12 +46,12 @@ public class MuteChatCommand implements CommandExecutor
         if (self.ChatMuted)
         {
             Bukkit.broadcastMessage(Messages.GetMessages().GetConfig().getString("Mute.GlobalMuted"));
-            DiscordUtil.SendFormatted("%s has muted the chat.", sender.getName());
+            //DiscordUtil.SendFormatted("%s has muted the chat.", sender.getName());
         }
         else
         {
             Bukkit.broadcastMessage(Messages.GetMessages().GetConfig().getString("Mute.GlobalUnmuted"));
-            DiscordUtil.SendFormatted("%s has un-muted the chat.", sender.getName());
+            //DiscordUtil.SendFormatted("%s has un-muted the chat.", sender.getName());
         }
         return true;
     }

@@ -21,6 +21,7 @@ database:
 
 Discord:
   Webhook: https://discordapp.com/api/webhooks/645266026694574097/UCUHIg3jfnd5Y8C58Csl2sEVMwn4x-NpWB2xiOlKNbzKI-SBvqXixJWKLyJyZEVP0icp
+  ReportWebhook: https://discordapp.com/api/webhooks/645266026694574097/UCUHIg3jfnd5Y8C58Csl2sEVMwn4x-NpWB2xiOlKNbzKI-SBvqXixJWKLyJyZEVP0icp
   # Example: mod banned iZachery for abusing villagers [SILENT] [#B-BF7BD5C85]
   UseSimplifiedMessage: false
   WebhookProfilePicture: "https://i.imgur.com/mKRAesS.png"

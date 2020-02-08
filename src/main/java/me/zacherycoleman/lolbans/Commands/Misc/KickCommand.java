@@ -16,6 +16,7 @@ import me.zacherycoleman.lolbans.Utils.BanID;
 import me.zacherycoleman.lolbans.Utils.Configuration;
 import me.zacherycoleman.lolbans.Utils.DiscordUtil;
 import me.zacherycoleman.lolbans.Utils.TimeUtil;
+import me.zacherycoleman.lolbans.Utils.TranslationUtil;
 import me.zacherycoleman.lolbans.Utils.User;
 import me.zacherycoleman.lolbans.Utils.Messages;
 import me.zacherycoleman.lolbans.Utils.DatabaseUtil;
@@ -107,7 +108,7 @@ public class KickCommand implements CommandExecutor
                     put("kicker", sender.getName());
                 }};
 
-                String KickAnnouncement = Messages.GetMessages().Translate(silent ? "Warn.SilentKickAnnouncement" : "Kick.KickAnnouncement", Variables);
+                String KickAnnouncement = Messages.GetMessages().Translate(silent ? "Kick.SilentKickAnnouncement" : "Kick.KickAnnouncement", Variables);
 
                 // Kick the player
                 User.KickPlayer(sender.getName(), (Player) target, kickid, reason);
@@ -124,16 +125,34 @@ public class KickCommand implements CommandExecutor
                     p.sendMessage(KickAnnouncement);
                 }
 
-                // Send to Discord. (New method)
-                if (sender instanceof ConsoleCommandSender)
+                if (DiscordUtil.UseSimplifiedMessage == true)
+                {
+                    String SimplifiedMessageUnban = Messages.GetMessages().Translate(silent ? "Discord.SimpMessageSilentKick" : "Discord.SimpMessageKick",
+                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                        {{
+                            put("player", target.getName());
+                            put("reason", FuckingJava);
+                            put("banner", sender.getName());
+                            put("kickid", kickid);
+                        }}
+                    );
+
+                    DiscordUtil.SendFormatted(SimplifiedMessageUnban);
+                    return true;
+                }
+                else if (sender instanceof ConsoleCommandSender)
+                {
+                    
                     DiscordUtil.SendKick(sender.getName().toString(), target.getName(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", target.getUniqueId().toString(), reason, kickid, silent);
+                }
                 else
                 {
-                    DiscordUtil.SendKick(sender.getName().toString(), target.getName(), 
-                            ((Entity) sender).getUniqueId().toString(), target.getUniqueId().toString(), reason, kickid, silent);
+                    DiscordUtil.SendKick(sender.getName().toString(), target.getName(),
+                            // if they're the console, use a hard-defined UUID instead of the player's UUID.
+                            (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((OfflinePlayer) sender).getUniqueId().toString(),
+                            target.getUniqueId().toString(), reason, kickid, silent);
+                    return true;
                 }
-
-                return true;
             }
             else
             {
@@ -147,5 +166,6 @@ public class KickCommand implements CommandExecutor
             sender.sendMessage(Messages.ServerError);
             return true;
         }
+        return true;
     }
 }

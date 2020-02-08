@@ -56,6 +56,7 @@ public class ReportCommand implements CommandExecutor
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
                             put("prefix", Messages.Prefix);
+                            put("player", username);
                         }}
                     ));
                     // SHow the syntax.
@@ -82,7 +83,7 @@ public class ReportCommand implements CommandExecutor
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
                             put("prefix", Messages.Prefix);
-                            put("username", u.getName());
+                            put("player", u.getName());
                             put("reason", reason);
                         }}
                     ));

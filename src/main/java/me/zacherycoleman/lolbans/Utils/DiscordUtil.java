@@ -33,11 +33,22 @@ public class DiscordUtil
 {
     public static String Webhook;
     public static Boolean UseSimplifiedMessage;
-    public static String SimplifiedMessage;
-    public static String SimplifiedMessageUnban;
-    public static String SimplifiedMessageSilent;
-    public static String SimplifiedMessageSilentUnban;
+    
+    public static String SimpMessageBan;
+    public static String SimpMessageUnban;
+    public static String SimpMessageSilentBan;
+    public static String SimpMessageSilentUnban;
+    public static String SimpMessageMute;
+    public static String SimpMessageUnmute;
+    public static String SimpMessageSilentMute;
+    public static String SimpMessageSilentUnmute;
+    public static String SimpMessageKick;
+    public static String SimpMessageSilentKick;
+    public static String SimpMessageWarn;
+    public static String SimpMessageSilentWarn;
+
     public static String WebhookProfilePicture;
+    public static String ReportWebhook;
 
         //sender.getName().toString(), target.getName(), 
         //((Entity) sender).getUniqueId().toString(), target.getUniqueId().toString(), reason, silent
@@ -459,12 +470,12 @@ public class DiscordUtil
                 temmie.sendMessage(dm);
         }
 
-        public static void SendFormatted(String message, Object... args)
+        public static void SendFormatted(String message)
         {
                 TemmieWebhook temmie = new TemmieWebhook(Webhook);
                 DiscordMessage dm = DiscordMessage.builder()
                         .username("LolBans") // We are creating a message with the username "Temmie"...
-                        .content(message + args) // with this content...
+                        .content(message) // with this content...
                         .avatarUrl(DiscordUtil.WebhookProfilePicture) // with this avatar...
                         .build(); // and now we build the message!
                         

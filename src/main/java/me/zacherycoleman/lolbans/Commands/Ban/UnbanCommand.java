@@ -124,7 +124,8 @@ public class UnbanCommand implements CommandExecutor
 
                 if (DiscordUtil.UseSimplifiedMessage == true)
                 {
-                    String SimplifiedMessageUnban = TranslationUtil.Translate(self.getConfig().getString(silent ? "SimplifiedMessageSilentUnban" : "SimplifiedMessageUnban"), "&",
+                    
+                    String SimplifiedMessageUnban = Messages.GetMessages().Translate(silent ? "Discord.SimpMessageSilentUnban" : "Discord.SimpMessageUnban",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
                             put("player", target.getName());
@@ -134,7 +135,7 @@ public class UnbanCommand implements CommandExecutor
                         }}
                     );
 
-                    DiscordUtil.SendFormatted(SimplifiedMessageUnban, sender.getName());
+                    DiscordUtil.SendFormatted(SimplifiedMessageUnban);
                     return true;
                 }
                 else

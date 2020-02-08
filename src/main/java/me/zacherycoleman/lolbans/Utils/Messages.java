@@ -17,6 +17,7 @@ public class Messages
     private FileConfiguration CustomConfig;
     private static Messages localself = null;
 
+    // Everything else
     public static String Prefix;
     public static String ServerError;
     public static String BanwaveStart;
@@ -38,8 +39,6 @@ public class Messages
     public static String WarnAnnouncment;
     public static String WarnedMessage;
     public static String WarnKickMessage;
-    public static String SimplifiedMessageSilent;
-    public static String SimplifiedMessage;
     public static String SilentUnmuteAnnouncment;
     public static String UnmuteAnnouncment;
     public static String TempIPBanMessage;
@@ -52,6 +51,20 @@ public class Messages
     public static String IPIsBanned;
     public static String IPIsNotBanned;
     public static String Insanity;
+
+    // Discord simplified messages
+    public static String SimpMessageBan;
+    public static String SimpMessageUnban;
+    public static String SimpMessageSilentBan;
+    public static String SimpMessageSilentUnban;
+    public static String SimpMessageMute;
+    public static String SimpMessageUnmute;
+    public static String SimpMessageSilentMute;
+    public static String SimpMessageSilentUnmute;
+    public static String SimpMessageKick;
+    public static String SimpMessageSilentKick;
+    public static String SimpMessageWarn;
+    public static String SimpMessageSilentWarn;
 
     // Initialized by our GetMessages() function.
     protected Messages()
@@ -89,12 +102,28 @@ public class Messages
         // Messages
         Messages.Prefix = this.CustomConfig.getString("Prefix").replace("&", "\u00A7");
         Messages.InvalidSyntax = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("InvalidSyntax"));
-        Messages.SimplifiedMessageSilent = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimplifiedMessageSilent"));
-        Messages.SimplifiedMessage = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimplifiedMessage"));
+        
+        // Discord simplified message
+        DiscordUtil.SimpMessageBan = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageBan"));
+        DiscordUtil.SimpMessageUnban = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageUnban"));
+        DiscordUtil.SimpMessageSilentBan = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageSilentBan"));
+        DiscordUtil.SimpMessageSilentUnban = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageSilentUnban"));
+        DiscordUtil.SimpMessageMute = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageMute"));
+        DiscordUtil.SimpMessageUnmute = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageUnmute"));
+        DiscordUtil.SimpMessageSilentMute = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageSilentMute"));
+        DiscordUtil.SimpMessageSilentUnmute = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageSilentUnmute"));
+        DiscordUtil.SimpMessageKick = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageKick"));
+        DiscordUtil.SimpMessageSilentKick = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageSilentKick"));
+        DiscordUtil.SimpMessageWarn = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageWarn"));
+        DiscordUtil.SimpMessageSilentWarn = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageSilentWarn"));
+
+        // Ban messages
         Messages.SilentBanAnnouncement = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Ban.SilentBanAnnouncement"));
         Messages.BanAnnouncement = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Ban.BanAnnouncement"));
         Messages.UnbanAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Ban.UnbanAnnouncment"));
         Messages.SilentUnbanAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Ban.SilentUnbanAnnouncment"));
+
+        // Mute messages
         Messages.SilentUnmuteAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Mute.SilentUnmuteAnnouncment"));
         Messages.UnmuteAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Mute.UnmuteAnnouncment"));
         //Messages.TempIPBanMessage = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.TempIPBanMessage"));

@@ -47,6 +47,7 @@ public class WarnCommand implements CommandExecutor
             // just incase someone, magically has a 1 char name........
             if (!(args.length < 1 || args == null))
             {
+                // FIXME: "-s" isn't parsed out of the message.
                 String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length)) : args[1];
                 reason = reason.replace(",", "").trim();
                 OfflinePlayer target = User.FindPlayerByBanID(args[0]);
@@ -104,8 +105,28 @@ public class WarnCommand implements CommandExecutor
                     put("warner", sender.getName());
                 }};
                     
-                String WarnedMessage = Messages.GetMessages().Translate("Warn.WarnedMessage", Variables);
-                String WarnAnnouncement = Messages.GetMessages().Translate(silent ? "Warn.SilentWarnAnnouncment" : "Warn.WarnAnnouncment", Variables);
+                //String WarnedMessage = Messages.GetMessages().Translate("Warn.WarnedMessage", Variables);
+                //String WarnAnnouncement = Messages.GetMessages().Translate(silent ? "Warn.SilentWarnAnnouncment" : "Warn.WarnAnnouncment", Variables);
+
+                String WarnedMessage = Messages.GetMessages().Translate("Warn.WarnedMessage",
+                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                    {{
+                        put("player", target.getName());
+                        put("reason", FuckingJava);
+                        put("warnid", warnid);
+                        put("warner", sender.getName());
+                    }}
+                );
+
+                String WarnAnnouncement = Messages.GetMessages().Translate("Warn.WarnAnnouncment",
+                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                    {{
+                        put("player", target.getName());
+                        put("reason", FuckingJava);
+                        put("warnid", warnid);
+                        put("warner", sender.getName());
+                    }}
+                );
 
                 // Send a message to the player
                 if (target.isOnline())
@@ -132,14 +153,34 @@ public class WarnCommand implements CommandExecutor
                     p.sendMessage(WarnAnnouncement);
                 }
 
+                String SimplifiedMessage = Messages.GetMessages().Translate(silent ? "Discord.SimpMessageSilentWarn" : "Discord.SimpMessageWarn",
+                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                    {{
+                        put("player", target.getName());
+                        put("reason", FuckingJava);
+                        put("banner", sender.getName());
+                        put("warnid", warnid);
+                    }}
+                );
+
                 // Send to Discord. (New method)
-                if (sender instanceof ConsoleCommandSender)
-                    DiscordUtil.SendWarn(sender.getName().toString(), target.getName(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", target.getUniqueId().toString(), reason, warnid, silent);
+                if (DiscordUtil.UseSimplifiedMessage == true)
+                {
+                    DiscordUtil.SendFormatted(SimplifiedMessage);
+                    return true;
+                }
                 else
                 {
-                    DiscordUtil.SendWarn(sender.getName().toString(), target.getName(), 
-                            ((Entity) sender).getUniqueId().toString(), target.getUniqueId().toString(), reason, warnid, silent);
+                    // Send to Discord. (New method)
+                    if (sender instanceof ConsoleCommandSender)
+                    DiscordUtil.SendWarn(sender.getName().toString(), target.getName(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", target.getUniqueId().toString(), reason, warnid, silent);
+                    else
+                    {
+                        DiscordUtil.SendWarn(sender.getName().toString(), target.getName(), 
+                                ((Entity) sender).getUniqueId().toString(), target.getUniqueId().toString(), reason, warnid, silent);
+                    }
                 }
+
 
                 return true;
 

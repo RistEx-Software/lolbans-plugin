@@ -81,21 +81,6 @@ public class UnmuteCommand implements CommandExecutor
                     sender.sendMessage(Messages.ServerError);
                     return true;
                 }
-                // Log to console.
-                // Format our messages.
-                String UnmuteMessage = Messages.GetMessages().Translate("Mute.YouWereUnMuted",
-                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                    {{
-                        put("prefix", Messages.Prefix);
-                        put("player", target.getName());
-                        put("reason", FuckingJava);
-                        put("muter", sender.getName());
-                        put("muteid", MuteID);
-                        put("silent", (silent ? " [silent]" : ""));
-                    }}
-                );
-
-                Bukkit.getConsoleSender().sendMessage(UnmuteMessage);
 
                 // Post that to the database.
                 for (Player p : Bukkit.getOnlinePlayers())
@@ -129,11 +114,17 @@ public class UnmuteCommand implements CommandExecutor
                     put("muteid", MuteID);
                 }}
                 );
-
-                if (target instanceof Player)
+                
+                if (target instanceof Player && target.isOnline())
                 {
                     Player target2 = (Player) target;
                     target2.sendMessage(YouWereUnMuted);
+                }
+                else
+                {
+                    // You cannot mute console.
+                    sender.sendMessage(Messages.GetMessages().GetConfig().getString("Mute.CannotMuteConsole"));
+                    return true;
                 }
 
                 /* 
@@ -151,17 +142,17 @@ public class UnmuteCommand implements CommandExecutor
 
                 if (DiscordUtil.UseSimplifiedMessage == true)
                 {
-                    String SimplifiedMessageUnban = TranslationUtil.Translate(self.getConfig().getString(silent ? "SimplifiedMessageSilentUnban" : "SimplifiedMessageUnban"), "&",
+                    String SimplifiedMessageUnban = Messages.GetMessages().Translate(silent ? "Discord.SimpMessageSilentUnmute" : "Discord.SimpMessageUnmute",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
                             put("player", target.getName());
                             put("reason", FuckingJava);
                             put("banner", sender.getName());
-                            put("banid", MuteID);
+                            put("muteid", MuteID);
                         }}
                     );
 
-                    DiscordUtil.SendFormatted(SimplifiedMessageUnban, sender.getName());
+                    DiscordUtil.SendFormatted(SimplifiedMessageUnban);
                     return true;
                 }
                 else
