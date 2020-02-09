@@ -18,6 +18,7 @@ import me.zacherycoleman.lolbans.Utils.TranslationUtil;
 import me.zacherycoleman.lolbans.Utils.User;
 import me.zacherycoleman.lolbans.Utils.Messages;
 import me.zacherycoleman.lolbans.Utils.PermissionUtil;
+import me.zacherycoleman.lolbans.Utils.TimeUtil;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -74,8 +75,10 @@ public class UnbanCommand implements CommandExecutor
                 result.next();
                 String BanID = result.getString("PunishID");
 
+                Timestamp timeremoved = new Timestamp(TimeUtil.GetUnixTime() * 1000L);
+
                 // Run the async task for the database
-                Future<Boolean> UnBan = DatabaseUtil.UnBan(target.getUniqueId().toString(), target.getName(), reason, sender, euuid);
+                Future<Boolean> UnBan = DatabaseUtil.UnBan(target.getUniqueId().toString(), target.getName(), reason, sender, euuid, timeremoved);
 
                 // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
                 if (!UnBan.get())

@@ -1,7 +1,7 @@
 
 Basis of plugin design: https://www.spigotmc.org/resources/litebans.3715/
 
-Completed/In Progress
+In Progress
 3. Staff history and mass unbans to undo (optionally within time range)
 1. IP bans using CIDRs
 19. /staffhistory
@@ -29,7 +29,7 @@ Completed/In Progress
 4. Server scopes (to allow for per-server punishments)
 
 # WAYYYYY FUTURE:
-1. Cross-server compatibility (lol)
+1. Cross-API compatibility (lol)
 2. Cross-database compatibility
 3. Allow shell-command executed ip bans to use for iptables and similar command line firewalls.
 4. Inventory GUI (or just make an API for lolbans and have someone else do it, because it'll happen)

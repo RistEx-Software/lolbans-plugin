@@ -18,6 +18,7 @@ import me.zacherycoleman.lolbans.Utils.TranslationUtil;
 import me.zacherycoleman.lolbans.Utils.User;
 import me.zacherycoleman.lolbans.Utils.Messages;
 import me.zacherycoleman.lolbans.Utils.PermissionUtil;
+import me.zacherycoleman.lolbans.Utils.TimeUtil;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -72,8 +73,10 @@ public class UnmuteCommand implements CommandExecutor
                 result.next();
                 String MuteID = result.getString("PunishID");
 
+                Timestamp timeremoved = new Timestamp(TimeUtil.GetUnixTime() * 1000L);
+
                 // Run the async task for the database
-                Future<Boolean> UnMute = DatabaseUtil.UnMute(target.getUniqueId().toString(), target.getName(), reason, sender ,euuid);
+                Future<Boolean> UnMute = DatabaseUtil.UnMute(target.getUniqueId().toString(), target.getName(), reason, sender, euuid, timeremoved);
 
                 // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
                 if (!UnMute.get())
@@ -120,7 +123,7 @@ public class UnmuteCommand implements CommandExecutor
                     Player target2 = (Player) target;
                     target2.sendMessage(YouWereUnMuted);
                 }
-                else
+                else if (target instanceof ConsoleCommandSender)
                 {
                     // You cannot mute console.
                     sender.sendMessage(Messages.GetMessages().GetConfig().getString("Mute.CannotMuteConsole"));
