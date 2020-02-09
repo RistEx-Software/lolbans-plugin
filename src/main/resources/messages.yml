@@ -27,6 +27,8 @@ Report:
   ReasonRequired: "{PREFIX}&cError! You must provide a reason for reporting {PLAYER}"
   # {REASON} is also a possible config option.
   ReportSuccess: "{PREFIX}&aThank you for reporting &7{PLAYER}&a!"
+  # Message sent to everyone who is important
+  ReportAnnouncement: "{PREFIX}&e{REPORTER} has reported {PLAYER}: &f{REASON}"
 
 # MESSAGES
 # BanMessage, {PLAYER} {REASON} {BANNER} {EXPIRY} {BANID}
@@ -55,6 +57,7 @@ IPBan:
   IPIsBanned: ""
   IPIsNotBanned: ""
   Insanity: ""
+  IPAltNotification: "{PREFIX} &c{PLAYER} joined, is alt account of {BANNEDPLAYER} &7[{IPADDRESS}]"
 
 
 Banwave:

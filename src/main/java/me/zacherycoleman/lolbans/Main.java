@@ -33,6 +33,7 @@ import me.zacherycoleman.lolbans.Commands.Warn.WarnCommand;
 import me.zacherycoleman.lolbans.Commands.Ban.BanCommand;
 import me.zacherycoleman.lolbans.Commands.Ban.UnbanCommand;
 import me.zacherycoleman.lolbans.Commands.Ban.BanWaveCommand;
+import me.zacherycoleman.lolbans.Commands.Ban.IPBanCommand;
 import me.zacherycoleman.lolbans.Commands.History.HistoryCommand;
 import me.zacherycoleman.lolbans.Commands.Misc.BroadcastCommand;
 import me.zacherycoleman.lolbans.Commands.Misc.KickCommand;
@@ -109,6 +110,7 @@ public final class Main extends JavaPlugin
 
         // Register commands
         this.getCommand("ban").setExecutor(new BanCommand());
+        //this.getCommand("ipban").setExecutor(new IPBanCommand());
         this.getCommand("unban").setExecutor(new UnbanCommand());
         this.getCommand("history").setExecutor(new HistoryCommand());
         this.getCommand("clearhistory").setExecutor(new HistoryCommand());

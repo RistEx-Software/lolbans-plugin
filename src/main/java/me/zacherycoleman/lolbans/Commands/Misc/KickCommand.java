@@ -134,8 +134,7 @@ public class KickCommand implements CommandExecutor
                             put("reason", FuckingJava);
                             put("banner", sender.getName());
                             put("kickid", kickid);
-                        }}
-                    );
+                        }});
 
                     DiscordUtil.SendFormatted(SimplifiedMessageUnban);
                     return true;

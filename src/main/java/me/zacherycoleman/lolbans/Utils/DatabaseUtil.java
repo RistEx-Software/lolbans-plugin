@@ -121,6 +121,30 @@ public class DatabaseUtil
         return t;
     }
 
+    public static Future<Void> ExecuteUpdate(PreparedStatement statement)
+    {
+        FutureTask<Void> t = new FutureTask<>(new Callable<Void>()
+        {
+            @Override
+            public Void call()
+            {
+                //This is where you should do your database interaction
+                try 
+                {
+                    statement.executeUpdate();
+                } 
+                catch (SQLException e) 
+                {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        });
+
+        self.pool.execute(t);
+        return t;
+    }
+
     public static Future<Boolean> InsertBan(String UUID, String PlayerName, String IPAddress, String Reason, CommandSender Executioner, String ExecutionerUUID, String BanID, Timestamp BanTime) throws SQLException
     {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()

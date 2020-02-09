@@ -37,7 +37,7 @@ public class ConnectionListeners implements Listener
 {
     private static Main self = Main.getPlugin(Main.class);
 
-    private static HashMap<UUID, String> LinkMessages;
+    private static HashMap<UUID, String> LinkMessages = null;
 
     /************************************************************************************
      * Convenience Functions
@@ -53,6 +53,10 @@ public class ConnectionListeners implements Listener
     {
         Main.USERS.put(event.getPlayer().getUniqueId(), new User(event.getPlayer()));
 
+        if (LinkMessages != null)
+            LinkMessages = new HashMap<UUID, String>();
+
+        // Link accounts via the website
         String JoinMessage = LinkMessages.get(event.getPlayer().getUniqueId());
         if (JoinMessage != null)
             event.getPlayer().sendMessage(JoinMessage);
@@ -219,16 +223,20 @@ public class ConnectionListeners implements Listener
             {
                 OfflinePlayer p = Bukkit.getOfflinePlayer(altaccount);
                 // Send a message to all ops with broadcast perms.
-                BroadcastUtil.BroadcastOps(Messages.GetMessages().Translate("IPBans.IPAltNotification", 
+                BroadcastUtil.BroadcastOps(Messages.GetMessages().Translate("IPBan.IPAltNotification", 
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) 
                     {{
+                        put("prefix", Messages.Prefix);
                         put("player", event.getName());
                         put("bannedplayer", p.getName());
                     }}
                 ));
             }
 
+            if (LinkMessages != null)
+                LinkMessages = new HashMap<UUID, String>();
 
+            LinkMessages.put(event.getUniqueId(), LinkedAccountMessage);
 
             // They're not banned and have no pending warnings, allow them to connect or other plugins to perform their actions.
         }

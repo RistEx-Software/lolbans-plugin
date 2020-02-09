@@ -44,10 +44,10 @@ public class ReportCommand implements CommandExecutor
         try 
         {
             // /report <player> <reason>
-            if (args.length > 2)
+            if (args.length >= 2)
             {
-                String username = args[1];
-                String reason = Messages.ConcatenateRest(args, 2).trim();
+                String username = args[0];
+                String reason = Messages.ConcatenateRest(args, 1).trim();
 
                 // They must have *something* in their report message.
                 if (reason.isEmpty())
@@ -70,14 +70,14 @@ public class ReportCommand implements CommandExecutor
                 try
                 {
                     int i = 1;
-                    PreparedStatement ps = self.connection.prepareStatement("INSERT INTO Reports (PlaintiffUUID, PlaintiffName, DefendantUUID, DefendantName, Reason) VALUES (?, ?, ?, ?)");
+                    PreparedStatement ps = self.connection.prepareStatement("INSERT INTO Reports (PlaintiffUUID, PlaintiffName, DefendantUUID, DefendantName, Reason) VALUES (?, ?, ?, ?, ?)");
                     ps.setString(i++, sender instanceof ConsoleCommandSender ? "console" : ((Player)sender).getUniqueId().toString());
                     ps.setString(i++, sender instanceof ConsoleCommandSender ? "console" : ((Player)sender).getName());
                     ps.setString(i++, u.getUniqueId().toString());
                     ps.setString(i++, u.getName());
                     ps.setString(i++, reason);
 
-                    DatabaseUtil.ExecuteLater(ps);
+                    DatabaseUtil.ExecuteUpdate(ps);
 
                     sender.sendMessage(Messages.GetMessages().Translate("Report.ReportSuccess",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
@@ -87,6 +87,21 @@ public class ReportCommand implements CommandExecutor
                             put("reason", reason);
                         }}
                     ));
+
+                    String AnnounceMessage = Messages.GetMessages().Translate("Report.ReportAnnouncement",
+                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                        {{
+                            put("prefix", Messages.Prefix);
+                            put("player", u.getName());
+                            put("reporter", sender.getName());
+                            put("reason", reason);
+                        }}
+                    );
+
+                    self.getLogger().warning(AnnounceMessage);
+
+                    for (Player p : Bukkit.getOnlinePlayers())
+                        p.sendMessage(AnnounceMessage);
 
                     // TODO: Discord notifs, email notifs, whatever else notifs?
 
