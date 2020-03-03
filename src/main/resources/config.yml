@@ -4,6 +4,8 @@ General:
   # Allow anyone who has been /op'ed to bypass all permission checks
   # (effectively making them have the same control as console)
   OpsBypassPermissions: false
+  # How much time to wait until reports expire (Default is 3d)
+  ReportExpiry: 3d
 
 database:
   host: localhost
@@ -20,11 +22,11 @@ database:
   QueryUpdate: 30
 
 Discord:
-  Webhook: https://discordapp.com/api/webhooks/645266026694574097/UCUHIg3jfnd5Y8C58Csl2sEVMwn4x-NpWB2xiOlKNbzKI-SBvqXixJWKLyJyZEVP0icp
-  ReportWebhook: https://discordapp.com/api/webhooks/645266026694574097/UCUHIg3jfnd5Y8C58Csl2sEVMwn4x-NpWB2xiOlKNbzKI-SBvqXixJWKLyJyZEVP0icp
+  Webhook: https://discordapp.com/api/webhooks/675967628707102721/t0MTV1d4sdLwWvZw4cnUTe5Y5NOhpTruaIqC3fRJBzBedPIFTOn2dARX8QC9LYHum7SM
+  ReportWebhook: https://discordapp.com/api/webhooks/675967628707102721/t0MTV1d4sdLwWvZw4cnUTe5Y5NOhpTruaIqC3fRJBzBedPIFTOn2dARX8QC9LYHum7SM
   # Example: mod banned iZachery for abusing villagers [SILENT] [#B-BF7BD5C85]
   UseSimplifiedMessage: false
-  WebhookProfilePicture: "https://i.imgur.com/mKRAesS.png"
+  WebhookProfilePicture: "https://icon2.kisspng.com/20180407/jlw/kisspng-face-with-tears-of-joy-emoji-laughter-smile-crying-crying-5ac88fc80a4968.8005591115230934480421.jpg"
 
 BanSettings:
   # Prevents over-reaching bans 

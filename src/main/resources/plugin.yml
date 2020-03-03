@@ -1,6 +1,6 @@
 name: LolBans
 version: ${project.version}
-main: me.zacherycoleman.lolbans.Main
+main: com.ristexsoftware.lolbans.Main
 api-version: 1.13
 authors: [Zachery Coleman, Justasic]
 description: A ban system for minecraft, nothing fancy
@@ -12,6 +12,11 @@ commands:
     usage: |
           Syntax Error!
           Use /ban <player> <ban time|*> <reason>
+  ipban:
+    description: Ban an ip address or CIDR range
+    usage: |
+          Syntax Error!
+          Use /ipban [-s] <ip address>[/<cidr>] <ban time|*> <reason>
   kick:
     description: Ban a player
     usage: |

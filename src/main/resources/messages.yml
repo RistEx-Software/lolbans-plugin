@@ -28,7 +28,9 @@ Report:
   # {REASON} is also a possible config option.
   ReportSuccess: "{PREFIX}&aThank you for reporting &7{PLAYER}&a!"
   # Message sent to everyone who is important
-  ReportAnnouncement: "{PREFIX}&e{REPORTER} has reported {PLAYER}: &f{REASON}"
+  ReportAnnouncement: "{PREFIX}&c{REPORTER} &7has reported &c{PLAYER}&7: &c{REASON}"
+  # If a user attempts to report a player more than once
+  TooManyTries: "{PREFIX}&cYou have already filed a report against &7{PLAYER}&c!"
 
 # MESSAGES
 # BanMessage, {PLAYER} {REASON} {BANNER} {EXPIRY} {BANID}
@@ -47,17 +49,18 @@ Ban:
   PlayerIsNotBanned: "{PREFIX}&cError! &7{PLAYER} is not banned!"
 
 IPBan:
-  TempIPBanMessage: ""
-  PermIPBanMessage: ""
-  IPBanAnnouncement: ""
-  SilentIPBanAnnouncement: ""
-  UnIPbanAnnouncement: "" 
-  SilentUnIPbanAnnouncement: ""
-  CannotIPBanSelf: ""
-  IPIsBanned: ""
-  IPIsNotBanned: ""
-  Insanity: ""
-  IPAltNotification: "{PREFIX} &c{PLAYER} joined, is alt account of {BANNEDPLAYER} &7[{IPADDRESS}]"
+  PermIPBanMessage: "&cThe IP &7{IPADDRESS} &chas been TEMPORARILY suspended from &7My Network &cuntil &7 {DATEEXPIRY}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+  TempIPBanMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+  SilentTempIPBanMessage: "3"
+  SilentPermIPBanMessage: "4"
+  UnIPbanAnnouncement: "5" 
+  SilentUnIPbanAnnouncement: "6"
+  CannotIPBanSelf: "7"
+  IPIsBanned: "{PREFIX}&cError! &7{PLAYER} is already banned!"
+  IPIsNotBanned: "9"
+  Insanity: "{PREFIX}&cBanning {ipaddress} would ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
+  IPAltNotification: "{PREFIX}&c{PLAYER} joined, is alt account of {BANNEDPLAYER} &7[{IPADDRESS}]"
+  
 
 
 Banwave:
@@ -96,11 +99,7 @@ Warn:
   WarnedOnAction: "{PREFIX}&cYou have been warned and cannot perform that action!\n{PREFIX}&cPlease acknowledge that you've been warned by typing &a/accept."
   WarnKickMessage: "&cYou have been warned!\n\n&cReason: {REASON}\n\n&7By rejoining you acknowledge that you've been warned!"
   AcceptMessage: "&aThank you for accepting, you may resume your gameplay!"
-
-IPBan:
-  IPBanPermMessage: "&cThe IP &7{IPADDRESS} &chas been TEMPORARILY suspended from &7My Network &cuntil &7 {DATEEXPIRY}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#B-{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
-  IPBanTempMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#B-{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
-  IPAltNotification: "&e[WARNING]&c {PLAYER} may be an alt account for {BANNEDPLAYER}."
+  
 
 History:
   HistoryMessage: "Some long thing here {History.kljahdfjklasdfkjlashdf} (exluding the unban section) blah blah blah blah blah"

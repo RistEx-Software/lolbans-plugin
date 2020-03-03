@@ -1,37 +1,62 @@
 
 Basis of plugin design: https://www.spigotmc.org/resources/litebans.3715/
 
-In Progress
-3. Staff history and mass unbans to undo (optionally within time range)
-1. IP bans using CIDRs
-19. /staffhistory
 
-# TODO
-0. Add message prefix to all messages (so they all say [lolbans] or whatever optionally// maybe make this a default arg inside arrays in MessageUtil?)
-1. Hover text (JSON)
-2. REST api for website.
-3. Mass unbans (??)
-4. Ensure targets can be names, uuids, ip addresses, or ip address ranges (CIDRs).
 
-5. /dupeip, /iphistory, /ipreport
-6. Lockdown support (incl., per-server lockdowns)
-7. Timezones???
-8. ALL THE PERMISSION NODESSSSSSSSS~~~~
-9. /prunehistory 
-10. Player-side /report functionality
-11. ???? Ensure multithreaded/asynchronous database queries for most/all things (we don't ever want to hang the main thread).
-12. Support IP bans by hostname
+The "Lite" version of lolbans should have everything litebans has, plus a little more
+the full version of lolbans should have everything under the sun (it's $20, it better have lots of features) this includes stupid thingys like
+analytics and other dumb shit, basically the full version is a core plugin with everything related to analytics and punishments.
+while the lite version is just strictly punishments.
 
+
+##########################################
+Minimum Viable Product (MVP) / Feature Freeze:
+##########################################
+ - report needs to broadcast only to staff - Zachery
+ - IP bans/unbans/whatever using CIDRs - Justin
+ - /staffhistory - Staff history and mass unbans to undo - Zachery/Justin
+ - Hover Text (JSON) - Zachery/Justin?
+ - Make "My Network" configurable like PREFIX in messages.yml - Justin
+ - /dupeip, /iphistory - Justin/Zachery
+ - /prunehistory <Player|PunishID|CIDR> <Distance In Time|*> - Zachery?
+ - IP banning based on hostnames (eg, banning *.stacksmash.net) -- requires rDNS implementation. - Justin
+ - All commands need rewrite to be async (player runs command, onCommand() return immediately but runs command in thread unless bukkit is an ass about API calls) - Justin/maybe Zachery
+ - /history needs to be converted to use messages.yml instead of hard-coded strings - Zachery
+ - Permissions (make sure they're granular enough?) - Zachery
+ - TESTING TESTING TESTING TESTING TESTING!!! - everyone!
+
+##########################################
+# Future (or nice to have after the MVP)
+##########################################
+1. Add scoring system to reports (if x amount of reports in y amount of time block command for z amount of time)
+2. reputation system? (if x player is reported y amount of times by whatever amount of people, they get points taken from them,
+    if they hit a certain amount of points, they get kicked/banned/muted/whatever is configured) (or +1 for kicks/warns +3 for bans and whatnot and so on)
+3. Report types (Cheating, Chat, ETC)
+4. analytics?
+5. REST api for website.
+6. Mass unbans (??)
+7. Ensure targets can be names, uuids, ip addresses, or ip address ranges (CIDRs).
+8. Lockdown support (incl., per-server lockdowns)
+9. Timezones???
+10. Support IP bans by hostname
+11. Link reports to bans if a report is marked for punishment by staff
+
+##########################################
 # Cross-Server stuffs
+##########################################
 1. Bans
 2. Kicks
 3. Broadcasts
 4. Server scopes (to allow for per-server punishments)
 
+##########################################
 # WAYYYYY FUTURE:
+##########################################
 1. Cross-API compatibility (lol)
 2. Cross-database compatibility
 3. Allow shell-command executed ip bans to use for iptables and similar command line firewalls.
 4. Inventory GUI (or just make an API for lolbans and have someone else do it, because it'll happen)
 5. GeoIP support
 6. Regex Name Bans.
+7. Import punishments from other plugins
+8. Local file storage instead of databases
