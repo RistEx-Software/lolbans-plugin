@@ -53,10 +53,9 @@ public class ReportCommand implements CommandExecutor
                 // They must have *something* in their report message.
                 if (reason.isEmpty())
                 {
-                    sender.sendMessage(Messages.GetMessages().Translate("Report.ReasonRequired",
+                    sender.sendMessage(Messages.Translate("Report.ReasonRequired",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
-                            put("prefix", Messages.Prefix);
                             put("player", username);
                         }}
                     ));
@@ -85,10 +84,9 @@ public class ReportCommand implements CommandExecutor
                             ResultSet res = bnyeh.get();
                             if (res.next())
                             {
-                                sender.sendMessage(Messages.GetMessages().Translate("Report.TooManyTries",
+                                sender.sendMessage(Messages.Translate("Report.TooManyTries",
                                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                                     {{
-                                        put("prefix", Messages.Prefix);
                                         put("player", u.getName());
                                     }}
                                 ));
@@ -108,19 +106,17 @@ public class ReportCommand implements CommandExecutor
 
                     DatabaseUtil.ExecuteUpdate(ps);
 
-                    sender.sendMessage(Messages.GetMessages().Translate("Report.ReportSuccess",
+                    sender.sendMessage(Messages.Translate("Report.ReportSuccess",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
-                            put("prefix", Messages.Prefix);
                             put("player", u.getName());
                             put("reason", reason);
                         }}
                     ));
 
-                    String AnnounceMessage = Messages.GetMessages().Translate("Report.ReportAnnouncement",
+                    String AnnounceMessage = Messages.Translate("Report.ReportAnnouncement",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
-                            put("prefix", Messages.Prefix);
                             put("player", u.getName());
                             put("reporter", sender.getName());
                             put("reason", reason);

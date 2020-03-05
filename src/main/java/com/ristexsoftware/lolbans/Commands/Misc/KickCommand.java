@@ -108,7 +108,7 @@ public class KickCommand implements CommandExecutor
                     put("kicker", sender.getName());
                 }};
 
-                String KickAnnouncement = Messages.GetMessages().Translate(silent ? "Kick.SilentKickAnnouncement" : "Kick.KickAnnouncement", Variables);
+                String KickAnnouncement = Messages.Translate(silent ? "Kick.SilentKickAnnouncement" : "Kick.KickAnnouncement", Variables);
 
                 // Kick the player
                 User.KickPlayer(sender.getName(), (Player) target, kickid, reason);
@@ -127,7 +127,7 @@ public class KickCommand implements CommandExecutor
 
                 if (DiscordUtil.UseSimplifiedMessage == true)
                 {
-                    String SimplifiedMessageUnban = Messages.GetMessages().Translate(silent ? "Discord.SimpMessageSilentKick" : "Discord.SimpMessageKick",
+                    String SimplifiedMessageUnban = Messages.Translate(silent ? "Discord.SimpMessageSilentKick" : "Discord.SimpMessageKick",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
                             put("player", target.getName());

@@ -73,10 +73,9 @@ public class PlayerEventListener
                 // TODO: Add {ISSUER}, {PLAYER}, and {REASON} to this message.
                 try
                 {
-                    p.sendMessage(Messages.GetMessages().Translate("Warn.WarnedOnAction", 
+                    p.sendMessage(Messages.Translate("Warn.WarnedOnAction", 
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
-                            put("prefix", Messages.Prefix);
                         }}
                     ));
                 }

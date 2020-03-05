@@ -64,8 +64,8 @@ public class FreezeCommand implements CommandExecutor
                                 put("freezer", sender.getName());
                             }};
                                 
-                            String FrozenMessage = Messages.GetMessages().Translate("Freeze.FrozenMessage", Variables);
-                            String FrozenAnnouncement = Messages.GetMessages().Translate(silent ? "Freeze.SilentFreezeAnnouncement" : "Freeze.FreezeAnnouncement", Variables);
+                            String FrozenMessage = Messages.Translate("Freeze.FrozenMessage", Variables);
+                            String FrozenAnnouncement = Messages.Translate(silent ? "Freeze.SilentFreezeAnnouncement" : "Freeze.FreezeAnnouncement", Variables);
     
                             // Send a message to the player
                             if (target.isOnline())
@@ -112,8 +112,8 @@ public class FreezeCommand implements CommandExecutor
                                 put("freezer", sender.getName());
                             }};
                                 
-                            String FrozenMessage = Messages.GetMessages().Translate("Freeze.UnFrozenMessage", Variables);
-                            String FrozenAnnouncement = Messages.GetMessages().Translate(silent ? "Freeze.SilentUnfreezeAnnouncement" : "Freeze.UnfreezeAnnouncement", Variables);
+                            String FrozenMessage = Messages.Translate("Freeze.UnFrozenMessage", Variables);
+                            String FrozenAnnouncement = Messages.Translate(silent ? "Freeze.SilentUnfreezeAnnouncement" : "Freeze.UnfreezeAnnouncement", Variables);
     
                             // Send a message to the player
                             if (target.isOnline())

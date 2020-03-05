@@ -100,7 +100,6 @@ Warn:
   WarnKickMessage: "&cYou have been warned!\n\n&cReason: {REASON}\n\n&7By rejoining you acknowledge that you've been warned!"
   AcceptMessage: "&aThank you for accepting, you may resume your gameplay!"
   
-
 History:
   HistoryMessage: "Some long thing here {History.kljahdfjklasdfkjlashdf} (exluding the unban section) blah blah blah blah blah"
   HistoryUbanned: "Uban Reason: {unbreasons} {latest}"

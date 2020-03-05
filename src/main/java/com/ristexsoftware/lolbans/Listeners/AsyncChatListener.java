@@ -59,10 +59,9 @@ public class AsyncChatListener implements Listener
                     String YouAreMuted;
                     try 
                     {
-                        YouAreMuted = Messages.GetMessages().Translate("Mute.YouAreMuted",
+                        YouAreMuted = Messages.Translate("Mute.YouAreMuted",
                             new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) 
                             {{
-                                put("prefix", Messages.Prefix);
                                 put("player", event.getPlayer().getName());
                                 put("reason", result.getString("Reason"));
                                 put("banner", result.getString("Executioner"));

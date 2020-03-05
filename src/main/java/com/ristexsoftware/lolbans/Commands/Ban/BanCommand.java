@@ -118,10 +118,9 @@ public class BanCommand implements CommandExecutor
                         User.KickPlayer(sender.getName(), (Player)target, banid, reason, bantime);
 
                     // Format our messages.
-                    String BanAnnouncement = Messages.GetMessages().Translate(silent ? "Ban.SilentBanAnnouncement" : "Ban.BanAnnouncement",
+                    String BanAnnouncement = Messages.Translate(silent ? "Ban.SilentBanAnnouncement" : "Ban.BanAnnouncement",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
-                            put("prefix", Messages.Prefix);
                             put("player", target.getName());
                             put("reason", FuckingJava);
                             put("banner", sender.getName());
@@ -144,10 +143,9 @@ public class BanCommand implements CommandExecutor
                         p.sendMessage(BanAnnouncement);
                     }
 
-                    String SimplifiedMessage = Messages.GetMessages().Translate(silent ? "Discord.SimpMessageSilentBan" : "Discord.SimpMessageBan",
+                    String SimplifiedMessage = Messages.Translate(silent ? "Discord.SimpMessageSilentBan" : "Discord.SimpMessageBan",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
-                            put("prefix", Messages.Prefix);
                             put("player", target.getName());
                             put("reason", FuckingJava);
                             put("banner", sender.getName());

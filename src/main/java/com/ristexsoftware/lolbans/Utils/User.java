@@ -268,7 +268,7 @@ public class User
         try
         {
             // (String message, String ColorChars, Map<String, String> Variables)
-            String KickMessage = Messages.GetMessages().Translate(BanTime != null ? "Ban.TempBanMessage" : "Ban.PermBanMessage",
+            String KickMessage = Messages.Translate(BanTime != null ? "Ban.TempBanMessage" : "Ban.PermBanMessage",
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("player", target.getName());
@@ -293,7 +293,7 @@ public class User
         try
         {
             // (String message, String ColorChars, Map<String, String> Variables)
-            String KickMessage = Messages.GetMessages().Translate(BanTime != null ? "IPBan.TempIPBanMessage" : "IPBan.PermIPBanMessage",
+            String KickMessage = Messages.Translate(BanTime != null ? "IPBan.TempIPBanMessage" : "IPBan.PermIPBanMessage",
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("player", target.getName());
@@ -319,7 +319,7 @@ public class User
         try
         {
             // (String message, String ColorChars, Map<String, String> Variables)
-            String KickMessage = Messages.GetMessages().Translate("Kick.KickMessage",
+            String KickMessage = Messages.Translate("Kick.KickMessage",
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("player", target.getName());
@@ -359,7 +359,7 @@ public class User
     {
         try 
         {
-            sender.sendMessage(Messages.GetMessages().Translate(MessageName,
+            sender.sendMessage(Messages.Translate(MessageName,
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("player", thingy.toString());

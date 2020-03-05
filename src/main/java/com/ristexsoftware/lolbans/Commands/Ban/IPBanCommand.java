@@ -84,10 +84,9 @@ public class IPBanCommand implements CommandExecutor
             // Format our messages.
             try {
                 final int fuckingfinal = affected;
-                String Insanity = Messages.GetMessages().Translate("IPBan.Insanity",
+                String Insanity = Messages.Translate("IPBan.Insanity",
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
-                        put("prefix", Messages.Prefix);
                         put("ipaddress", String.valueOf(bnyeh));
                         put("AFFECTEDPLAYERS", String.valueOf(fuckingfinal));
                         put("TOTALPLAYERS", String.valueOf(TotalOnline));
@@ -175,10 +174,9 @@ public class IPBanCommand implements CommandExecutor
 
             // Format our messages.
             String messagenode = silent ? (bantime != null ? "IPBan.SilentTempIPBanMessage" : "IPBan.SilentPermIPBanMessage") : (bantime != null ? "IPBan.TempIPBanMessage" : "IPBan.PermIPBanMessage");
-            String IPBanAnnouncement = Messages.GetMessages().Translate(messagenode,
+            String IPBanAnnouncement = Messages.Translate(messagenode,
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
-                    put("prefix", Messages.Prefix);
                     put("player", thingy.toString());
                     put("reason", reason);
                     put("banner", sender.getName());

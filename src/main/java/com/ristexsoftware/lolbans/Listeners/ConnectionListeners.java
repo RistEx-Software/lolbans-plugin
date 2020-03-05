@@ -130,7 +130,7 @@ public class ConnectionListeners implements Listener
                         put("banid", result.getString("PunishID"));
                     }};
 
-                    IPBanMessage = Messages.GetMessages().Translate(Expiry != null ? "IPBan.TempIPBanMessage" : "IPBan.PermIPBanMessage", Variables);
+                    IPBanMessage = Messages.Translate(Expiry != null ? "IPBan.TempIPBanMessage" : "IPBan.PermIPBanMessage", Variables);
                 }
             }
 
@@ -144,7 +144,7 @@ public class ConnectionListeners implements Listener
                 ResultSet result = LinkedResult.get();
                 if (result.next())
                 {
-                    TempMsg = Messages.GetMessages().Translate("Link.LinkedAccountMessage",
+                    TempMsg = Messages.Translate("Link.LinkedAccountMessage",
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
                         put("LinkID", result.getString("LinkID"));
@@ -176,7 +176,7 @@ public class ConnectionListeners implements Listener
                         put("LinkMessage", LinkedAccountMessage);
                     }};
                     //(String message, String ColorChars, Map<String, String> Variables)
-                    event.disallow(Result.KICK_BANNED, Messages.GetMessages().Translate(BanTime != null ? "Ban.TempBanMessage" : "Ban.PermBanMessage", Variables));
+                    event.disallow(Result.KICK_BANNED, Messages.Translate(BanTime != null ? "Ban.TempBanMessage" : "Ban.PermBanMessage", Variables));
                     return;
                 }
             }
@@ -198,7 +198,7 @@ public class ConnectionListeners implements Listener
                 ResultSet result = WarnResult.get();
                 if (result.next())
                 {
-                    String WarnKickMessage = Messages.GetMessages().Translate("Warn.WarnKickMessage",
+                    String WarnKickMessage = Messages.Translate("Warn.WarnKickMessage",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
                             put("player", result.getString("PlayerName"));
@@ -225,14 +225,17 @@ public class ConnectionListeners implements Listener
             {
                 OfflinePlayer p = Bukkit.getOfflinePlayer(altaccount);
                 // Send a message to all ops with broadcast perms.
-                BroadcastUtil.BroadcastOps(Messages.GetMessages().Translate("IPBan.IPAltNotification", 
+                String Message = Messages.Translate("IPBans.IPAltNotification", 
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) 
                     {{
-                        put("prefix", Messages.Prefix);
                         put("player", event.getName());
                         put("bannedplayer", p.getName());
                     }}
-                ));
+                );
+
+                BroadcastUtil.BroadcastOps(Message);
+                self.getLogger().warning(Message);
+                // TODO: Send to discord?
             }
 
             LinkMessages.put(event.getUniqueId(), LinkedAccountMessage);

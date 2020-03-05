@@ -55,6 +55,10 @@ FreezeSettings:
   BoxMaterial: Barrier
   FreezePlayer: true
 
+IPBanSettings:
+  # Optionally specify how wide reaching the ban will go
+  InsanePercentage: 90
+
 # Draw a box around the ban message!
 # WARNING! If their window is smaller than the box length, it will text-wrap
 # Removed due to how minecraft handles whitespace.................

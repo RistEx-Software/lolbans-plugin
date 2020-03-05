@@ -99,7 +99,7 @@ public class UnbanCommand implements CommandExecutor
 
                     //"&c%banner% &7has banned &c%player%&7: &c%reason%"
             
-                    String UnbanAnnouncementMessage = Messages.GetMessages().Translate(silent ? "Ban.SilentUnbanAnnouncment" : "Ban.UnbanAnnouncment",
+                    String UnbanAnnouncementMessage = Messages.Translate(silent ? "Ban.SilentUnbanAnnouncment" : "Ban.UnbanAnnouncment",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
                             put("player", target.getName());
@@ -128,7 +128,7 @@ public class UnbanCommand implements CommandExecutor
                 if (DiscordUtil.UseSimplifiedMessage == true)
                 {
                     
-                    String SimplifiedMessageUnban = Messages.GetMessages().Translate(silent ? "Discord.SimpMessageSilentUnban" : "Discord.SimpMessageUnban",
+                    String SimplifiedMessageUnban = Messages.Translate(silent ? "Discord.SimpMessageSilentUnban" : "Discord.SimpMessageUnban",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
                             put("player", target.getName());

@@ -19,6 +19,7 @@ public class Messages
 
     // Everything else
     public static String Prefix;
+    public static String NetworkName;
     public static String ServerError;
     public static String BanwaveStart;
     public static String TempBanMessage;
@@ -101,6 +102,7 @@ public class Messages
 
         // Messages
         Messages.Prefix = this.CustomConfig.getString("Prefix").replace("&", "\u00A7");
+        Messages.NetworkName = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("NetworkName"));
         Messages.InvalidSyntax = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("InvalidSyntax"));
         
         // Discord simplified message
@@ -141,11 +143,15 @@ public class Messages
         return this.CustomConfig;
     }
 
-    public String Translate(String ConfigNode, Map<String, String> Variables) throws InvalidConfigurationException
+    public static String Translate(String ConfigNode, Map<String, String> Variables) throws InvalidConfigurationException
     {
-        String ConfigMessage = this.CustomConfig.getString(ConfigNode);
+        String ConfigMessage = GetMessages().CustomConfig.getString(ConfigNode);
         if (ConfigMessage == null)
             throw new InvalidConfigurationException("Configuration Node is invalid or does not exist: " + ConfigNode);
+
+        Variables.put("prefix", Messages.Prefix);
+        Variables.put("networkname", Messages.NetworkName);
+
         return TranslationUtil.Translate(ConfigMessage, "&", Variables);
     }
 

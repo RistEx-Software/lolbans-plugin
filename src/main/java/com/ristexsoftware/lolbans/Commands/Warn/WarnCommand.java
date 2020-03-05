@@ -105,10 +105,10 @@ public class WarnCommand implements CommandExecutor
                     put("warner", sender.getName());
                 }};
                     
-                //String WarnedMessage = Messages.GetMessages().Translate("Warn.WarnedMessage", Variables);
-                //String WarnAnnouncement = Messages.GetMessages().Translate(silent ? "Warn.SilentWarnAnnouncment" : "Warn.WarnAnnouncment", Variables);
+                //String WarnedMessage = Messages.Translate("Warn.WarnedMessage", Variables);
+                //String WarnAnnouncement = Messages.Translate(silent ? "Warn.SilentWarnAnnouncment" : "Warn.WarnAnnouncment", Variables);
 
-                String WarnedMessage = Messages.GetMessages().Translate("Warn.WarnedMessage",
+                String WarnedMessage = Messages.Translate("Warn.WarnedMessage",
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
                         put("player", target.getName());
@@ -118,7 +118,7 @@ public class WarnCommand implements CommandExecutor
                     }}
                 );
 
-                String WarnAnnouncement = Messages.GetMessages().Translate("Warn.WarnAnnouncment",
+                String WarnAnnouncement = Messages.Translate("Warn.WarnAnnouncment",
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
                         put("player", target.getName());
@@ -153,7 +153,7 @@ public class WarnCommand implements CommandExecutor
                     p.sendMessage(WarnAnnouncement);
                 }
 
-                String SimplifiedMessage = Messages.GetMessages().Translate(silent ? "Discord.SimpMessageSilentWarn" : "Discord.SimpMessageWarn",
+                String SimplifiedMessage = Messages.Translate(silent ? "Discord.SimpMessageSilentWarn" : "Discord.SimpMessageWarn",
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
                         put("player", target.getName());

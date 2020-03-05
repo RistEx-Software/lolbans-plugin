@@ -51,7 +51,7 @@ public class BanWaveCommand implements CommandExecutor
 
                 if (!(sender instanceof ConsoleCommandSender) && target.getUniqueId().equals(((Player) sender).getUniqueId()))
                 {
-                    sender.sendMessage(Messages.Prefix + Messages.GetMessages().Translate("Banwave.CannotAddSelf", null));
+                    sender.sendMessage(Messages.Translate("Banwave.CannotAddSelf", null));
                     return true;
                 }
 
@@ -90,10 +90,9 @@ public class BanWaveCommand implements CommandExecutor
                 // TODO: Log to everyone with the alert permission?
                 // FIXME: Silents?
                 // Format our messages.
-                String BanWaveAnnouncement = Messages.GetMessages().Translate(silent ? "BanWave.AddedToWave" : "BanWave.AddedToWave",
+                String BanWaveAnnouncement = Messages.Translate(silent ? "BanWave.AddedToWave" : "BanWave.AddedToWave",
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
-                        put("prefix", Messages.Prefix);
                         put("player", target.getName());
                         put("reason", FuckingJava);
                         put("banner", sender.getName());

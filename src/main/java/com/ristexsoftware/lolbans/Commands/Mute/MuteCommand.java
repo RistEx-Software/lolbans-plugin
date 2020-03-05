@@ -111,10 +111,9 @@ public class MuteCommand implements CommandExecutor
                 //if (target instanceof Player)
                 //    User.KickPlayer(sender.getName(), (Player)target, muteid, reason, bantime);
                 // TODO: Send mute message?
-                String YouWereMuted = Messages.GetMessages().Translate("Mute.YouWereMuted",
+                String YouWereMuted = Messages.Translate("Mute.YouWereMuted",
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
-                        put("prefix", Messages.Prefix);
                         put("player", target.getName());
                         put("reason", FuckingJava);
                         put("muter", sender.getName());
@@ -138,10 +137,9 @@ public class MuteCommand implements CommandExecutor
                 }
 
                 // Format our messages.
-                String MuteAnnouncement = Messages.GetMessages().Translate(silent ? "Mute.SilentMuteAnnouncement" : "Mute.MuteAnnouncement",
+                String MuteAnnouncement = Messages.Translate(silent ? "Mute.SilentMuteAnnouncement" : "Mute.MuteAnnouncement",
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
-                        put("prefix", Messages.Prefix);
                         put("player", target.getName());
                         put("reason", FuckingJava);
                         put("muter", sender.getName());
@@ -164,7 +162,7 @@ public class MuteCommand implements CommandExecutor
                     p.sendMessage(MuteAnnouncement);
                 }
 
-                String SimplifiedMessage = Messages.GetMessages().Translate(silent ? "Discord.SimpMessageSilentMute" : "Discord.SimpMessageMute",
+                String SimplifiedMessage = Messages.Translate(silent ? "Discord.SimpMessageSilentMute" : "Discord.SimpMessageMute",
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
                         put("player", target.getName());
