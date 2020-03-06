@@ -142,11 +142,11 @@ public class KickCommand implements CommandExecutor
                 else if (sender instanceof ConsoleCommandSender)
                 {
                     
-                    DiscordUtil.SendKick(sender.getName().toString(), target.getName(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", target.getUniqueId().toString(), reason, kickid, silent);
+                    DiscordUtil.SendDiscord(sender.getName().toString(), "kicked", target.getName(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", target.getUniqueId().toString(), reason, kickid, silent);
                 }
                 else
                 {
-                    DiscordUtil.SendKick(sender.getName().toString(), target.getName(),
+                    DiscordUtil.SendDiscord(sender.getName().toString(), "kicked", target.getName(),
                             // if they're the console, use a hard-defined UUID instead of the player's UUID.
                             (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((OfflinePlayer) sender).getUniqueId().toString(),
                             target.getUniqueId().toString(), reason, kickid, silent);

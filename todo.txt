@@ -16,7 +16,6 @@ Minimum Viable Product (MVP) / Feature Freeze:
  - IP bans/unbans/whatever using CIDRs - Justin
  - /staffhistory - Staff history and mass unbans to undo - Zachery/Justin
  - Hover Text (JSON) - Zachery/Justin?
- - Make "My Network" configurable like PREFIX in messages.yml - Justin
  - /dupeip, /iphistory - Justin/Zachery
  - /prunehistory <Player|PunishID|CIDR> <Distance In Time|*> - Zachery?
  - IP banning based on hostnames (eg, banning *.stacksmash.net) -- requires rDNS implementation. - Justin

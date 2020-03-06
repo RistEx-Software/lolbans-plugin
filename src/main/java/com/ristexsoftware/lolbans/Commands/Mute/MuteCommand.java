@@ -180,10 +180,7 @@ public class MuteCommand implements CommandExecutor
                 }
                 else
                 {
-                    DiscordUtil.SendMute(sender.getName().toString(), target.getName(),
-                            // if they're the console, use a hard-defined UUID instead of the player's UUID.
-                            (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((Entity) sender).getUniqueId().toString(), 
-                            target.getUniqueId().toString(), reason, muteid, mutetime, silent);
+                    DiscordUtil.SendDiscord(sender, "muted", target, reason, muteid, mutetime, silent);
                     return true;
                 }
             }

@@ -158,10 +158,7 @@ public class UnmuteCommand implements CommandExecutor
                 }
                 else
                 {
-                    DiscordUtil.SendUnmute(sender.getName().toString(), target.getName(),
-                            // if they're the console, use a hard-defined UUID instead of the player's UUID.
-                            (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((OfflinePlayer) sender).getUniqueId().toString(),
-                            target.getUniqueId().toString(), reason, MuteID, silent);
+                    DiscordUtil.SendDiscord(sender, "un-muted", target, reason, MuteID, silent);
                     return true;
                 }
             }

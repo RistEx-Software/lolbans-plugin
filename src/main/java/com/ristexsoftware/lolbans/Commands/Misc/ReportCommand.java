@@ -126,7 +126,10 @@ public class ReportCommand implements CommandExecutor
                     self.getLogger().warning(AnnounceMessage);
 
                     for (Player p : Bukkit.getOnlinePlayers())
-                        p.sendMessage(AnnounceMessage);
+                    {
+                        if (PermissionUtil.Check(sender, "lolbans.ReceiveReports"))
+                            p.sendMessage(AnnounceMessage);
+                    }
 
                     // TODO: Discord notifs, email notifs, whatever else notifs?
 

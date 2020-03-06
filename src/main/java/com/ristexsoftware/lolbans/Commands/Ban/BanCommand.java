@@ -169,10 +169,7 @@ public class BanCommand implements CommandExecutor
                     }
                     else
                     {
-                        DiscordUtil.Send(sender.getName().toString(), target.getName(),
-                                // if they're the console, use a hard-defined UUID instead of the player's UUID.
-                                (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((Entity) sender).getUniqueId().toString(), 
-                                target.getUniqueId().toString(), reason, banid, bantime, silent);
+                        DiscordUtil.SendDiscord(sender, "banned", target, reason, banid, bantime, silent);
                         return true;
                     }
                 }

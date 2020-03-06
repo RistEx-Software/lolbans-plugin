@@ -24,7 +24,7 @@ public class QueryRunnable extends BukkitRunnable
             {
                 String name = rs.getString("PlayerName"), id = rs.getString("PunishID");
                 self.getLogger().info(String.format("Expiring ban on %s (#%s)", name, id));
-                DiscordUtil.Send(name, id);
+                DiscordUtil.SendFormatted(String.format("Expiring ban on %s (#%s)", name, id));
             }
 
             self.connection.prepareStatement("DELETE FROM BannedPlayers WHERE Expiry IS NOT NULL AND Expiry <= NOW()").executeUpdate();
@@ -36,7 +36,7 @@ public class QueryRunnable extends BukkitRunnable
             {
                 String name = rs2.getString("PlayerName"), id = rs2.getString("PunishID");
                 self.getLogger().info(String.format("Expiring mute on %s (#%s)", name, id));
-                DiscordUtil.Send2(name, id);
+                DiscordUtil.SendFormatted(String.format("Expiring mute on %s (#%s)", name, id));
             }
 
             self.connection.prepareStatement("DELETE FROM MutedPlayers WHERE Expiry IS NOT NULL AND Expiry <= NOW()").executeUpdate();

@@ -172,13 +172,7 @@ public class WarnCommand implements CommandExecutor
                 else
                 {
                     // Send to Discord. (New method)
-                    if (sender instanceof ConsoleCommandSender)
-                    DiscordUtil.SendWarn(sender.getName().toString(), target.getName(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", target.getUniqueId().toString(), reason, warnid, silent);
-                    else
-                    {
-                        DiscordUtil.SendWarn(sender.getName().toString(), target.getName(), 
-                                ((Entity) sender).getUniqueId().toString(), target.getUniqueId().toString(), reason, warnid, silent);
-                    }
+                    DiscordUtil.SendDiscord(sender, "warned", target, reason, warnid, silent);
                 }
 
 
