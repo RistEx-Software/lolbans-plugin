@@ -95,13 +95,15 @@ public class ReportCommand implements CommandExecutor
                         }
                     }
 
+                    String PunishID = BanID.GenerateID(DatabaseUtil.GenID());
 
                     int i = 1;
-                    PreparedStatement ps = self.connection.prepareStatement("INSERT INTO Reports (PlaintiffUUID, PlaintiffName, DefendantUUID, DefendantName, Reason) VALUES (?, ?, ?, ?, ?)");
+                    PreparedStatement ps = self.connection.prepareStatement("INSERT INTO Reports (PlaintiffUUID, PlaintiffName, DefendantUUID, DefendantName, Reason, PunishID) VALUES (?, ?, ?, ?, ?, ?)");
                     ps.setString(i++, sender instanceof ConsoleCommandSender ? "console" : ((Player)sender).getUniqueId().toString());
                     ps.setString(i++, sender instanceof ConsoleCommandSender ? "console" : ((Player)sender).getName());
                     ps.setString(i++, u.getUniqueId().toString());
                     ps.setString(i++, u.getName());
+                    ps.setString(i++, PunishID);
                     ps.setString(i++, reason);
 
                     DatabaseUtil.ExecuteUpdate(ps);
@@ -111,6 +113,7 @@ public class ReportCommand implements CommandExecutor
                         {{
                             put("player", u.getName());
                             put("reason", reason);
+                            put("punishid", PunishID);
                         }}
                     ));
 
@@ -120,6 +123,7 @@ public class ReportCommand implements CommandExecutor
                             put("player", u.getName());
                             put("reporter", sender.getName());
                             put("reason", reason);
+                            put("punishid", PunishID);
                         }}
                     );
 
@@ -131,6 +135,8 @@ public class ReportCommand implements CommandExecutor
                             p.sendMessage(AnnounceMessage);
                     }
 
+                    DiscordUtil.SendDiscord(sender, "reported", u, reason, PunishID, false);
+
                     // TODO: Discord notifs, email notifs, whatever else notifs?
 
                     return true;
@@ -139,7 +145,6 @@ public class ReportCommand implements CommandExecutor
                 {
                     ex.printStackTrace();
                     sender.sendMessage(Messages.ServerError);
-                    return true;
                 }
             }
             else

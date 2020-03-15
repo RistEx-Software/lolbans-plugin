@@ -46,8 +46,7 @@ public class BanCommand implements CommandExecutor
                 // just incase someone, magically has a 1 char name........
                 if (!(args.length < 2 || args == null))
                 {
-                    String reason = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length)) : args[1];
-                    reason = reason.replace(",", "").trim();
+                    String reason = Messages.ConcatenateRest(args, 2).trim();
                     OfflinePlayer target = User.FindPlayerByBanID(args[0]);
                     Timestamp bantime = null;
 
@@ -58,7 +57,6 @@ public class BanCommand implements CommandExecutor
 
                     if (sender instanceof ConsoleCommandSender)
                         euuid = "console";
-
                     else if (sender instanceof Player)
                         euuid = ((Player) sender).getUniqueId().toString();
 
@@ -163,15 +161,9 @@ public class BanCommand implements CommandExecutor
 
                     // Send to Discord. (New method)
                     if (DiscordUtil.UseSimplifiedMessage == true)
-                    {
                         DiscordUtil.SendFormatted(SimplifiedMessage);
-                        return true;
-                    }
                     else
-                    {
                         DiscordUtil.SendDiscord(sender, "banned", target, reason, banid, bantime, silent);
-                        return true;
-                    }
                 }
                 else
                 {
@@ -183,7 +175,6 @@ public class BanCommand implements CommandExecutor
             {
                 e.printStackTrace();
                 sender.sendMessage(Messages.ServerError);
-                return true;
             }
         }
         // They're denied perms, just return.

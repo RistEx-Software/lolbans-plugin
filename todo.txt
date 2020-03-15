@@ -9,10 +9,24 @@ analytics and other dumb shit, basically the full version is a core plugin with 
 while the lite version is just strictly punishments.
 
 
+#########################################
+Business model
+#########################################
+Website is now our profit cabability, make the site similar to how LuckPerms manages permissions except for bans, force license keys to use the site
+for validation, the java plugin is now considered to be a loss (see also: purecore.io).
+
+With the website, we offer real-time analytics, punishments from web, appealing system, etc. This will be offered as a service 
+(the plugin itself will cost whatever amount). The service will be offered at a fixed rate 
+(x amount of free punishments then 0.005 cents per punishments or something stupid). I would like this to be a cheap service for people to use 
+while still making money. (Maybe make the service free and have premium features? For example, you can get punishment stats and punishments from web,
+but you don't get the appeal/reporting system. This needs to be appealing, so it ends up actually making profit, maybe make the plugin beta paid and full release cheaper/free?
+People donate like crazy anyway..)
+
+
+
 ##########################################
 Minimum Viable Product (MVP) / Feature Freeze:
 ##########################################
- - report needs to broadcast only to staff - Zachery
  - IP bans/unbans/whatever using CIDRs - Justin
  - /staffhistory - Staff history and mass unbans to undo - Zachery/Justin
  - Hover Text (JSON) - Zachery/Justin?
@@ -22,23 +36,19 @@ Minimum Viable Product (MVP) / Feature Freeze:
  - All commands need rewrite to be async (player runs command, onCommand() return immediately but runs command in thread unless bukkit is an ass about API calls) - Justin/maybe Zachery
  - /history needs to be converted to use messages.yml instead of hard-coded strings - Zachery
  - Permissions (make sure they're granular enough?) - Zachery
+ - REST api for website.
+ - Report types (Cheating, Chat, ETC)
  - TESTING TESTING TESTING TESTING TESTING!!! - everyone!
 
 ##########################################
 # Future (or nice to have after the MVP)
 ##########################################
-1. Add scoring system to reports (if x amount of reports in y amount of time block command for z amount of time)
-2. reputation system? (if x player is reported y amount of times by whatever amount of people, they get points taken from them,
-    if they hit a certain amount of points, they get kicked/banned/muted/whatever is configured) (or +1 for kicks/warns +3 for bans and whatnot and so on)
-3. Report types (Cheating, Chat, ETC)
-4. analytics?
-5. REST api for website.
-6. Mass unbans (??)
-7. Ensure targets can be names, uuids, ip addresses, or ip address ranges (CIDRs).
-8. Lockdown support (incl., per-server lockdowns)
-9. Timezones???
-10. Support IP bans by hostname
-11. Link reports to bans if a report is marked for punishment by staff
+5. Mass unbans (??)
+6. Ensure targets can be names, uuids, ip addresses, or ip address ranges (CIDRs).
+7. Lockdown support (incl., per-server lockdowns)
+8. Timezones???
+9. Support IP bans by hostname
+10. Link reports to bans if a report is marked for punishment by staff
 
 ##########################################
 # Cross-Server stuffs

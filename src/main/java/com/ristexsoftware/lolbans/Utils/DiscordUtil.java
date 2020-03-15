@@ -32,6 +32,7 @@ import org.bukkit.entity.Player;
               | |_| |\ V  V /| |_| |
                \__,_| \_/\_/  \__,_|
 */
+
 public class DiscordUtil 
 {
     public static String Webhook;

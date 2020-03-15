@@ -51,9 +51,7 @@ public class KickCommand implements CommandExecutor
                 if (args.length < 2)
                     return User.PlayerOnlyVariableMessage("InvalidArguments", sender, target.getName(), true);
 
-                String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length)) : args[1];
-                reason = reason.replace(",", "").trim();
-                String euuid = null;
+                String reason = Messages.ConcatenateRest(args, 1).trim(), euuid = null;
 
                 if (sender instanceof ConsoleCommandSender)
                     euuid = "console";
@@ -74,7 +72,6 @@ public class KickCommand implements CommandExecutor
                 boolean silent = false;
                 if (args.length > 2)
                     silent = args[1].equalsIgnoreCase("-s");
-
 
                 final String FuckingJava = new String(reason);
                 
@@ -137,21 +134,9 @@ public class KickCommand implements CommandExecutor
                         }});
 
                     DiscordUtil.SendFormatted(SimplifiedMessageUnban);
-                    return true;
-                }
-                else if (sender instanceof ConsoleCommandSender)
-                {
-                    
-                    DiscordUtil.SendDiscord(sender.getName().toString(), "kicked", target.getName(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", target.getUniqueId().toString(), reason, kickid, silent);
                 }
                 else
-                {
-                    DiscordUtil.SendDiscord(sender.getName().toString(), "kicked", target.getName(),
-                            // if they're the console, use a hard-defined UUID instead of the player's UUID.
-                            (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((OfflinePlayer) sender).getUniqueId().toString(),
-                            target.getUniqueId().toString(), reason, kickid, silent);
-                    return true;
-                }
+                    DiscordUtil.SendDiscord(sender, "kicked", target, reason, kickid, null, silent);
             }
             else
             {
@@ -163,7 +148,6 @@ public class KickCommand implements CommandExecutor
         {
             e.printStackTrace();
             sender.sendMessage(Messages.ServerError);
-            return true;
         }
         return true;
     }
