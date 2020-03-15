@@ -24,6 +24,7 @@ import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 
 import java.sql.*;
+import java.util.regex.*;
 import java.util.Arrays;
 import java.time.Duration;
 import java.lang.Long;
@@ -37,9 +38,7 @@ import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
 import inet.ipaddr.IncompatibleAddressException;
 
-// FIXME: Hostname-based bans?
-
-public class IPBanCommand implements CommandExecutor
+public class RegexBanCommand implements CommandExecutor
 {
     private static Main self = Main.getPlugin(Main.class);
 
@@ -50,10 +49,10 @@ public class IPBanCommand implements CommandExecutor
      * 
      * Returns true if it is an insane (over-reaching) ban.
      */
-    private boolean SanityCheck(IPAddress bnyeh, CommandSender sender)
+    private boolean SanityCheck(Pattern bnyeh, CommandSender sender)
     {
         // Checking IP masks for sanity has been disabled by the config.
-        if (self.getConfig().getBoolean("BanSettings.insane.ipmasks"))
+        if (self.getConfig().getBoolean("BanSettings.insane.regex"))
             return false;
 
         double sanepercent = self.getConfig().getDouble("BanSettings.insane.trigger");
@@ -64,7 +63,16 @@ public class IPBanCommand implements CommandExecutor
         for (Player player : Bukkit.getOnlinePlayers())
         {
             HostName hn = new HostName(player.getAddress());
-            if (bnyeh.contains(hn.asAddress()))
+            String rDNS = IPBanUtil.rDNSQUery(hn.asAddress());
+            
+            // Check their IP address
+            if (bnyeh.matcher(hn.asAddress()).matches())
+                affected++;
+            // Check their rDNS hostname
+            else if (bnyeh.matcher(rDNS).matches())
+                affected++;
+            // Finally, check their player display name
+            else if (bnyeh.matcher(player.getName()).matches())
                 affected++;
         }
 
@@ -82,12 +90,13 @@ public class IPBanCommand implements CommandExecutor
             // Because Java requries effective finality, we have to redeclare shit.
 
             // Format our messages.
-            try {
+            try 
+            {
                 final int fuckingfinal = affected;
-                String Insanity = Messages.Translate("IPBan.Insanity",
+                String Insanity = Messages.Translate("RegexBan.Insanity",
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
-                        put("ipaddress", String.valueOf(bnyeh));
+                        put("regex", bnyeh.pattern());
                         put("AFFECTEDPLAYERS", String.valueOf(fuckingfinal));
                         put("TOTALPLAYERS", String.valueOf(TotalOnline));
                         put("INSANEPERCENT", String.valueOf(percentage));
@@ -113,10 +122,12 @@ public class IPBanCommand implements CommandExecutor
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        if (!PermissionUtil.Check(sender, "lolbans.ipban"))
+        if (!PermissionUtil.Check(sender, "lolbans.regexban"))
             return true;
 
-        // /ipban <ip address>[/<cidr>] <time> <Reason here unlimited length>
+        // /regexban <regex> <time> <Reason here unlimited length>
+        // FIXME: How do we handle the <regex> if there's spaces in the regex?
+        // Should spaces even be allowed? I don't think anything allows spaces...
         try
         {
             if (args.length < 3 || args == null)
@@ -125,8 +136,22 @@ public class IPBanCommand implements CommandExecutor
                 return false;
             }
 
-            boolean silent = args.length > 3 ? args[2].equalsIgnoreCase("-s") : false;
-            String reason = Messages.ConcatenateRest(args, silent ? 3 : 2);
+            int lmfaofucker = 0;
+            for (String arg : args)
+                self.getLogger().info(String.format("arg[%d] = %s", lmfaofucker++, arg));
+
+            String reason = Messages.ConcatenateRest(args, 2);
+            Pattern regex = null;
+            try 
+            {
+                regex = Pattern.compile(args[0]);
+            }
+            catch (PatternSyntaxException ex)
+            {
+                // TODO: Maybe give more of a reason why this pattern failed?
+                sender.sendMessage(Messages.InvalidSyntax);
+                return false;
+            }
             
             Timestamp bantime = null;
             // Parse ban time.
@@ -134,7 +159,7 @@ public class IPBanCommand implements CommandExecutor
             {
                 Optional<Long> dur = TimeUtil.Duration(args[1]);
                 if (dur.isPresent())
-                    bantime = new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
+                bantime = new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
                 else
                 {
                     sender.sendMessage(Messages.InvalidSyntax);
@@ -147,30 +172,38 @@ public class IPBanCommand implements CommandExecutor
             final String FuckingJava3 = new String(bantime != null ? TimeUtil.Expires(bantime) : "Never");
             final String FuckingJava4 = new String(bantime != null ? TimeUtil.TimeString(bantime) : "Never");
             
-            // Is a future, needed != null for some reason.
-            IPAddress thingy = new IPAddressString(args[0]).toAddress();
-            // TODO: handle this better? Send the banned subnet string instead of the address they tried to ban?
-            Optional<ResultSet> res = IPBanUtil.IsBanned(thingy.toInetAddress()).get();
-            if (res.isPresent() && res.get().next())
-                return User.PlayerOnlyVariableMessage("IPBan.IPIsBanned", sender, thingy.toString(), true);
-
-            if (SanityCheck(thingy, sender))
+            if (SanityCheck(regex, sender))
                 return true;
 
-            String banid = BanID.GenerateID(DatabaseUtil.GenID());
+            String banid = BanID.GenerateID(DatabaseUtil.GenID("RegexBans"));
 
             int i = 1;
-            PreparedStatement pst = self.connection.prepareStatement("INSERT INTO IPBans (IPAddress, Reason, Executioner, PunishID, Expiry) VALUES (?, ?, ?, ?, ?)");
-            pst.setString(i++, thingy.toString());
+            PreparedStatement pst = self.connection.prepareStatement("INSERT INTO RegexBans (Regex, Reason, Executioner, PunishID, Expiry) VALUES (?, ?, ?, ?, ?)");
+            pst.setString(i++, regex.pattern());
             pst.setString(i++, reason);
             pst.setString(i++, sender.getName());
             pst.setString(i++, banid);
             pst.setTimestamp(i++, bantime);
             pst.executeUpdate();
 
+            // Add it to our pattern cache
+            pst = self.connection.prepareStatement("SELECT id FROM RegexBans WHERE PunishID = ?");
+            pst.setString(1, banid);
+            ResultSet rst = pst.executeQuery();
+            
+            if (rst.next())
+            {
+                self.REGEX.put(rst.getInt("id"), regex);
+            }
+            else
+            {
+                self.getLogger().severe("Cannot get ID for regex " + regex.pattern() + " punish id " + banid + ", this will not allow the regex to be enforced!");
+                self.getLogger().severe("Please try restarting the server! If this error persists, please report it to the lolbans team.");
+            }
+
             // Format our messages.
-            // FIXME: Is this even the right message?
-            String messagenode = silent ? (bantime != null ? "IPBan.SilentTempIPBanMessage" : "IPBan.SilentPermIPBanMessage") : (bantime != null ? "IPBan.TempIPBanMessage" : "IPBan.PermIPBanMessage");
+            // TODO: This.
+            String messagenode = bantime != null ? "RegexBan.TempBanMessage" : "RegexBan.PermBanMessage";
             String IPBanAnnouncement = Messages.Translate(messagenode,
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
@@ -196,14 +229,23 @@ public class IPBanCommand implements CommandExecutor
             // Kick players who match the ban
             for (Player player : Bukkit.getOnlinePlayers())
             {
-                HostName hn = new HostName(player.getAddress());
+                String rDNS = IPBanUtil.rDNSQUery(player.getAddress().getHostAddress());
+                // Matchers to make things more efficient.
+                Matcher NameMatch = regex.matcher(player.getName());
+                Matcher IPMatch = regex.matcher(event.getAddress().getHostAddress());
+                Matcher HostMatch = regex.matcher(rDNS);
 
-                // FIXME: Do we use a custom message? what's this func even doing?
-                // "KickPlayer" sends the inputed strings into the function in the User class
-                // there are multiple "KickPlayer" funcs but this one is for IPBans (hence why the IP is on the end)
-                // Once the func gets the inputs, it'll kick the player with a message specified in the config
-                if (thingy.contains(hn.asAddress()))
-                    User.KickPlayer(sender.getName(), player, banid, reason, bantime, thingy);
+                // If any of them match, we must query the database for the record
+                // then disconnect them for matching something.
+                if (NameMatch.matches() || IPMatch.matches() || HostMatch.matches())
+                {
+                    // FIXME: Do we use a custom message? what's this func even doing?
+                    // "KickPlayer" sends the inputed strings into the function in the User class
+                    // there are multiple "KickPlayer" funcs but this one is for IPBans (hence why the IP is on the end)
+                    // Once the func gets the inputs, it'll kick the player with a message specified in the config
+                    // FIXME: Is this message personalized for each banned player to describe what is matched?
+                    User.KickPlayer(sender.getName(), player, banid, reason, bantime);
+                }
             }
             
             // TODO: Global announcement
@@ -217,7 +259,7 @@ public class IPBanCommand implements CommandExecutor
             }
             else
             {
-                DiscordUtil.SendDiscord(sender.getName().toString(), "IPBanned", thingy.toString(),
+                DiscordUtil.SendDiscord(sender.getName().toString(), "Regex Banned", thingy.toString(),
                         // if they're the console, use a hard-defined UUID instead of the player's UUID.
                         (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((Entity) sender).getUniqueId().toString(), 
                         thingy.toString(), reason, banid, bantime, silent);

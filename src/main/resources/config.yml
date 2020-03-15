@@ -34,6 +34,9 @@ BanSettings:
     # Allow bans with insane ipmasks (over-reaching IP/CIDR bans)
     ipmasks: false
 
+    # Allow bans with insane regex (over-reaching regular expressions)
+    regex: false
+
     # What percentage of players on the server to trigger
     # specifying an insane ban as. The default is 75.5%
     # which means if you have 100 players on the server

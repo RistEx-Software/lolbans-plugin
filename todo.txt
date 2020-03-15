@@ -38,6 +38,9 @@ Minimum Viable Product (MVP) / Feature Freeze:
  - Permissions (make sure they're granular enough?) - Zachery
  - REST api for website.
  - Report types (Cheating, Chat, ETC)
+ - Eliminate "Global" ban announcements, instead make them individual permissions. This is more flexible.
+ - Eliminate a large "alerts" announcement class and make an alerts permission for each event. (eg, ipbans would get "lolbans.IPBan.announce" instead of "lolbans.alerts")
+ - List bans, regex bans, ip bans, warnings, etc. and ensure they're easy to remove.
  - TESTING TESTING TESTING TESTING TESTING!!! - everyone!
 
 ##########################################

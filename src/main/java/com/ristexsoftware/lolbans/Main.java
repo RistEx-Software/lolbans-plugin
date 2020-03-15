@@ -34,6 +34,7 @@ import com.ristexsoftware.lolbans.Commands.Ban.BanCommand;
 import com.ristexsoftware.lolbans.Commands.Ban.UnbanCommand;
 import com.ristexsoftware.lolbans.Commands.Ban.BanWaveCommand;
 import com.ristexsoftware.lolbans.Commands.Ban.IPBanCommand;
+import com.ristexsoftware.lolbans.Commands.Ban.RegexBanCommand;
 import com.ristexsoftware.lolbans.Commands.History.HistoryCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.BroadcastCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.KickCommand;
@@ -52,10 +53,14 @@ import com.ristexsoftware.lolbans.Hacks.Hacks;
 import inet.ipaddr.IPAddressString;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 import java.util.UUID;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,6 +69,7 @@ import java.util.concurrent.Executors;
 public final class Main extends JavaPlugin
 {
     public static HashMap<UUID, User> USERS = new HashMap<UUID, User>();
+    public static HashMap<Integer, Pattern> REGEX = new HashMap<Integer, Pattern>();
     public static List<IPAddressString> BannedAddresses = new Vector<IPAddressString>();
     // For some reason using Futures with the Bukkit Async scheduler doesn't work.
     // Instead of relying on dumb bukkit APIs to get tasks done, we use a thread pool of
@@ -109,6 +115,26 @@ public final class Main extends JavaPlugin
         // Make sure our messages file exists
         Messages.GetMessages();
 
+        // Initialize and compile the regex cache
+        ResultSet res = this.connection.prepareStatement("SELECT * FROM RegexBans").executeQuery();
+        while (res.next())
+        {
+            try
+            {
+                Main.REGEX.put(res.getInt("id"), Pattern.compile(res.getString("Regex")));
+            }
+            catch (PatternSyntaxException ex)
+            {
+                ex.printStackTrace();
+                getLogger().warning(String.format("Ignoring Regular Expression \"%s\"", res.getString("Regex")));
+            }
+        }
+
+        // Used if the admin does /reload confirm
+        // Do this before we register event listeners
+        for (Player p : Bukkit.getOnlinePlayers())
+            Main.USERS.put(p.getUniqueId(), new User(p));
+
         Bukkit.getPluginManager().registerEvents(new ConnectionListeners(), this);
         Bukkit.getPluginManager().registerEvents(new AsyncChatListener(), this);
 
@@ -126,11 +152,8 @@ public final class Main extends JavaPlugin
         this.getCommand("kick").setExecutor(new KickCommand());
         this.getCommand("broadcast").setExecutor(new BroadcastCommand());
         this.getCommand("report").setExecutor(new ReportCommand());
+        this.getCommand("regexban").setExecutor(new RegexBanCommand());
         
-        // Used if the admin does /reload confirm
-        for (Player p : Bukkit.getOnlinePlayers())
-            Main.USERS.put(p.getUniqueId(), new User(p));
-
         // Run our hacks
         Hacks.HackIn(this);
     }

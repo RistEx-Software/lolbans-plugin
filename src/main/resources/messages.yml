@@ -12,6 +12,8 @@ Discord:
   SimpMessageWarn: ":hammer: **{BANNER}** warned **{PLAYER}** for **{REASON}** [#*{WARNID}*]"
   SimpMessageSilentWarn: ":hammer: **{BANNER}** warned **{PLAYER}** for **{REASON}** *[SILENT]* [#*{WARNID}*]"
 
+
+# TODO: Add "My Network" as a global variable
 Prefix: "&c<LolBans> "
 InvalidSyntax: "{PREFIX}&cInvalid Syntax!"
 InvalidArguments: "{PREFIX}&cInvalid Arguments!"
@@ -61,7 +63,11 @@ IPBan:
   Insanity: "{PREFIX}&cBanning {ipaddress} would ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
   IPAltNotification: "{PREFIX}&c{PLAYER} joined, is alt account of {BANNEDPLAYER} &7[{IPADDRESS}]"
   
-
+RegexBan:
+  # TODO: Fix these messages for regex-based bans.
+  TempBanMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{PUNISHID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+  PermBanMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+  Insanity: "{PREFIX}&cBanning {regex} would ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
 
 Banwave:
   AddedToWave: "{PREFIX}&7{PLAYER} &chas been added to the next ban wave."

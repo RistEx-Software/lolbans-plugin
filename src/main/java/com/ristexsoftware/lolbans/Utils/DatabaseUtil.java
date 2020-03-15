@@ -35,6 +35,7 @@ public class DatabaseUtil
         // Ensure Our tables are created.
         try
         {
+            // FIXME: Why do we have two tables for the same thing? Why do we need BannedPlayers AND BannedHistory? Why not just BannedPlayers with an IsActive = False for BannedHistory?
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedPlayers (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS MutedPlayers (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, TimeMuted TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedHistory (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, UnbanReason TEXT, UnbanExecutioner varchar(17), UnbanExecutionerUUID varchar(36), TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL, TimeRemoved TIMESTAMP NULL)").execute();
@@ -43,9 +44,11 @@ public class DatabaseUtil
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Warnings (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, Accepted boolean, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)").execute();
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Kicks (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)").execute();
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS IPBans (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, IPAddress varchar(49) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, PunishID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
+            // FIXME: How is this gonna work for our new website-based model?
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS LinkConfirmations (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, Executioner varchar(17) NOT NULL, LinkID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NOT NULL)").execute();
-
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Reports (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, PlaintiffUUID varchar(36) NOT NULL, PlaintiffName varchar(17) NOT NULL, DefendantUUID varchar(36) NOT NULL, DefendantName varchar(17) NOT NULL, Reason TEXT NOT NULL, JudgeUUID varchar(36) NULL, JudgeName varchar(17) NULL, CloseReason TEXT NULL, Closed boolean DEFAULT FALSE NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PunishID varchar(20) NOT NULL)").execute();
+            // NOTE: This table compares both minecraft names AND client hostnames against this, not sure yet if this is a good idea or not...
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS RegexBans (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, Regex VARCHAR(255) NOT NULL, Reason TEXT NOT NULL, Executioner varchar(17) NOT NULL, PunishID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
         }
         catch (SQLException e)
         {
@@ -436,10 +439,10 @@ public class DatabaseUtil
         return (Future<Boolean>)t;
     }
 
-    public static int GenID() throws SQLException
+    public static int GenID(String table) throws SQLException
     {
         // Get the latest ID of the banned players to generate a BanID form it.
-        ResultSet ids = self.connection.createStatement().executeQuery("SELECT MAX(id) FROM BannedPlayers");
+        ResultSet ids = self.connection.createStatement().executeQuery("SELECT MAX(id) FROM " + table);
         int id = 1;
         if (ids.next())
         {

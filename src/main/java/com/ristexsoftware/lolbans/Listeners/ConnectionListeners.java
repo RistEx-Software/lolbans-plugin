@@ -6,9 +6,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.ristexsoftware.lolbans.IPBanning.IPBanUtil;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
@@ -103,6 +107,8 @@ public class ConnectionListeners implements Listener
             Future<Optional<ResultSet>> IPBanRecord = IPBanUtil.IsBanned(event.getAddress());
             Future<UUID> AltRecords  = IPBanUtil.CheckAlts(event.getAddress());
 
+            // Query for their reverse DNS hostname
+            String rDNS = IPBanUtil.rDNSQUery(event.getAddress().getHostAddress());
 
             // While we run those queries, lets check to see if they match any CIDRs
             // NOTE: We don't immediately disconnect them from here, instead we make
@@ -131,6 +137,50 @@ public class ConnectionListeners implements Listener
                     }};
 
                     IPBanMessage = Messages.Translate(Expiry != null ? "IPBan.TempIPBanMessage" : "IPBan.PermIPBanMessage", Variables);
+                }
+            }
+
+            // Do Regex matches since they're pre-compiled
+            Iterator it = self.REGEX.entrySet().iterator();
+            while (it.hasNext())
+            {
+                Map.Entry pair = (Map.Entry)it.next();
+                Pattern regex = (Pattern)pair.getValue();
+                // Matchers to make things more efficient.
+                Matcher NameMatch = regex.matcher(event.getName());
+                Matcher IPMatch = regex.matcher(event.getAddress().getHostAddress());
+                Matcher HostMatch = regex.matcher(rDNS);
+
+                // If any of them match, we must query the database for the record
+                // then disconnect them for matching something.
+                if (NameMatch.matches() || IPMatch.matches() || HostMatch.matches())
+                {
+                    // FIXME: AND (Expiry IS NULL OR Expiry >= NOW()) -- how do we handle expired regex bans?
+                    PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM RegexBans WHERE id = ?");
+                    ps.setInt(1, pair.getKey());
+                    ResultSet res = ps.executeQuery();
+
+                    // Something's fucked? lets make note.
+                    if (!res.next())
+                        throw SQLException("No such regex " + regex.pattern());
+
+                    Timestamp Expiry = result.getTimestamp("Expiry");
+                    Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                    {{
+                        put("IPADDRESS", event.getAddress().toString());
+                        put("player", event.getName());
+                        put("rdns", rDNS);
+                        put("regex", regex.pattern());
+                        put("reason", result.getString("Reason"));
+                        put("banner", result.getString("Executioner"));
+                        put("fullexpiry", Expiry != null ? String.format("%s (%s)", TimeUtil.TimeString(Expiry), TimeUtil.Expires(Expiry)) : "Never");
+                        put("expiryduration", Expiry != null ? TimeUtil.Expires(Expiry) : "Never");
+                        put("dateexpiry", Expiry != null ? TimeUtil.TimeString(Expiry) : "Never");
+                        put("punishid", result.getString("PunishID"));
+                    }};
+
+                    // We'll commondeer the IPBanMessage variable for regex bans too.
+                    IPBanMessage = Messages.Translate(Expiry != null ? "RegexBan.TempBanMessage" : "RegexBan.PermBanMessage", Variables);
                 }
             }
 

@@ -4,6 +4,7 @@ import inet.ipaddr.HostName;
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.*;
 import java.util.Collection;
 import java.util.List;
@@ -134,5 +135,24 @@ public class IPBanUtil
 
 		float percentage = (TotalAffected / Players.size()) * 100.0f;
 		return percentage;
+	}
+
+	/**
+	 * Query the Reverse DNS of an address and return the DNS result
+	 * as a string.
+	 * @return String with the DNS result or null
+	 */
+	public static String rDNSQUery(String address)
+	{
+		try
+		{
+			InetAddress ia = InetAddress.getByName(address);
+			return ia.getCanonicalHostName();
+		}
+		catch (UnknownHostException ex)
+		{
+			ex.printStackTrace();
+		}
+		return null;
 	}
 }
