@@ -55,6 +55,7 @@ import inet.ipaddr.IPAddressString;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -116,18 +117,26 @@ public final class Main extends JavaPlugin
         Messages.GetMessages();
 
         // Initialize and compile the regex cache
-        ResultSet res = this.connection.prepareStatement("SELECT * FROM RegexBans").executeQuery();
-        while (res.next())
+        try 
         {
-            try
+            ResultSet res = this.connection.prepareStatement("SELECT * FROM RegexBans").executeQuery();
+            while (res.next())
             {
-                Main.REGEX.put(res.getInt("id"), Pattern.compile(res.getString("Regex")));
+                try
+                {
+                    Main.REGEX.put(res.getInt("id"), Pattern.compile(res.getString("Regex")));
+                }
+                catch (PatternSyntaxException ex)
+                {
+                    ex.printStackTrace();
+                    getLogger().warning(String.format("Ignoring Regular Expression \"%s\"", res.getString("Regex")));
+                }
             }
-            catch (PatternSyntaxException ex)
-            {
-                ex.printStackTrace();
-                getLogger().warning(String.format("Ignoring Regular Expression \"%s\"", res.getString("Regex")));
-            }
+        }
+        catch (SQLException ex)
+        {
+            ex.printStackTrace();
+            return;
         }
 
         // Used if the admin does /reload confirm

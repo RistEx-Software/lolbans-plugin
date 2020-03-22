@@ -157,12 +157,12 @@ public class ConnectionListeners implements Listener
                 {
                     // FIXME: AND (Expiry IS NULL OR Expiry >= NOW()) -- how do we handle expired regex bans?
                     PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM RegexBans WHERE id = ?");
-                    ps.setInt(1, pair.getKey());
-                    ResultSet res = ps.executeQuery();
+                    ps.setInt(1, (Integer)pair.getKey());
+                    ResultSet result = ps.executeQuery();
 
                     // Something's fucked? lets make note.
-                    if (!res.next())
-                        throw SQLException("No such regex " + regex.pattern());
+                    if (!result.next())
+                        throw new SQLException("No such regex " + regex.pattern());
 
                     Timestamp Expiry = result.getTimestamp("Expiry");
                     Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)

@@ -63,10 +63,11 @@ public class RegexBanCommand implements CommandExecutor
         for (Player player : Bukkit.getOnlinePlayers())
         {
             HostName hn = new HostName(player.getAddress());
-            String rDNS = IPBanUtil.rDNSQUery(hn.asAddress());
+            self.getLogger().info(hn.getHost());
+            String rDNS = IPBanUtil.rDNSQUery(hn.getHost());
             
             // Check their IP address
-            if (bnyeh.matcher(hn.asAddress()).matches())
+            if (bnyeh.matcher(hn.getHost()).matches())
                 affected++;
             // Check their rDNS hostname
             else if (bnyeh.matcher(rDNS).matches())
@@ -204,10 +205,11 @@ public class RegexBanCommand implements CommandExecutor
             // Format our messages.
             // TODO: This.
             String messagenode = bantime != null ? "RegexBan.TempBanMessage" : "RegexBan.PermBanMessage";
+            String ThanksJava = regex.pattern();
             String IPBanAnnouncement = Messages.Translate(messagenode,
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
-                    put("player", thingy.toString());
+                    put("regex", ThanksJava);
                     put("reason", reason);
                     put("banner", sender.getName());
                     put("banid", banid);
@@ -220,7 +222,7 @@ public class RegexBanCommand implements CommandExecutor
             // Send messages to all players (if not silent) or only to admins (if silent)
             for (Player p : Bukkit.getOnlinePlayers())
             {
-                if (silent && (!p.hasPermission("lolbans.alerts") && !p.isOp()))
+                if (/*silent &&*/ (!p.hasPermission("lolbans.alerts") && !p.isOp()))
                     continue;
 
                 p.sendMessage(IPBanAnnouncement);
@@ -229,10 +231,10 @@ public class RegexBanCommand implements CommandExecutor
             // Kick players who match the ban
             for (Player player : Bukkit.getOnlinePlayers())
             {
-                String rDNS = IPBanUtil.rDNSQUery(player.getAddress().getHostAddress());
+                String rDNS = IPBanUtil.rDNSQUery(player.getAddress().getAddress().getHostAddress());
                 // Matchers to make things more efficient.
                 Matcher NameMatch = regex.matcher(player.getName());
-                Matcher IPMatch = regex.matcher(event.getAddress().getHostAddress());
+                Matcher IPMatch = regex.matcher(player.getAddress().getAddress().getHostAddress());
                 Matcher HostMatch = regex.matcher(rDNS);
 
                 // If any of them match, we must query the database for the record
@@ -259,10 +261,10 @@ public class RegexBanCommand implements CommandExecutor
             }
             else
             {
-                DiscordUtil.SendDiscord(sender.getName().toString(), "Regex Banned", thingy.toString(),
+                DiscordUtil.SendDiscord(sender.getName().toString(), "Regex Banned", regex.pattern(),
                         // if they're the console, use a hard-defined UUID instead of the player's UUID.
                         (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((Entity) sender).getUniqueId().toString(), 
-                        thingy.toString(), reason, banid, bantime, silent);
+                        regex.pattern(), reason, banid, bantime, false);
             }
 
             return true;

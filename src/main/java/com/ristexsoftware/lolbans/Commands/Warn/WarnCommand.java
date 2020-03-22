@@ -68,7 +68,7 @@ public class WarnCommand implements CommandExecutor
                 int i = 1;
 
                 // Get the latest ID of the banned players to generate a BanID form it.
-                String warnid = BanID.GenerateID(DatabaseUtil.GenID());
+                String warnid = BanID.GenerateID(DatabaseUtil.GenID("Warnings"));
 
                 /*
                 // Preapre a statement

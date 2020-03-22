@@ -157,7 +157,7 @@ public class IPBanCommand implements CommandExecutor
             if (SanityCheck(thingy, sender))
                 return true;
 
-            String banid = BanID.GenerateID(DatabaseUtil.GenID());
+            String banid = BanID.GenerateID(DatabaseUtil.GenID("IPBans"));
 
             int i = 1;
             PreparedStatement pst = self.connection.prepareStatement("INSERT INTO IPBans (IPAddress, Reason, Executioner, PunishID, Expiry) VALUES (?, ?, ?, ?, ?)");

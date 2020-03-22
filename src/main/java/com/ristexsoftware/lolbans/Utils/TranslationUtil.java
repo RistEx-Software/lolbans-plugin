@@ -32,6 +32,12 @@ public class TranslationUtil
     // Used to translate colors
     public static String TranslateColors(String chars, String message)
     {
+        if (message == null)
+            return null;
+        
+        if (chars == null)
+            return message;
+            
         // Don't allocate if we don't have to.
         if (!message.contains(chars))
             return message;

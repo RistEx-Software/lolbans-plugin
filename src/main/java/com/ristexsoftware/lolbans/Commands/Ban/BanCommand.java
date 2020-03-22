@@ -98,7 +98,7 @@ public class BanCommand implements CommandExecutor
                     final String FuckingJava4 = new String(bantime != null ? TimeUtil.TimeString(bantime) : "Never");
 
                     // Get our ban id based on the latest id in the database.
-                    String banid = BanID.GenerateID(DatabaseUtil.GenID());
+                    String banid = BanID.GenerateID(DatabaseUtil.GenID("BannedPlayers"));
 
                     // Execute queries to get the bans.
                     Future<Boolean> HistorySuccess = DatabaseUtil.InsertHistory(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, banid, bantime);

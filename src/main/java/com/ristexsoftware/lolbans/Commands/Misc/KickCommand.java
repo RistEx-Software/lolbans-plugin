@@ -76,7 +76,7 @@ public class KickCommand implements CommandExecutor
                 final String FuckingJava = new String(reason);
                 
                 // Get the latest ID of the banned players to generate a BanID form it.
-                String kickid = BanID.GenerateID(DatabaseUtil.GenID());
+                String kickid = BanID.GenerateID(DatabaseUtil.GenID("Kicks"));
                 
                 // Preapre a statement
                 int i = 1;

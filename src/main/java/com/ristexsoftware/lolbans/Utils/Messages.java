@@ -3,6 +3,7 @@ package com.ristexsoftware.lolbans.Utils; // Zachery's package owo
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Arrays;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -94,53 +95,58 @@ public class Messages
         {
             fc.load(CustomConfigFile);
             this.CustomConfig = fc;
+
+            // TODO: ALL theses need default values!
+
+            // Messages
+            Messages.Prefix = this.CustomConfig.getString("Prefix", "[lolbans] ").replace("&", "\u00A7");
+            Messages.NetworkName = Messages._Translate(this.CustomConfig.getString("NetworkName", "My Network"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            Messages.InvalidSyntax = Messages._Translate(this.CustomConfig.getString("InvalidSyntax", "&cInvalid Syntax!"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            
+            // Discord simplified message
+            DiscordUtil.SimpMessageBan = Messages._Translate(this.CustomConfig.getString("Discord.SimpMessageBan"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            DiscordUtil.SimpMessageUnban = Messages._Translate(this.CustomConfig.getString("Discord.SimpMessageUnban"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            DiscordUtil.SimpMessageSilentBan = Messages._Translate(this.CustomConfig.getString("Discord.SimpMessageSilentBan"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            DiscordUtil.SimpMessageSilentUnban = Messages._Translate(this.CustomConfig.getString("Discord.SimpMessageSilentUnban"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            DiscordUtil.SimpMessageMute = Messages._Translate(this.CustomConfig.getString("Discord.SimpMessageMute"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            DiscordUtil.SimpMessageUnmute = Messages._Translate(this.CustomConfig.getString("Discord.SimpMessageUnmute"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            DiscordUtil.SimpMessageSilentMute = Messages._Translate(this.CustomConfig.getString("Discord.SimpMessageSilentMute"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            DiscordUtil.SimpMessageSilentUnmute = Messages._Translate(this.CustomConfig.getString("Discord.SimpMessageSilentUnmute"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            DiscordUtil.SimpMessageKick = Messages._Translate(this.CustomConfig.getString("Discord.SimpMessageKick"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            DiscordUtil.SimpMessageSilentKick = Messages._Translate(this.CustomConfig.getString("Discord.SimpMessageSilentKick"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            DiscordUtil.SimpMessageWarn = Messages._Translate(this.CustomConfig.getString("Discord.SimpMessageWarn"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            DiscordUtil.SimpMessageSilentWarn = Messages._Translate(this.CustomConfig.getString("Discord.SimpMessageSilentWarn"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+
+            // Ban messages
+            Messages.SilentBanAnnouncement = Messages._Translate(this.CustomConfig.getString("Ban.SilentBanAnnouncement"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            Messages.BanAnnouncement = Messages._Translate(this.CustomConfig.getString("Ban.BanAnnouncement"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            Messages.UnbanAnnouncment = Messages._Translate(this.CustomConfig.getString("Ban.UnbanAnnouncment"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            Messages.SilentUnbanAnnouncment = Messages._Translate(this.CustomConfig.getString("Ban.SilentUnbanAnnouncment"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+
+            // Mute messages
+            Messages.SilentUnmuteAnnouncment = Messages._Translate(this.CustomConfig.getString("Mute.SilentUnmuteAnnouncment"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            Messages.UnmuteAnnouncment = Messages._Translate(this.CustomConfig.getString("Mute.UnmuteAnnouncment"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
         } 
         catch (IOException | InvalidConfigurationException e) 
         {
             e.printStackTrace();
         }
-
-        // Messages
-        Messages.Prefix = this.CustomConfig.getString("Prefix").replace("&", "\u00A7");
-        Messages.NetworkName = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("NetworkName"));
-        Messages.InvalidSyntax = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("InvalidSyntax"));
-        
-        // Discord simplified message
-        DiscordUtil.SimpMessageBan = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageBan"));
-        DiscordUtil.SimpMessageUnban = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageUnban"));
-        DiscordUtil.SimpMessageSilentBan = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageSilentBan"));
-        DiscordUtil.SimpMessageSilentUnban = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageSilentUnban"));
-        DiscordUtil.SimpMessageMute = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageMute"));
-        DiscordUtil.SimpMessageUnmute = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageUnmute"));
-        DiscordUtil.SimpMessageSilentMute = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageSilentMute"));
-        DiscordUtil.SimpMessageSilentUnmute = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageSilentUnmute"));
-        DiscordUtil.SimpMessageKick = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageKick"));
-        DiscordUtil.SimpMessageSilentKick = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageSilentKick"));
-        DiscordUtil.SimpMessageWarn = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageWarn"));
-        DiscordUtil.SimpMessageSilentWarn = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Discord.SimpMessageSilentWarn"));
-
-        // Ban messages
-        Messages.SilentBanAnnouncement = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Ban.SilentBanAnnouncement"));
-        Messages.BanAnnouncement = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Ban.BanAnnouncement"));
-        Messages.UnbanAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Ban.UnbanAnnouncment"));
-        Messages.SilentUnbanAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Ban.SilentUnbanAnnouncment"));
-
-        // Mute messages
-        Messages.SilentUnmuteAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Mute.SilentUnmuteAnnouncment"));
-        Messages.UnmuteAnnouncment = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("Mute.UnmuteAnnouncment"));
-        //Messages.TempIPBanMessage = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.TempIPBanMessage"));
-        //Messages.PermIPBanMessage = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.PermIPBanMessage"));
-        //Messages.IPBanAnnouncement = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.IPBanAnnouncement"));
-        //Messages.SilentIPBanAnnouncement = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.SilentIPBanAnnouncement"));
-        //Messages.UnIPbanAnnouncement = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.UnIPbanAnnouncement"));
-        //Messages.SilentUnIPbanAnnouncement = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.SilentUnIPbanAnnouncement"));
-        //Messages.IPIsBanned = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.IPIsBanned"));
-        //Messages.Insanity = TranslationUtil.TranslateColors("&", this.CustomConfig.getString("IPBan.Insanity"));
     }
 
     public FileConfiguration GetConfig()
     {
         return this.CustomConfig;
+    }
+
+    private static String _Translate(String ConfigMessage, Map<String, String> Variables)
+    {
+        if (ConfigMessage == null)
+            return null;
+        
+        Variables.put("prefix", Messages.Prefix);
+        Variables.put("networkname", Messages.NetworkName);
+
+        return TranslationUtil.Translate(ConfigMessage, "&", Variables);
     }
 
     public static String Translate(String ConfigNode, Map<String, String> Variables) throws InvalidConfigurationException
@@ -149,10 +155,7 @@ public class Messages
         if (ConfigMessage == null)
             throw new InvalidConfigurationException("Configuration Node is invalid or does not exist: " + ConfigNode);
 
-        Variables.put("prefix", Messages.Prefix);
-        Variables.put("networkname", Messages.NetworkName);
-
-        return TranslationUtil.Translate(ConfigMessage, "&", Variables);
+        return _Translate(ConfigMessage, Variables);
     }
 
     public static String ConcatenateRest(String[] args, int offset, String delim)

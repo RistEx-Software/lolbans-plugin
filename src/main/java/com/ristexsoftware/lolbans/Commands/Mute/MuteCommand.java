@@ -94,7 +94,7 @@ public class MuteCommand implements CommandExecutor
                 final String FuckingJava4 = new String(mutetime != null ? TimeUtil.TimeString(mutetime) : "Never");
 
                 // Get our ban id based on the latest id in the database.
-                String muteid = BanID.GenerateID(DatabaseUtil.GenID());
+                String muteid = BanID.GenerateID(DatabaseUtil.GenID("Mutes"));
 
                 // Execute queries to get the bans.
                 Future<Boolean> HistorySuccess = DatabaseUtil.InsertMuteHistory(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, muteid, mutetime);

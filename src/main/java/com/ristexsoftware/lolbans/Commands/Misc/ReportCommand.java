@@ -95,7 +95,7 @@ public class ReportCommand implements CommandExecutor
                         }
                     }
 
-                    String PunishID = BanID.GenerateID(DatabaseUtil.GenID());
+                    String PunishID = BanID.GenerateID(DatabaseUtil.GenID("Reports"));
 
                     int i = 1;
                     PreparedStatement ps = self.connection.prepareStatement("INSERT INTO Reports (PlaintiffUUID, PlaintiffName, DefendantUUID, DefendantName, Reason, PunishID) VALUES (?, ?, ?, ?, ?, ?)");

@@ -17,6 +17,11 @@ commands:
     usage: |
           Syntax Error!
           Use /ipban [-s] <ip address>[/<cidr>] <ban time|*> <reason>
+  regexban:
+    description: Ban a username/hostname/ip address based on a Regular Expression
+    usage: |
+          Syntax Error!
+          Use /regexban [-s] <regex pattern> <ban time|*> <reason>
   kick:
     description: Ban a player
     usage: |

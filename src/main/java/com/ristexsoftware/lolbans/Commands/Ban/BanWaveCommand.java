@@ -65,7 +65,7 @@ public class BanWaveCommand implements CommandExecutor
                 boolean silent = args.length > 2 ? args[1].equalsIgnoreCase("-s") : false;
 
                 // Get the latest ID of the banned players to generate a BanID form it.
-                String banid = BanID.GenerateID(DatabaseUtil.GenID());
+                String banid = BanID.GenerateID(DatabaseUtil.GenID("BanWave"));
                     
                 // Preapre a statement
                 int i = 1;
