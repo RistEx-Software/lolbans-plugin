@@ -12,7 +12,7 @@ while the lite version is just strictly punishments.
 #########################################
 Business model
 #########################################
-Website is now our profit cabability, make the site similar to how LuckPerms manages permissions except for bans, force license keys to use the site
+Website is now our profit capability, make the site similar to how LuckPerms manages permissions except for bans, force license keys to use the site
 for validation, the java plugin is now considered to be a loss (see also: purecore.io).
 
 With the website, we offer real-time analytics, punishments from web, appealing system, etc. This will be offered as a service 
@@ -23,16 +23,13 @@ but you don't get the appeal/reporting system. This needs to be appealing, so it
 People donate like crazy anyway..)
 
 
-
 ##########################################
 Minimum Viable Product (MVP) / Feature Freeze:
 ##########################################
- - IP bans/unbans/whatever using CIDRs - Justin
  - /staffhistory - Staff history and mass unbans to undo - Zachery/Justin
  - Hover Text (JSON) - Zachery/Justin?
  - /dupeip, /iphistory - Justin/Zachery
  - /prunehistory <Player|PunishID|CIDR> <Distance In Time|*> - Zachery?
- - IP banning based on hostnames (eg, banning *.stacksmash.net) -- requires rDNS implementation. - Justin
  - All commands need rewrite to be async (player runs command, onCommand() return immediately but runs command in thread unless bukkit is an ass about API calls) - Justin/maybe Zachery
  - /history needs to be converted to use messages.yml instead of hard-coded strings - Zachery
  - Permissions (make sure they're granular enough?) - Zachery
@@ -52,6 +49,7 @@ Minimum Viable Product (MVP) / Feature Freeze:
 8. Timezones???
 9. Support IP bans by hostname
 10. Link reports to bans if a report is marked for punishment by staff
+11. dnsbl/ip blacklist support
 
 ##########################################
 # Cross-Server stuffs

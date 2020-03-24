@@ -63,7 +63,7 @@ public class ReportCommand implements CommandExecutor
                     return false;
                 }
 
-                OfflinePlayer u = User.FindPlayerByBanID(username);
+                OfflinePlayer u = User.FindPlayerByAny(username);
                 if (u == null)
                     return User.NoSuchPlayer(sender, username, true);
 

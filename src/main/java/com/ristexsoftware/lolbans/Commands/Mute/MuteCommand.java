@@ -20,6 +20,7 @@ import com.ristexsoftware.lolbans.Utils.TranslationUtil;
 import com.ristexsoftware.lolbans.Utils.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
+import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -48,7 +49,7 @@ public class MuteCommand implements CommandExecutor
             {
                 String reason = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length )) : args[1];
                 reason = reason.replace(",", "").trim();
-                OfflinePlayer target = User.FindPlayerByBanID(args[0]);
+                OfflinePlayer target = User.FindPlayerByAny(args[0]);
                 Timestamp mutetime = null;
                 String euuid = null;
                 System.out.println("!");
@@ -94,14 +95,14 @@ public class MuteCommand implements CommandExecutor
                 final String FuckingJava4 = new String(mutetime != null ? TimeUtil.TimeString(mutetime) : "Never");
 
                 // Get our ban id based on the latest id in the database.
-                String muteid = BanID.GenerateID(DatabaseUtil.GenID("Mutes"));
+                String muteid = BanID.GenerateID(DatabaseUtil.GenID("Punishments"));
 
                 // Execute queries to get the bans.
-                Future<Boolean> HistorySuccess = DatabaseUtil.InsertMuteHistory(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, muteid, mutetime);
-                Future<Boolean> MuteSuccess = DatabaseUtil.InsertMute(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, muteid, mutetime);
+                Future<Boolean> MuteSuccess = DatabaseUtil.InsertPunishment(PunishmentType.PUNISH_MUTE, target.getUniqueId().toString(), target.getName(), 
+                                        target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, muteid, mutetime);
 
                 // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
-                if (!MuteSuccess.get() || !HistorySuccess.get())
+                if (!MuteSuccess.get())
                 {
                     sender.sendMessage(Messages.ServerError);
                     return true;

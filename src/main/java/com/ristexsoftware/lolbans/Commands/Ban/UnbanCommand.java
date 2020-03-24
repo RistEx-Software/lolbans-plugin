@@ -44,7 +44,7 @@ public class UnbanCommand implements CommandExecutor
                 String reason = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length )) : args[1];
                 reason = reason.replace(",", "").trim();
                 // Because dumbfuck java and it's "ItS nOt FiNaL"
-                OfflinePlayer target = User.FindPlayerByBanID(args[0]);
+                OfflinePlayer target = User.FindPlayerByAny(args[0]);
                 String euuid = null;
 
                 if (sender instanceof ConsoleCommandSender)
@@ -68,17 +68,16 @@ public class UnbanCommand implements CommandExecutor
 
                 // Preapre a statement
                 // We need to get the latest banid first.
-                PreparedStatement pst3 = self.connection.prepareStatement("SELECT PunishID FROM BannedPlayers WHERE UUID = ?");
+                // TODO: There has to be a better way to do this.
+                PreparedStatement pst3 = self.connection.prepareStatement("SELECT PunishID FROM Punishments WHERE UUID = ? AND Type = 0 AND AppealStaff = NULL");
                 pst3.setString(1, target.getUniqueId().toString());
 
                 ResultSet result = pst3.executeQuery();
                 result.next();
                 String BanID = result.getString("PunishID");
 
-                Timestamp timeremoved = new Timestamp(TimeUtil.GetUnixTime() * 1000L);
-
                 // Run the async task for the database
-                Future<Boolean> UnBan = DatabaseUtil.UnBan(target.getUniqueId().toString(), target.getName(), reason, sender, euuid, timeremoved);
+                Future<Boolean> UnBan = DatabaseUtil.RemovePunishment(BanID, target.getUniqueId().toString(), reason, sender, euuid, TimeUtil.TimestampNow());
 
                 // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
                 if (!UnBan.get())
@@ -88,6 +87,7 @@ public class UnbanCommand implements CommandExecutor
                 }
 
                 // Log to console.
+                // TODO: Translation and use a log line instead?
                 Bukkit.getConsoleSender().sendMessage(String.format("\u00A7c%s \u00A77has unbanned \u00A7c%s\u00A77: \u00A7c%s\u00A77%s\u00A7r", 
                 sender.getName(), target.getName(), reason, (silent ? " [silent]" : "")));
 

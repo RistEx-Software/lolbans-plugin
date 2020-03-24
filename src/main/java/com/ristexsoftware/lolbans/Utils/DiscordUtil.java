@@ -31,6 +31,7 @@ import org.bukkit.entity.Player;
               | | | \ \ /\ / / | | |
               | |_| |\ V  V /| |_| |
                \__,_| \_/\_/  \__,_|
+                               ᵈᵃᵈᵈʸ
 */
 
 public class DiscordUtil 

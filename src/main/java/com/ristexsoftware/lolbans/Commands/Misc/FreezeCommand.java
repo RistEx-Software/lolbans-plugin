@@ -48,7 +48,7 @@ public class FreezeCommand implements CommandExecutor
                     // just incase someone, magically has a 1 char name........
                     if (args.length >= 1)
                     {
-                        OfflinePlayer target = User.FindPlayerByBanID(args[0]);
+                        OfflinePlayer target = User.FindPlayerByAny(args[0]);
 
                         if (target == null)
                             return User.NoSuchPlayer(sender, args[0], true);

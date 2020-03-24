@@ -20,6 +20,7 @@ import com.ristexsoftware.lolbans.Utils.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
+import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -50,7 +51,7 @@ public class WarnCommand implements CommandExecutor
                 // FIXME: "-s" isn't parsed out of the message.
                 String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length)) : args[1];
                 reason = reason.replace(",", "").trim();
-                OfflinePlayer target = User.FindPlayerByBanID(args[0]);
+                OfflinePlayer target = User.FindPlayerByAny(args[0]);
                 String euuid = null;
 
                 if (sender instanceof ConsoleCommandSender)
@@ -70,25 +71,9 @@ public class WarnCommand implements CommandExecutor
                 // Get the latest ID of the banned players to generate a BanID form it.
                 String warnid = BanID.GenerateID(DatabaseUtil.GenID("Warnings"));
 
-                /*
-                // Preapre a statement
-                PreparedStatement pst = self.connection.prepareStatement("INSERT INTO Warnings (UUID, PlayerName, IPAddress, Reason, Executioner, WarnID, Accepted) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                pst.setString(i++, target.getUniqueId().toString());
-                pst.setString(i++, target.getName());
-                if (target.isOnline())
-                    pst.setString(i++, ((Player)target).getAddress().getAddress().getHostAddress());
-                else
-                    pst.setString(i++, "UNKNOWN");
-                pst.setString(i++, reason);
-                pst.setString(i++, sender.getName());
-                pst.setString(i++, warnid);
-                pst.setBoolean(i++, false);
-
-                // Commit to the database.
-                pst.executeUpdate();
-                */
                 // InsertWarn
-                Future<Boolean> InsertWarn = DatabaseUtil.InsertWarn(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, warnid);
+                Future<Boolean> InsertWarn = DatabaseUtil.InsertPunishment(PunishmentType.PUNISH_WARN, target.getUniqueId().toString(), target.getName(), 
+                                                target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, warnid, null);
 
                 // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
                 if (!InsertWarn.get())

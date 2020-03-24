@@ -14,6 +14,7 @@ import org.bukkit.block.data.BlockData;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.Configuration;
+import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 
@@ -39,12 +40,10 @@ public class AcceptCommand implements CommandExecutor
                     // Unset them warned locally
                     u.SetWarned(false, null, null);
                     // Preapre a statement
-                    PreparedStatement pst3 = self.connection.prepareStatement("UPDATE Warnings SET Accepted = true WHERE UUID = ?");
+                    PreparedStatement pst3 = self.connection.prepareStatement("UPDATE Punishments SET WarningAck = true WHERE UUID = ? AND Type = 3");
                     pst3.setString(1, player.getUniqueId().toString());
-                    pst3.executeUpdate();
+                    DatabaseUtil.ExecuteUpdate(pst3);
 
-                    // Commit to the database.
-                    pst3.executeUpdate();
                     User.PlayerOnlyVariableMessage("Warn.AcceptMessage", sender, sender.getName(), false);
                 }
                 catch (SQLException e)

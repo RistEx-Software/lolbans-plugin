@@ -25,6 +25,22 @@ public class StaffHistoryCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) 
     {
+        if (!PermissionUtil.Check(sender, "lolbans.staffhistory"))
+            return true;
+
+        // Command runs as /staffhistory <staffmember>
+
+        if (args == null || args.length < 1)
+        {
+            sender.sendMessage(Messages.InvalidSyntax);
+            return false;
+        }
+
+        OfflinePlayer target = User.FindPlayerByAny(args[0]);
+        if (target == null)
+            return User.NoSuchPlayer(sender, args[0], true);
+
+        
         /*
         if (PermissionUtil.Check(sender, "lolbans.staffhistory"))
         {
@@ -35,7 +51,7 @@ public class StaffHistoryCommand implements CommandExecutor {
                 {
                     String reason = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length)) : args[1];
                     reason = reason.replace(",", "").trim();
-                    OfflinePlayer target = User.FindPlayerByBanID(args[0]);
+                    OfflinePlayer target = User.FindPlayerByAny(args[0]);
                     Timestamp bantime = null;
                     String euuid = null;
 

@@ -180,4 +180,9 @@ public class TimeUtil
     {
         return System.currentTimeMillis() / 1000L;
     }
+
+    public static Timestamp TimestampNow()
+    {
+        return new Timestamp(TimeUtil.GetUnixTime() * 1000L);
+    }
 }

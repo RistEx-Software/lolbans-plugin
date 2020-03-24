@@ -20,6 +20,7 @@ import com.ristexsoftware.lolbans.Utils.TranslationUtil;
 import com.ristexsoftware.lolbans.Utils.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
+import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -47,7 +48,7 @@ public class BanCommand implements CommandExecutor
                 if (!(args.length < 2 || args == null))
                 {
                     String reason = Messages.ConcatenateRest(args, 2).trim();
-                    OfflinePlayer target = User.FindPlayerByBanID(args[0]);
+                    OfflinePlayer target = User.FindPlayerByAny(args[0]);
                     Timestamp bantime = null;
 
                     // So, we need to get the UUID of punisher so we can display the icons on the website
@@ -98,14 +99,13 @@ public class BanCommand implements CommandExecutor
                     final String FuckingJava4 = new String(bantime != null ? TimeUtil.TimeString(bantime) : "Never");
 
                     // Get our ban id based on the latest id in the database.
-                    String banid = BanID.GenerateID(DatabaseUtil.GenID("BannedPlayers"));
+                    String banid = BanID.GenerateID(DatabaseUtil.GenID("Punishments"));
 
                     // Execute queries to get the bans.
-                    Future<Boolean> HistorySuccess = DatabaseUtil.InsertHistory(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, banid, bantime);
-                    Future<Boolean> BanSuccess = DatabaseUtil.InsertBan(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, banid, bantime);
+                    Future<Boolean> BanSuccess = DatabaseUtil.InsertPunishment(PunishmentType.PUNISH_BAN, target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, banid, bantime);
 
                     // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
-                    if (!BanSuccess.get() || !HistorySuccess.get())
+                    if (!BanSuccess.get())
                     {
                         sender.sendMessage(Messages.ServerError);
                         return true;

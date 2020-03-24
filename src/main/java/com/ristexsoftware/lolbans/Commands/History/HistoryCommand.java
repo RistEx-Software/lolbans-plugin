@@ -8,6 +8,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 
 import com.ristexsoftware.lolbans.Main;
@@ -18,6 +19,7 @@ import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.TreeMap;
 import java.sql.*;
 
 public class HistoryCommand implements CommandExecutor
@@ -67,23 +69,12 @@ public class HistoryCommand implements CommandExecutor
     }
     */
 
-    // Convenience function
-    private String fmt(String str, Object... args)
+    private boolean HandleHistory(CommandSender sender, Command command, String label, String[] args)
     {
-        return ChatColor.translateAlternateColorCodes('&', String.format(str, args)) + "\u00A7r";
-    }
-
-    private boolean HandleHistory(CommandSender sender, boolean SenderHasPerms, Command command, String label, String[] args)
-    {
-        for (int i = 0; i < 128; i++)
-        {
-            Bukkit.broadcast(String.valueOf(i), "thing");
-        }
-
-        if (!SenderHasPerms)
+        if (!PermissionUtil.Check(sender, "lolbans.history"))
             return false;
 
-        try 
+        try
         {
             // They only need the players name, nothing else.
             if (args.length == 1)
@@ -91,19 +82,30 @@ public class HistoryCommand implements CommandExecutor
                 OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
 
                 if (target == null)
-                {
-                    sender.sendMessage(String.format("Player \"%s\" does not exist!", target));
-                    return true;
-                }
+                    return User.NoSuchPlayer(sender, args[0], true);
 
                 // Preapre a statement
+                // FIXME: This absolute unit of a query needs to be fixed... and so does this file...
                 PreparedStatement pst = self.connection.prepareStatement("SELECT PlayerName, UUID, PunishID, Reason, Executioner, TimeBanned, Expiry, UnbanReason, UnbanExecutioner, GROUP_CONCAT(PunishID) AS BanIDs, GROUP_CONCAT(Reason) AS Reasons, GROUP_CONCAT(Executioner) AS Executioners, GROUP_CONCAT(DISTINCT Executioner) AS Executioners2, GROUP_CONCAT(UnbanReason) AS UnbanReasons, GROUP_CONCAT(UnbanExecutioner) AS UnbanExecutioners, GROUP_CONCAT(DISTINCT UnbanExecutioner) AS UnbanExecutioners2, MAX(TimeBanned) FROM BannedHistory WHERE PlayerName = ?");
                 pst.setString(1, args[0]);
 
                 ResultSet result = pst.executeQuery();
                 if (!result.next() || result.wasNull())
                 {
-                    sender.sendMessage(this.fmt("&cPlayer &4%s&c has no recorded ban history.", target.getName()));
+                    try 
+                    {
+                        sender.sendMessage(Messages.Translate("History.NoSuchPlayer",
+                            new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                            {{
+                                put("player", target.getName());
+                            }}
+                        ));
+                    }
+                    catch (InvalidConfigurationException ex)
+                    {
+                        ex.printStackTrace();
+                    }
+
                     return true;
                 }
 
@@ -182,9 +184,9 @@ public class HistoryCommand implements CommandExecutor
         }
     }
     
-    private boolean HandleClearHistory(CommandSender sender, boolean SenderHasPerms, Command command, String label, String[] args)
+    private boolean HandleClearHistory(CommandSender sender, Command command, String label, String[] args)
     {
-        if (!SenderHasPerms)
+        if (!PermissionUtil.Check(sender, "lolbans.clearhistory"))
             return false;
             
         try 
@@ -200,13 +202,8 @@ public class HistoryCommand implements CommandExecutor
                     return true;
                 }
 
-                // Delete the user's history from the history table
-                PreparedStatement pst = self.connection.prepareStatement("DELETE FROM BannedHistory WHERE UUID = ?");
-                pst.setString(1, target.getUniqueId().toString());
-                pst.executeUpdate();
-
                 // Also unban the user (as they no longer have any history)
-                PreparedStatement pst2 = self.connection.prepareStatement("DELETE FROM BannedPlayers WHERE UUID = ?");
+                PreparedStatement pst2 = self.connection.prepareStatement("DELETE FROM Punishments WHERE UUID = ? AND AppealStaff != NULL AND WarningAck != NULL");
                 pst2.setString(1, target.getUniqueId().toString());
                 pst2.executeUpdate();
 
@@ -232,16 +229,13 @@ public class HistoryCommand implements CommandExecutor
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        // Check if the user has the perms.
-        boolean SenderHasPerms = PermissionUtil.Check(sender, "lolbans.history");
-        
         // Handle the History command
         if (command.getName().equalsIgnoreCase("history") || command.getName().equalsIgnoreCase("h"))
-            return this.HandleHistory(sender, SenderHasPerms, command, label, args);
+            return this.HandleHistory(sender, command, label, args);
 
         // Handle the clear history
         if (command.getName().equalsIgnoreCase("clearhistory") || command.getName().equalsIgnoreCase("ch"))
-            return this.HandleClearHistory(sender, SenderHasPerms, command, label, args);
+            return this.HandleClearHistory(sender, command, label, args);
             
         // Invalid command.
         return false;

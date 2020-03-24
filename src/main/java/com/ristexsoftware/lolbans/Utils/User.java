@@ -209,13 +209,14 @@ public class User
         return false;
     }
 
-    // FIXME: Return a Future<> instead of an OfflinePlayer
-    public static OfflinePlayer FindPlayerByBanID(String BanID)
+    public static OfflinePlayer FindPlayerByAny(String BanID)
     {
         // Try stupid first. If the BanID is just a nickname, then avoid DB queries.
         OfflinePlayer op = Bukkit.getOfflinePlayer(BanID);
         if (op != null)
             return op;
+
+        // Now we move to more expensive operations.
         
         try 
         {

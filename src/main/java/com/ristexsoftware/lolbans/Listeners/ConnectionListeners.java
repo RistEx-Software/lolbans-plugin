@@ -1,6 +1,8 @@
 package com.ristexsoftware.lolbans.Listeners;
 
 import inet.ipaddr.IPAddressString;
+
+import java.net.InetSocketAddress;
 import java.sql.*;
 import java.util.Map;
 import java.util.Optional;
@@ -68,6 +70,53 @@ public class ConnectionListeners implements Listener
             event.getPlayer().sendMessage(JoinMessage);
     }
 
+    @EventHandler
+    public void OnPlayerJoin(PlayerJoinEvent event)
+    {
+        Player player = event.getPlayer();
+        String puuid = player.getUniqueId().toString();
+        String ipaddr = player.getAddress().getAddress().getHostAddress();
+        if (player.hasPlayedBefore())
+        {
+            Timestamp firstjoin = TimeUtil.TimestampNow();
+            try 
+            {
+                int i = 1;
+                PreparedStatement ps = self.connection.prepareStatement("INSERT INTO Users (UUID, PlayerName, IPAddress, FirstLogin, LastLogin) VALUES (?, ?, ?, ?, ?)");
+                ps.setString(i++, puuid);
+                ps.setString(i++, player.getName());
+                ps.setString(i++, ipaddr);
+                ps.setTimestamp(i++, firstjoin);
+                ps.setTimestamp(i++, firstjoin);
+
+                DatabaseUtil.ExecuteLater(ps);
+            }
+            catch (SQLException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        else
+        {
+            Timestamp lastjoin = TimeUtil.TimestampNow();
+            try 
+            {
+                int i = 1;
+                PreparedStatement ps = self.connection.prepareStatement("UPDATE Users SET LastLogin = ? WHERE UUID = ?");
+                ps.setString(i++, player.getName());
+                ps.setString(i++, ipaddr);
+                ps.setTimestamp(i++, lastjoin);
+                ps.setString(i++, puuid);
+
+                DatabaseUtil.ExecuteLater(ps);
+            }
+            catch (SQLException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
+
     // We need to make this async so the database stuff doesn't run on the main
     // thread.
     @EventHandler
@@ -86,6 +135,9 @@ public class ConnectionListeners implements Listener
             //    are done and we can check if they have anything.
             // 4. If they don't match any queries, we let them join.
 
+            // Here's the nonsense for adding the user info into the database, move this where ever ig...
+            String player = event.getName();
+            String addr = event.getAddress().getHostAddress();
 
             // Ask the database for any ban records
             PreparedStatement BanStatement = self.connection.prepareStatement("SELECT * FROM BannedPlayers WHERE UUID = ? AND (Expiry IS NULL OR Expiry >= NOW())");

@@ -41,7 +41,7 @@ public class AsyncChatListener implements Listener
 
             // Otherwise check if they're individually muted.
             PreparedStatement MuteStatement = self.connection.prepareStatement(
-                    "SELECT * FROM MutedPlayers WHERE UUID = ? AND (Expiry IS NULL OR Expiry >= NOW())");
+                    "SELECT * FROM Punishments WHERE UUID = ? AND Type = 2 AND (Expiry IS NULL OR Expiry >= NOW())");
             MuteStatement.setString(1, event.getPlayer().getUniqueId().toString());
 
             Future<Optional<ResultSet>> MuteRecord = DatabaseUtil.ExecuteLater(MuteStatement);

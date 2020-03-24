@@ -44,7 +44,7 @@ public class BanWaveCommand implements CommandExecutor
             {
                 String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length )) : args[1];
                 reason = reason.replace(",", "").trim();
-                OfflinePlayer target = User.FindPlayerByBanID(args[0]);
+                OfflinePlayer target = User.FindPlayerByAny(args[0]);
 
                 if (target == null)
                     return User.NoSuchPlayer(sender, args[0], true);
@@ -103,6 +103,7 @@ public class BanWaveCommand implements CommandExecutor
                 Bukkit.getConsoleSender().sendMessage(BanWaveAnnouncement);
 
                 // Send to Discord.
+                // TODO: Uhhh this is different now?
                 DiscordUtil.SendBanWaveAdd(sender.getName(), target.getName(), target.getUniqueId().toString(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", reason, banid);
                 return true;
             }
@@ -129,7 +130,7 @@ public class BanWaveCommand implements CommandExecutor
         reason = reason.replace(",", "");
 
         // Check and make sure the user actually exists.
-        OfflinePlayer target = User.FindPlayerByBanID(args[0]);
+        OfflinePlayer target = User.FindPlayerByAny(args[0]);
         if (target == null)
             return User.NoSuchPlayer(sender, args[0], true);
 

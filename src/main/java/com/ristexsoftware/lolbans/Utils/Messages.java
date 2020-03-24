@@ -53,8 +53,6 @@ public class Messages
             fc.load(CustomConfigFile);
             this.CustomConfig = fc;
 
-            // TODO: ALL theses need default values!
-
             // Messages
             Messages.Prefix = this.CustomConfig.getString("Prefix", "[lolbans] ").replace("&", "\u00A7");
             Messages.NetworkName = Messages._Translate(this.CustomConfig.getString("NetworkName", "My Network"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));

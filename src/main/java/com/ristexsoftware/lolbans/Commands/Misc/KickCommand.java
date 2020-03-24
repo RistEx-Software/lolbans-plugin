@@ -21,6 +21,7 @@ import com.ristexsoftware.lolbans.Utils.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
+import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -46,7 +47,7 @@ public class KickCommand implements CommandExecutor
             // just incase someone, magically has a 1 char name........
             if (!(args.length < 1 || args == null))
             {
-                OfflinePlayer target = User.FindPlayerByBanID(args[0]);
+                OfflinePlayer target = User.FindPlayerByAny(args[0]);
 
                 if (args.length < 2)
                     return User.PlayerOnlyVariableMessage("InvalidArguments", sender, target.getName(), true);
@@ -76,26 +77,9 @@ public class KickCommand implements CommandExecutor
                 final String FuckingJava = new String(reason);
                 
                 // Get the latest ID of the banned players to generate a BanID form it.
-                String kickid = BanID.GenerateID(DatabaseUtil.GenID("Kicks"));
-                
-                // Preapre a statement
-                int i = 1;
-                PreparedStatement pst = self.connection.prepareStatement("INSERT INTO Kicks (UUID, PlayerName, IPAddress, Reason, Executioner, ExecutionerUUID, PunishID) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                //CREATE TABLE IF NOT EXISTS Kicks (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT
-                // NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, KickID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)").execute();
-                pst.setString(i++, target.getUniqueId().toString());
-                pst.setString(i++, target.getName());
-                if (target.isOnline())
-                    pst.setString(i++, ((Player)target).getAddress().getAddress().getHostAddress());
-                else
-                    pst.setString(i++, "UNKNOWN");
-                pst.setString(i++, reason);
-                pst.setString(i++, sender.getName());
-                pst.setString(i++, euuid);
-                pst.setString(i++, kickid);
+                String kickid = BanID.GenerateID(DatabaseUtil.GenID("Punishments"));
 
-                // Commit to the database.
-                pst.executeUpdate();
+                DatabaseUtil.InsertPunishment(PunishmentType.PUNISH_KICK, target.getUniqueId().toString(), target.getName(), ((Player)target).getAddress().getAddress().getHostAddress(), reason, sender, euuid, kickid, null);
 
                 Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
