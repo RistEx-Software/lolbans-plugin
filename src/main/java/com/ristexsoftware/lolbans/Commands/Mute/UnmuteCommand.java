@@ -58,15 +58,16 @@ public class UnmuteCommand implements CommandExecutor
                 
                 if (!User.IsPlayerMuted(target))
                     return User.PlayerOnlyVariableMessage("Mute.PlayerIsNotMuted", sender, target.getName(), true);
-                
-                // Prepare our reason for unbanning
-                boolean silent = args.length > 2 ? args[1].equalsIgnoreCase("-s") : false;
 
                 final String FuckingJava = new String(reason);
                 
+                boolean silent = false;
+                if (args.length > 2)
+                    silent = args[1].equalsIgnoreCase("-s");
+
                 // Preapre a statement
                 // We need to get the latest banid first.
-                PreparedStatement pst3 = self.connection.prepareStatement("SELECT PunishID FROM Punishments WHERE UUID = ? AND Type = 2 AND AppealStaff = NULL");
+                PreparedStatement pst3 = self.connection.prepareStatement("SELECT PunishID FROM Punishments WHERE UUID = ? AND Type = 1 AND Appealed = false");
                 pst3.setString(1, target.getUniqueId().toString());
 
                 ResultSet result = pst3.executeQuery();
@@ -83,6 +84,25 @@ public class UnmuteCommand implements CommandExecutor
                     return true;
                 }
 
+                /* for (Player p : Bukkit.getOnlinePlayers())
+                {
+                    if (silent && (!p.hasPermission("lolbans.alerts") && !p.isOp()))
+                        continue;
+
+                    //"&c%banner% &7has banned &c%player%&7: &c%reason%"
+            
+                    String UnbanAnnouncementMessage = Messages.Translate(silent ? "Ban.SilentUnbanAnnouncment" : "Ban.UnbanAnnouncment",
+                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                        {{
+                            put("player", target.getName());
+                            put("reason", FuckingJava);
+                            put("banner", sender.getName());
+                            put("banid", BanID);
+                        }}
+                    );
+
+                    p.sendMessage(UnbanAnnouncementMessage);
+                } */
                 // Post that to the database.
                 for (Player p : Bukkit.getOnlinePlayers())
                 {
@@ -91,7 +111,7 @@ public class UnmuteCommand implements CommandExecutor
 
                     //"&c%banner% &7has banned &c%player%&7: &c%reason%"
             
-                    String UnbanAnnouncementMessage = Messages.Translate(silent ? "Mute.SilentUnmuteAnnouncment" : "Mute.UnmuteAnnouncment",
+                    String UnmuteAnnouncementMessage = Messages.Translate(silent ? "Mute.SilentUnmuteAnnouncment" : "Mute.UnmuteAnnouncment",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
                             put("player", target.getName());
@@ -101,7 +121,7 @@ public class UnmuteCommand implements CommandExecutor
                         }}
                     );
 
-                    p.sendMessage(UnbanAnnouncementMessage);
+                    p.sendMessage(UnmuteAnnouncementMessage);
                 }
 
                 String YouWereUnMuted = Messages.Translate("Mute.YouWereUnMuted",

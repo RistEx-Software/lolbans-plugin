@@ -58,7 +58,7 @@ public class ConnectionListeners implements Listener
      * Our event listeners.
      */
 
-     // What are you doing here? I'm confused by it, I wont touch it.
+    // Adding players to a hashmap and account linking
     @EventHandler
     public void OnPlayerConnect(PlayerJoinEvent event) 
     {
@@ -70,55 +70,68 @@ public class ConnectionListeners implements Listener
             event.getPlayer().sendMessage(JoinMessage);
     }
 
+    // The asyncprelogin event method doesn't return things like the playername, or have login like "hasPlayedBefore"
+    // I need both of those for the users table.
     @EventHandler
     public void OnPlayerJoin(PlayerJoinEvent event)
     {
         Player player = event.getPlayer();
         String puuid = player.getUniqueId().toString();
         String ipaddr = player.getAddress().getAddress().getHostAddress();
-        if (player.hasPlayedBefore())
-        {
-            Timestamp firstjoin = TimeUtil.TimestampNow();
-            try 
-            {
-                int i = 1;
-                PreparedStatement ps = self.connection.prepareStatement("INSERT INTO Users (UUID, PlayerName, IPAddress, FirstLogin, LastLogin) VALUES (?, ?, ?, ?, ?)");
-                ps.setString(i++, puuid);
-                ps.setString(i++, player.getName());
-                ps.setString(i++, ipaddr);
-                ps.setTimestamp(i++, firstjoin);
-                ps.setTimestamp(i++, firstjoin);
 
-                DatabaseUtil.ExecuteLater(ps);
-            }
-            catch (SQLException ex)
+        try 
+        {
+            if (player.hasPlayedBefore())
             {
-                ex.printStackTrace();
+                Timestamp firstjoin = TimeUtil.TimestampNow();
+                /* try 
+                {
+                    int i = 1;
+                    PreparedStatement ps = self.connection.prepareStatement("INSERT INTO Users (UUID, PlayerName, IPAddress, FirstLogin, LastLogin) VALUES (?, ?, ?, ?, ?)");
+                    ps.setString(i++, puuid);
+                    ps.setString(i++, player.getName());
+                    ps.setString(i++, ipaddr);
+                    ps.setTimestamp(i++, firstjoin);
+                    ps.setTimestamp(i++, firstjoin);
+    
+                    DatabaseUtil.ExecuteLater(ps);
+                }
+                catch (SQLException ex)
+                {
+                    ex.printStackTrace();
+                } */
+                DatabaseUtil.InsertUser(puuid, player.getName(), ipaddr, firstjoin, firstjoin);
+            }
+            else
+            {
+                Timestamp lastjoin = TimeUtil.TimestampNow();
+                /* try 
+                {
+                    int i = 1;
+                    PreparedStatement ps = self.connection.prepareStatement("UPDATE Users SET LastLogin = ?, PlayerName = ?, IPAddress = ? WHERE UUID = ?");
+                    ps.setTimestamp(i++, lastjoin);
+                    ps.setString(i++, player.getName());
+                    ps.setString(i++, ipaddr);
+                    ps.setString(i++, puuid);
+    
+                    DatabaseUtil.ExecuteLater(ps);
+                }
+                catch (SQLException ex)
+                {
+                    ex.printStackTrace();
+                } */
+                DatabaseUtil.UpdateUser(lastjoin, player.getName(), ipaddr, puuid);
             }
         }
-        else
+        catch (SQLException e)
         {
-            Timestamp lastjoin = TimeUtil.TimestampNow();
-            try 
-            {
-                int i = 1;
-                PreparedStatement ps = self.connection.prepareStatement("UPDATE Users SET LastLogin = ? WHERE UUID = ?");
-                ps.setString(i++, player.getName());
-                ps.setString(i++, ipaddr);
-                ps.setTimestamp(i++, lastjoin);
-                ps.setString(i++, puuid);
-
-                DatabaseUtil.ExecuteLater(ps);
-            }
-            catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            }
+            e.printStackTrace();
         }
     }
 
     // We need to make this async so the database stuff doesn't run on the main
     // thread.
+    // This event is already async, no need.
     @EventHandler
     public void OnPlayerConnectAsync(AsyncPlayerPreLoginEvent event) 
     {

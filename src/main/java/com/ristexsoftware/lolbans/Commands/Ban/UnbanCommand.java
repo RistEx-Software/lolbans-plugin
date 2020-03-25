@@ -69,7 +69,7 @@ public class UnbanCommand implements CommandExecutor
                 // Preapre a statement
                 // We need to get the latest banid first.
                 // TODO: There has to be a better way to do this.
-                PreparedStatement pst3 = self.connection.prepareStatement("SELECT PunishID FROM Punishments WHERE UUID = ? AND Type = 0 AND AppealStaff = NULL");
+                PreparedStatement pst3 = self.connection.prepareStatement("SELECT PunishID FROM Punishments WHERE UUID = ? AND Type = 0 AND Appealed = false");
                 pst3.setString(1, target.getUniqueId().toString());
 
                 ResultSet result = pst3.executeQuery();

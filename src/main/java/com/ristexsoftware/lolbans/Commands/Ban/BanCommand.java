@@ -6,32 +6,24 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.BanID;
-import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
-import com.ristexsoftware.lolbans.Utils.TranslationUtil;
 import com.ristexsoftware.lolbans.Utils.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
 import java.sql.*;
-import java.util.Arrays;
-import java.time.Duration;
 import java.lang.Long;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.Future;
-
-import javax.lang.model.util.ElementScanner6;
-
 
 public class BanCommand implements CommandExecutor
 {
@@ -63,17 +55,18 @@ public class BanCommand implements CommandExecutor
 
                     // debugging
                     Long now = System.currentTimeMillis();
-                    sender.sendMessage(ChatColor.GRAY + "Processing... please wait.");
 
                     if (target == null)
                         return User.NoSuchPlayer(sender, args[0], true);
+                    
 
                     if (!(sender instanceof ConsoleCommandSender) && target.getUniqueId().equals(((Player) sender).getUniqueId()))
                         return User.PlayerOnlyVariableMessage("Ban.CannotBanSelf", sender, target.getName(), true);
+                        
 
                     if (User.IsPlayerBanned(target))
                         return User.PlayerOnlyVariableMessage("Ban.PlayerIsBanned", sender, target.getName(), true);
-
+                    
 
                     // Parse ban time.
                     if (!args[1].trim().contentEquals("0") && !args[1].trim().contentEquals("*"))
@@ -87,6 +80,7 @@ public class BanCommand implements CommandExecutor
                             return false;
                         }
                     }
+                    
 
                     // Prepare our reason
                     boolean silent = args.length > 3 ? args[2].equalsIgnoreCase("-s") : false;
@@ -97,24 +91,28 @@ public class BanCommand implements CommandExecutor
                     final String FuckingJava2 = new String(bantime != null ? String.format("%s (%s)", TimeUtil.TimeString(bantime), TimeUtil.Expires(bantime)) : "Never");
                     final String FuckingJava3 = new String(bantime != null ? TimeUtil.Expires(bantime) : "Never");
                     final String FuckingJava4 = new String(bantime != null ? TimeUtil.TimeString(bantime) : "Never");
+                    
 
                     // Get our ban id based on the latest id in the database.
                     String banid = BanID.GenerateID(DatabaseUtil.GenID("Punishments"));
+                    
 
                     // Execute queries to get the bans.
                     Future<Boolean> BanSuccess = DatabaseUtil.InsertPunishment(PunishmentType.PUNISH_BAN, target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, banid, bantime);
-
+                    
                     // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
                     if (!BanSuccess.get())
                     {
                         sender.sendMessage(Messages.ServerError);
                         return true;
                     } 
+                    
 
                     // Kick the player first, they're officially banned.
                     if (target instanceof Player)
                         User.KickPlayer(sender.getName(), (Player)target, banid, reason, bantime);
 
+                    
                     // Format our messages.
                     String BanAnnouncement = Messages.Translate(silent ? "Ban.SilentBanAnnouncement" : "Ban.BanAnnouncement",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)

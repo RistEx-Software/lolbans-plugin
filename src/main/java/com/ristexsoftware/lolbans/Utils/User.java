@@ -155,7 +155,7 @@ public class User
     {
         try 
         {
-            PreparedStatement ps = self.connection.prepareStatement("SELECT 1 FROM BannedPlayers WHERE UUID = ? LIMIT 1");
+            PreparedStatement ps = self.connection.prepareStatement("SELECT 1 FROM Punishments WHERE UUID = ? AND Type = 0 AND Appealed = false LIMIT 1");
             ps.setString(1, user.getUniqueId().toString());
 
             return ps.executeQuery().next();
@@ -197,7 +197,7 @@ public class User
     {
         try 
         {
-            PreparedStatement ps = self.connection.prepareStatement("SELECT 1 FROM MutedPlayers WHERE UUID = ? LIMIT 1");
+            PreparedStatement ps = self.connection.prepareStatement("SELECT 1 FROM Punishments WHERE UUID = ? AND Type = 1 AND Appealed = false LIMIT 1");
             ps.setString(1, user.getUniqueId().toString());
 
             return ps.executeQuery().next();

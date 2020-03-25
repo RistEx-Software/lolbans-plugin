@@ -1,15 +1,5 @@
-package com.ristexsoftware.lolbans.Utils; // Zachery's package owo
+package com.ristexsoftware.lolbans.Utils; // Zachery's package owo :spray:
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.xml.soap.MessageFactory;
-
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Arrays;
 
@@ -21,10 +11,8 @@ import com.mrpowergamerbr.temmiewebhook.embed.FooterEmbed;
 import com.mrpowergamerbr.temmiewebhook.embed.ThumbnailEmbed;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 
 /*
                _   ___      ___   _ 
@@ -65,8 +53,9 @@ public class DiscordUtil
 
             // https://crafatar.com/renders/head/e296a7d7-7c25-4d90-894b-feba23665a98?overlay
             String fuckingjava = "https://crafatar.com/renders/head/" + TargetUUID + "?overlay&default=MHF_Steve";        
+            String Color = PunishID.replaceAll("[^0-9]","");
             DiscordEmbed de = DiscordEmbed.builder()
-                    .color(255)
+                    .color(Integer.parseInt(Color))
                     .title(sender + " " + title + " " + target + st) // We are creating a embed with this title...
                     .description(reason) // with this description...
                     // Maybe a link to the ban id if a website is configured?
@@ -105,9 +94,10 @@ public class DiscordUtil
             TemmieWebhook temmie = new TemmieWebhook(Webhook);
 
             // https://crafatar.com/renders/head/e296a7d7-7c25-4d90-894b-feba23665a98?overlay
-            String fuckingjava = "https://crafatar.com/renders/head/" + TargetUUID + "?overlay&default=MHF_Steve";        
+            String fuckingjava = "https://crafatar.com/renders/head/" + TargetUUID + "?overlay&default=MHF_Steve";       
+            String Color = PunishID.replaceAll("[^0-9]",""); 
             DiscordEmbed de = DiscordEmbed.builder()
-                    .color(255)
+                    .color(Integer.parseInt(Color))
                     .title(sender + " " + title + " " + target + st) // We are creating a embed with this title...
                     .description(reason) // with this description...
                     // Maybe a link to the ban id if a website is configured?
