@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.IPBanning.IPBanUtil;
+import com.ristexsoftware.lolbans.Hacks.IPBanning.IPBanUtil;
 import com.ristexsoftware.lolbans.Utils.BanID;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;

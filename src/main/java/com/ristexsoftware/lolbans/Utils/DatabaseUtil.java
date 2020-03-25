@@ -68,7 +68,7 @@ public class DatabaseUtil
                                             +"(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                                             +"UUID VARCHAR(36) NOT NULL,"
                                             +"PlayerName VARCHAR(17),"
-                                            +"IPAdress VARCHAR(48) NOT NULL,"
+                                            +"IPAddress VARCHAR(48) NOT NULL,"
                                             +"FirstLogin TIMESTAMP NOT NULL,"
                                             +"LastLogin TIMESTAMP NOT NULL,"
                                             +"Punishments INT NULL,"

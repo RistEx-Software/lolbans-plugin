@@ -15,7 +15,7 @@ import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.ristexsoftware.lolbans.IPBanning.IPBanUtil;
+import com.ristexsoftware.lolbans.Hacks.IPBanning.IPBanUtil;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.Configuration;
@@ -81,45 +81,14 @@ public class ConnectionListeners implements Listener
 
         try 
         {
-            if (player.hasPlayedBefore())
+            if (!player.hasPlayedBefore())
             {
                 Timestamp firstjoin = TimeUtil.TimestampNow();
-                /* try 
-                {
-                    int i = 1;
-                    PreparedStatement ps = self.connection.prepareStatement("INSERT INTO Users (UUID, PlayerName, IPAddress, FirstLogin, LastLogin) VALUES (?, ?, ?, ?, ?)");
-                    ps.setString(i++, puuid);
-                    ps.setString(i++, player.getName());
-                    ps.setString(i++, ipaddr);
-                    ps.setTimestamp(i++, firstjoin);
-                    ps.setTimestamp(i++, firstjoin);
-    
-                    DatabaseUtil.ExecuteLater(ps);
-                }
-                catch (SQLException ex)
-                {
-                    ex.printStackTrace();
-                } */
                 DatabaseUtil.InsertUser(puuid, player.getName(), ipaddr, firstjoin, firstjoin);
             }
             else
             {
                 Timestamp lastjoin = TimeUtil.TimestampNow();
-                /* try 
-                {
-                    int i = 1;
-                    PreparedStatement ps = self.connection.prepareStatement("UPDATE Users SET LastLogin = ?, PlayerName = ?, IPAddress = ? WHERE UUID = ?");
-                    ps.setTimestamp(i++, lastjoin);
-                    ps.setString(i++, player.getName());
-                    ps.setString(i++, ipaddr);
-                    ps.setString(i++, puuid);
-    
-                    DatabaseUtil.ExecuteLater(ps);
-                }
-                catch (SQLException ex)
-                {
-                    ex.printStackTrace();
-                } */
                 DatabaseUtil.UpdateUser(lastjoin, player.getName(), ipaddr, puuid);
             }
         }
@@ -340,11 +309,12 @@ public class ConnectionListeners implements Listener
             {
                 OfflinePlayer p = Bukkit.getOfflinePlayer(altaccount);
                 // Send a message to all ops with broadcast perms.
-                String Message = Messages.Translate("IPBans.IPAltNotification", 
+                String Message = Messages.Translate("IPBan.IPAltNotification", 
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) 
                     {{
                         put("player", event.getName());
                         put("bannedplayer", p.getName());
+                        put("IPADDRESS", event.getAddress().getHostAddress());
                     }}
                 );
 
