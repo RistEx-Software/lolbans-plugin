@@ -95,7 +95,7 @@ public class ReportCommand implements CommandExecutor
                         }
                     }
 
-                    String PunishID = PunishID.GenerateID(DatabaseUtil.GenID("Reports"));
+                    String ReportID = PunishID.GenerateID(DatabaseUtil.GenID("Reports"));
 
                     int i = 1;
                     PreparedStatement ps = self.connection.prepareStatement("INSERT INTO Reports (PlaintiffUUID, PlaintiffName, DefendantUUID, DefendantName, Reason, PunishID) VALUES (?, ?, ?, ?, ?, ?)");
@@ -103,7 +103,7 @@ public class ReportCommand implements CommandExecutor
                     ps.setString(i++, sender instanceof ConsoleCommandSender ? "console" : ((Player)sender).getName());
                     ps.setString(i++, u.getUniqueId().toString());
                     ps.setString(i++, u.getName());
-                    ps.setString(i++, PunishID);
+                    ps.setString(i++, ReportID);
                     ps.setString(i++, reason);
 
                     DatabaseUtil.ExecuteUpdate(ps);
@@ -113,7 +113,7 @@ public class ReportCommand implements CommandExecutor
                         {{
                             put("player", u.getName());
                             put("reason", reason);
-                            put("punishid", PunishID);
+                            put("punishid", ReportID);
                         }}
                     ));
 
@@ -123,7 +123,7 @@ public class ReportCommand implements CommandExecutor
                             put("player", u.getName());
                             put("reporter", sender.getName());
                             put("reason", reason);
-                            put("punishid", PunishID);
+                            put("punishid", ReportID);
                         }}
                     );
 
@@ -135,7 +135,7 @@ public class ReportCommand implements CommandExecutor
                             p.sendMessage(AnnounceMessage);
                     }
 
-                    DiscordUtil.SendDiscord(sender, "reported", u, reason, PunishID, false);
+                    DiscordUtil.SendDiscord(sender, "reported", u, reason, ReportID, false);
 
                     // TODO: Discord notifs, email notifs, whatever else notifs?
 

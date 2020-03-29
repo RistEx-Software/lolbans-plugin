@@ -341,6 +341,26 @@ public class User
      * Convenience functions to make the code cleaner.
      */
 
+    public static boolean PermissionDenied(CommandSender sender, String PermissionNode)
+    {
+        try
+        {
+            sender.sendMessage(Messages.Translate("NoPermission", 
+                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                {{
+                    put("executor", sender.getName());
+                    put("permission", PermissionNode);
+                }}
+            ));
+        }
+        catch (InvalidConfigurationException ex)
+        {
+            ex.printStackTrace();
+            sender.sendMessage("Permission Denied!");
+        }
+        return true;
+    }
+
     public static boolean NoSuchPlayer(CommandSender sender, String PlayerName, boolean ret)
     {
         return User.PlayerOnlyVariableMessage("PlayerDoesntExist", sender, PlayerName, ret);
@@ -375,9 +395,23 @@ public class User
         return ret;
     }
 
-	public static boolean PlayerOnlyVariableMessage(String messageName, CommandSender sender, String name,
-			boolean ret) {
-		return false;
+    public static boolean PlayerOnlyVariableMessage(String MessageName, CommandSender sender, String name, boolean ret)
+    {
+        try 
+        {
+            sender.sendMessage(Messages.Translate(MessageName,
+                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                {{
+                    put("player", name);
+                    // TODO: More appropriate name?
+                    put("sender", sender.getName());
+                }}
+            ));
+        }
+        catch (InvalidConfigurationException e)
+        {
+            e.printStackTrace();
+        }
+        return ret;
 	}
-
 }

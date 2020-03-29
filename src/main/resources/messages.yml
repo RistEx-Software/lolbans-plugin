@@ -13,8 +13,8 @@ Discord:
   SimpMessageSilentWarn: ":hammer: **{BANNER}** warned **{PLAYER}** for **{REASON}** *[SILENT]* [#*{WARNID}*]"
 
 
-# TODO: Add "My Network" as a global variable
 Prefix: "&c<LolBans> "
+NetworkName: "&7My Network "
 InvalidSyntax: "{PREFIX}&cInvalid Syntax!"
 InvalidArguments: "{PREFIX}&cInvalid Arguments!"
 ServerError: "{PREFIX}&cThe server encountered an error, please try again later."
@@ -41,19 +41,19 @@ Report:
 # expiryduration ex: (1 year 2 months 1 week 29 days 55 minutes 10 seconds)
 # dateexpiry ex: (January 1, 2019 12:30:00)
 Ban:
-  TempBanMessage: "&cThe account &7{PLAYER} &chas been TEMPORARILY suspended from &7My Network &cuntil &7 {DATEEXPIRY}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#{BANID}\n&7If you think this is a mistake contact us at yourwebsite.com!"
-  PermBanMessage: "&cThe account &7{PLAYER} &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{BANID}\n&7If you think this is a mistake contact us at yourwebsite.com!"
-  BanAnnouncement: "&c{BANNER} &7has banned &c{PLAYER}&7: &c{REASON} &7[#{BANID}]"
-  SilentBanAnnouncement: "&c{BANNER} &7has banned &c{PLAYER}&7: &c{REASON} &7[#{BANID}] &8[SILENT]"
-  UnbanAnnouncment: "&c{BANNER} &7has un-banned &c{PLAYER}&7: &c{REASON} &7[#{BANID}]"
-  SilentUnbanAnnouncment: "&c{BANNER} &7has un-banned &c{PLAYER}&7: &c{REASON} &7[#{BANID}] &8[SILENT]"
+  TempBanMessage: "&cThe account &7{PLAYER} &chas been TEMPORARILY suspended from {NETWORKNAME} &cuntil &7 {DATEEXPIRY}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#{BANID}\n&7If you think this is a mistake contact us at yourwebsite.com!"
+  PermBanMessage: "&cThe account &7{PLAYER} &chas been INDEFINTELY suspended from {NETWORKNAME}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{PUNISHID}\n&7If you think this is a mistake contact us at yourwebsite.com!"
+  BanAnnouncement: "&c{BANNER} &7has banned &c{PLAYER}&7: &c{REASON} &7[#{PUNISHID}]"
+  SilentBanAnnouncement: "&c{BANNER} &7has banned &c{PLAYER}&7: &c{REASON} &7[#{PUNISHID}] &8[SILENT]"
+  UnbanAnnouncment: "&c{BANNER} &7has un-banned &c{PLAYER}&7: &c{REASON} &7[#{PUNISHID}]"
+  SilentUnbanAnnouncment: "&c{BANNER} &7has un-banned &c{PLAYER}&7: &c{REASON} &7[#{PUNISHID}] &8[SILENT]"
   CannotBanSelf: "{PREFIX}&cYes, you have permissions! You cannot ban yourself!"
   PlayerIsBanned: "{PREFIX}&cError! &7{PLAYER} is already banned!"
   PlayerIsNotBanned: "{PREFIX}&cError! &7{PLAYER} is not banned!"
 
 IPBan:
-  PermIPBanMessage: "&cThe IP &7{IPADDRESS} &chas been TEMPORARILY suspended from &7My Network &cuntil &7 {DATEEXPIRY}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
-  TempIPBanMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+  PermIPBanMessage: "&cThe IP &7{IPADDRESS} &chas been TEMPORARILY suspended from {NETWORKNAME} &cuntil &7 {DATEEXPIRY}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+  TempIPBanMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from {NETWORKNAME}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
   SilentTempIPBanMessage: "3"
   SilentPermIPBanMessage: "4"
   UnIPbanAnnouncement: "5" 
@@ -66,17 +66,18 @@ IPBan:
   
 RegexBan:
   # TODO: Fix these messages for regex-based bans.
-  TempBanMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{PUNISHID}\n&7Sharing your Ban ID may affect the result of your appeal!"
-  PermBanMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from &7My Network\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+  TempBanMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from {NETWORKNAME}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{PUNISHID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+  PermBanMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from {NETWORKNAME}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{BANID}\n&7Sharing your Ban ID may affect the result of your appeal!"
   Insanity: "{PREFIX}&cBanning {regex} would ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
 
-Banwave:
+BanWave:
   AddedToWave: "{PREFIX}&7{PLAYER} &chas been added to the next ban wave."
   RemovedFromWave: "{PREFIX}&7{PLAYER} &chas been removed from the next ban wave."
   CannotAddSelf: "{PREFIX}&cYou cannot add yourself to the banwave!"
   PlayerIsInBanWave: "{PREFIX}&cError! &7{PLAYER} is already in the ban wave!"
   PlayerNotInBanWave: "{PREFIX}&cError! &7{PLAYER} is not part of any ban waves!"
   BannedPlayersInBanWave: "&cBanned &7{AMOUNT} &cplayer(s)!"
+  BanWaveStart: "{PREFIX}&b{PLAYER} started a ban wave, please stand by..."
 
 Mute:
   YouWereMuted: "{PREFIX}&cYou &7were muted by &c{MUTER} &7for: &c{REASON} &7[#{MUTEID}]\n&7Your mute expires on: &c{dateexpiry}&7!"
@@ -94,7 +95,7 @@ Mute:
   GlobalUnmuted: "&aThe chat is now unmuted, you may now converse."
 
 Kick:
-  KickMessage: "&cYou were kicked from &7My Network\n\n&cYou were kicked by: &f{KICKER}\n&cReason: &f{REASON}"
+  KickMessage: "&cYou were kicked from {NETWORKNAME}\n\n&cYou were kicked by: &f{KICKER}\n&cReason: &f{REASON}"
   KickAnnouncement: "&c{KICKER} &7kicked &c{PLAYER}&7: &c{REASON}"
   SilentKickAnnouncement: "&c{KICKER} &7kicked &c{PLAYER}&7: &c{REASON} &8[SILENT]"
   CannotKickSelf: "{PREFIX}&cYou may not kick yourself!"

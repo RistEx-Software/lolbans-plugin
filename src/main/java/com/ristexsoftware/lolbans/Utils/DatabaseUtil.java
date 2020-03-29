@@ -75,13 +75,19 @@ public class DatabaseUtil
                                             +"LastPunished TIMESTAMP NULL"
                                             +")").execute();
 
-            //self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedPlayers (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
-            //self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS MutedPlayers (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, TimeMuted TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
-            //self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BannedHistory (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, UnbanReason TEXT, UnbanExecutioner varchar(17), UnbanExecutionerUUID varchar(36), TimeBanned TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL, TimeRemoved TIMESTAMP NULL)").execute();
-            //self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS MutedHistory (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, UnmuteReason TEXT, UnmuteExecutioner varchar(17), UnmuteExecutionerUUID varchar(36), TimeMuted TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL, TimeRemoved TIMESTAMP NULL)").execute();
-            //self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Kicks (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)").execute();
-            //self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Warnings (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, Accepted boolean, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)").execute();
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BanWave (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, PlayerName varchar(17) NOT NULL, IPAddress varchar(48) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, ExecutionerUUID varchar(36) NOT NULL, PunishID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BanWave"
+                                            +"(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
+                                            +"UUID varchar(36) NOT NULL,"
+                                            +"PlayerName varchar(17) NOT NULL,"
+                                            +"IPAddress varchar(48) NOT NULL,"
+                                            +"Reason TEXT NULL,"
+                                            +"ExecutionerName varchar(17) NOT NULL,"
+                                            +"ExecutionerUUID varchar(36) NOT NULL,"
+                                            +"PunishID varchar(20) NOT NULL,"
+                                            +"TimePunished TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+                                            +"Expiry TIMESTAMP NULL"
+                                            +")").execute();
+
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS IPBans (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, IPAddress varchar(49) NOT NULL, Reason TEXT NULL, Executioner varchar(17) NOT NULL, PunishID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
             // FIXME: How is this gonna work for our new website-based model?
             // (Links will still be a thing to link their UUID to the website, ig reports will only be local, or global so other

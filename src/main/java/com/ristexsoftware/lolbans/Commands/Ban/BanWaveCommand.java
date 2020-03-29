@@ -35,83 +35,83 @@ public class BanWaveCommand implements CommandExecutor
     private boolean BanWaveAdd(CommandSender sender, Command command, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.banwave.add"))
-            return true;
+            return User.PermissionDenied(sender, "lolbans.banwave.add");
+
+        if (args == null || args.length < 2)
+        {
+            sender.sendMessage(Messages.InvalidSyntax);
+            return false; // Show syntax.
+        }
 
         try 
         {
-            // just incase someone, magically has a 1 char name........
-            if (!(args.length < 2 || args == null))
+            // TODO: Fix this too.
+            // TODO: Fix expiries.
+            String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length )) : args[1];
+            reason = reason.replace(",", "").trim();
+            OfflinePlayer target = User.FindPlayerByAny(args[0]);
+
+            if (target == null)
+                return User.NoSuchPlayer(sender, args[0], true);
+
+            if (!(sender instanceof ConsoleCommandSender) && target.getUniqueId().equals(((Player) sender).getUniqueId()))
             {
-                String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length )) : args[1];
-                reason = reason.replace(",", "").trim();
-                OfflinePlayer target = User.FindPlayerByAny(args[0]);
-
-                if (target == null)
-                    return User.NoSuchPlayer(sender, args[0], true);
-
-                if (!(sender instanceof ConsoleCommandSender) && target.getUniqueId().equals(((Player) sender).getUniqueId()))
-                {
-                    sender.sendMessage(Messages.Translate("Banwave.CannotAddSelf", null));
-                    return true;
-                }
-
-                if (User.IsPlayerInWave(target))
-                    return User.PlayerOnlyVariableMessage("Banwave.PlayerIsInBanWave", sender, target.getName(), true);
-
-
-                final String FuckingJava = new String(reason);
-
-                // Prepare our reason
-                boolean silent = args.length > 2 ? args[1].equalsIgnoreCase("-s") : false;
-
-                // Get the latest ID of the banned players to generate a PunishID form it.
-                String banid = PunishID.GenerateID(DatabaseUtil.GenID("BanWave"));
-                    
-                // Preapre a statement
-                int i = 1;
-                PreparedStatement pst = self.connection.prepareStatement("INSERT INTO BanWave (UUID, PlayerName, IPAddress, Reason, Executioner, PunishID) VALUES (?, ?, ?, ?, ?, ?)");
-                pst.setString(i++, target.getUniqueId().toString());
-                pst.setString(i++, target.getName());
-                if (target.isOnline())
-                    pst.setString(i++, ((Player)target).getAddress().getAddress().getHostAddress());
-                else
-                    pst.setString(i++, "UNKNOWN");
-                pst.setString(i++, reason);
-                pst.setString(i++, sender.getName());
-                pst.setString(i++, banid);
-
-                // Commit to the database.
-                pst.executeUpdate();
-
-                // Reply to the sender that we added the message.
-                User.PlayerOnlyVariableMessage("Banwave.AddedToWave", sender, target.getName(), false);
-
-                // Log to console.
-                // TODO: Log to everyone with the alert permission?
-                // FIXME: Silents?
-                // Format our messages.
-                String BanWaveAnnouncement = Messages.Translate(silent ? "BanWave.AddedToWave" : "BanWave.AddedToWave",
-                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                    {{
-                        put("player", target.getName());
-                        put("reason", FuckingJava);
-                        put("banner", sender.getName());
-                        put("banid", banid);
-                        put("silent", (silent ? " [silent]" : ""));
-                    }}
-                );
-                Bukkit.getConsoleSender().sendMessage(BanWaveAnnouncement);
-
-                // Send to Discord.
-                // TODO: Uhhh this is different now?
-                DiscordUtil.SendBanWaveAdd(sender.getName(), target.getName(), target.getUniqueId().toString(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", reason, banid);
+                sender.sendMessage(Messages.Translate("BanWave.CannotAddSelf", null));
                 return true;
             }
+
+            if (User.IsPlayerInWave(target))
+                return User.PlayerOnlyVariableMessage("BanWave.PlayerIsInBanWave", sender, target.getName(), true);
+
+            final String FuckingJava = new String(reason);
+
+            // Prepare our reason
+            // FIXME: Fix this.
+            boolean silent = args.length > 2 ? args[1].equalsIgnoreCase("-s") : false;
+
+            // Get the latest ID of the banned players to generate a PunishID form it.
+            String banid = PunishID.GenerateID(DatabaseUtil.GenID("BanWave"));
+                
+            // TODO: Cleanup this query...
+            int i = 1;
+            PreparedStatement pst = self.connection.prepareStatement("INSERT INTO BanWave (UUID, PlayerName, IPAddress, Reason, ExecutionerName, ExecutionerUUID, PunishID) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            pst.setString(i++, target.getUniqueId().toString());
+            pst.setString(i++, target.getName());
+            if (target.isOnline())
+                pst.setString(i++, ((Player)target).getAddress().getAddress().getHostAddress());
             else
-            {
-                sender.sendMessage(Messages.InvalidSyntax);
-                return false; // Show syntax.
-            }
+                pst.setString(i++, "UNKNOWN");
+            pst.setString(i++, reason);
+            pst.setString(i++, sender.getName());
+            if (sender  instanceof ConsoleCommandSender)
+                pst.setString(i++, "CONSOLE");
+            else
+                pst.setString(i++, ((Player)sender).getUniqueId().toString());
+            pst.setString(i++, banid);
+
+            // Commit to the database.
+            pst.executeUpdate();
+
+            // Log to console.
+            // TODO: Log to everyone with the alert permission?
+            // FIXME: Silents?
+            // Format our messages.
+            String BanWaveAnnouncement = Messages.Translate(silent ? "BanWave.AddedToWave" : "BanWave.AddedToWave",
+                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                {{
+                    put("player", target.getName());
+                    put("reason", FuckingJava);
+                    put("banner", sender.getName());
+                    put("banid", banid);
+                    put("silent", (silent ? " [silent]" : ""));
+                }}
+            );
+            Bukkit.getConsoleSender().sendMessage(BanWaveAnnouncement);
+
+            // Send to Discord.
+            // TODO: Uhhh this is different now?
+            DiscordUtil.SendBanWaveAdd(sender.getName(), target.getName(), target.getUniqueId().toString(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", reason, banid);
+            return true;
         }
         catch (SQLException | InvalidConfigurationException e)
         {
@@ -124,7 +124,7 @@ public class BanWaveCommand implements CommandExecutor
     private boolean BanWaveRemove(CommandSender sender, Command command, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.banwave.remove"))
-            return true;
+            return User.PermissionDenied(sender, "lolbans.banwave.remove");
 
         String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length )) : args[1];
         reason = reason.replace(",", "");
@@ -136,7 +136,7 @@ public class BanWaveCommand implements CommandExecutor
 
         // Check if they're banned normally
         if (!User.IsPlayerInWave(target))
-            return User.PlayerOnlyVariableMessage("Banwave.PlayerNotInBanWave", sender, target.getName(), true);
+            return User.PlayerOnlyVariableMessage("BanWave.PlayerNotInBanWave", sender, target.getName(), true);
 
         try
         {
@@ -145,7 +145,7 @@ public class BanWaveCommand implements CommandExecutor
             fuckingdumb.setString(1, target.getUniqueId().toString());
             fuckingdumb.executeUpdate();
 
-            User.PlayerOnlyVariableMessage("Banwave.RemovedFromWave", sender, target.getName(), false);
+            User.PlayerOnlyVariableMessage("BanWave.RemovedFromWave", sender, target.getName(), false);
             return true;
             
         }
@@ -160,20 +160,20 @@ public class BanWaveCommand implements CommandExecutor
     private boolean BanWaveExecute(CommandSender sender, Command command, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.banwave.enforce"))
-            return true;
+            return User.PermissionDenied(sender, "lolbans.banwave.enforce");
 
-        User.PlayerOnlyVariableMessage("Banwave.BanwaveStart", sender, sender.getName(), false);
+        User.PlayerOnlyVariableMessage("BanWave.BanWaveStart", sender, sender.getName(), false);
         BanWaveRunnable bwr = new BanWaveRunnable();
         bwr.sender = sender;
         bwr.runTaskAsynchronously(self);
-        return false;
+        return true;
     }
         
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.banwave"))
-            return true;
+            return User.PermissionDenied(sender, "lolbans.banwave");
         
         //System.out.println("User has perms, args: " + String.join(" ", args));
         // Invalid arguments.
@@ -185,11 +185,13 @@ public class BanWaveCommand implements CommandExecutor
 
         //System.out.println("Subcommand: " + SubCommand + " subargs: " + String.join(" ", Subargs));
 
+        // TODO: Help commands with this which explains everything
+
         if (SubCommand.equalsIgnoreCase("add"))
         {
             return this.BanWaveAdd(sender, command, label, Subargs);
         }
-        else if (SubCommand.equalsIgnoreCase("remove") || SubCommand.equalsIgnoreCase("rm")) 
+        else if (SubCommand.equalsIgnoreCase("remove") || SubCommand.equalsIgnoreCase("rm") || SubCommand.equalsIgnoreCase("delete") || SubCommand.equalsIgnoreCase("del")) 
         {
             return this.BanWaveRemove(sender, command, label, Subargs);
         }
