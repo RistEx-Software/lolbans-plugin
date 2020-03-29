@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.BanID;
+import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
@@ -27,7 +27,7 @@ import java.util.concurrent.Future;
 
 public class BanCommand implements CommandExecutor
 {
-    private static Main self = Main.getPlugin(Main.class);
+    //private static Main self = Main.getPlugin(Main.class);
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
@@ -94,13 +94,13 @@ public class BanCommand implements CommandExecutor
                     
 
                     // Get our ban id based on the latest id in the database.
-                    String banid = BanID.GenerateID(DatabaseUtil.GenID("Punishments"));
+                    String banid = PunishID.GenerateID(DatabaseUtil.GenID("Punishments"));
                     
 
                     // Execute queries to get the bans.
                     Future<Boolean> BanSuccess = DatabaseUtil.InsertPunishment(PunishmentType.PUNISH_BAN, target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, banid, bantime);
                     
-                    // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
+                    // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String PunishID, Timestamp BanTime)
                     if (!BanSuccess.get())
                     {
                         sender.sendMessage(Messages.ServerError);
@@ -141,15 +141,18 @@ public class BanCommand implements CommandExecutor
 
                     String SimplifiedMessage = Messages.Translate(silent ? "Discord.SimpMessageSilentBan" : "Discord.SimpMessageBan",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                        {{
-                            put("player", target.getName());
-                            put("reason", FuckingJava);
-                            put("banner", sender.getName());
-                            put("banid", banid);
-                            put("fullexpiry", FuckingJava2);
-                            put("expiryduration", FuckingJava3);
-                            put("dateexpiry", FuckingJava4);
-                        }}
+                        {
+                            private static final long serialVersionUID = 1L;
+                            {
+                                put("player", target.getName());
+                                put("reason", FuckingJava);
+                                put("banner", sender.getName());
+                                put("banid", banid);
+                                put("fullexpiry", FuckingJava2);
+                                put("expiryduration", FuckingJava3);
+                                put("dateexpiry", FuckingJava4);
+                            }
+                        }
                     );
 
                     // debugging

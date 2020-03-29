@@ -77,7 +77,7 @@ public class UnmuteCommand implements CommandExecutor
                 // Run the async task for the database
                 Future<Boolean> UnMute = DatabaseUtil.RemovePunishment(MuteID, target.getUniqueId().toString(), reason, sender, euuid, TimeUtil.TimestampNow());
 
-                // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
+                // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String PunishID, Timestamp BanTime)
                 if (!UnMute.get())
                 {
                     sender.sendMessage(Messages.ServerError);
@@ -97,7 +97,7 @@ public class UnmuteCommand implements CommandExecutor
                             put("player", target.getName());
                             put("reason", FuckingJava);
                             put("banner", sender.getName());
-                            put("banid", BanID);
+                            put("banid", PunishID);
                         }}
                     );
 
@@ -149,9 +149,9 @@ public class UnmuteCommand implements CommandExecutor
                 /* 
                 // Send to Discord.
                 if (sender instanceof ConsoleCommandSender)
-                    DiscordUtil.SendUnban(sender.getName().toString(), target.getName(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", target.getUniqueId().toString(), reason, BanID, silent);
+                    DiscordUtil.SendUnban(sender.getName().toString(), target.getName(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", target.getUniqueId().toString(), reason, PunishID, silent);
                 else
-                    DiscordUtil.SendUnban(sender.getName().toString(), target.getName(), ((OfflinePlayer) sender).getUniqueId().toString(), target.getUniqueId().toString(), reason, BanID, silent);
+                    DiscordUtil.SendUnban(sender.getName().toString(), target.getName(), ((OfflinePlayer) sender).getUniqueId().toString(), target.getUniqueId().toString(), reason, PunishID, silent);
                 */ 
 
                 // ":hammer: **{BANNER}** un-banned **{PLAYER}** for **{REASON}** *[SILENT] {BANID}*"

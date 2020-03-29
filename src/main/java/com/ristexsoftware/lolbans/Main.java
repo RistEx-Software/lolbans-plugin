@@ -67,6 +67,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // welcome.
+// TAKE YOUR SHOES OFF DONT BE DRAGGING NO DIRT IN HERE
 public final class Main extends JavaPlugin
 {
     public static HashMap<UUID, User> USERS = new HashMap<UUID, User>();

@@ -13,7 +13,7 @@ import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Hacks.IPBanning.IPBanUtil;
-import com.ristexsoftware.lolbans.Utils.BanID;
+import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
@@ -176,7 +176,7 @@ public class RegexBanCommand implements CommandExecutor
             if (SanityCheck(regex, sender))
                 return true;
 
-            String banid = BanID.GenerateID(DatabaseUtil.GenID("RegexBans"));
+            String banid = PunishID.GenerateID(DatabaseUtil.GenID("RegexBans"));
 
             int i = 1;
             PreparedStatement pst = self.connection.prepareStatement("INSERT INTO RegexBans (Regex, Reason, Executioner, PunishID, Expiry) VALUES (?, ?, ?, ?, ?)");

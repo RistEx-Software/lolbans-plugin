@@ -13,7 +13,7 @@ import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Hacks.IPBanning.IPBanUtil;
-import com.ristexsoftware.lolbans.Utils.BanID;
+import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
@@ -157,7 +157,7 @@ public class IPBanCommand implements CommandExecutor
             if (SanityCheck(thingy, sender))
                 return true;
 
-            String banid = BanID.GenerateID(DatabaseUtil.GenID("IPBans"));
+            String banid = PunishID.GenerateID(DatabaseUtil.GenID("IPBans"));
 
             int i = 1;
             PreparedStatement pst = self.connection.prepareStatement("INSERT INTO IPBans (IPAddress, Reason, Executioner, PunishID, Expiry) VALUES (?, ?, ?, ?, ?)");

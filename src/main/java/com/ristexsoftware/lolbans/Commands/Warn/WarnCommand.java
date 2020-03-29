@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.BanID;
+import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
@@ -68,14 +68,14 @@ public class WarnCommand implements CommandExecutor
                 final String FuckingJava = new String(reason);
                 int i = 1;
 
-                // Get the latest ID of the banned players to generate a BanID form it.
-                String warnid = BanID.GenerateID(DatabaseUtil.GenID("Warnings"));
+                // Get the latest ID of the banned players to generate a PunishID form it.
+                String warnid = PunishID.GenerateID(DatabaseUtil.GenID("Warnings"));
 
                 // InsertWarn
                 Future<Boolean> InsertWarn = DatabaseUtil.InsertPunishment(PunishmentType.PUNISH_WARN, target.getUniqueId().toString(), target.getName(), 
                                                 target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, warnid, null);
 
-                // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
+                // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String PunishID, Timestamp BanTime)
                 if (!InsertWarn.get())
                 {
                     sender.sendMessage(Messages.ServerError);

@@ -270,7 +270,7 @@ public class DatabaseUtil
 
     public static int GenID(String table) throws SQLException
     {
-        // Get the latest ID of the banned players to generate a BanID form it.
+        // Get the latest ID of the banned players to generate a PunishID form it.
         ResultSet ids = self.connection.createStatement().executeQuery("SELECT MAX(id) FROM " + table);
         int id = 1;
         if (ids.next())

@@ -63,7 +63,7 @@ class Luhn
     }
 }
 
-public class BanID
+public class PunishID
 {
     public static String GenerateID(int idstart)
     {

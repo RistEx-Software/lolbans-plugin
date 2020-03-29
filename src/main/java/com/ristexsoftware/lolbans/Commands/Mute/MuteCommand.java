@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.BanID;
+import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
@@ -95,13 +95,13 @@ public class MuteCommand implements CommandExecutor
                 final String FuckingJava4 = new String(mutetime != null ? TimeUtil.TimeString(mutetime) : "Never");
 
                 // Get our ban id based on the latest id in the database.
-                String muteid = BanID.GenerateID(DatabaseUtil.GenID("Punishments"));
+                String muteid = PunishID.GenerateID(DatabaseUtil.GenID("Punishments"));
 
                 // Execute queries to get the bans.
                 Future<Boolean> MuteSuccess = DatabaseUtil.InsertPunishment(PunishmentType.PUNISH_MUTE, target.getUniqueId().toString(), target.getName(), 
                                         target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, muteid, mutetime);
 
-                // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
+                // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String PunishID, Timestamp BanTime)
                 if (!MuteSuccess.get())
                 {
                     sender.sendMessage(Messages.ServerError);

@@ -209,10 +209,10 @@ public class User
         return false;
     }
 
-    public static OfflinePlayer FindPlayerByAny(String BanID)
+    public static OfflinePlayer FindPlayerByAny(String PunishID)
     {
-        // Try stupid first. If the BanID is just a nickname, then avoid DB queries.
-        OfflinePlayer op = Bukkit.getOfflinePlayer(BanID);
+        // Try stupid first. If the PunishID is just a nickname, then avoid DB queries.
+        OfflinePlayer op = Bukkit.getOfflinePlayer(PunishID);
         if (op != null)
             return op;
 
@@ -222,8 +222,8 @@ public class User
         {
             PreparedStatement bplay = self.connection.prepareStatement("SELECT UUID FROM BannedPlayers WHERE PunishID = ? LIMIT 1");
             PreparedStatement bhist = self.connection.prepareStatement("SELECT UUID FROM BannedHistory WHERE PunishID = ? LIMIT 1");
-            bplay.setString(1, BanID);
-            bhist.setString(1, BanID);
+            bplay.setString(1, PunishID);
+            bhist.setString(1, PunishID);
 
             Future<Optional<ResultSet>> bhres = DatabaseUtil.ExecuteLater(bhist);
             Optional<ResultSet> bpres = DatabaseUtil.ExecuteLater(bplay).get();
@@ -264,7 +264,7 @@ public class User
         return null;
     }
 
-    public static void KickPlayer(String sender, Player target, String BanID, String reason, Timestamp BanTime)
+    public static void KickPlayer(String sender, Player target, String PunishID, String reason, Timestamp BanTime)
     {
         try
         {
@@ -278,7 +278,7 @@ public class User
                     put("fullexpiry", BanTime != null ? String.format("%s (%s)", TimeUtil.TimeString(BanTime), TimeUtil.Expires(BanTime)) : "Never");
                     put("expiryduration", BanTime != null ? TimeUtil.Expires(BanTime) : "Never");
                     put("dateexpiry", BanTime != null ? TimeUtil.TimeString(BanTime) : "Never");
-                    put("BanID", BanID);
+                    put("PunishID", PunishID);
                 }}
             );
             target.kickPlayer(KickMessage);
@@ -289,7 +289,7 @@ public class User
         }
     }
 
-    public static void KickPlayer(String sender, Player target, String BanID, String reason, Timestamp BanTime, IPAddress IP)
+    public static void KickPlayer(String sender, Player target, String PunishID, String reason, Timestamp BanTime, IPAddress IP)
     {
         try
         {
@@ -303,7 +303,7 @@ public class User
                     put("fullexpiry", BanTime != null ? String.format("%s (%s)", TimeUtil.TimeString(BanTime), TimeUtil.Expires(BanTime)) : "Never");
                     put("expiryduration", BanTime != null ? TimeUtil.Expires(BanTime) : "Never");
                     put("dateexpiry", BanTime != null ? TimeUtil.TimeString(BanTime) : "Never");
-                    put("BanID", BanID);
+                    put("PunishID", PunishID);
                     put("IPAddress", IP.toString());
                 }}
             );

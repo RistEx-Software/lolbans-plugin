@@ -18,20 +18,20 @@ import com.ristexsoftware.lolbans.Utils.User;
 // Get reflection
 import java.lang.reflect.Field; 
 
-//     public static void KickPlayer(String sender, Player target, String BanID, String reason, Timestamp BanTime)
+//     public static void KickPlayer(String sender, Player target, String PunishID, String reason, Timestamp BanTime)
 class BannedUser
 {
-    public BannedUser(OfflinePlayer op, String Executioner, String BanID, String BanReason)
+    public BannedUser(OfflinePlayer op, String Executioner, String PunishID, String BanReason)
     {
         this.BannedPlayer = op;
         this.Executioner = Executioner;
-        this.BanID = BanID;
+        this.PunishID = PunishID;
         this.BanReason = BanReason;
     }
 
     public OfflinePlayer BannedPlayer;
     public String Executioner;
-    public String BanID;
+    public String PunishID;
     public String BanReason;
 }
 
@@ -50,8 +50,8 @@ public class BanWaveRunnable extends BukkitRunnable
             PreparedStatement PlayersToBanQuery = self.connection.prepareStatement("SELECT * FROM BanWave");
             // Array of users to be banned.
             PreparedStatement PlayersToBanQueryArr = self.connection.prepareStatement("SELECT PlayerName, GROUP_CONCAT(PlayerName) AS PlayerNames FROM BanWave");
-            PreparedStatement BanBatchQuery = self.connection.prepareStatement("INSERT INTO BannedPlayers (UUID, PlayerName, IPAddress, Reason, Executioner, BanID) VALUES (?, ?, ?, ?, ?, ?)");
-            PreparedStatement BanHistoryQuery = self.connection.prepareStatement("INSERT INTO BannedHistory (UUID, PlayerName, IPAddress, Reason, Executioner, BanID) VALUES (?, ?, ?, ?, ?, ?)");
+            PreparedStatement BanBatchQuery = self.connection.prepareStatement("INSERT INTO BannedPlayers (UUID, PlayerName, IPAddress, Reason, Executioner, PunishID) VALUES (?, ?, ?, ?, ?, ?)");
+            PreparedStatement BanHistoryQuery = self.connection.prepareStatement("INSERT INTO BannedHistory (UUID, PlayerName, IPAddress, Reason, Executioner, PunishID) VALUES (?, ?, ?, ?, ?, ?)");
             
             List<BannedUser> BannedPlayers = new ArrayList<BannedUser>();
             ResultSet ptbqr = PlayersToBanQueryArr.executeQuery();
@@ -71,7 +71,7 @@ public class BanWaveRunnable extends BukkitRunnable
                 {
                     int i = 1;
                     OfflinePlayer op = Bukkit.getOfflinePlayer(UUID.fromString(PlayersToBan.getString("UUID")));
-                    BannedUser bp = new BannedUser(op, PlayersToBan.getString("Executioner"), PlayersToBan.getString("BanID"), PlayersToBan.getString("Reason"));
+                    BannedUser bp = new BannedUser(op, PlayersToBan.getString("Executioner"), PlayersToBan.getString("PunishID"), PlayersToBan.getString("Reason"));
                     BannedPlayers.add(bp);
 
                     BanBatchQuery.setString(i++, PlayersToBan.getString("UUID"));
@@ -79,7 +79,7 @@ public class BanWaveRunnable extends BukkitRunnable
                     BanBatchQuery.setString(i++, PlayersToBan.getString("IPAddress"));
                     BanBatchQuery.setString(i++, bp.BanReason);
                     BanBatchQuery.setString(i++, bp.Executioner);
-                    BanBatchQuery.setString(i++, bp.BanID);
+                    BanBatchQuery.setString(i++, bp.PunishID);
                     BanBatchQuery.addBatch();
 
                     i = 1;
@@ -89,7 +89,7 @@ public class BanWaveRunnable extends BukkitRunnable
                     BanHistoryQuery.setString(i++, PlayersToBan.getString("IPAddress"));
                     BanHistoryQuery.setString(i++, PlayersToBan.getString("Reason"));
                     BanHistoryQuery.setString(i++, PlayersToBan.getString("Executioner"));
-                    BanHistoryQuery.setString(i++, PlayersToBan.getString("BanID"));
+                    BanHistoryQuery.setString(i++, PlayersToBan.getString("PunishID"));
                     BanHistoryQuery.addBatch();
                 }
 
@@ -103,9 +103,9 @@ public class BanWaveRunnable extends BukkitRunnable
                     for (BannedUser bu : BannedPlayers)
                     {
                         if (bu.BannedPlayer.isOnline())
-                            User.KickPlayer(bu.Executioner, (Player)bu.BannedPlayer, bu.BanID, bu.BanReason, null);
+                            User.KickPlayer(bu.Executioner, (Player)bu.BannedPlayer, bu.PunishID, bu.BanReason, null);
 
-                        self.getLogger().info(String.format("%s was banned: %s (#%s)", bu.BannedPlayer.getName(), bu.BanReason, bu.BanID));
+                        self.getLogger().info(String.format("%s was banned: %s (#%s)", bu.BannedPlayer.getName(), bu.BanReason, bu.PunishID));
                     }
                 }, 1L);
 

@@ -122,11 +122,11 @@ public class ConnectionListeners implements Listener
             String addr = event.getAddress().getHostAddress();
 
             // Ask the database for any ban records
-            PreparedStatement BanStatement = self.connection.prepareStatement("SELECT * FROM BannedPlayers WHERE UUID = ? AND (Expiry IS NULL OR Expiry >= NOW())");
+            PreparedStatement BanStatement = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ? AND Type = 0 AND (Expiry IS NULL OR Expiry >= NOW())");
             BanStatement.setString(1, event.getUniqueId().toString());
 
             // Also ask for any warning records
-            PreparedStatement WarnStatement = self.connection.prepareStatement("SELECT * FROM Warnings WHERE UUID = ? AND Accepted = ?");
+            PreparedStatement WarnStatement = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ? AND Type = 3 AND WarningAck = ?");
             WarnStatement.setString(1, event.getUniqueId().toString());
             WarnStatement.setBoolean(2, false);
 

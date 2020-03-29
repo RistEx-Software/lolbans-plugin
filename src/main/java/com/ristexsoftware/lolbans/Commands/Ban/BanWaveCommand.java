@@ -12,7 +12,7 @@ import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Runnables.BanWaveRunnable;
-import com.ristexsoftware.lolbans.Utils.BanID;
+import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
@@ -64,8 +64,8 @@ public class BanWaveCommand implements CommandExecutor
                 // Prepare our reason
                 boolean silent = args.length > 2 ? args[1].equalsIgnoreCase("-s") : false;
 
-                // Get the latest ID of the banned players to generate a BanID form it.
-                String banid = BanID.GenerateID(DatabaseUtil.GenID("BanWave"));
+                // Get the latest ID of the banned players to generate a PunishID form it.
+                String banid = PunishID.GenerateID(DatabaseUtil.GenID("BanWave"));
                     
                 // Preapre a statement
                 int i = 1;

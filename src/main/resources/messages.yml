@@ -21,6 +21,7 @@ ServerError: "{PREFIX}&cThe server encountered an error, please try again later.
 PlayerDoesntExist: "{PREFIX}&cError! &7{PLAYER} &cdoesn't exist!"
 PlayerIsOffline: "{PREFIX}&cError! &7{PLAYER} &cis offline!"
 UserRequired: "{PREFIX}&cYou have to be a user to these commands."
+NoPermission: "{PREFIX}&cYou do not have permission to use this command!"
 
 Link:
   LinkedAccountMessage: "&Your Account Link Confirmation Code is {LINKID}"

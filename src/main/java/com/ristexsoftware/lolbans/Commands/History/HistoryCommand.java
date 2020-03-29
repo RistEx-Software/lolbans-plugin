@@ -86,7 +86,7 @@ public class HistoryCommand implements CommandExecutor
 
                 // Preapre a statement
                 // FIXME: This absolute unit of a query needs to be fixed... and so does this file...
-                PreparedStatement pst = self.connection.prepareStatement("SELECT PlayerName, UUID, PunishID, Reason, Executioner, TimeBanned, Expiry, UnbanReason, UnbanExecutioner, GROUP_CONCAT(PunishID) AS BanIDs, GROUP_CONCAT(Reason) AS Reasons, GROUP_CONCAT(Executioner) AS Executioners, GROUP_CONCAT(DISTINCT Executioner) AS Executioners2, GROUP_CONCAT(UnbanReason) AS UnbanReasons, GROUP_CONCAT(UnbanExecutioner) AS UnbanExecutioners, GROUP_CONCAT(DISTINCT UnbanExecutioner) AS UnbanExecutioners2, MAX(TimeBanned) FROM BannedHistory WHERE PlayerName = ?");
+                PreparedStatement pst = self.connection.prepareStatement("SELECT PlayerName, UUID, PunishID, Reason, Executioner, TimeBanned, Expiry, UnbanReason, UnbanExecutioner, GROUP_CONCAT(PunishID) AS PunishIDs, GROUP_CONCAT(Reason) AS Reasons, GROUP_CONCAT(Executioner) AS Executioners, GROUP_CONCAT(DISTINCT Executioner) AS Executioners2, GROUP_CONCAT(UnbanReason) AS UnbanReasons, GROUP_CONCAT(UnbanExecutioner) AS UnbanExecutioners, GROUP_CONCAT(DISTINCT UnbanExecutioner) AS UnbanExecutioners2, MAX(TimeBanned) FROM BannedHistory WHERE PlayerName = ?");
                 pst.setString(1, args[0]);
 
                 ResultSet result = pst.executeQuery();
@@ -112,7 +112,7 @@ public class HistoryCommand implements CommandExecutor
                 boolean IsBanned = User.IsPlayerBanned(target);
 
                 // We need to put all of the stupid shit from the database into this string array.
-                String[] thing = {"1","2","3"};
+                String[] thing = {};
 
                 // we also need to loop through each thing in the database, and return things like a banid username and so on in 1 "block"
                 /* example:
@@ -133,16 +133,16 @@ public class HistoryCommand implements CommandExecutor
                 
                 
 
-                //System.out.println(this.GetLineItems(result, "BanIDs", "Ban ID(s)", ", ", IsBanned));
+                //System.out.println(this.GetLineItems(result, "PunishIDs", "Ban ID(s)", ", ", IsBanned));
                 
 
                 /*
                 sender.sendMessage(this.fmt("&8&m------------------------------"));
                 sender.sendMessage(this.fmt("&cName: &7%s &8[%s]", target.getName(), target.getUniqueId().toString()));
-                sender.sendMessage(this.GetLineItems(result, "BanIDs", "Ban ID(s)", ", ", IsBanned));
+                sender.sendMessage(this.GetLineItems(result, "PunishIDs", "Ban ID(s)", ", ", IsBanned));
                 sender.sendMessage(this.GetLineItems(result, "Reasons", "Reason(s)", ", ", IsBanned));
                 sender.sendMessage(this.GetLineItems(result, "Executioners", "Executioners(s)", ", ", IsBanned));
-                sender.sendMessage(this.fmt("&cTimes Banned: &7%d", this.GetStringOrDefault(result, "BanIDs", "").chars().filter(ch -> ch == ',').count()));
+                sender.sendMessage(this.fmt("&cTimes Banned: &7%d", this.GetStringOrDefault(result, "PunishIDs", "").chars().filter(ch -> ch == ',').count()));
 
                 if (IsBanned)
                 {

@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.BanID;
+import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;

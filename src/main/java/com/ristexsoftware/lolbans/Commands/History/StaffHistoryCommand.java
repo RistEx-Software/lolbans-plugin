@@ -95,13 +95,13 @@ public class StaffHistoryCommand implements CommandExecutor {
                     final String FuckingJava4 = new String(bantime != null ? TimeUtil.TimeString(bantime) : "Never");
 
                     // Get our ban id based on the latest id in the database.
-                    String banid = BanID.GenerateID(DatabaseUtil.GenID());
+                    String banid = PunishID.GenerateID(DatabaseUtil.GenID());
 
                     // Execute queries to get the bans.
                     Future<Boolean> HistorySuccess = DatabaseUtil.InsertHistory(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, banid, bantime);
                     Future<Boolean> BanSuccess = DatabaseUtil.InsertBan(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, banid, bantime);
 
-                    // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String BanID, Timestamp BanTime)
+                    // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String PunishID, Timestamp BanTime)
                     if (!BanSuccess.get() || !HistorySuccess.get())
                     {
                         sender.sendMessage(Messages.ServerError);

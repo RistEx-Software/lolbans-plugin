@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.BanID;
+import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
@@ -76,8 +76,8 @@ public class KickCommand implements CommandExecutor
 
                 final String FuckingJava = new String(reason);
                 
-                // Get the latest ID of the banned players to generate a BanID form it.
-                String kickid = BanID.GenerateID(DatabaseUtil.GenID("Punishments"));
+                // Get the latest ID of the banned players to generate a PunishID form it.
+                String kickid = PunishID.GenerateID(DatabaseUtil.GenID("Punishments"));
 
                 DatabaseUtil.InsertPunishment(PunishmentType.PUNISH_KICK, target.getUniqueId().toString(), target.getName(), ((Player)target).getAddress().getAddress().getHostAddress(), reason, sender, euuid, kickid, null);
 

@@ -167,11 +167,11 @@ public class DiscordUtil
                 temmie.sendMessage(dm);
         }
 
-        public static void SendBanWaveAdd(String sender, String target, String TargetUUID, String SenderUUID, String reason, String BanID)
+        public static void SendBanWaveAdd(String sender, String target, String TargetUUID, String SenderUUID, String reason, String PunishID)
         {
                 TemmieWebhook temmie = new TemmieWebhook(Webhook);
                 String fuckingjava = "https://crafatar.com/renders/head/" + TargetUUID + "?overlay";
-                String Color = BanID.replaceAll("[^0-9]","");
+                String Color = PunishID.replaceAll("[^0-9]","");
 
                 DiscordEmbed de = DiscordEmbed.builder()
                         .title(sender + " has added " + target + " to the ban wave") // We are creating a embed with this title...
@@ -191,8 +191,8 @@ public class DiscordUtil
                         //.url("https://github.com/MrPowerGamerBR/TemmieWebhook") // that, when clicked, goes to the TemmieWebhook repo...
                         .fields(Arrays.asList( // with fields...
                                 FieldEmbed.builder()
-                                .name("BanID")
-                                .value("#" + BanID)
+                                .name("PunishID")
+                                .value("#" + PunishID)
                                 .build(),
                                 FieldEmbed.builder()
                                 .name("Expires")
