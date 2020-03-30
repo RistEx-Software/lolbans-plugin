@@ -1,26 +1,50 @@
 package com.ristexsoftware.lolbans.Commands.History;
 
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Optional;
-
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.Messages;
-import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
+import com.ristexsoftware.lolbans.Utils.TranslationUtil;
 import com.ristexsoftware.lolbans.Utils.User;
+import com.ristexsoftware.lolbans.Utils.Messages;
+import com.ristexsoftware.lolbans.Utils.Paginator;
+import com.ristexsoftware.lolbans.Utils.PermissionUtil;
+import com.ristexsoftware.lolbans.Utils.PunishmentType;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.TreeMap;
+import java.util.function.Function;
+import java.util.List;
+import java.sql.*;
 
 public class StaffHistoryCommand implements CommandExecutor {
 
     private static Main self = Main.getPlugin(Main.class);
+
+    private String GodForbidJava8HasUsableLambdaExpressionsSoICanAvoidDefiningSuperflouosFunctionsLikeThisOne(PunishmentType Type, Timestamp ts)
+    {
+        if (Type == PunishmentType.PUNISH_BAN)
+        {
+            // Check if ts is null.
+            if (ts == null)
+                return "Permanent Ban";
+            else 
+                return "Temporary Ban";
+        }
+        else 
+            return Type.DisplayName();
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) 
@@ -30,161 +54,86 @@ public class StaffHistoryCommand implements CommandExecutor {
 
         // Command runs as /staffhistory <staffmember>
 
-        if (args == null || args.length < 1)
+        if (args.length < 1)
         {
             sender.sendMessage(Messages.InvalidSyntax);
             return false;
         }
 
-        OfflinePlayer target = User.FindPlayerByAny(args[0]);
-        if (target == null)
-            return User.NoSuchPlayer(sender, args[0], true);
-
-        
-        /*
-        if (PermissionUtil.Check(sender, "lolbans.staffhistory"))
+        try 
         {
-            try 
+            // FIXME: What if args[0] == "Console"
+            OfflinePlayer target = User.FindPlayerByAny(args[0]);
+            if (target == null)
+                return User.NoSuchPlayer(sender, args[0], true);
+
+            // Preapre a statement
+            // TODO: What about IP bans?
+            PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM Punishments WHERE ExecutionerUUID = ?");
+            pst.setString(1, target.getUniqueId().toString());
+
+            ResultSet result = pst.executeQuery();
+            if (!result.next() || result.wasNull())
+                return User.PlayerOnlyVariableMessage("History.NoHistory", sender, args[0], true);
+
+            boolean IsBanned = User.IsPlayerBanned(target);
+
+            // The page to use.
+            // TODO: WHat if args[1] is a string not an int?
+            int pageno = args.length > 1 ? Integer.valueOf(args[1]) : 1;
+
+            // We use a do-while loop because we already checked if there was a result above.
+            List<String> pageditems = new ArrayList<String>();
+            do 
             {
-                // just incase someone, magically has a 1 char name........
-                if (!(args.length < 2 || args == null))
-                {
-                    String reason = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length)) : args[1];
-                    reason = reason.replace(",", "").trim();
-                    OfflinePlayer target = User.FindPlayerByAny(args[0]);
-                    Timestamp bantime = null;
-                    String euuid = null;
+                // First, we have to calculate our punishment type.
+                PunishmentType Type = PunishmentType.FromOrdinal(result.getInt("Type"));
+                Timestamp ts = result.getTimestamp("TimePunished");
 
-                    if (sender instanceof ConsoleCommandSender)
-                        euuid = "console";
-
-                    else if (sender instanceof Player)
-                        euuid = ((Player) sender).getUniqueId().toString();
-
-                    Long now = System.currentTimeMillis();
-                    sender.sendMessage(ChatColor.GRAY + "Processing... please wait.");
-
-                    if (target == null)
-                        return User.NoSuchPlayer(sender, args[0], true);
-
-                    if (User.StaffHasHistory(sender))
-                        return User.PlayerOnlyVariableMessage("Ban.PlayerIsBanned", sender, target.getName(), true);
-
-
-                    // Parse ban time.
-                    if (!args[1].trim().contentEquals("0") && !args[1].trim().contentEquals("*"))
-                    {
-                        Optional<Long> dur = TimeUtil.Duration(args[1]);
-                        if (dur.isPresent())
-                            bantime = new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
-                        else
-                        {
-                            sender.sendMessage(Messages.InvalidSyntax);
-                            return false;
-                        }
-                    }
-
-                    // Prepare our reason
-                    boolean silent = args.length > 3 ? args[2].equalsIgnoreCase("-s") : false;
-
-                    // Because dumbfuck java and it's "ItS nOt FiNaL"
-                    // but really? what the fuck java? Now I have to have all of these "fuckingjava" strings.. thanks.......
-                    final String FuckingJava = new String(reason);
-                    final String FuckingJava2 = new String(bantime != null ? String.format("%s (%s)", TimeUtil.TimeString(bantime), TimeUtil.Expires(bantime)) : "Never");
-                    final String FuckingJava3 = new String(bantime != null ? TimeUtil.Expires(bantime) : "Never");
-                    final String FuckingJava4 = new String(bantime != null ? TimeUtil.TimeString(bantime) : "Never");
-
-                    // Get our ban id based on the latest id in the database.
-                    String banid = PunishID.GenerateID(DatabaseUtil.GenID());
-
-                    // Execute queries to get the bans.
-                    Future<Boolean> HistorySuccess = DatabaseUtil.InsertHistory(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, banid, bantime);
-                    Future<Boolean> BanSuccess = DatabaseUtil.InsertBan(target.getUniqueId().toString(), target.getName(), target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, banid, bantime);
-
-                    // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String PunishID, Timestamp BanTime)
-                    if (!BanSuccess.get() || !HistorySuccess.get())
-                    {
-                        sender.sendMessage(Messages.ServerError);
-                        return true;
-                    } 
-
-                    // Kick the player first, they're officially banned.
-                    if (target instanceof Player)
-                        User.KickPlayer(sender.getName(), (Player)target, banid, reason, bantime);
-
-                    // Format our messages.
-                    String BanAnnouncement = Messages.Translate(silent ? "Ban.SilentBanAnnouncement" : "Ban.BanAnnouncement",
-                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                        {{
-                            put("player", target.getName());
-                            put("reason", FuckingJava);
-                            put("banner", sender.getName());
-                            put("banid", banid);
-                            put("fullexpiry", FuckingJava2);
-                            put("expiryduration", FuckingJava3);
-                            put("dateexpiry", FuckingJava4);
-                        }}
-                    );
-
-                    // Send it to the console.
-                    Bukkit.getConsoleSender().sendMessage(BanAnnouncement);
-                
-                    // Send messages to all players (if not silent) or only to admins (if silent)
-                    for (Player p : Bukkit.getOnlinePlayers())
-                    {
-                        if (silent && (!p.hasPermission("lolbans.alerts") && !p.isOp()))
-                            continue;
-
-                        p.sendMessage(BanAnnouncement);
-                    }
-
-                    String SimplifiedMessage = Messages.Translate(silent ? "Discord.SimplifiedMessageSilent" : "Discord.SimplifiedMessage",
-                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                        {{
-                            put("player", target.getName());
-                            put("reason", FuckingJava);
-                            put("banner", sender.getName());
-                            put("banid", banid);
-                            put("fullexpiry", FuckingJava2);
-                            put("expiryduration", FuckingJava3);
-                            put("dateexpiry", FuckingJava4);
-                        }}
-                    );
-                    Long later = System.currentTimeMillis();
-                    Long thingy = later - now;
-                    sender.sendMessage(ChatColor.GRAY + "Done! " + ChatColor.RED + thingy + "ms");
-
-                    // Send to Discord. (New method)
-                    if (DiscordUtil.UseSimplifiedMessage == true)
-                    {
-                        DiscordUtil.SendFormatted(SimplifiedMessage);
-                        return true;
-                    }
-                    else
-                    {
-                        DiscordUtil.Send(sender.getName().toString(), target.getName(),
-                                // if they're the console, use a hard-defined UUID instead of the player's UUID.
-                                (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((Entity) sender).getUniqueId().toString(), 
-                                target.getUniqueId().toString(), reason, banid, bantime, silent);
-                        return true;
-                    }
-                }
-                else
-                {
-                    sender.sendMessage(Messages.InvalidSyntax);
-                    return false; // Show syntax.
-                }
+                pageditems.add(Messages.Translate(ts == null ? "History.StaffHistoryMessagePerm" : "History.StaffHistoryMessageTemp", 
+                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                    {{
+                        put("playername", result.getString("PlayerName"));
+                        put("punishid", result.getString("PunishID"));
+                        put("reason", result.getString("Reason"));
+                        put("moderator", result.getString("ExecutionerName"));
+                        put("type", GodForbidJava8HasUsableLambdaExpressionsSoICanAvoidDefiningSuperflouosFunctionsLikeThisOne(Type, ts));
+                        put("expirydate", TimeUtil.TimeString(ts));
+                        put("expiryduration", TimeUtil.Expires(ts));
+                        // TODO: Add more variables for people who want more info?
+                    }}
+                ));
             }
-            catch (Exception e)
+            while(result.next());
+
+            // This is several rendered things in one string
+            // Minecraft's short window (when chat is closed) can hold 10 lines
+            // their extended window can hold 20 lines
+            Paginator page = new Paginator<String>(pageditems, 2);
+
+            for (Object str : page.GetPage(pageno))
+                sender.sendMessage((String)str);
+
+            // Check if the paginator needs the page text or not.
+            if (page.GetTotalPages() > 1)
             {
-                e.printStackTrace();
-                sender.sendMessage(Messages.ServerError);
-                return true;
+                sender.sendMessage(Messages.Translate("History.Paginator",
+                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                    {{
+                        put("current", String.valueOf(page.GetCurrent()));
+                        put("total", String.valueOf(page.GetTotalPages()));
+                    }}
+                ));
             }
+
+            return true;
         }
-        */
-
-        return true;
+        catch (SQLException | InvalidConfigurationException ex)
+        {
+            ex.printStackTrace();
+            sender.sendMessage(Messages.ServerError);
+            return true;
+        }
     }
 
 }

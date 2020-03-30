@@ -27,6 +27,7 @@ People donate like crazy anyway..)
 Minimum Viable Product (MVP) / Feature Freeze:
 ##########################################
  - /staffhistory - Staff history and mass unbans to undo - Zachery/Justin
+ - Reports show up in /history
  - Hover Text (JSON) - Zachery/Justin?
  - /dupeip, /iphistory - Justin/Zachery
  - /prunehistory <Player|PunishID|CIDR> <Distance In Time|*> - Zachery?

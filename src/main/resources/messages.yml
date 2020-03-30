@@ -109,7 +109,14 @@ Warn:
   AcceptMessage: "&aThank you for accepting, you may resume your gameplay!"
   
 History:
-  NoHistroy: "{PREFIX}&cPlayer &7{PLAYER}&c has no punishment history."
+  NoHistory: "{PREFIX}&cPlayer &7{PLAYER}&c has no punishment history."
   HistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &7{REASON}\n&f&lModerator: &7{MODERATOR}\n&f&lType: &r&c{TYPE}&7 - &f&lExpires: &7{EXPIRYDATE}"
   HistoryMessagePerm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &7{REASON}\n&f&lModerator: &7{MODERATOR}\n&f&lType: &r&c{TYPE}&7"
+  StaffHistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &7{REASON}\n&f&lModerator: &7{MODERATOR}\n&f&lType: &r&c{TYPE}&7 - &f&lExpires: &7{EXPIRYDATE}"
+  StaffHistoryMessagePerm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &7{REASON}\n&f&lModerator: &7{MODERATOR}\n&f&lType: &r&c{TYPE}&7"
   Paginator: "&3:=:=:= &b[Page {CURRENT}/{TOTAL}]&3 =:=:=:"
+
+StaffRollback:
+  RollbackComplete: "{PREFIX}&fRolled back &b{AFFECTED} punishments&f."
+  NoRollback: "{PREFIX}&fThere are no users to rollback."
+  NoHistory: "{PREFIX}&{PLAYER} has performed no punishments."

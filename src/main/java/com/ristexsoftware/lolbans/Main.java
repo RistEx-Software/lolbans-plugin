@@ -36,9 +36,11 @@ import com.ristexsoftware.lolbans.Commands.Ban.BanWaveCommand;
 import com.ristexsoftware.lolbans.Commands.Ban.IPBanCommand;
 import com.ristexsoftware.lolbans.Commands.Ban.RegexBanCommand;
 import com.ristexsoftware.lolbans.Commands.History.HistoryCommand;
+import com.ristexsoftware.lolbans.Commands.History.StaffHistoryCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.BroadcastCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.KickCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.ReportCommand;
+import com.ristexsoftware.lolbans.Commands.Misc.StaffRollbackCommand;
 import com.ristexsoftware.lolbans.Commands.Mute.UnmuteCommand;
 import com.ristexsoftware.lolbans.Commands.Mute.MuteCommand;
 import com.ristexsoftware.lolbans.Listeners.AsyncChatListener;
@@ -163,6 +165,8 @@ public final class Main extends JavaPlugin
         this.getCommand("broadcast").setExecutor(new BroadcastCommand());
         this.getCommand("report").setExecutor(new ReportCommand());
         this.getCommand("regexban").setExecutor(new RegexBanCommand());
+        this.getCommand("staffrollback").setExecutor(new StaffRollbackCommand());
+        this.getCommand("staffhistory").setExecutor(new StaffHistoryCommand());
         
         // Run our hacks
         Hacks.HackIn(this);

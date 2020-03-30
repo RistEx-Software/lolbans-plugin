@@ -12,6 +12,17 @@ commands:
     usage: |
           Syntax Error!
           Use /ban <player> <ban time|*> <reason>
+  staffrollback:
+    description: Rollback a staff member's actions
+    usage: |
+          Syntax Error!
+          Use /staffrollback <staff> <relative time>
+          Relative time is in format in 1y2m4w8d4h3m2s
+  staffhistory:
+    descripton: Show staff history
+    usage: |
+          Syntax Error!
+          Use /staffhistory <staff> [<page>]
   ipban:
     description: Ban an ip address or CIDR range
     usage: |
@@ -51,7 +62,7 @@ commands:
     description: Get history of users punishments
     usage: |
         Syntax Error!
-        Use /history <player>
+        Use /history <player> [<page>]
     aliases: [h]
   clearhistory:
     description: Clear history of a player

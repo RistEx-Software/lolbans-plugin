@@ -168,7 +168,9 @@
             <groupId>com.github.seancfoley</groupId>
             <artifactId>ipaddress</artifactId>
             <version>5.1.0</version>
-        </dependency>        
+        </dependency>
+
+        <!-- For testing -->       
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>

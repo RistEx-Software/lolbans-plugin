@@ -161,7 +161,7 @@ public class DatabaseUtil
                 catch (SQLException e) 
                 {
                     e.printStackTrace();
-                    return Optional.ofNullable(null);
+                    return Optional.empty();
                 }
             }
         });
@@ -171,23 +171,23 @@ public class DatabaseUtil
         return t;
     }
 
-    public static Future<Void> ExecuteUpdate(PreparedStatement statement)
+    public static Future<Integer> ExecuteUpdate(PreparedStatement statement)
     {
-        FutureTask<Void> t = new FutureTask<>(new Callable<Void>()
+        FutureTask<Integer> t = new FutureTask<>(new Callable<Integer>()
         {
             @Override
-            public Void call()
+            public Integer call()
             {
                 //This is where you should do your database interaction
                 try 
                 {
-                    statement.executeUpdate();
+                    return statement.executeUpdate();
                 } 
                 catch (SQLException e) 
                 {
                     e.printStackTrace();
                 }
-                return null;
+                return -1;
             }
         });
 
