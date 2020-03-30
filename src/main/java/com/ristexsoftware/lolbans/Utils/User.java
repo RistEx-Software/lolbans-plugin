@@ -155,7 +155,7 @@ public class User
     {
         try 
         {
-            PreparedStatement ps = self.connection.prepareStatement("SELECT 1 FROM Punishments WHERE UUID = ? AND Type = 0 AND Appealed = false LIMIT 1");
+            PreparedStatement ps = self.connection.prepareStatement("SELECT 1 FROM Punishments WHERE UUID = ? AND Type = 0 AND Appealed = FALSE LIMIT 1");
             ps.setString(1, user.getUniqueId().toString());
 
             return ps.executeQuery().next();
@@ -171,7 +171,7 @@ public class User
     {
         try 
         {
-            PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM BannedPlayers, BannedHistory, Warnings, MutedHistory, MutedPlayers, Kicks WHERE ExecutionerUUID = ? LIMIT 1");
+            PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM Punishments Kicks WHERE ExecutionerUUID = ? LIMIT 1");
             
             if (user instanceof Player)
             {
@@ -217,15 +217,13 @@ public class User
             return op;
 
         // Now we move to more expensive operations.
-        
         try 
         {
-            PreparedStatement bplay = self.connection.prepareStatement("SELECT UUID FROM BannedPlayers WHERE PunishID = ? LIMIT 1");
-            PreparedStatement bhist = self.connection.prepareStatement("SELECT UUID FROM BannedHistory WHERE PunishID = ? LIMIT 1");
+            PreparedStatement bplay = self.connection.prepareStatement("SELECT UUID FROM Punishments WHERE PunishID = ? OR PlayerName = ? OR UUID = ? LIMIT 1");
             bplay.setString(1, PunishID);
-            bhist.setString(1, PunishID);
+            bplay.setString(2, PunishID);
+            bplay.setString(3, PunishID);
 
-            Future<Optional<ResultSet>> bhres = DatabaseUtil.ExecuteLater(bhist);
             Optional<ResultSet> bpres = DatabaseUtil.ExecuteLater(bplay).get();
             
             if (bpres.isPresent())
@@ -234,27 +232,11 @@ public class User
                 if (res.next())
                 {
                     UUID uuid = UUID.fromString(res.getString("UUID"));
-                    op = Bukkit.getOfflinePlayer(uuid);
+                    System.out.println("UUID: " + uuid.toString());
+                    return Bukkit.getOfflinePlayer(uuid);
                 }
-
-                // Try and query from history
-                if (op == null)
-                {
-                    Optional<ResultSet> opt = bhres.get();
-                    if (opt.isPresent())
-                    {
-                        res = opt.get();
-                        if (res.next())
-                        {
-                            UUID uuid = UUID.fromString(res.getString("UUID"));
-                            op = Bukkit.getOfflinePlayer(uuid);
-                            return op;
-                        }
-                    }
-                }
-                else
-                    return op;
             }
+            System.out.println("No results!");
         }
         catch (SQLException | InterruptedException | ExecutionException ex)
         {

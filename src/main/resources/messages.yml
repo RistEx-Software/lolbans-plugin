@@ -15,7 +15,7 @@ Discord:
 
 Prefix: "&c<LolBans> "
 NetworkName: "&7My Network "
-InvalidSyntax: "{PREFIX}&cInvalid Syntax!"
+InvalidSyntax: "{PREFIX}&cInvalid Syntax! {SYNTAX}"
 InvalidArguments: "{PREFIX}&cInvalid Arguments!"
 ServerError: "{PREFIX}&cThe server encountered an error, please try again later."
 PlayerDoesntExist: "{PREFIX}&cError! &7{PLAYER} &cdoesn't exist!"
@@ -109,12 +109,7 @@ Warn:
   AcceptMessage: "&aThank you for accepting, you may resume your gameplay!"
   
 History:
-  HistoryMessage: "Some long thing here {History.kljahdfjklasdfkjlashdf} (exluding the unban section) blah blah blah blah blah"
-  HistoryUbanned: "Uban Reason: {unbreasons} {latest}"
-  HistoryUbannedExec: "Uban Exec: {execs} {latest}"
-  HistoryLastBanned: "Last Banned: {lastbanned} {lastedbanned}"
-  HistoryLasteNeverBanned: "Last Banned: never banned"
-  HistoryExpiry: "Uban Exp: {Expiry}"
-  HistoryIndefExpiry: "Uban Exp: never!"
-  # HistoryMessage: {PLAYER} {BANNER} %banreasons% %unbanreasons% %banids% %expiry% %latestbanreasons% %latestunbanreason% %latestbanner% %timesbanned% %currentlybanned% 
-  HistoryMessage: "&8&m------------------------------\n \n&8&m------------------------------"
+  NoHistroy: "{PREFIX}&cPlayer &7{PLAYER}&c has no punishment history."
+  HistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &7{REASON}\n&f&lModerator: &7{MODERATOR}\n&f&lType: &r&c{TYPE}&7 - &f&lExpires: &7{EXPIRYDATE}"
+  HistoryMessagePerm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &7{REASON}\n&f&lModerator: &7{MODERATOR}\n&f&lType: &r&c{TYPE}&7"
+  Paginator: "&3:=:=:= &b[Page {CURRENT}/{TOTAL}]&3 =:=:=:"

@@ -122,7 +122,7 @@ public class ConnectionListeners implements Listener
             String addr = event.getAddress().getHostAddress();
 
             // Ask the database for any ban records
-            PreparedStatement BanStatement = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ? AND Type = 0 AND (Expiry IS NULL OR Expiry >= NOW())");
+            PreparedStatement BanStatement = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ? AND Type = 0 AND (Expiry IS NULL OR Expiry >= NOW()) AND Appealed = FALSE");
             BanStatement.setString(1, event.getUniqueId().toString());
 
             // Also ask for any warning records
@@ -167,7 +167,7 @@ public class ConnectionListeners implements Listener
                         put("fullexpiry", Expiry != null ? String.format("%s (%s)", TimeUtil.TimeString(Expiry), TimeUtil.Expires(Expiry)) : "Never");
                         put("expiryduration", Expiry != null ? TimeUtil.Expires(Expiry) : "Never");
                         put("dateexpiry", Expiry != null ? TimeUtil.TimeString(Expiry) : "Never");
-                        put("banid", result.getString("PunishID"));
+                        put("punishid", result.getString("PunishID"));
                     }};
 
                     IPBanMessage = Messages.Translate(Expiry != null ? "IPBan.TempIPBanMessage" : "IPBan.PermIPBanMessage", Variables);
@@ -252,11 +252,11 @@ public class ConnectionListeners implements Listener
                     {{
                         put("player", event.getName());
                         put("reason", result.getString("Reason"));
-                        put("banner", result.getString("Executioner"));
+                        put("banner", result.getString("ExecutionerName"));
                         put("fullexpiry", BanTime != null ? String.format("%s (%s)", TimeUtil.TimeString(BanTime), TimeUtil.Expires(BanTime)) : "Never");
                         put("expiryduration", BanTime != null ? TimeUtil.Expires(BanTime) : "Never");
                         put("dateexpiry", BanTime != null ? TimeUtil.TimeString(BanTime) : "Never");
-                        put("banid", result.getString("PunishID"));
+                        put("punishid", result.getString("PunishID"));
                         put("LinkMessage", LinkedAccountMessage);
                     }};
                     //(String message, String ColorChars, Map<String, String> Variables)
@@ -287,8 +287,8 @@ public class ConnectionListeners implements Listener
                         {{
                             put("player", result.getString("PlayerName"));
                             put("reason", result.getString("Reason"));
-                            put("issuer", result.getString("Executioner"));
-                            put("warnid", result.getString("PunishID"));
+                            put("issuer", result.getString("ExecutionerName"));
+                            put("punishid", result.getString("PunishID"));
                         }}
                     );
                     

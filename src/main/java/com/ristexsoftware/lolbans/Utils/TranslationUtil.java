@@ -19,9 +19,14 @@ public class TranslationUtil
             if (ch >= 97)
                 ch -= 32;
 
+            // Minecraft uses some new special chars for formatting so we have
+            // to account for those too.
+            if (ch == 'R' || (ch < 80 && ch > 74))
+                return true;
+
             // if they're greater than 70 (aka 'F') but less than 65 (aka 'A')
             // then it's not valid hexidecimal.
-            if (ch > 71 || ch < 63)
+            if (ch > 71 || ch < 65)
                 return false;
         }
         

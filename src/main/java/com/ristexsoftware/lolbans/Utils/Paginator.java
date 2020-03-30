@@ -15,7 +15,8 @@ public class Paginator<T>
 	public Paginator(T[] objects, Integer max) 
 	{
 		this.objects = objects;
-		pagSize = new Double(max);
+		this.pagSize = new Double(max);
+		this.amountOfPages = (int) Math.ceil(objects.length / pagSize);
 	}
 
 	public Paginator(List<T> objects, Integer max) 
@@ -26,6 +27,7 @@ public class Paginator<T>
 	public void SetElements(List<T> objects) 
 	{
 		this.objects = objects.toArray((T[]) new Object[0]);
+		this.amountOfPages = (int) Math.ceil(objects.size() / pagSize);
 	}
 
 	public boolean HasNext() 
@@ -46,6 +48,16 @@ public class Paginator<T>
 	public int GetPrev() 
 	{
 		return currentPage - 1;
+	}
+
+	public int GetCurrent()
+	{
+		return currentPage;
+	}
+
+	public int GetTotalPages()
+	{
+		return this.amountOfPages;
 	}
 
 	public List<T> GetPage(Integer pageNum) 

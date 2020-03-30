@@ -38,6 +38,8 @@ Minimum Viable Product (MVP) / Feature Freeze:
  - Eliminate "Global" ban announcements, instead make them individual permissions. This is more flexible.
  - Eliminate a large "alerts" announcement class and make an alerts permission for each event. (eg, ipbans would get "lolbans.IPBan.announce" instead of "lolbans.alerts")
  - List bans, regex bans, ip bans, warnings, etc. and ensure they're easy to remove.
+ - Fuck off with spigot's default syntax handlers and do our own with messages.yml.
+ - Standardize the name for who the hell bans someone. Are they `Banner`, `Executioner`, `Moderator`, `StaffMember`, `Issuer`, etc.?
  - TESTING TESTING TESTING TESTING TESTING!!! - everyone!
 
 ##########################################
