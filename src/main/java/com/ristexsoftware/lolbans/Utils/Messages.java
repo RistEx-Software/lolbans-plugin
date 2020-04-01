@@ -98,4 +98,15 @@ public class Messages
     {
         return Messages.ConcatenateRest(args, offset, " ");
     }
+
+    public static boolean CompareMany(String haystack, String[] needles)
+    {
+        for (String needle : needles)
+        {
+            if (haystack.equalsIgnoreCase(needle))
+                return true;
+        }
+        
+        return false;
+    }
 }

@@ -1,19 +1,16 @@
-package com.ristexsoftware.lolbans.Hacks.IPBanning;
+package com.ristexsoftware.lolbans.Utils;
 
 import inet.ipaddr.HostName;
-import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.*;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
-import javax.sql.rowset.serial.SerialBlob;
 import com.ristexsoftware.lolbans.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -64,7 +61,7 @@ public class IPBanUtil
 			}
 		});
 
-		self.pool.execute(t);
+		Main.pool.execute(t);
 
 		return t;
 	}
@@ -110,7 +107,7 @@ public class IPBanUtil
 			}
 		});
 
-		self.pool.execute(t);
+		Main.pool.execute(t);
 		return t;
 	}
 

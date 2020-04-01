@@ -1,19 +1,13 @@
 package com.ristexsoftware.lolbans.Commands.History;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.entity.Player;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
-import com.ristexsoftware.lolbans.Utils.TranslationUtil;
 import com.ristexsoftware.lolbans.Utils.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.Paginator;
@@ -21,10 +15,7 @@ import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.TreeMap;
-import java.util.function.Function;
 import java.util.List;
 import java.sql.*;
 
@@ -76,13 +67,13 @@ public class StaffHistoryCommand implements CommandExecutor {
             if (!result.next() || result.wasNull())
                 return User.PlayerOnlyVariableMessage("History.NoHistory", sender, args[0], true);
 
-            boolean IsBanned = User.IsPlayerBanned(target);
 
             // The page to use.
             // TODO: WHat if args[1] is a string not an int?
             int pageno = args.length > 1 ? Integer.valueOf(args[1]) : 1;
 
             // We use a do-while loop because we already checked if there was a result above.
+            // NYE!... nye..... bye....go to bed bum or what I'll disconnect your inet bye
             List<String> pageditems = new ArrayList<String>();
             do 
             {
@@ -109,7 +100,7 @@ public class StaffHistoryCommand implements CommandExecutor {
             // This is several rendered things in one string
             // Minecraft's short window (when chat is closed) can hold 10 lines
             // their extended window can hold 20 lines
-            Paginator page = new Paginator<String>(pageditems, 2);
+            Paginator<String> page = new Paginator<String>(pageditems, 2);
 
             for (Object str : page.GetPage(pageno))
                 sender.sendMessage((String)str);

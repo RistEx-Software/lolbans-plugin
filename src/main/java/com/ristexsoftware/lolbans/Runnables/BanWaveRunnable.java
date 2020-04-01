@@ -12,13 +12,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.ArrayList;
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 import com.ristexsoftware.lolbans.Utils.User;
 
-// Get reflection
-import java.lang.reflect.Field; 
 
 //     public static void KickPlayer(String sender, Player target, String PunishID, String reason, Timestamp BanTime)
 class BannedUser

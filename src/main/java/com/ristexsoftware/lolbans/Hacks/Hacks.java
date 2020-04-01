@@ -3,21 +3,20 @@ package com.ristexsoftware.lolbans.Hacks;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
-import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.ReflectionUtil;
-import com.ristexsoftware.lolbans.Hacks.LolbansPluginManager;
-import com.ristexsoftware.lolbans.Listeners.PlayerEventListener;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandMap;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -79,6 +78,7 @@ public class Hacks implements Listener
                 for (ClassInfo event : events) 
                 {
                     // noinspection unchecked
+                    @SuppressWarnings("unchecked")
                     Class<? extends Event> eventClass = (Class<? extends Event>) Class.forName(event.getName());
 
                     if (Arrays.stream(eventClass.getDeclaredMethods()).anyMatch(
@@ -117,41 +117,38 @@ public class Hacks implements Listener
 
         // if it's one of our plugin managers, restore the old one.
         if (pluginManager instanceof LolbansPluginManager)
-            ReflectionUtil.setProtectedValue(Bukkit.getServer(), "pluginManager",
-                    ((LolbansPluginManager) pluginManager).origpm);
+            ReflectionUtil.setProtectedValue(Bukkit.getServer(), "pluginManager", ((LolbansPluginManager) pluginManager).origpm);
     }
 
     public void CallEvent(Event event) throws IllegalStateException 
     {
-        // Get our main plugin class.
-        final Main self = Main.getPlugin(Main.class);
+        try 
+        {
+            // Listen to our player event.
+            if (event instanceof PlayerEvent)
+                PlayerEventListener.OnPlayerEvent((PlayerEvent)event);
 
-        // self.getLogger().info(String.format("Executing %s...",
-        // event.getEventName()));
+            if (event instanceof EntityEvent)
+                PlayerEventListener.OnEntityEvent((EntityEvent)event);
 
-        // Listen to our player event.
-        if (event instanceof PlayerEvent)
-            try 
-            {
-                PlayerEventListener.OnPlayerEvent((PlayerEvent) event);
-            } 
-            catch (InterruptedException e) 
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } 
-            catch (ExecutionException e) 
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } 
-            catch (InvalidConfigurationException e) 
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            if (event instanceof AsyncPlayerChatEvent)
+                AsyncChatListener.OnAsyncPlayerChat((AsyncPlayerChatEvent)event);
+            
+            if (event instanceof PlayerJoinEvent)
+                ConnectionListeners.OnPlayerConnect((PlayerJoinEvent)event);
 
-        if (event instanceof EntityEvent)
-            PlayerEventListener.OnEntityEvent((EntityEvent)event);
+            if (event instanceof AsyncPlayerPreLoginEvent)
+                ConnectionListeners.OnPlayerConnectAsync((AsyncPlayerPreLoginEvent)event);
+
+            if (event instanceof PlayerQuitEvent)
+                ConnectionListeners.OnPlayerDisconnect((PlayerQuitEvent)event);
+
+            if (event instanceof PlayerKickEvent)
+                ConnectionListeners.OnPlayerKick((PlayerKickEvent)event);
+        }
+        catch (InterruptedException | ExecutionException | InvalidConfigurationException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

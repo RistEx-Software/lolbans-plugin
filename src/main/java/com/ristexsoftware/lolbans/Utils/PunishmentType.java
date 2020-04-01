@@ -18,9 +18,9 @@ public enum PunishmentType
             case PUNISH_MUTE: return "Mute";
             case PUNISH_KICK: return "Kick";
             case PUNISH_WARN: return "Warning";
+            default:
+                return "Unknown";
         }
-
-        return "Unknown";
     }
 
     public static PunishmentType FromOrdinal(int ordinal)
@@ -31,7 +31,8 @@ public enum PunishmentType
             case 1: return PunishmentType.PUNISH_MUTE;
             case 2: return PunishmentType.PUNISH_KICK;
             case 3: return PunishmentType.PUNISH_WARN;
+            default:
+                return PunishmentType.PUNISH_UNKNOWN;
         }
-        return PunishmentType.PUNISH_UNKNOWN;
     }
 }

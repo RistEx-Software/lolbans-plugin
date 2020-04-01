@@ -1,10 +1,5 @@
 package com.ristexsoftware.lolbans.Utils; // Zachery's package owo
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;

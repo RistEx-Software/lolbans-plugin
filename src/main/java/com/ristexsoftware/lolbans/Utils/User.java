@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -24,14 +23,14 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 
 import com.ristexsoftware.lolbans.Main;
-import net.md_5.bungee.api.ChatColor;
 
 public class User
 {
-    public boolean IsWarn;
     static Main self = Main.getPlugin(Main.class);
+    public boolean IsWarn;
     
     private Player pl;
+    private boolean frozen;
     private Location WarnLocation;
     private String WarnMessage;
 
@@ -70,8 +69,12 @@ public class User
         return this.IsWarn;
     }
 
-    // ALL VOIDS GO AFTER HERE
+    public boolean IsFrozen()
+    {
+        return this.frozen;
+    }
 
+    // ALL VOIDS GO AFTER HERE
     public void SetWarned(boolean IsWarn, Location warnLocation, String WarnMessage)
     {
         this.IsWarn = IsWarn;
@@ -81,9 +84,15 @@ public class User
         this.WarnMessage = WarnMessage;
     }
 
+    public void SetFrozen(boolean IsFrozen)
+    {
+        this.frozen = IsFrozen;
+        if (!IsFrozen)
+            this.SpawnBox(false, Material.AIR.createBlockData());
+    }
+
     public void SendMessage(String message)
     {
-        //target.sendMessage(message);
         this.pl.sendMessage(message);
     }
 
@@ -212,7 +221,7 @@ public class User
     public static OfflinePlayer FindPlayerByAny(String PunishID)
     {
         // Try stupid first. If the PunishID is just a nickname, then avoid DB queries.
-        OfflinePlayer op = Bukkit.getOfflinePlayer(PunishID);
+        @SuppressWarnings("deprecation") OfflinePlayer op = Bukkit.getOfflinePlayer(PunishID);
         if (op != null)
             return op;
 

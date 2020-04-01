@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+@SuppressWarnings("unchecked")
 public class ReflectionUtil 
 {
     public static void setProtectedValue(Object o, String field, Object newValue) 
@@ -11,12 +12,12 @@ public class ReflectionUtil
         setProtectedValue(o.getClass(), o, field, newValue);
     }
 
-    public static void setProtectedValue(Class c, String field, Object newValue) 
+    public static void setProtectedValue(Class<?> c, String field, Object newValue) 
     {
         setProtectedValue(c, null, field, newValue);
     }
 
-    public static void setProtectedValue(Class c, Object o, String field, Object newValue) 
+    public static void setProtectedValue(Class<?> c, Object o, String field, Object newValue) 
     {
         try 
         {
@@ -48,7 +49,7 @@ public class ReflectionUtil
     {
         try 
         {
-            Class c = obj.getClass();
+            Class<?> c = obj.getClass();
             while (c != Object.class) 
             {
                 Field[] fields = c.getDeclaredFields();
@@ -72,7 +73,7 @@ public class ReflectionUtil
         }
     }
 
-    public static <T> T getProtectedValue(Class c, String field) 
+    public static <T> T getProtectedValue(Class<?> c, String field) 
     {
         try 
         {
@@ -87,7 +88,7 @@ public class ReflectionUtil
         }
     }
 
-    public static Object invokeProtectedMethod(Class c, String method, Object... args) 
+    public static Object invokeProtectedMethod(Class<?> c, String method, Object... args) 
     {
         return invokeProtectedMethod(c, null, method, args);
     }
@@ -97,11 +98,11 @@ public class ReflectionUtil
         return invokeProtectedMethod(o.getClass(), o, method, args);
     }
 
-    public static Object invokeProtectedMethod(Class c, Object o, String method, Object... args) 
+    public static Object invokeProtectedMethod(Class<?> c, Object o, String method, Object... args) 
     {
         try 
         {
-            Class[] pTypes = new Class[args.length];
+            Class<?>[] pTypes = new Class<?>[args.length];
             for (int i = 0; i < args.length; i++) 
             {
                 if (args[i] instanceof Integer) 

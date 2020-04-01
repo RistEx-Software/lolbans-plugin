@@ -1,4 +1,4 @@
-package com.ristexsoftware.lolbans.Tests; // Zachery's package owo
+package com.ristexsoftware.lolbans.Utils; // Zachery's package owo
 
 // Javadoc: https://www.jacoco.org/jacoco/trunk/doc/api/index.html
 import org.junit.jupiter.api.Test;
@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
-import com.ristexsoftware.lolbans.Utils.TranslationUtil;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestTranslateColors

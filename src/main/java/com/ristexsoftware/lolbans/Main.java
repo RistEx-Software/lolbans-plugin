@@ -43,9 +43,6 @@ import com.ristexsoftware.lolbans.Commands.Misc.ReportCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.StaffRollbackCommand;
 import com.ristexsoftware.lolbans.Commands.Mute.UnmuteCommand;
 import com.ristexsoftware.lolbans.Commands.Mute.MuteCommand;
-import com.ristexsoftware.lolbans.Listeners.AsyncChatListener;
-import com.ristexsoftware.lolbans.Listeners.ConnectionListeners;
-import com.ristexsoftware.lolbans.Listeners.PlayerEventListener;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
@@ -55,7 +52,6 @@ import com.ristexsoftware.lolbans.Hacks.Hacks;
 import inet.ipaddr.IPAddressString;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -147,8 +143,8 @@ public final class Main extends JavaPlugin
         for (Player p : Bukkit.getOnlinePlayers())
             Main.USERS.put(p.getUniqueId(), new User(p));
 
-        Bukkit.getPluginManager().registerEvents(new ConnectionListeners(), this);
-        Bukkit.getPluginManager().registerEvents(new AsyncChatListener(), this);
+        // Run our hacks
+        Hacks.HackIn(this);
 
         // Register commands
         this.getCommand("ban").setExecutor(new BanCommand());
@@ -167,9 +163,6 @@ public final class Main extends JavaPlugin
         this.getCommand("regexban").setExecutor(new RegexBanCommand());
         this.getCommand("staffrollback").setExecutor(new StaffRollbackCommand());
         this.getCommand("staffhistory").setExecutor(new StaffHistoryCommand());
-        
-        // Run our hacks
-        Hacks.HackIn(this);
     }
 
     @Override

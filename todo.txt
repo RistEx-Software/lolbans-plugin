@@ -22,22 +22,21 @@ while still making money. (Maybe make the service free and have premium features
 but you don't get the appeal/reporting system. This needs to be appealing, so it ends up actually making profit, maybe make the plugin beta paid and full release cheaper/free?
 People donate like crazy anyway..)
 
+lol may/june release pls
 
 ##########################################
 Minimum Viable Product (MVP) / Feature Freeze:
 ##########################################
- - /staffhistory - Staff history and mass unbans to undo - Zachery/Justin
  - Reports show up in /history
- - Hover Text (JSON) - Zachery/Justin?
  - /dupeip, /iphistory - Justin/Zachery
  - /prunehistory <Player|PunishID|CIDR> <Distance In Time|*> - Zachery?
- - All commands need rewrite to be async (player runs command, onCommand() return immediately but runs command in thread unless bukkit is an ass about API calls) - Justin/maybe Zachery
- - /history needs to be converted to use messages.yml instead of hard-coded strings - Zachery
  - Permissions (make sure they're granular enough?) - Zachery
  - REST api for website.
  - Report types (Cheating, Chat, ETC)
- - Eliminate "Global" ban announcements, instead make them individual permissions. This is more flexible.
- - Eliminate a large "alerts" announcement class and make an alerts permission for each event. (eg, ipbans would get "lolbans.IPBan.announce" instead of "lolbans.alerts")
+ - Fix all silent arguments to commands
+ - Discord Messages need to be announced for all actions
+ - UnIPBan, UnWarn, UnRegexBan commands need to be created
+ - Update Syntax Messages
  - List bans, regex bans, ip bans, warnings, etc. and ensure they're easy to remove.
  - Fuck off with spigot's default syntax handlers and do our own with messages.yml.
  - Standardize the name for who the hell bans someone. Are they `Banner`, `Executioner`, `Moderator`, `StaffMember`, `Issuer`, etc.?
@@ -46,6 +45,8 @@ Minimum Viable Product (MVP) / Feature Freeze:
 ##########################################
 # Future (or nice to have after the MVP)
 ##########################################
+ - Hover Text (JSON) - Zachery/Justin?
+ - dynamic permissions...
 5. Mass unbans (??)
 6. Ensure targets can be names, uuids, ip addresses, or ip address ranges (CIDRs).
 7. Lockdown support (incl., per-server lockdowns)

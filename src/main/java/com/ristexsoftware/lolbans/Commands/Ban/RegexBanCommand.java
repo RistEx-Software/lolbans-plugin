@@ -1,7 +1,6 @@
 package com.ristexsoftware.lolbans.Commands.Ban;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -9,34 +8,24 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Hacks.IPBanning.IPBanUtil;
+import com.ristexsoftware.lolbans.Utils.IPBanUtil;
 import com.ristexsoftware.lolbans.Utils.PunishID;
-import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
-import com.ristexsoftware.lolbans.Utils.TranslationUtil;
 import com.ristexsoftware.lolbans.Utils.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 
 import java.sql.*;
 import java.util.regex.*;
-import java.util.Arrays;
-import java.time.Duration;
 import java.lang.Long;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.concurrent.Future;
 
-import inet.ipaddr.AddressStringException;
 import inet.ipaddr.HostName;
-import inet.ipaddr.IPAddress;
-import inet.ipaddr.IPAddressString;
-import inet.ipaddr.IncompatibleAddressException;
 
 public class RegexBanCommand implements CommandExecutor
 {
@@ -88,8 +77,6 @@ public class RegexBanCommand implements CommandExecutor
             if (sender.hasPermission("lolbans.insanityoverride"))
                 return false;
 
-            // Because Java requries effective finality, we have to redeclare shit.
-
             // Format our messages.
             try 
             {
@@ -124,23 +111,16 @@ public class RegexBanCommand implements CommandExecutor
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.regexban"))
-            return true;
+            return User.PermissionDenied(sender, "lolbans.regexban");
+
+        if (args.length < 3 || args == null)
+            return false;
 
         // /regexban <regex> <time> <Reason here unlimited length>
         // FIXME: How do we handle the <regex> if there's spaces in the regex?
         // Should spaces even be allowed? I don't think anything allows spaces...
         try
         {
-            if (args.length < 3 || args == null)
-            {
-                sender.sendMessage(Messages.InvalidSyntax);
-                return false;
-            }
-
-            int lmfaofucker = 0;
-            for (String arg : args)
-                self.getLogger().info(String.format("arg[%d] = %s", lmfaofucker++, arg));
-
             String reason = Messages.ConcatenateRest(args, 2);
             Pattern regex = null;
             try 
@@ -193,9 +173,7 @@ public class RegexBanCommand implements CommandExecutor
             ResultSet rst = pst.executeQuery();
             
             if (rst.next())
-            {
-                self.REGEX.put(rst.getInt("id"), regex);
-            }
+                Main.REGEX.put(rst.getInt("id"), regex);
             else
             {
                 self.getLogger().severe("Cannot get ID for regex " + regex.pattern() + " punish id " + banid + ", this will not allow the regex to be enforced!");
@@ -248,10 +226,9 @@ public class RegexBanCommand implements CommandExecutor
                     // FIXME: Is this message personalized for each banned player to describe what is matched?
                     User.KickPlayer(sender.getName(), player, banid, reason, bantime);
                 }
+                // TODO: Global announcement
             }
             
-            // TODO: Global announcement
-
             // SendIP
             // Send to Discord. (New method)
             if (DiscordUtil.UseSimplifiedMessage == true)

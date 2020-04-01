@@ -1,24 +1,12 @@
-package com.ristexsoftware.lolbans.Listeners;
+package com.ristexsoftware.lolbans.Hacks;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Map;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -31,15 +19,11 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.PlayerInventory;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.Configuration;
-import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
-import com.ristexsoftware.lolbans.Utils.TimeUtil;
 
 public class PlayerEventListener 
 {
-    private static Main self = Main.getPlugin(Main.class);
 
     public static void OnPlayerEvent(PlayerEvent event) throws InterruptedException, ExecutionException, InvalidConfigurationException
     {

@@ -7,10 +7,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Runnables.QueryRunnable;
-import com.ristexsoftware.lolbans.Utils.Configuration;
-import com.ristexsoftware.lolbans.Utils.PunishmentType;
-import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 
 
 
@@ -93,7 +93,7 @@ public class DatabaseUtil
             // (Links will still be a thing to link their UUID to the website, ig reports will only be local, or global so other
             // users are aware of why a player is being reported.)
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS LinkConfirmations (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, Executioner varchar(17) NOT NULL, LinkID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NOT NULL)").execute();
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Reports (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, PlaintiffUUID varchar(36) NOT NULL, PlaintiffName varchar(17) NOT NULL, DefendantUUID varchar(36) NOT NULL, DefendantName varchar(17) NOT NULL, Reason TEXT NOT NULL, JudgeUUID varchar(36) NULL, JudgeName varchar(17) NULL, CloseReason TEXT NULL, Closed boolean DEFAULT FALSE NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PunishID varchar(20) NOT NULL)").execute();
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Reports (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, PlaintiffUUID varchar(36) NOT NULL, PlaintiffName varchar(17) NOT NULL, DefendantUUID varchar(36) NOT NULL, DefendantName varchar(17) NOT NULL, Reason TEXT NOT NULL, JudgeUUID varchar(36) NULL, JudgeName varchar(17) NULL, Type varchar(32) NOT NULL, CloseReason TEXT NULL, Closed boolean DEFAULT FALSE NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PunishID varchar(20) NOT NULL)").execute();
             // NOTE: This table compares both minecraft names AND client hostnames against this, not sure yet if this is a good idea or not...
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS RegexBans (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, Regex VARCHAR(255) NOT NULL, Reason TEXT NOT NULL, Executioner varchar(17) NOT NULL, PunishID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NULL)").execute();
         }
@@ -166,7 +166,7 @@ public class DatabaseUtil
             }
         });
 
-        self.pool.execute(t);
+        Main.pool.execute(t);
 
         return t;
     }
@@ -191,7 +191,7 @@ public class DatabaseUtil
             }
         });
 
-        self.pool.execute(t);
+        Main.pool.execute(t);
         return t;
     }
 
@@ -233,12 +233,53 @@ public class DatabaseUtil
             }
         });
 
-        self.pool.execute(t);
+        Main.pool.execute(t);
 
         return (Future<Boolean>)t;
     }
 
-    public static Future<Boolean> RemovePunishment(String PunishID, String UUID, String Reason, CommandSender Executioner, String ExecutionerUUID, Timestamp TimeRemoved) throws SQLException
+    public static Future<Boolean> InsertPunishment(PunishmentType Type, OfflinePlayer player, CommandSender Executioner, String Reason, String PunishID, Timestamp Expiry) throws SQLException
+    {
+        FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
+        {
+            @Override
+            public Boolean call()
+            {
+
+                //This is where you should do your database interaction
+                try 
+                {
+                    // Preapre a statement
+                    int i = 1;
+                    PreparedStatement InsertBan = self.connection
+                    .prepareStatement(String.format("INSERT INTO Punishments (UUID, PlayerName, IPAddress, Reason, ExecutionerName, ExecutionerUUID, PunishID, Expiry, Type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"));
+                    InsertBan.setString(i++, player.getUniqueId().toString());
+                    InsertBan.setString(i++, player.getName());
+                    InsertBan.setString(i++, player.isOnline() ? ((Player)player).getAddress().getAddress().getHostAddress() : "UNKNOWN");
+                    InsertBan.setString(i++, Reason);
+                    InsertBan.setString(i++, Executioner.getName().toString());
+                    InsertBan.setString(i++, Executioner instanceof ConsoleCommandSender ? "Console" : ((Player)Executioner).getUniqueId().toString());
+                    InsertBan.setString(i++, PunishID);
+                    InsertBan.setTimestamp(i++, Expiry);
+                    InsertBan.setInt(i++, Type.ordinal());
+                    InsertBan.executeUpdate();
+                } 
+                catch (SQLException e) 
+                {
+                    e.printStackTrace();
+                    Executioner.sendMessage(Messages.ServerError);
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        Main.pool.execute(t);
+
+        return (Future<Boolean>)t;
+    }
+
+    public static Future<Boolean> RemovePunishment(String PunishID, OfflinePlayer Target, CommandSender Executioner, String Reason, Timestamp TimeRemoved) throws SQLException
     {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
         {
@@ -253,9 +294,9 @@ public class DatabaseUtil
                     PreparedStatement pst2 = self.connection.prepareStatement("UPDATE Punishments SET AppealReason = ?, AppealStaff = ?, AppealUUID = ?, AppealTime = ?, Appealed = true WHERE UUID = ? AND PunishID = ?");
                     pst2.setString(i++, Reason);
                     pst2.setString(i++, Executioner.getName());
-                    pst2.setString(i++, ExecutionerUUID);
+                    pst2.setString(i++, Executioner instanceof ConsoleCommandSender ? "CONSOLE" : ((Player)Executioner).getUniqueId().toString());
                     pst2.setTimestamp(i++, TimeRemoved);
-                    pst2.setString(i++, UUID);
+                    pst2.setString(i++, Target.getUniqueId().toString());
                     pst2.setString(i++, PunishID);
                     pst2.executeUpdate();
                 } 
@@ -269,7 +310,7 @@ public class DatabaseUtil
             }
         });
 
-        self.pool.execute(t);
+        Main.pool.execute(t);
 
         return (Future<Boolean>)t;
     }
@@ -321,7 +362,7 @@ public class DatabaseUtil
             }
         });
 
-        self.pool.execute(t);
+        Main.pool.execute(t);
 
         return (Future<Boolean>)t;
     }
@@ -355,9 +396,8 @@ public class DatabaseUtil
             }
         });
 
-        self.pool.execute(t);
+        Main.pool.execute(t);
 
         return (Future<Boolean>)t;
     }
-    //"UPDATE Users SET LastLogin = ?, PlayerName = ?, IPAddress = ? WHERE UUID = ?"
 }

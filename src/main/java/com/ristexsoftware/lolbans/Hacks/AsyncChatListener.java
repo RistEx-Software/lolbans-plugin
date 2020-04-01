@@ -1,4 +1,4 @@
-package com.ristexsoftware.lolbans.Listeners;
+package com.ristexsoftware.lolbans.Hacks;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,22 +10,18 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
-import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
 
-public class AsyncChatListener implements Listener 
+public class AsyncChatListener 
 {
     private static Main self = Main.getPlugin(Main.class);
 
-    @EventHandler
-    public void OnAsyncPlayerChat(AsyncPlayerChatEvent event) throws InterruptedException, ExecutionException 
+    public static void OnAsyncPlayerChat(AsyncPlayerChatEvent event) throws InterruptedException, ExecutionException 
     {
         try 
         {

@@ -1,8 +1,5 @@
-package com.ristexsoftware.lolbans.Listeners;
+package com.ristexsoftware.lolbans.Hacks;
 
-import inet.ipaddr.IPAddressString;
-
-import java.net.InetSocketAddress;
 import java.sql.*;
 import java.util.Map;
 import java.util.Optional;
@@ -15,22 +12,18 @@ import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.ristexsoftware.lolbans.Hacks.IPBanning.IPBanUtil;
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Utils.IPBanUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
-import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
-import com.ristexsoftware.lolbans.Utils.TranslationUtil;
 import com.ristexsoftware.lolbans.Utils.User;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
@@ -42,13 +35,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class ConnectionListeners implements Listener 
 {
     private static Main self = Main.getPlugin(Main.class);
-
     private static HashMap<UUID, String> LinkMessages = null;
-
-    public ConnectionListeners()
-    {
-        LinkMessages = new HashMap<UUID, String>();
-    }
 
     /************************************************************************************
      * Convenience Functions
@@ -59,25 +46,16 @@ public class ConnectionListeners implements Listener
      */
 
     // Adding players to a hashmap and account linking
-    @EventHandler
-    public void OnPlayerConnect(PlayerJoinEvent event) 
+    public static void OnPlayerConnect(PlayerJoinEvent event) 
     {
-        Main.USERS.put(event.getPlayer().getUniqueId(), new User(event.getPlayer()));
+        if (LinkMessages == null)
+            LinkMessages = new HashMap<UUID, String>();
 
-        // Link accounts via the website
-        String JoinMessage = LinkMessages.get(event.getPlayer().getUniqueId());
-        if (JoinMessage != null)
-            event.getPlayer().sendMessage(JoinMessage);
-    }
-
-    // The asyncprelogin event method doesn't return things like the playername, or have login like "hasPlayedBefore"
-    // I need both of those for the users table.
-    @EventHandler
-    public void OnPlayerJoin(PlayerJoinEvent event)
-    {
         Player player = event.getPlayer();
         String puuid = player.getUniqueId().toString();
         String ipaddr = player.getAddress().getAddress().getHostAddress();
+
+        Main.USERS.put(player.getUniqueId(), new User(player));
 
         try 
         {
@@ -96,13 +74,17 @@ public class ConnectionListeners implements Listener
         {
             e.printStackTrace();
         }
+
+        // Link accounts via the website
+        String JoinMessage = LinkMessages.get(player.getUniqueId());
+        if (JoinMessage != null)
+            player.sendMessage(JoinMessage);
     }
 
     // We need to make this async so the database stuff doesn't run on the main
     // thread.
     // This event is already async, no need.
-    @EventHandler
-    public void OnPlayerConnectAsync(AsyncPlayerPreLoginEvent event) 
+    public static void OnPlayerConnectAsync(AsyncPlayerPreLoginEvent event) 
     {
         try 
         {
@@ -116,10 +98,6 @@ public class ConnectionListeners implements Listener
             // 3. If they don't match any CIDR bans, hopefully our queries
             //    are done and we can check if they have anything.
             // 4. If they don't match any queries, we let them join.
-
-            // Here's the nonsense for adding the user info into the database, move this where ever ig...
-            String player = event.getName();
-            String addr = event.getAddress().getHostAddress();
 
             // Ask the database for any ban records
             PreparedStatement BanStatement = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ? AND Type = 0 AND (Expiry IS NULL OR Expiry >= NOW()) AND Appealed = FALSE");
@@ -175,10 +153,10 @@ public class ConnectionListeners implements Listener
             }
 
             // Do Regex matches since they're pre-compiled
-            Iterator it = self.REGEX.entrySet().iterator();
+            Iterator<?> it = Main.REGEX.entrySet().iterator();
             while (it.hasNext())
             {
-                Map.Entry pair = (Map.Entry)it.next();
+                Map.Entry<?, ?> pair = (Map.Entry<?, ?>)it.next();
                 Pattern regex = (Pattern)pair.getValue();
                 // Matchers to make things more efficient.
                 Matcher NameMatch = regex.matcher(event.getName());
@@ -323,6 +301,9 @@ public class ConnectionListeners implements Listener
                 // TODO: Send to discord?
             }
 
+            if (LinkMessages == null)
+                LinkMessages = new HashMap<UUID, String>();
+
             LinkMessages.put(event.getUniqueId(), LinkedAccountMessage);
 
             // They're not banned and have no pending warnings, allow them to connect or other plugins to perform their actions.
@@ -336,15 +317,13 @@ public class ConnectionListeners implements Listener
         }
     }
 
-    @EventHandler
-    public void OnPlayerDisconnect(PlayerQuitEvent event) 
+    public static void OnPlayerDisconnect(PlayerQuitEvent event) 
     {
         UUID PlayerUUID = event.getPlayer().getUniqueId();
         Main.USERS.remove(PlayerUUID);
     }
 
-    @EventHandler
-    public void OnPlayerKick(PlayerKickEvent event) 
+    public static void OnPlayerKick(PlayerKickEvent event) 
     {
         Main.USERS.remove(event.getPlayer().getUniqueId());
     }

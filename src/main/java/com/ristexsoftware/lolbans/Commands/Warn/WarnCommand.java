@@ -1,21 +1,16 @@
 package com.ristexsoftware.lolbans.Commands.Warn;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.PunishID;
-import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
-import com.ristexsoftware.lolbans.Utils.TimeUtil;
 import com.ristexsoftware.lolbans.Utils.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
@@ -23,14 +18,10 @@ import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
 import java.sql.*;
-import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.Map;
-import java.time.Duration;
-import java.lang.Long;
-import java.util.Optional;
 
 
 public class WarnCommand implements CommandExecutor
@@ -41,140 +32,80 @@ public class WarnCommand implements CommandExecutor
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.warn"))
-            return true;
+            return User.PermissionDenied(sender, "lolbans.warn");
+
+        // /warn [-s] <PlayerName> <Reason>
+        if (args.length < 2)
+            return false;
 
         try 
         {
-            // just incase someone, magically has a 1 char name........
-            if (!(args.length < 1 || args == null))
+            boolean silent = args.length > 2 ? args[0].equalsIgnoreCase("-s") : false;
+            String PlayerName = args[silent ? 1 : 0];
+            String reason = Messages.ConcatenateRest(args, silent ? 2 : 1).trim();
+            OfflinePlayer target = User.FindPlayerByAny(PlayerName);
+
+            if (target == null)
+                return User.NoSuchPlayer(sender, PlayerName, true);
+
+            // Get the latest ID of the banned players to generate a PunishID form it.
+            String warnid = PunishID.GenerateID(DatabaseUtil.GenID("Warnings"));
+
+            // InsertWarn
+            Future<Boolean> InsertWarn = DatabaseUtil.InsertPunishment(PunishmentType.PUNISH_WARN, target, sender, reason, warnid, null);
+            if (!InsertWarn.get())
             {
-                // FIXME: "-s" isn't parsed out of the message.
-                String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length)) : args[1];
-                reason = reason.replace(",", "").trim();
-                OfflinePlayer target = User.FindPlayerByAny(args[0]);
-                String euuid = null;
-
-                if (sender instanceof ConsoleCommandSender)
-                    euuid = "console";
-
-                else if (sender instanceof Player)
-                    euuid = ((Player) sender).getUniqueId().toString();
-
-                if (target == null)
-                    return User.NoSuchPlayer(sender, args[0], true);
-
-                // Prepare our reason
-                boolean silent = args.length > 2 ? args[1].equalsIgnoreCase("-s") : false;
-                final String FuckingJava = new String(reason);
-                int i = 1;
-
-                // Get the latest ID of the banned players to generate a PunishID form it.
-                String warnid = PunishID.GenerateID(DatabaseUtil.GenID("Warnings"));
-
-                // InsertWarn
-                Future<Boolean> InsertWarn = DatabaseUtil.InsertPunishment(PunishmentType.PUNISH_WARN, target.getUniqueId().toString(), target.getName(), 
-                                                target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN", reason, sender, euuid, warnid, null);
-
-                // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String PunishID, Timestamp BanTime)
-                if (!InsertWarn.get())
-                {
-                    sender.sendMessage(Messages.ServerError);
-                    return true;
-                }
-
-                Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                {{
-                    put("player", target.getName());
-                    put("reason", FuckingJava);
-                    put("warnid", warnid);
-                    put("warner", sender.getName());
-                }};
-                    
-                //String WarnedMessage = Messages.Translate("Warn.WarnedMessage", Variables);
-                //String WarnAnnouncement = Messages.Translate(silent ? "Warn.SilentWarnAnnouncment" : "Warn.WarnAnnouncment", Variables);
-
-                String WarnedMessage = Messages.Translate("Warn.WarnedMessage",
-                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                    {{
-                        put("player", target.getName());
-                        put("reason", FuckingJava);
-                        put("warnid", warnid);
-                        put("warner", sender.getName());
-                    }}
-                );
-
-                String WarnAnnouncement = Messages.Translate("Warn.WarnAnnouncment",
-                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                    {{
-                        put("player", target.getName());
-                        put("reason", FuckingJava);
-                        put("warnid", warnid);
-                        put("warner", sender.getName());
-                    }}
-                );
-
-                // Send a message to the player
-                if (target.isOnline())
-                {
-                    User u = Main.USERS.get(target.getUniqueId());
-                    u.SetWarned(true, ((Player)target).getLocation(), WarnedMessage);
-                    u.SendMessage(WarnedMessage);
-
-                    // Send them a box as well. This will disallow them from sending move events.
-                    // However, client-side enforcement is not guaranteed so we also enforce the
-                    // same thing using the MovementListener, this just helps stop rubberbanding.
-                    u.SpawnBox(true, null);
-                }
-            
-                // Log to console.
-                Bukkit.getConsoleSender().sendMessage(WarnAnnouncement);
-                    
-                // Send the message to all online players.
-                for (Player p : Bukkit.getOnlinePlayers())
-                {
-                    if (silent && (!p.hasPermission("lolbans.alerts") && !p.isOp() && p == target))
-                        continue;
-
-                    p.sendMessage(WarnAnnouncement);
-                }
-
-                String SimplifiedMessage = Messages.Translate(silent ? "Discord.SimpMessageSilentWarn" : "Discord.SimpMessageWarn",
-                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                    {{
-                        put("player", target.getName());
-                        put("reason", FuckingJava);
-                        put("banner", sender.getName());
-                        put("warnid", warnid);
-                    }}
-                );
-
-                // Send to Discord. (New method)
-                if (DiscordUtil.UseSimplifiedMessage == true)
-                {
-                    DiscordUtil.SendFormatted(SimplifiedMessage);
-                    return true;
-                }
-                else
-                {
-                    // Send to Discord. (New method)
-                    DiscordUtil.SendDiscord(sender, "warned", target, reason, warnid, silent);
-                }
-
-
+                sender.sendMessage(Messages.ServerError);
                 return true;
+            }
 
-            }
-            else
+            Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+            {{
+                put("player", target.getName());
+                put("reason", reason);
+                put("punishid", warnid);
+                put("warner", sender.getName());
+            }};
+                
+            
+            // If they're online, require acknowledgement immediately by freezing them and sending a message.
+            if (target.isOnline())
             {
-                sender.sendMessage(Messages.InvalidSyntax);
-                return false; // Show syntax.
+                String WarnedMessage = Messages.Translate("Warn.WarnedMessage", Variables);
+                User u = Main.USERS.get(target.getUniqueId());
+                u.SetWarned(true, ((Player)target).getLocation(), WarnedMessage);
+                u.SendMessage(WarnedMessage);
+
+                // Send them a box as well. This will disallow them from sending move events.
+                // However, client-side enforcement is not guaranteed so we also enforce the
+                // same thing using the MovementListener, this just helps stop rubberbanding.
+                u.SpawnBox(true, null);
             }
+        
+            String WarnAnnouncement = Messages.Translate("Warn.WarnAnnouncment", Variables);
+
+            // Log to console.
+            self.getLogger().info(WarnAnnouncement);
+                
+            // Send the message to all online players.
+            for (Player p : Bukkit.getOnlinePlayers())
+            {
+                if (!silent && (p.hasPermission("lolbans.alerts") || p.isOp() && p != target))
+                    p.sendMessage(WarnAnnouncement);
+            }
+
+            // Send to Discord. (New method)
+            if (DiscordUtil.UseSimplifiedMessage == true)
+                DiscordUtil.SendFormatted(Messages.Translate(silent ? "Discord.SimpMessageSilentWarn" : "Discord.SimpMessageWarn", Variables));
+            else
+                DiscordUtil.SendDiscord(sender, "warned", target, reason, warnid, silent);
         }
         catch (SQLException | InvalidConfigurationException | InterruptedException | ExecutionException e)
         {
             e.printStackTrace();
             sender.sendMessage(Messages.ServerError);
-            return true;
         }
+
+        return true;
     }
 }

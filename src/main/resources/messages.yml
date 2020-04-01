@@ -34,6 +34,8 @@ Report:
   ReportAnnouncement: "{PREFIX}&c{REPORTER} &7has reported &c{PLAYER}&7: &c{REASON}"
   # If a user attempts to report a player more than once
   TooManyTries: "{PREFIX}&cYou have already filed a report against &7{PLAYER}&c!"
+  # Console cannot run this command.
+  ConsoleDisallowed: "{PREFIX}&cCONSOLE cannot run /report, please login as a player to report."
 
 # MESSAGES
 # BanMessage, {PLAYER} {REASON} {BANNER} {EXPIRY} {BANID}
