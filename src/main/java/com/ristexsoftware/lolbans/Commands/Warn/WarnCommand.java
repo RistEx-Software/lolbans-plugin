@@ -11,7 +11,8 @@ import org.bukkit.OfflinePlayer;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
-import com.ristexsoftware.lolbans.Utils.User;
+import com.ristexsoftware.lolbans.Objects.Punishment;
+import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
@@ -48,26 +49,17 @@ public class WarnCommand implements CommandExecutor
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
 
-            // Get the latest ID of the banned players to generate a PunishID form it.
-            String warnid = PunishID.GenerateID(DatabaseUtil.GenID("Warnings"));
-
-            // InsertWarn
-            Future<Boolean> InsertWarn = DatabaseUtil.InsertPunishment(PunishmentType.PUNISH_WARN, target, sender, reason, warnid, null);
-            if (!InsertWarn.get())
-            {
-                sender.sendMessage(Messages.ServerError);
-                return true;
-            }
+            Punishment punish = new Punishment(PunishmentType.PUNISH_WARN, sender, target, reason, null);
+            punish.Commit(sender);
 
             Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
             {{
                 put("player", target.getName());
                 put("reason", reason);
-                put("punishid", warnid);
+                put("punishid", punish.GetPunishmentID());
                 put("warner", sender.getName());
             }};
                 
-            
             // If they're online, require acknowledgement immediately by freezing them and sending a message.
             if (target.isOnline())
             {
@@ -98,9 +90,9 @@ public class WarnCommand implements CommandExecutor
             if (DiscordUtil.UseSimplifiedMessage == true)
                 DiscordUtil.SendFormatted(Messages.Translate(silent ? "Discord.SimpMessageSilentWarn" : "Discord.SimpMessageWarn", Variables));
             else
-                DiscordUtil.SendDiscord(sender, "warned", target, reason, warnid, silent);
+                DiscordUtil.SendDiscord(punish, silent);
         }
-        catch (SQLException | InvalidConfigurationException | InterruptedException | ExecutionException e)
+        catch (SQLException | InvalidConfigurationException e)
         {
             e.printStackTrace();
             sender.sendMessage(Messages.ServerError);

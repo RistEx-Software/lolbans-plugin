@@ -21,9 +21,9 @@ public class Messages
     // Everything else
     public static String Prefix;
     public static String NetworkName;
+    public static String Website;
     public static String ServerError;
     public static String InvalidSyntax;
-    public static String PlayerDoesntExist;
 
     // Initialized by our GetMessages() function.
     protected Messages()
@@ -56,6 +56,8 @@ public class Messages
             // Messages
             Messages.Prefix = this.CustomConfig.getString("Prefix", "[lolbans] ").replace("&", "\u00A7");
             Messages.NetworkName = Messages._Translate(this.CustomConfig.getString("NetworkName", "My Network"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            Messages.Website = Messages._Translate(this.CustomConfig.getString("Website", "YourWebsiteHere.com"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            Messages.ServerError = Messages._Translate(this.CustomConfig.getString("ServerError", "The server encountered an error!"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
             Messages.InvalidSyntax = Messages._Translate(this.CustomConfig.getString("InvalidSyntax", "&cInvalid Syntax!"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
         } 
         catch (IOException | InvalidConfigurationException e) 

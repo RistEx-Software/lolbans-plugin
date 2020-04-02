@@ -9,17 +9,15 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
-import com.ristexsoftware.lolbans.Utils.User;
+import com.ristexsoftware.lolbans.Objects.Punishment;
+import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
-import com.ristexsoftware.lolbans.Utils.TimeUtil;
+import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
-import java.sql.*;
+import java.util.Optional;
 import java.util.TreeMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 public class UnbanCommand implements CommandExecutor
 {
@@ -50,22 +48,19 @@ public class UnbanCommand implements CommandExecutor
 
             // Preapre a statement
             // We need to get the latest banid first.
-            // TODO: Can we ensure they have the right punish id?
-            PreparedStatement pst3 = self.connection.prepareStatement("SELECT PunishID FROM Punishments WHERE UUID = ? AND Type = 0 AND Appealed = false");
-            pst3.setString(1, target.getUniqueId().toString());
-            // TODO: Uh. we need to add a database call for this
-            ResultSet result = pst3.executeQuery();
-            result.next();
-            String PunishID = result.getString("PunishID");
+            Optional<Punishment> op = Punishment.FindPunishment(PunishmentType.PUNISH_BAN, target, false);
 
-            // Run the async task for the database
-            Future<Boolean> UnBan = DatabaseUtil.RemovePunishment(PunishID, target, sender, reason, TimeUtil.TimestampNow());
-
-            if (!UnBan.get())
+            if (!op.isPresent())
             {
-                sender.sendMessage(Messages.ServerError);
+                sender.sendMessage("Congratulations!! You've found a bug!! Please report it to the lolbans developers to get it fixed! :D");
                 return true;
             }
+
+            Punishment punish = op.get();
+            punish.SetAppealReason(reason);
+            punish.SetAppealed(true);
+            punish.SetAppealStaff((OfflinePlayer)sender);
+            punish.Commit(sender);
 
             // Prepare our announce message
             String AnnounceMessage = Messages.Translate(silent ? "Ban.SilentUnbanAnnouncment" : "Ban.UnbanAnnouncment",
@@ -74,7 +69,7 @@ public class UnbanCommand implements CommandExecutor
                     put("player", target.getName());
                     put("reason", reason);
                     put("banner", sender.getName());
-                    put("punishid", PunishID);
+                    put("punishid", punish.GetPunishmentID());
                 }}
             );
 
@@ -84,7 +79,7 @@ public class UnbanCommand implements CommandExecutor
             // Post that to the database.
             for (Player p : Bukkit.getOnlinePlayers())
             {
-                if (silent && (!p.hasPermission("lolbans.alerts") && !p.isOp()))
+                if (!silent && (p.hasPermission("lolbans.alerts") || p.isOp()))
                     p.sendMessage(AnnounceMessage);
             }
 
@@ -96,22 +91,18 @@ public class UnbanCommand implements CommandExecutor
                         put("player", target.getName());
                         put("reason", reason);
                         put("banner", sender.getName());
-                        put("punishid", PunishID);
+                        put("punishid", punish.GetPunishmentID());
                     }}
                 ));
-                return true;
             }
             else
-            {
-                DiscordUtil.SendDiscord(sender, "unbanned", target, reason, PunishID, silent);
-                return true;
-            }
+                DiscordUtil.SendDiscord(punish, silent);
         }
-        catch (SQLException | InvalidConfigurationException | InterruptedException | ExecutionException e)
+        catch (InvalidConfigurationException e)
         {
             e.printStackTrace();
             sender.sendMessage(Messages.ServerError);
-            return true;
         }
+        return true;
     }
 }

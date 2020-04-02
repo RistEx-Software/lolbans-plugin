@@ -1,4 +1,4 @@
-package com.ristexsoftware.lolbans.Utils;
+package com.ristexsoftware.lolbans.Objects;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,6 +23,10 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
+import com.ristexsoftware.lolbans.Utils.Messages;
+import com.ristexsoftware.lolbans.Utils.PunishmentType;
+import com.ristexsoftware.lolbans.Utils.TimeUtil;
 
 public class User
 {
@@ -233,6 +237,7 @@ public class User
             bplay.setString(2, PunishID);
             bplay.setString(3, PunishID);
 
+
             Optional<ResultSet> bpres = DatabaseUtil.ExecuteLater(bplay).get();
             
             if (bpres.isPresent())
@@ -253,6 +258,19 @@ public class User
         }
         
         return null;
+    }
+
+    public static void KickPlayer(Punishment p)
+    {
+        if (p.GetPunishmentType() != PunishmentType.PUNISH_KICK)
+        {
+            if (p.GetExpiry() != null)
+                User.KickPlayer(p.GetExecutioner().getName(), (Player)p.GetPlayer(), p.GetPunishmentID(), p.GetReason(), p.GetTimePunished(), p.GetIPAddress());
+            else
+                User.KickPlayer(p.GetExecutioner().getName(), (Player)p.GetPlayer(), p.GetPunishmentID(), p.GetReason(), p.GetTimePunished());
+        }
+        else
+            User.KickPlayer(p.GetExecutioner().getName(), (Player)p.GetPlayer(), p.GetPunishmentID(), p.GetReason());
     }
 
     public static void KickPlayer(String sender, Player target, String PunishID, String reason, Timestamp BanTime)
@@ -280,7 +298,7 @@ public class User
         }
     }
 
-    public static void KickPlayer(String sender, Player target, String PunishID, String reason, Timestamp BanTime, IPAddress IP)
+    public static void KickPlayer(String sender, Player target, String PunishID, String reason, Timestamp BanTime, String IP)
     {
         try
         {
@@ -295,7 +313,7 @@ public class User
                     put("expiryduration", BanTime != null ? TimeUtil.Expires(BanTime) : "Never");
                     put("dateexpiry", BanTime != null ? TimeUtil.TimeString(BanTime) : "Never");
                     put("PunishID", PunishID);
-                    put("IPAddress", IP.toString());
+                    put("IPAddress", IP);
                 }}
             );
             target.kickPlayer(KickMessage);

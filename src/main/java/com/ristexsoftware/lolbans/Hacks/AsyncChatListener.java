@@ -41,7 +41,6 @@ public class AsyncChatListener
             MuteStatement.setString(1, event.getPlayer().getUniqueId().toString());
 
             Future<Optional<ResultSet>> MuteRecord = DatabaseUtil.ExecuteLater(MuteStatement);
-
             Optional<ResultSet> MuteResult = MuteRecord.get();
             // The query was successful.
             if (MuteResult.isPresent()) 
@@ -52,10 +51,9 @@ public class AsyncChatListener
                 {
                     event.setCancelled(true);
                     Timestamp MuteTime = result.getTimestamp("Expiry");
-                    String YouAreMuted;
                     try 
                     {
-                        YouAreMuted = Messages.Translate("Mute.YouAreMuted",
+                        event.getPlayer().sendMessage(Messages.Translate("Mute.YouAreMuted",
                             new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) 
                             {{
                                 put("player", event.getPlayer().getName());
@@ -65,16 +63,13 @@ public class AsyncChatListener
                                 put("fullexpiry",MuteTime != null ? String.format("%s (%s)",TimeUtil.TimeString(MuteTime), TimeUtil.Expires(MuteTime)) : "Never");
                                 put("expiryduration", MuteTime != null ? TimeUtil.Expires(MuteTime) : "Never");
                                 put("dateexpiry", MuteTime != null ? TimeUtil.TimeString(MuteTime) : "Never");
-                            }});
-                        event.getPlayer().sendMessage(YouAreMuted);
+                            }}
+                        ));
                     } 
                     catch (InvalidConfigurationException e) 
                     {
                         e.printStackTrace();
                     }
-                    //(String message, String ColorChars, Map<String, String> Variables)
-                    
-                    return;
                 }
             }
         }

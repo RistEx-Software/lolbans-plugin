@@ -67,6 +67,7 @@ Minimum Viable Product (MVP) / Feature Freeze:
 # WAYYYYY FUTURE:
 ##########################################
 1. Cross-API compatibility (lol)
+ - Live Update of the jar for updates.
 2. Cross-database compatibility
 3. Allow shell-command executed ip bans to use for iptables and similar command line firewalls.
 4. Inventory GUI (or just make an API for lolbans and have someone else do it, because it'll happen)

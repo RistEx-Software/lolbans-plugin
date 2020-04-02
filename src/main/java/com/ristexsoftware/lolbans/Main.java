@@ -46,8 +46,8 @@ import com.ristexsoftware.lolbans.Commands.Mute.MuteCommand;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
-import com.ristexsoftware.lolbans.Utils.User;
 import com.ristexsoftware.lolbans.Hacks.Hacks;
+import com.ristexsoftware.lolbans.Objects.User;
 
 import inet.ipaddr.IPAddressString;
 

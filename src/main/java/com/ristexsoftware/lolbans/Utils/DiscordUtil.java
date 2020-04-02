@@ -9,6 +9,7 @@ import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
 import com.mrpowergamerbr.temmiewebhook.embed.FieldEmbed;
 import com.mrpowergamerbr.temmiewebhook.embed.FooterEmbed;
 import com.mrpowergamerbr.temmiewebhook.embed.ThumbnailEmbed;
+import com.ristexsoftware.lolbans.Objects.Punishment;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -138,6 +139,24 @@ public class DiscordUtil
                 DiscordUtil.SendDiscord(sender.getName().toString(), title, target.getName().toString(),
                 (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((OfflinePlayer)sender).getUniqueId().toString(),
                 target.getUniqueId().toString(), reason, PunishID, expiry, silent);
+        }
+
+        public static void SendDiscord(Punishment p, boolean silent)
+        {
+                String ExecutionerName = p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getName();
+                String ExecutionerUUID = p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getUniqueId().toString();
+                String action = null;
+
+                switch(p.GetPunishmentType())
+                {
+                   case PUNISH_BAN: action = p.GetAppealed() ? "unbanned" : "banned";
+                   case PUNISH_KICK: action = p.GetAppealed() ? "unkicked" : "kicked";
+                   case PUNISH_MUTE: action = p.GetAppealed() ? "unmuted" : "muted";
+                   case PUNISH_WARN: action = p.GetAppealed() ? "removed warning for" : "warned";
+                   default: action = "did an unknown action to";
+                }
+                
+                DiscordUtil.SendDiscord(ExecutionerName, action, p.GetPlayerName(), ExecutionerUUID, p.GetUUID().toString(), p.GetReason(), p.GetPunishmentID(), silent);
         }
 
 

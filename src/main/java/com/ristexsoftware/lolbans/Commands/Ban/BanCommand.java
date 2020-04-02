@@ -10,11 +10,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Objects.Punishment;
+import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
-import com.ristexsoftware.lolbans.Utils.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
@@ -60,7 +61,6 @@ public class BanCommand implements CommandExecutor
             if (User.IsPlayerBanned(target))
                 return User.PlayerOnlyVariableMessage("Ban.PlayerIsBanned", sender, target.getName(), true);
             
-
             Timestamp bantime = null;
 
             // Parse ban time.
@@ -76,40 +76,23 @@ public class BanCommand implements CommandExecutor
             if (bantime == null && !PermissionUtil.Check(sender, "lolbans.ban.perm"))
                 return User.PermissionDenied(sender, "lolbans.ban.perm"); 
             
-            // Because dumbfuck java and it's "ItS nOt FiNaL"
-            // but really? what the fuck java? Now I have to have all of these "fuckingjava" strings.. thanks.......
-            final String FuckingJava2 = new String(bantime != null ? String.format("%s (%s)", TimeUtil.TimeString(bantime), TimeUtil.Expires(bantime)) : "Never");
-            final String FuckingJava3 = new String(bantime != null ? TimeUtil.Expires(bantime) : "Never");
-            final String FuckingJava4 = new String(bantime != null ? TimeUtil.TimeString(bantime) : "Never");
-            
-
-            // Get our ban id based on the latest id in the database.
-            String banid = PunishID.GenerateID(DatabaseUtil.GenID("Punishments"));
-
-            // Execute queries to get the bans.
-            Future<Boolean> BanSuccess = DatabaseUtil.InsertPunishment(PunishmentType.PUNISH_BAN, target, sender, reason, banid, bantime);
-            
-            // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String PunishID, Timestamp BanTime)
-            if (!BanSuccess.get())
-            {
-                sender.sendMessage(Messages.ServerError);
-                return true;
-            } 
+            Punishment punish = new Punishment(PunishmentType.PUNISH_BAN, sender, target, reason, bantime);
+            punish.Commit(sender);
 
             // Kick the player first, they're officially banned.
             if (target.isOnline())
-                User.KickPlayer(sender.getName(), (Player)target, banid, reason, bantime);
+                User.KickPlayer(punish);
             
             // Format our messages.
             Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
-                    put("player", target.getName());
-                    put("reason", reason);
-                    put("banner", sender.getName());
-                    put("punishid", banid);
-                    put("fullexpiry", FuckingJava2);
-                    put("expiryduration", FuckingJava3);
-                    put("dateexpiry", FuckingJava4);
+                    put("player", punish.GetPlayerName());
+                    put("reason", punish.GetReason());
+                    put("banner", punish.GetExecutioner().getName());
+                    put("punishid", punish.GetPunishmentID());
+                    put("fullexpiry", punish.GetExpiryDateAndDuration());
+                    put("expiryduration", punish.GetExpiryDuration());
+                    put("dateexpires", punish.GetExpiryDate());
                 }};
 
             String BanAnnouncement = Messages.Translate(silent ? "Ban.SilentBanAnnouncement" : "Ban.BanAnnouncement", Variables);
@@ -133,7 +116,7 @@ public class BanCommand implements CommandExecutor
             if (DiscordUtil.UseSimplifiedMessage == true)
                 DiscordUtil.SendFormatted(Messages.Translate(silent ? "Discord.SimpMessageSilentBan" : "Discord.SimpMessageBan", Variables));
             else
-                DiscordUtil.SendDiscord(sender, "banned", target, reason, banid, bantime, silent);
+                DiscordUtil.SendDiscord(punish, silent);
         }
         catch (Exception e)
         {

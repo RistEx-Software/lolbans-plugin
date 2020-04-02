@@ -8,7 +8,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
-import com.ristexsoftware.lolbans.Utils.User;
+import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.Paginator;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
@@ -100,7 +100,7 @@ public class StaffHistoryCommand implements CommandExecutor {
             // This is several rendered things in one string
             // Minecraft's short window (when chat is closed) can hold 10 lines
             // their extended window can hold 20 lines
-            Paginator<String> page = new Paginator<String>(pageditems, 2);
+            Paginator<String> page = new Paginator<String>(pageditems, Messages.GetMessages().GetConfig().getInt("History.StaffPageSize", 2));
 
             for (Object str : page.GetPage(pageno))
                 sender.sendMessage((String)str);

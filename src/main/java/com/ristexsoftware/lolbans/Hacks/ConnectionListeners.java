@@ -16,9 +16,10 @@ import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.IPBanUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
+import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
-import com.ristexsoftware.lolbans.Utils.User;
+import com.ristexsoftware.lolbans.Objects.User;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -281,7 +282,6 @@ public class ConnectionListeners implements Listener
             }
 
             // Check to make sure they're not an ALT account
-            // TODO: Add config option to kick/ban alts
             UUID altaccount = AltRecords.get();
             if (altaccount != null)
             {
@@ -298,7 +298,37 @@ public class ConnectionListeners implements Listener
 
                 BroadcastUtil.BroadcastOps(Message);
                 self.getLogger().warning(Message);
+
+                if (self.getConfig().getBoolean("IPBanSettings.KickAltAccounts", false))
+                {
+                    event.disallow(Result.KICK_BANNED, Messages.Translate("IPBan.IPAltBanMessage",
+                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                        {{
+                            put("PLAYERNAME", event.getName());
+                            put("ALTACCOUNT", p.getUniqueId().toString());
+
+                            put("BANNER", "");
+                            put("REASON", "");
+                            put("EXPIRYDURATION", "");
+                            put("PUNISHID", "");
+                        }}
+                    ));
+                }
+
                 // TODO: Send to discord?
+                if (DiscordUtil.UseSimplifiedMessage)
+                {
+                    DiscordUtil.SendFormatted(Messages.Translate("Discord.KickedAltAccount", 
+                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                        {{
+                            put("", "");
+                        }}
+                    ));
+                }
+                else
+                {
+
+                }
             }
 
             if (LinkMessages == null)

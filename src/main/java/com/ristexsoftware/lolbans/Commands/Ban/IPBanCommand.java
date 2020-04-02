@@ -15,7 +15,7 @@ import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
-import com.ristexsoftware.lolbans.Utils.User;
+import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 
@@ -166,7 +166,7 @@ public class IPBanCommand implements CommandExecutor
                     put("player", thingy.toString());
                     put("reason", reason);
                     put("banner", sender.getName());
-                    put("banid", banid);
+                    put("punishid", banid);
                     put("fullexpiry", FuckingJava2);
                     put("expiryduration", FuckingJava3);
                     put("dateexpiry", FuckingJava4);
@@ -185,7 +185,7 @@ public class IPBanCommand implements CommandExecutor
                 // Once the func gets the inputs, it'll kick the player with a message specified in the config
                 if (thingy.contains(hn.asAddress()))
                 {
-                    User.KickPlayer(sender.getName(), p, banid, reason, bantime, thingy);
+                    User.KickPlayer(sender.getName(), p, banid, reason, bantime, thingy.toString());
                     continue;
                 }
 

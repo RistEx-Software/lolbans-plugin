@@ -8,23 +8,18 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 
-import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
-import com.ristexsoftware.lolbans.Utils.User;
+import com.ristexsoftware.lolbans.Objects.Punishment;
+import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
-import com.ristexsoftware.lolbans.Utils.TimeUtil;
+import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
-import java.sql.*;
+import java.util.Optional;
 import java.util.TreeMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 public class UnmuteCommand implements CommandExecutor
 {
-    private static Main self = Main.getPlugin(Main.class);
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
@@ -48,29 +43,26 @@ public class UnmuteCommand implements CommandExecutor
             if (!User.IsPlayerMuted(target))
                 return User.PlayerOnlyVariableMessage("Mute.PlayerIsNotMuted", sender, target.getName(), true);
 
-            // Preapre a statement
-            // We need to get the latest banid first.
-            PreparedStatement pst3 = self.connection.prepareStatement("SELECT PunishID FROM Punishments WHERE UUID = ? AND Type = 1 AND Appealed = false");
-            pst3.setString(1, target.getUniqueId().toString());
+            Optional<Punishment> op = Punishment.FindPunishment(PunishmentType.PUNISH_MUTE, target, false);
 
-            ResultSet result = pst3.executeQuery();
-            result.next();
-            String MuteID = result.getString("PunishID");
-
-            // Run the async task for the database
-            Future<Boolean> UnMute = DatabaseUtil.RemovePunishment(MuteID, target, sender, reason, TimeUtil.TimestampNow());
-            if (!UnMute.get())
+            if (!op.isPresent())
             {
-                sender.sendMessage(Messages.ServerError);
+                sender.sendMessage("Congratulations!! You've found a bug!! Please report it to the lolbans developers to get it fixed! :D");
                 return true;
             }
+
+            Punishment punish = op.get();
+            punish.SetAppealReason(reason);
+            punish.SetAppealed(true);
+            punish.SetAppealStaff((OfflinePlayer)sender);
+            punish.Commit(sender);
 
             TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("player", target.getName());
                     put("reason", reason);
                     put("unmuter", sender.getName());
-                    put("punishid", MuteID);
+                    put("punishid", punish.GetPunishmentID());
                 }};
 
             // Post that to the database.
@@ -86,9 +78,9 @@ public class UnmuteCommand implements CommandExecutor
             if (DiscordUtil.UseSimplifiedMessage == true)
                 DiscordUtil.SendFormatted(Messages.Translate(silent ? "Discord.SimpMessageSilentUnmute" : "Discord.SimpMessageUnmute", Variables));
             else
-                DiscordUtil.SendDiscord(sender, "un-muted", target, reason, MuteID, silent);
+                DiscordUtil.SendDiscord(punish, silent);
         }
-        catch (SQLException | InvalidConfigurationException | InterruptedException | ExecutionException e)
+        catch (InvalidConfigurationException e)
         {
             e.printStackTrace();
             sender.sendMessage(Messages.ServerError);

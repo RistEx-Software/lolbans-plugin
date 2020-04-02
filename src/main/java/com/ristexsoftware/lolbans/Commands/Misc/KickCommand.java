@@ -10,11 +10,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
-import com.ristexsoftware.lolbans.Utils.User;
+import com.ristexsoftware.lolbans.Objects.Punishment;
+import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
-import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
@@ -52,22 +51,21 @@ public class KickCommand implements CommandExecutor
             if (!(sender instanceof ConsoleCommandSender) && target.getUniqueId().equals(((Player) sender).getUniqueId()))
                 return User.PlayerOnlyVariableMessage("Kick.CannotKickSelf", sender, target.getName(), true);
 
-            // Get the latest ID of the banned players to generate a PunishID form it.
-            String kickid = PunishID.GenerateID(DatabaseUtil.GenID("Punishments"));
-            DatabaseUtil.InsertPunishment(PunishmentType.PUNISH_KICK, target, sender, reason, kickid, null);
+            Punishment punish = new Punishment(PunishmentType.PUNISH_KICK, sender, target, reason, null);
+            punish.Commit(sender);
 
-            String KickAnnouncement = Messages.Translate(silent ? "Kick.SilentKickAnnouncement" : "Kick.KickAnnouncement",
-                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+            // Kick the player
+            User.KickPlayer(punish);
+
+            TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("player", target.getName());
                     put("reason", reason);
-                    put("kickid", kickid);
+                    put("punishid", punish.GetPunishmentID());
                     put("kicker", sender.getName());
-                }}
-            );
+                }};
 
-            // Kick the player
-            User.KickPlayer(sender.getName(), (Player) target, kickid, reason);
+            String KickAnnouncement = Messages.Translate(silent ? "Kick.SilentKickAnnouncement" : "Kick.KickAnnouncement", Variables);
         
             // Log to console.
             self.getLogger().info(KickAnnouncement);
@@ -80,19 +78,9 @@ public class KickCommand implements CommandExecutor
             }
 
             if (DiscordUtil.UseSimplifiedMessage == true)
-            {
-                DiscordUtil.SendFormatted(Messages.Translate(silent ? "Discord.SimpMessageSilentKick" : "Discord.SimpMessageKick",
-                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                    {{
-                        put("player", target.getName());
-                        put("reason", reason);
-                        put("banner", sender.getName());
-                        put("kickid", kickid);
-                    }}
-                ));
-            }
+                DiscordUtil.SendFormatted(Messages.Translate(silent ? "Discord.SimpMessageSilentKick" : "Discord.SimpMessageKick", Variables));
             else
-                DiscordUtil.SendDiscord(sender, "kicked", target, reason, kickid, null, silent);
+                DiscordUtil.SendDiscord(punish, silent);
         }
         catch (SQLException | InvalidConfigurationException e)
         {

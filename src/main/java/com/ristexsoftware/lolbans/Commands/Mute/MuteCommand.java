@@ -9,11 +9,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.PunishID;
-import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
-import com.ristexsoftware.lolbans.Utils.User;
+import com.ristexsoftware.lolbans.Objects.Punishment;
+import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
@@ -23,7 +22,6 @@ import java.lang.Long;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.Map;
-import java.util.concurrent.Future;
 
 public class MuteCommand implements CommandExecutor
 {
@@ -68,35 +66,20 @@ public class MuteCommand implements CommandExecutor
             }
 
             if (mutetime == null && !PermissionUtil.Check(sender, "lolbans.mute.perm"))
-                return User.PermissionDenied(sender, "lolbans.mute.perm"); 
+                return User.PermissionDenied(sender, "lolbans.mute.perm");
 
-            // Because dumbfuck java and it's "ItS nOt FiNaL"
-            final String FuckingJava2 = new String(mutetime != null ? String.format("%s (%s)", TimeUtil.TimeString(mutetime), TimeUtil.Expires(mutetime)) : "Never");
-            final String FuckingJava3 = new String(mutetime != null ? TimeUtil.Expires(mutetime) : "Never");
-            final String FuckingJava4 = new String(mutetime != null ? TimeUtil.TimeString(mutetime) : "Never");
-
-            // Get our ban id based on the latest id in the database.
-            String muteid = PunishID.GenerateID(DatabaseUtil.GenID("Punishments"));
-
-            // Execute queries to get the bans.
-            Future<Boolean> MuteSuccess = DatabaseUtil.InsertPunishment(PunishmentType.PUNISH_MUTE, target, sender, reason, muteid, mutetime);
-
-            // InsertBan(String UUID, String PlayerName, String Reason, String Executioner, String PunishID, Timestamp BanTime)
-            if (!MuteSuccess.get())
-            {
-                sender.sendMessage(Messages.ServerError);
-                return true;
-            }
+            Punishment punish = new Punishment(PunishmentType.PUNISH_MUTE, sender, target, reason, mutetime);
+            punish.Commit(sender);
 
             Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("player", target.getName());
                     put("reason", reason);
                     put("muter", sender.getName());
-                    put("punishid", muteid);
-                    put("fullexpiry", FuckingJava2);
-                    put("expiryduration", FuckingJava3);
-                    put("dateexpiry", FuckingJava4);
+                    put("punishid", punish.GetPunishmentID());
+                    put("fullexpiry", punish.GetExpiryDateAndDuration());
+                    put("expiryduration", punish.GetExpiryDuration());
+                    put("dateexpiry", punish.GetExpiryDate());
                 }};
 
             if (target.isOnline())
@@ -116,20 +99,10 @@ public class MuteCommand implements CommandExecutor
             }
 
             // Send to Discord. (New method)
-            if (DiscordUtil.UseSimplifiedMessage == true)
-            {
-                DiscordUtil.SendFormatted(Messages.Translate(silent ? "Discord.SimpMessageSilentMute" : "Discord.SimpMessageMute",
-                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                    {{
-                        put("player", target.getName());
-                        put("reason", reason);
-                        put("banner", sender.getName());
-                        put("punishid", muteid);
-                    }}
-                ));
-            }
+            if (DiscordUtil.UseSimplifiedMessage)
+                DiscordUtil.SendFormatted(Messages.Translate(silent ? "Discord.SimpMessageSilentMute" : "Discord.SimpMessageMute", Variables));
             else
-                DiscordUtil.SendDiscord(sender, "muted", target, reason, muteid, mutetime, silent);
+                DiscordUtil.SendDiscord(punish, silent);
         }
         catch (Exception e)
         {

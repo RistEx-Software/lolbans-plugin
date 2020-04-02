@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
-import com.ristexsoftware.lolbans.Utils.User;
+import com.ristexsoftware.lolbans.Objects.User;
 
 
 //     public static void KickPlayer(String sender, Player target, String PunishID, String reason, Timestamp BanTime)

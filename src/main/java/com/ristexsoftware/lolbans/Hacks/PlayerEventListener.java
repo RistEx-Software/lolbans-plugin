@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.PlayerInventory;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.User;
+import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 
 public class PlayerEventListener 
@@ -28,8 +28,8 @@ public class PlayerEventListener
     public static void OnPlayerEvent(PlayerEvent event) throws InterruptedException, ExecutionException, InvalidConfigurationException
     {
         User u = Main.USERS.get(event.getPlayer().getUniqueId());
-        // Ignore players not warned
 
+        // Ignore players not warned
         if (u == null || !u.IsWarn())
             return;
 

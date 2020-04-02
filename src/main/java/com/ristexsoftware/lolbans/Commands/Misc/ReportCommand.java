@@ -42,7 +42,7 @@ public class ReportCommand implements CommandExecutor
             OfflinePlayer u = User.FindPlayerByAny(username);
 
             if (sender instanceof ConsoleCommandSender)
-                return User.PlayerOnlyVariableMessage("Report.ConsoleDisallowed", sender, "CONSOLE", true);
+                return User.PlayerOnlyVariableMessage("UserRequired", sender, "CONSOLE", true);
 
             if (u == null)
                 return User.NoSuchPlayer(sender, username, true);
