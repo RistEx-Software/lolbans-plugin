@@ -28,11 +28,12 @@ public class Messages
     // Initialized by our GetMessages() function.
     protected Messages()
     {
-        CustomConfigFile = new File(self.getDataFolder(), "messages.yml");
+        String TranslationFile = self.getConfig().getString("General.TranslationFile", "messages.en_us.yml");
+        CustomConfigFile = new File(self.getDataFolder(), TranslationFile);
         if (!CustomConfigFile.exists()) 
         {
             CustomConfigFile.getParentFile().mkdirs();
-            self.saveResource("messages.yml", false);
+            self.saveResource(TranslationFile, false);
         }
 
         this.Reload();

@@ -6,6 +6,8 @@ General:
   OpsBypassPermissions: false
   # How much time to wait until reports expire (Default is 3d)
   ReportExpiry: 3d
+  # The translation file you wish to use. (Default: messages.en_us.yml)
+  TranslationFile: "messages.en_us.yml"
 
 database:
   host: localhost
