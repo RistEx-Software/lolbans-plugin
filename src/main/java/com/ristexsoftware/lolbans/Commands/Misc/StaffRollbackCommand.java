@@ -2,6 +2,7 @@ package com.ristexsoftware.lolbans.Commands.Misc;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
