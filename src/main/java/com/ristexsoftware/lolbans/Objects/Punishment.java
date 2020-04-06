@@ -110,15 +110,15 @@ public class Punishment
                     // Find players now.
                     p.player = Bukkit.getOfflinePlayer(p.uuid);
 
-                    if (res.getString("ExecutionerUUID").equalsIgnoreCase("CONSOLE"))
+                    if (res.getString("ArbiterUUID").equalsIgnoreCase("CONSOLE"))
                         p.IsConsoleExectioner = true;
                     else
-                        p.Executioner = Bukkit.getOfflinePlayer(UUID.fromString(res.getString("ExecutionerUUID")));
+                        p.Executioner = Bukkit.getOfflinePlayer(UUID.fromString(res.getString("ArbiterUUID")));
 
-                    if (res.getString("AppealUUID").equalsIgnoreCase("CONSOLE"))
+                    if (res.getString("AppelleeUUID").equalsIgnoreCase("CONSOLE"))
                         p.IsConsoleAppealer = true;
                     else
-                        p.AppealStaff = Bukkit.getOfflinePlayer(UUID.fromString(res.getString("AppealUUID")));
+                        p.AppealStaff = Bukkit.getOfflinePlayer(UUID.fromString(res.getString("AppelleeUUID")));
 
                     return Optional.of(p);
                 }
@@ -179,7 +179,7 @@ public class Punishment
                         if (me.Appealed && me.AppealedTime == null)
                             me.AppealedTime = TimeUtil.TimestampNow();
 
-                        InsertBan = self.connection.prepareStatement("UPDATE Punishments SET UUID = ?, PlayerName = ?, IPAddress = ?, Reason = ?, ExecutionerName = ?, ExecutionerUUID = ?, PunishID = ?, Expiry = ?, Type = ?, TimePunished = ?, AppealReason = ?, AppealStaff = ?, AppealUUID = ?, AppealTime = ?, Appealed = ?, WarningAck = ? WHERE id = ?");
+                        InsertBan = self.connection.prepareStatement("UPDATE Punishments SET UUID = ?, PlayerName = ?, IPAddress = ?, Reason = ?, ArbiterName = ?, ArbiterUUID = ?, PunishID = ?, Expiry = ?, Type = ?, TimePunished = ?, AppealReason = ?, AppelleeName = ?, AppelleeUUID = ?, AppealTime = ?, Appealed = ?, WarningAck = ? WHERE id = ?");
                         InsertBan.setString(i++, me.uuid.toString());
                         InsertBan.setString(i++, me.PlayerName);
                         InsertBan.setString(i++, me.IPAddress);
@@ -203,7 +203,7 @@ public class Punishment
                     else
                     {                    
                         // Preapre a statement
-                        InsertBan = self.connection.prepareStatement(String.format("INSERT INTO Punishments (UUID, PlayerName, IPAddress, Reason, ExecutionerName, ExecutionerUUID, PunishID, Expiry, Type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"));
+                        InsertBan = self.connection.prepareStatement(String.format("INSERT INTO Punishments (UUID, PlayerName, IPAddress, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry, Type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"));
                         InsertBan.setString(i++, me.uuid.toString());
                         InsertBan.setString(i++, me.PlayerName);
                         InsertBan.setString(i++, me.IPAddress);

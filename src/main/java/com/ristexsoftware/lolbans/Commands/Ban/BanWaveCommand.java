@@ -83,7 +83,7 @@ public class BanWaveCommand extends RistExCommand
                 {{
                     put("player", target.getName());
                     put("reason", reason);
-                    put("banner", sender.getName());
+                    put("arbiter", sender.getName());
                     put("punishid", banid);
                     put("silent", (silent ? " [silent]" : ""));
                 }}

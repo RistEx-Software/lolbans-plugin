@@ -73,12 +73,14 @@ public class IPBanCommand extends RistExCommand
             // Because Java requries effective finality, we have to redeclare shit.
 
             // Format our messages.
-            try {
+            try 
+            {
                 final int fuckingfinal = affected;
                 String Insanity = Messages.Translate("IPBan.Insanity",
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
                         put("ipaddress", String.valueOf(bnyeh));
+                        put("arbiter", sender.getName());
                         put("AFFECTEDPLAYERS", String.valueOf(fuckingfinal));
                         put("TOTALPLAYERS", String.valueOf(TotalOnline));
                         put("INSANEPERCENT", String.valueOf(percentage));
@@ -172,7 +174,7 @@ public class IPBanCommand extends RistExCommand
                 {{
                     put("player", thingy.toString());
                     put("reason", reason);
-                    put("banner", sender.getName());
+                    put("arbiter", sender.getName());
                     put("punishid", banid);
                     put("fullexpiry", FuckingJava2);
                     put("expiryduration", FuckingJava3);

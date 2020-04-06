@@ -68,7 +68,7 @@ public class UnmuteCommand extends RistExCommand
                 {{
                     put("player", target.getName());
                     put("reason", reason);
-                    put("unmuter", sender.getName());
+                    put("arbiter", sender.getName());
                     put("punishid", punish.GetPunishmentID());
                 }};
 

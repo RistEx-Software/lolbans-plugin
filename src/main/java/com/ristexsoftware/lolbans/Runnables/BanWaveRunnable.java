@@ -50,7 +50,7 @@ public class BanWaveRunnable extends BukkitRunnable
             PreparedStatement PlayersToBanQuery = self.connection.prepareStatement("SELECT * FROM BanWave");
             // Array of users to be banned so we can send it to Discord.
             PreparedStatement PlayersToBanQueryArr = self.connection.prepareStatement("SELECT GROUP_CONCAT(PlayerName) AS PlayerNames FROM BanWave");
-            PreparedStatement BanBatchQuery = self.connection.prepareStatement("INSERT INTO Punishments (UUID, PlayerName, IPAddress, Reason, PunishID, Type, ExecutionerName, ExecutionerUUID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement BanBatchQuery = self.connection.prepareStatement("INSERT INTO Punishments (UUID, PlayerName, IPAddress, Reason, PunishID, Type, ArbiterName, ArbiterUUID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
             
             List<BannedUser> BannedPlayers = new ArrayList<BannedUser>();
             ResultSet ptbqr = PlayersToBanQueryArr.executeQuery();
@@ -72,7 +72,7 @@ public class BanWaveRunnable extends BukkitRunnable
             {
                 int i = 1;
                 OfflinePlayer op = Bukkit.getOfflinePlayer(UUID.fromString(PlayersToBan.getString("UUID")));
-                BannedUser bp = new BannedUser(op, PlayersToBan.getString("ExecutionerName"), PlayersToBan.getString("ExecutionerUUID"), PlayersToBan.getString("PunishID"), PlayersToBan.getString("Reason"));
+                BannedUser bp = new BannedUser(op, PlayersToBan.getString("ArbiterName"), PlayersToBan.getString("ArbiterUUID"), PlayersToBan.getString("PunishID"), PlayersToBan.getString("Reason"));
                 BannedPlayers.add(bp);
 
                 BanBatchQuery.setString(i++, PlayersToBan.getString("UUID"));

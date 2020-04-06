@@ -142,7 +142,7 @@ public class ConnectionListeners implements Listener
                         put("IPADDRESS", event.getAddress().toString());
                         put("player", event.getName());
                         put("reason", result.getString("Reason"));
-                        put("banner", result.getString("Executioner"));
+                        put("arbiter", result.getString("ArbiterName"));
                         put("fullexpiry", Expiry != null ? String.format("%s (%s)", TimeUtil.TimeString(Expiry), TimeUtil.Expires(Expiry)) : "Never");
                         put("expiryduration", Expiry != null ? TimeUtil.Expires(Expiry) : "Never");
                         put("dateexpiry", Expiry != null ? TimeUtil.TimeString(Expiry) : "Never");
@@ -185,7 +185,7 @@ public class ConnectionListeners implements Listener
                         put("rdns", rDNS);
                         put("regex", regex.pattern());
                         put("reason", result.getString("Reason"));
-                        put("banner", result.getString("Executioner"));
+                        put("arbiter", result.getString("ArbiterName"));
                         put("fullexpiry", Expiry != null ? String.format("%s (%s)", TimeUtil.TimeString(Expiry), TimeUtil.Expires(Expiry)) : "Never");
                         put("expiryduration", Expiry != null ? TimeUtil.Expires(Expiry) : "Never");
                         put("dateexpiry", Expiry != null ? TimeUtil.TimeString(Expiry) : "Never");
@@ -231,7 +231,7 @@ public class ConnectionListeners implements Listener
                     {{
                         put("player", event.getName());
                         put("reason", result.getString("Reason"));
-                        put("banner", result.getString("ExecutionerName"));
+                        put("arbiter", result.getString("ArbiterName"));
                         put("fullexpiry", BanTime != null ? String.format("%s (%s)", TimeUtil.TimeString(BanTime), TimeUtil.Expires(BanTime)) : "Never");
                         put("expiryduration", BanTime != null ? TimeUtil.Expires(BanTime) : "Never");
                         put("dateexpiry", BanTime != null ? TimeUtil.TimeString(BanTime) : "Never");
@@ -266,7 +266,7 @@ public class ConnectionListeners implements Listener
                         {{
                             put("player", result.getString("PlayerName"));
                             put("reason", result.getString("Reason"));
-                            put("issuer", result.getString("ExecutionerName"));
+                            put("arbiter", result.getString("ArbiterName"));
                             put("punishid", result.getString("PunishID"));
                         }}
                     );
@@ -304,10 +304,11 @@ public class ConnectionListeners implements Listener
                     event.disallow(Result.KICK_BANNED, Messages.Translate("IPBan.IPAltBanMessage",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
+                            // TODO: This!
                             put("PLAYERNAME", event.getName());
                             put("ALTACCOUNT", p.getUniqueId().toString());
 
-                            put("BANNER", "");
+                            put("arbiter", "");
                             put("REASON", "");
                             put("EXPIRYDURATION", "");
                             put("PUNISHID", "");

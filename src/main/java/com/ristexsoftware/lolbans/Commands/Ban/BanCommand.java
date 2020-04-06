@@ -91,7 +91,7 @@ public class BanCommand extends RistExCommand
                 {{
                     put("player", punish.GetPlayerName());
                     put("reason", punish.GetReason());
-                    put("banner", punish.GetExecutioner().getName());
+                    put("arbiter", punish.GetExecutioner().getName());
                     put("punishid", punish.GetPunishmentID());
                     put("fullexpiry", punish.GetExpiryDateAndDuration());
                     put("expiryduration", punish.GetExpiryDuration());

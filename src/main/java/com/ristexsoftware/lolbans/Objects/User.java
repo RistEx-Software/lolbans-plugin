@@ -357,7 +357,7 @@ public class User
             sender.sendMessage(Messages.Translate("NoPermission", 
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
-                    put("executor", sender.getName());
+                    put("arbiter", sender.getName());
                     put("permission", PermissionNode);
                 }}
             ));

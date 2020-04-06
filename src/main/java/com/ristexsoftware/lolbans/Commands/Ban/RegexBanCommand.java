@@ -85,6 +85,7 @@ public class RegexBanCommand extends RistExCommand
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
                         put("regex", bnyeh.pattern());
+                        put("arbiter", sender.getName());
                         put("AFFECTEDPLAYERS", String.valueOf(fuckingfinal));
                         put("TOTALPLAYERS", String.valueOf(TotalOnline));
                         put("INSANEPERCENT", String.valueOf(percentage));
@@ -196,7 +197,7 @@ public class RegexBanCommand extends RistExCommand
                 {{
                     put("regex", ThanksJava);
                     put("reason", reason);
-                    put("banner", sender.getName());
+                    put("arbiter", sender.getName());
                     put("banid", banid);
                     put("fullexpiry", FuckingJava2);
                     put("expiryduration", FuckingJava3);

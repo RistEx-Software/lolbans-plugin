@@ -82,7 +82,7 @@ public class MuteCommand extends RistExCommand
                 {{
                     put("player", target.getName());
                     put("reason", reason);
-                    put("muter", sender.getName());
+                    put("arbiter", sender.getName());
                     put("punishid", punish.GetPunishmentID());
                     put("fullexpiry", punish.GetExpiryDateAndDuration());
                     put("expiryduration", punish.GetExpiryDuration());

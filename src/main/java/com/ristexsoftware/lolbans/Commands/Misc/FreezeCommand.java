@@ -57,7 +57,7 @@ public class FreezeCommand extends RistExCommand
             Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
             {{
                 put("player", target.getName());
-                put("freezer", sender.getName());
+                put("arbiter", sender.getName());
             }};
 
             if (u.IsFrozen())

@@ -1,16 +1,16 @@
 Discord:
-  SimpMessageBan: ":hammer: **{BANNER}** banned **{PLAYER}** for **{REASON}** [#*{PUNISHID}*]"
-  SimpMessageUnban: ":hammer: **{BANNER}** un-banned **{PLAYER}** for **{REASON}** [#*{PUNISHID}*]"
-  SimpMessageSilentBan: ":hammer: **{BANNER}** banned **{PLAYER}** for **{REASON}** *[SILENT]* [#*{PUNISHID}*]"
-  SimpMessageSilentUnban: ":hammer: **{BANNER}** un-banned **{PLAYER}** for **{REASON}** *[SILENT]* [#*{PUNISHID}*]"
-  SimpMessageMute: ":hammer: **{BANNER}** muted **{PLAYER}** for **{REASON}** [#*{MUTEID}*]"
-  SimpMessageUnmute: ":hammer: **{BANNER}** un-muted **{PLAYER}** for **{REASON}** [#*{MUTEID}*]"
-  SimpMessageSilentMute: ":hammer: **{BANNER}** muted **{PLAYER}** for **{REASON}** *[SILENT]* [#*{MUTEID}*]"
-  SimpMessageSilentUnmute: ":hammer: **{BANNER}** un-muted **{PLAYER}** for **{REASON}** *[SILENT]* [#*{MUTEID}*]"
-  SimpMessageKick: ":hammer: **{BANNER}** kicked **{PLAYER}** for **{REASON}** [#*{KICKID}*]"
-  SimpMessageSilentKick: ":hammer: **{BANNER}** kicked **{PLAYER}** for **{REASON}** *[SILENT]* [#*{KICKID}*]"
-  SimpMessageWarn: ":hammer: **{BANNER}** warned **{PLAYER}** for **{REASON}** [#*{WARNID}*]"
-  SimpMessageSilentWarn: ":hammer: **{BANNER}** warned **{PLAYER}** for **{REASON}** *[SILENT]* [#*{WARNID}*]"
+  SimpMessageBan: ":hammer: **{ARBITER}** banned **{PLAYER}** for **{REASON}** [#*{PUNISHID}*]"
+  SimpMessageUnban: ":hammer: **{ARBITER}** un-banned **{PLAYER}** for **{REASON}** [#*{PUNISHID}*]"
+  SimpMessageSilentBan: ":hammer: **{ARBITER}** banned **{PLAYER}** for **{REASON}** *[SILENT]* [#*{PUNISHID}*]"
+  SimpMessageSilentUnban: ":hammer: **{ARBITER}** un-banned **{PLAYER}** for **{REASON}** *[SILENT]* [#*{PUNISHID}*]"
+  SimpMessageMute: ":hammer: **{ARBITER}** muted **{PLAYER}** for **{REASON}** [#*{MUTEID}*]"
+  SimpMessageUnmute: ":hammer: **{ARBITER}** un-muted **{PLAYER}** for **{REASON}** [#*{MUTEID}*]"
+  SimpMessageSilentMute: ":hammer: **{ARBITER}** muted **{PLAYER}** for **{REASON}** *[SILENT]* [#*{MUTEID}*]"
+  SimpMessageSilentUnmute: ":hammer: **{ARBITER}** un-muted **{PLAYER}** for **{REASON}** *[SILENT]* [#*{MUTEID}*]"
+  SimpMessageKick: ":hammer: **{ARBITER}** kicked **{PLAYER}** for **{REASON}** [#*{KICKID}*]"
+  SimpMessageSilentKick: ":hammer: **{ARBITER}** kicked **{PLAYER}** for **{REASON}** *[SILENT]* [#*{KICKID}*]"
+  SimpMessageWarn: ":hammer: **{ARBITER}** warned **{PLAYER}** for **{REASON}** [#*{WARNID}*]"
+  SimpMessageSilentWarn: ":hammer: **{ARBITER}** warned **{PLAYER}** for **{REASON}** *[SILENT]* [#*{WARNID}*]"
 
 # Global variables, you can use these in any message in this file.
 Prefix: "&c<LolBans> "
@@ -34,29 +34,29 @@ Report:
   # {REASON} is also a possible config option.
   ReportSuccess: "{PREFIX}&aThank you for reporting &7{PLAYER}&a!"
   # Message sent to everyone who is important
-  ReportAnnouncement: "{PREFIX}&c{REPORTER} &7has reported &c{PLAYER}&7: &c{REASON}"
+  ReportAnnouncement: "{PREFIX}&c{ARBITER} &7has reported &c{PLAYER}&7: &c{REASON}"
   # If a user attempts to report a player more than once
   TooManyTries: "{PREFIX}&cYou have already filed a report against &7{PLAYER}&c!"
 
 # MESSAGES
-# BanMessage, {PLAYER} {REASON} {BANNER} {EXPIRY} {PUNISHID}
+# BanMessage, {PLAYER} {REASON} {ARBITER} {EXPIRY} {PUNISHID}
 # fullexpiry ex: (January 1, 2019 12:30:00 (1 year 2 months 1 week 29 days 55 minutes 10 seconds))
 # expiryduration ex: (1 year 2 months 1 week 29 days 55 minutes 10 seconds)
 # dateexpiry ex: (January 1, 2019 12:30:00)
 Ban:
-  TempBanMessage: "&cThe account &7{PLAYER} &chas been TEMPORARILY suspended from {NETWORKNAME} &cuntil &7 {DATEEXPIRY}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#{PUNISHID}\n&7If you think this is a mistake contact us at {WEBSITE}!"
-  PermBanMessage: "&cThe account &7{PLAYER} &chas been INDEFINTELY suspended from {NETWORKNAME}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{PUNISHID}\n&7If you think this is a mistake contact us at {WEBSITE}!"
-  BanAnnouncement: "&c{BANNER} &7has banned &c{PLAYER}&7: &c{REASON} &7[#{PUNISHID}]"
-  SilentBanAnnouncement: "&c{BANNER} &7has banned &c{PLAYER}&7: &c{REASON} &7[#{PUNISHID}] &8[SILENT]"
-  UnbanAnnouncment: "&c{BANNER} &7has un-banned &c{PLAYER}&7: &c{REASON} &7[#{PUNISHID}]"
-  SilentUnbanAnnouncment: "&c{BANNER} &7has un-banned &c{PLAYER}&7: &c{REASON} &7[#{PUNISHID}] &8[SILENT]"
+  TempBanMessage: "&cThe account &7{PLAYER} &chas been TEMPORARILY suspended from {NETWORKNAME} &cuntil &7 {DATEEXPIRY}\n\n&cYou were banned by: &f{ARBITER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#{PUNISHID}\n&7If you think this is a mistake contact us at {WEBSITE}!"
+  PermBanMessage: "&cThe account &7{PLAYER} &chas been INDEFINTELY suspended from {NETWORKNAME}\n\n&cYou were banned by: &f{ARBITER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{PUNISHID}\n&7If you think this is a mistake contact us at {WEBSITE}!"
+  BanAnnouncement: "&c{ARBITER} &7has banned &c{PLAYER}&7: &c{REASON} &7[#{PUNISHID}]"
+  SilentBanAnnouncement: "&c{ARBITER} &7has banned &c{PLAYER}&7: &c{REASON} &7[#{PUNISHID}] &8[SILENT]"
+  UnbanAnnouncment: "&c{ARBITER} &7has un-banned &c{PLAYER}&7: &c{REASON} &7[#{PUNISHID}]"
+  SilentUnbanAnnouncment: "&c{ARBITER} &7has un-banned &c{PLAYER}&7: &c{REASON} &7[#{PUNISHID}] &8[SILENT]"
   CannotBanSelf: "{PREFIX}&cYes, you have permissions! You cannot ban yourself!"
   PlayerIsBanned: "{PREFIX}&cError! &7{PLAYER} is already banned!"
   PlayerIsNotBanned: "{PREFIX}&cError! &7{PLAYER} is not banned!"
 
 IPBan:
-  PermIPBanMessage: "&cThe IP &7{IPADDRESS} &chas been TEMPORARILY suspended from {NETWORKNAME} &cuntil &7 {DATEEXPIRY}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#{PUNISHID}\n&7Sharing your Ban ID may affect the result of your appeal!"
-  TempIPBanMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from {NETWORKNAME}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{PUNISHID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+  PermIPBanMessage: "&cThe IP &7{IPADDRESS} &chas been TEMPORARILY suspended from {NETWORKNAME} &cuntil &7 {DATEEXPIRY}\n\n&cYou were banned by: &f{ARBITER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#{PUNISHID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+  TempIPBanMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from {NETWORKNAME}\n\n&cYou were banned by: &f{ARBITER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{PUNISHID}\n&7Sharing your Ban ID may affect the result of your appeal!"
   SilentTempIPBanMessage: "3"
   SilentPermIPBanMessage: "4"
   UnIPbanAnnouncement: "5" 
@@ -66,12 +66,12 @@ IPBan:
   IPIsNotBanned: "9"
   Insanity: "{PREFIX}&cBanning {ipaddress} would ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
   IPAltNotification: "{PREFIX}&c{PLAYER} joined, is alt account of {BANNEDPLAYER} &7[{IPADDRESS}]"
-  IPAltBanMessage: "&cThe Player &7{PLAYERNAME} &cis an alternate account of {ALTACCOUNT} which has been suspended on {NETWORKNAME} and is disallowed from connection.\n\n&cBanned by: &f{BANNER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#{PUNISHID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+  IPAltBanMessage: "&cThe Player &7{PLAYERNAME} &cis an alternate account of {ALTACCOUNT} which has been suspended on {NETWORKNAME} and is disallowed from connection.\n\n&cBanned by: &f{ARBITER} \n&cReason: &f{REASON}\n&cExpires: &f{EXPIRYDURATION} \n\n&cBan ID: &f#{PUNISHID}\n&7Sharing your Ban ID may affect the result of your appeal!"
   
 RegexBan:
   # TODO: Fix these messages for regex-based bans.
-  TempBanMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from {NETWORKNAME}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{PUNISHID}\n&7Sharing your Ban ID may affect the result of your appeal!"
-  PermBanMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from {NETWORKNAME}\n\n&cYou were banned by: &f{BANNER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{PUNISHID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+  TempBanMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from {NETWORKNAME}\n\n&cYou were banned by: &f{ARBITER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{PUNISHID}\n&7Sharing your Ban ID may affect the result of your appeal!"
+  PermBanMessage: "&cThe IP &7{IPADDRESS} &chas been INDEFINTELY suspended from {NETWORKNAME}\n\n&cYou were banned by: &f{ARBITER} \n&cReason: &f{REASON}\n\n&cBan ID: &f#{PUNISHID}\n&7Sharing your Ban ID may affect the result of your appeal!"
   Insanity: "{PREFIX}&cBanning {regex} would ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
 
 BanWave:
@@ -84,24 +84,24 @@ BanWave:
   BanWaveStart: "{PREFIX}&b{PLAYER} started a ban wave, please stand by..."
 
 Mute:
-  YouWereMuted: "{PREFIX}&cYou &7were muted by &c{MUTER} &7for: &c{REASON} &7[#{MUTEID}]\n&7Your mute expires on: &c{dateexpiry}&7!"
-  YouWereUnMuted: "{PREFIX}&cYou &7were un-muted by &c{UNMUTER} &7for: &c{REASON} &7[#{MUTEID}]"
+  YouWereMuted: "{PREFIX}&cYou &7were muted by &c{ARBITER} &7for: &c{REASON} &7[#{MUTEID}]\n&7Your mute expires on: &c{dateexpiry}&7!"
+  YouWereUnMuted: "{PREFIX}&cYou &7were un-muted by &c{ARBITER} &7for: &c{REASON} &7[#{MUTEID}]"
   YouAreMuted: "{PREFIX}&cYou are muted and may not speak.\n&7Your mute expires on: &c{dateexpiry}&7! &7[#{MUTEID}]"
   CannotMuteConsole: "{PREFIX}&cThe CONSOLE cannot be muted."
   CannotMuteSelf: "{PREFIX}&cYes, you have permissions! You cannot mute yourself!"
   PlayerIsMuted: "{PREFIX}&cError! &7{PLAYER} is already muted!"
   PlayerIsNotMuted: "{PREFIX}&cError! &7{PLAYER} is not muted!"
-  MuteAnnouncement: "&c{MUTER} &7has muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}]"
-  SilentMuteAnnouncement: "&c{MUTER} &7has muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}] &8[SILENT]"
-  SilentUnmuteAnnouncment: "&c{UNMUTER} &7has un-muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}] &8[SILENT]"
-  UnmuteAnnouncment: "&c{UNMUTER} &7has un-muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}]"
+  MuteAnnouncement: "&c{ARBITER} &7has muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}]"
+  SilentMuteAnnouncement: "&c{ARBITER} &7has muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}] &8[SILENT]"
+  SilentUnmuteAnnouncment: "&c{ARBITER} &7has un-muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}] &8[SILENT]"
+  UnmuteAnnouncment: "&c{ARBITER} &7has un-muted &c{PLAYER}&7: &c{REASON} &7[#{MUTEID}]"
   GlobalMuted: "&cThe chat is currently muted and you may not send messages."
   GlobalUnmuted: "&aThe chat is now unmuted, you may now converse."
 
 Kick:
-  KickMessage: "&cYou were kicked from {NETWORKNAME}\n\n&cYou were kicked by: &f{KICKER}\n&cReason: &f{REASON}"
-  KickAnnouncement: "&c{KICKER} &7kicked &c{PLAYER}&7: &c{REASON}"
-  SilentKickAnnouncement: "&c{KICKER} &7kicked &c{PLAYER}&7: &c{REASON} &8[SILENT]"
+  KickMessage: "&cYou were kicked from {NETWORKNAME}\n\n&cYou were kicked by: &f{ARBITER}\n&cReason: &f{REASON}"
+  KickAnnouncement: "&c{ARBITER} &7kicked &c{PLAYER}&7: &c{REASON}"
+  SilentKickAnnouncement: "&c{ARBITER} &7kicked &c{PLAYER}&7: &c{REASON} &8[SILENT]"
   CannotKickSelf: "{PREFIX}&cYou may not kick yourself!"
 
 Warn:
@@ -115,10 +115,10 @@ Warn:
 History:
   NoHistory: "{PREFIX}&cPlayer &7{PLAYER}&c has no punishment history."
   ClearedHistory: "{PREFIX}&fCleared history for &b{PLAYER}&f."
-  HistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &7{REASON}\n&f&lModerator: &7{MODERATOR}\n&f&lType: &r&c{TYPE}&7 - &f&lExpires: &7{EXPIRYDATE}\n"
-  HistoryMessagePerm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &7{REASON}\n&f&lModerator: &7{MODERATOR}\n&f&lType: &r&c{TYPE}&7\n"
-  StaffHistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &7{REASON}\n&f&lModerator: &7{MODERATOR}\n&f&lType: &r&c{TYPE}&7 - &f&lExpires: &7{EXPIRYDATE}\n"
-  StaffHistoryMessagePerm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &7{REASON}\n&f&lModerator: &7{MODERATOR}\n&f&lType: &r&c{TYPE}&7\n"
+  HistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &7{REASON}\n&f&lModerator: &7{ARBITER}\n&f&lType: &r&c{TYPE}&7 - &f&lExpires: &7{EXPIRYDATE}\n"
+  HistoryMessagePerm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &7{REASON}\n&f&lModerator: &7{ARBITER}\n&f&lType: &r&c{TYPE}&7\n"
+  StaffHistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &7{REASON}\n&f&lModerator: &7{ARBITER}\n&f&lType: &r&c{TYPE}&7 - &f&lExpires: &7{EXPIRYDATE}\n"
+  StaffHistoryMessagePerm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &7{REASON}\n&f&lModerator: &7{ARBITER}\n&f&lType: &r&c{TYPE}&7\n"
   # The number of times `HistoryMessageTemp` or `HistoryMessagePerm` is treated as a page. (Default is 2)
   PageSize: 2
   StaffPageSize: 2

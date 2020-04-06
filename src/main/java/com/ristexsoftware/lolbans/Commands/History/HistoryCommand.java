@@ -80,7 +80,7 @@ public class HistoryCommand extends RistExCommand
                         put("playername", result.getString("PlayerName"));
                         put("punishid", result.getString("PunishID"));
                         put("reason", result.getString("Reason"));
-                        put("moderator", result.getString("ExecutionerName"));
+                        put("arbiter", result.getString("ArbiterName"));
                         put("type", GodForbidJava8HasUsableLambdaExpressionsSoICanAvoidDefiningSuperflouosFunctionsLikeThisOne(Type, ts));
                         put("punishdate", TimeUtil.TimeString(result.getTimestamp("TimePunished")));
                         put("expirydate", TimeUtil.TimeString(ts));

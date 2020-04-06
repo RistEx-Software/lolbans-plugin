@@ -75,7 +75,7 @@ public class UnbanCommand extends RistExCommand
                 {{
                     put("player", target.getName());
                     put("reason", reason);
-                    put("banner", sender.getName());
+                    put("arbiter", sender.getName());
                     put("punishid", punish.GetPunishmentID());
                 }}
             );
@@ -97,7 +97,7 @@ public class UnbanCommand extends RistExCommand
                     {{
                         put("player", target.getName());
                         put("reason", reason);
-                        put("banner", sender.getName());
+                        put("arbiter", sender.getName());
                         put("punishid", punish.GetPunishmentID());
                     }}
                 ));
