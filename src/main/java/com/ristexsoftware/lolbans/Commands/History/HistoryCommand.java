@@ -2,12 +2,12 @@ package com.ristexsoftware.lolbans.Commands.History;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
+import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
@@ -20,7 +20,7 @@ import java.util.TreeMap;
 import java.util.List;
 import java.sql.*;
 
-public class HistoryCommand implements CommandExecutor
+public class HistoryCommand extends RistExCommand
 {
     private static Main self = Main.getPlugin(Main.class);
 
@@ -159,9 +159,16 @@ public class HistoryCommand implements CommandExecutor
         return true;
     }
 
+    @Override
+    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    {
+        sender.sendMessage(Messages.InvalidSyntax);
+        sender.sendMessage("Usage: /history <PlayerName> [<Page>]");
+        sender.sendMessage("Usage: /clearhistory <PlayerName> [<DateRange>]");
+    }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
     {
         // Handle the History command
         if (Messages.CompareMany(command.getName(), new String[]{"history", "h"}))

@@ -2,20 +2,27 @@ package com.ristexsoftware.lolbans.Commands.Mute;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 
-public class MuteChatCommand implements CommandExecutor
+public class MuteChatCommand extends RistExCommand
 {
     private static Main self = Main.getPlugin(Main.class);
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    {
+        sender.sendMessage(Messages.InvalidSyntax);
+        sender.sendMessage("Usage: /chatmute");
+    }
+
+    @Override
+    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.chatmute"))
             return User.PermissionDenied(sender, "lolbans.staffrollback");

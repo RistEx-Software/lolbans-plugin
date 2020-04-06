@@ -1,13 +1,13 @@
 package com.ristexsoftware.lolbans.Commands.Misc;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
+import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
@@ -19,12 +19,19 @@ import java.lang.Long;
 import java.util.Optional;
 
 
-public class StaffRollbackCommand implements CommandExecutor
+public class StaffRollbackCommand extends RistExCommand
 {
     private static Main self = Main.getPlugin(Main.class);
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    {
+        sender.sendMessage(Messages.InvalidSyntax);
+        sender.sendMessage("Usage: /staffrollback [-s] <Staffmember> <Time|*>");
+    }
+
+    @Override
+    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.staffrollback"))
             return User.PermissionDenied(sender, "lolbans.staffrollback");

@@ -3,7 +3,6 @@ package com.ristexsoftware.lolbans.Commands.Ban;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
@@ -11,6 +10,7 @@ import org.bukkit.entity.Player;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.Punishment;
+import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
@@ -19,12 +19,19 @@ import com.ristexsoftware.lolbans.Utils.PunishmentType;
 import java.util.Optional;
 import java.util.TreeMap;
 
-public class UnbanCommand implements CommandExecutor
+public class UnbanCommand extends RistExCommand
 {
     private static Main self = Main.getPlugin(Main.class);
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    {
+        sender.sendMessage(Messages.InvalidSyntax);
+        sender.sendMessage("Usage: /unban [-s] <PlayerName|PunishID> <Reason>");
+    }
+
+    @Override
+    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.unban"))
             return true;

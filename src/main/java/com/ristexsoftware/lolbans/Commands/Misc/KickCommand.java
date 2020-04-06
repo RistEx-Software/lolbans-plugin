@@ -2,7 +2,6 @@ package com.ristexsoftware.lolbans.Commands.Misc;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -12,6 +11,7 @@ import org.bukkit.OfflinePlayer;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.Punishment;
+import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
@@ -21,12 +21,19 @@ import java.sql.*;
 import java.util.TreeMap;
 
 
-public class KickCommand implements CommandExecutor
+public class KickCommand extends RistExCommand
 {
     private static Main self = Main.getPlugin(Main.class);
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    {
+        sender.sendMessage(Messages.InvalidSyntax);
+        sender.sendMessage("Usage: /kick [-s] <PlayerName> <Reason>");
+    }
+
+    @Override
+    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.kick"))
             return User.PermissionDenied(sender, "lolbans.kick");

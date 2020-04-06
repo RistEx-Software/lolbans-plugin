@@ -3,7 +3,6 @@ package com.ristexsoftware.lolbans.Commands.History;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 // import inet.ipaddr.AddressStringException;
@@ -12,6 +11,7 @@ import inet.ipaddr.IPAddressString;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
 import com.ristexsoftware.lolbans.Objects.Punishment;
+import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
@@ -23,12 +23,19 @@ import java.util.regex.Pattern;
 import java.util.Optional;
 import java.sql.*;
 
-public class PruneHistoryCommand implements CommandExecutor 
+public class PruneHistoryCommand extends RistExCommand
 {
     private static Main self = Main.getPlugin(Main.class);
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    {
+        sender.sendMessage(Messages.InvalidSyntax);
+        sender.sendMessage("Usage: /prunehistory <Player|PunishID|CIDR|Regex> <Time|*>");
+    }
+
+    @Override
+    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.history.prune"))
             return User.PermissionDenied(sender, "lolbans.history.prune");

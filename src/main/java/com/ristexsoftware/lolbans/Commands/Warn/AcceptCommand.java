@@ -4,22 +4,29 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
+import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 
-public class AcceptCommand implements CommandExecutor 
+public class AcceptCommand extends RistExCommand
 {    
     private static Main self = Main.getPlugin(Main.class);
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) 
+    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    {
+        sender.sendMessage(Messages.InvalidSyntax);
+        sender.sendMessage("Usage: /warnaccept");
+    }
+
+    @Override
+    public boolean Execute(CommandSender sender, Command command, String label, String[] args) 
     {
         if (!PermissionUtil.Check(sender, "lolbans.warnaccept"))
             return User.PermissionDenied(sender, "lolbans.warnaccept");

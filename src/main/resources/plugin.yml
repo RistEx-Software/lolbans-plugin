@@ -9,86 +9,37 @@ website: https://github.com/notzachery
 commands:
   ban:
     description: Ban a player
-    usage: |
-          Syntax Error!
-          Use /ban <player> <ban time|*> <reason>
   staffrollback:
     description: Rollback a staff member's actions
-    usage: |
-          Syntax Error!
-          Use /staffrollback <staff> <relative time>
-          Relative time is in format in 1y2m4w8d4h3m2s
   staffhistory:
     descripton: Show staff history
-    usage: |
-          Syntax Error!
-          Use /staffhistory <staff> [<page>]
   ipban:
     description: Ban an ip address or CIDR range
-    usage: |
-          Syntax Error!
-          Use /ipban [-s] <ip address>[/<cidr>] <ban time|*> <reason>
   regexban:
     description: Ban a username/hostname/ip address based on a Regular Expression
-    usage: |
-          Syntax Error!
-          Use /regexban [-s] <regex pattern> <ban time|*> <reason>
   kick:
     description: Ban a player
-    usage: |
-          Syntax Error!
-          Use /kick <player> <reason>
   mute:
     description: mute a player
-    usage: |
-          Syntax Error!
-          Use /mute <player> <mute time|*> <reason>
   unban:
     description: Unban a payer
-    usage: |
-        Syntax Error!
-        Use /unban <player> <reason>
   mutechat:
     description: Mute the chat for all players (togglable)
-    usage: |
-        Syntax Error!
-        Use /mutechat
   unmute:
     description: Unban a payer
-    usage: |
-        Syntax Error!
-        Use /unmute <player> <reason>
   history:
     description: Get history of users punishments
-    usage: |
-        Syntax Error!
-        Use /history <player> [<page>]
     aliases: [h]
   clearhistory:
     description: Clear history of a player
-    usage: |
-        Syntax Error!
-        Use /clearhistory <player>
     aliases: [ch]
   banwave:
     description: add user to the banwave
-    usage: |
-        Syntax Error!
-        Use /banwave <add|remove|enforce> [player]
   warn:
     description: Warn a player
-    usage: |
-        Syntax Error!
-        Use /warn <player> [-s] <reason>
   accept:
     description: accept a warning
   broadcast:
     description: Broadcast a message to all online players
-    usage: |
-      Syntax Error!
-      Use /broadcast <message>
   report:
     description: Report a user
-    usage: |
-      Syntax Error!
-      Use /report <player> <reason>

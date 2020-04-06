@@ -2,7 +2,6 @@ package com.ristexsoftware.lolbans.Commands.Ban;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -14,6 +13,7 @@ import com.ristexsoftware.lolbans.Runnables.BanWaveRunnable;
 import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.User;
+import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
@@ -22,7 +22,7 @@ import java.sql.*;
 import java.util.Arrays;
 import java.util.TreeMap;
 
-public class BanWaveCommand implements CommandExecutor
+public class BanWaveCommand extends RistExCommand
 {
     private static Main self = Main.getPlugin(Main.class);
 
@@ -140,15 +140,25 @@ public class BanWaveCommand implements CommandExecutor
         if (!PermissionUtil.Check(sender, "lolbans.banwave.enforce"))
             return User.PermissionDenied(sender, "lolbans.banwave.enforce");
 
+        // TODO: handle -s
         User.PlayerOnlyVariableMessage("BanWave.BanWaveStart", sender, sender.getName(), false);
         BanWaveRunnable bwr = new BanWaveRunnable();
         bwr.sender = sender;
         bwr.runTaskAsynchronously(self);
         return true;
     }
+
+    @Override
+    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    {
+        sender.sendMessage(Messages.InvalidSyntax);
+        sender.sendMessage("Usage: /banwave [-s] add <Player> <Time|*> <Reason>");
+        sender.sendMessage("Usage: /banwave [-s] rm|remove|delete|del <Player>");
+        sender.sendMessage("Usage: /banwave [-s] enforce|run|start|exec|execute");
+    }
         
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.banwave"))
             return User.PermissionDenied(sender, "lolbans.banwave");

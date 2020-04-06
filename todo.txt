@@ -36,7 +36,6 @@ Minimum Viable Product (MVP) / Feature Freeze:
  - UnIPBan, UnWarn, UnRegexBan commands need to be created
  - Update Syntax Messages
  - List bans, regex bans, ip bans, warnings, etc. and ensure they're easy to remove.
- - Fuck off with spigot's default syntax handlers and do our own with messages.yml.
  - Standardize the name for who the hell bans someone. Are they `Banner`, `Executioner`, `Moderator`, `StaffMember`, `Issuer`, etc.? - it's arbitor
  - TESTING TESTING TESTING TESTING TESTING!!! - everyone!
 
@@ -45,6 +44,7 @@ Minimum Viable Product (MVP) / Feature Freeze:
 ##########################################
  - Hover Text (JSON) - Zachery/Justin?
  - dynamic permissions...
+ - Inventory-based UI for management of bans and whatnot.
 5. Mass unbans (??)
 6. Ensure targets can be names, uuids, ip addresses, or ip address ranges (CIDRs).
 7. Lockdown support (incl., per-server lockdowns)
