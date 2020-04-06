@@ -32,14 +32,12 @@ Minimum Viable Product (MVP) / Feature Freeze:
  - /prunehistory <Player|PunishID|CIDR> <Distance In Time|*> - Zachery?
  - Permissions (make sure they're granular enough?) - Zachery
  - REST api for website.
- - Report types (Cheating, Chat, ETC)
- - Fix all silent arguments to commands
  - Discord Messages need to be announced for all actions
  - UnIPBan, UnWarn, UnRegexBan commands need to be created
  - Update Syntax Messages
  - List bans, regex bans, ip bans, warnings, etc. and ensure they're easy to remove.
  - Fuck off with spigot's default syntax handlers and do our own with messages.yml.
- - Standardize the name for who the hell bans someone. Are they `Banner`, `Executioner`, `Moderator`, `StaffMember`, `Issuer`, etc.?
+ - Standardize the name for who the hell bans someone. Are they `Banner`, `Executioner`, `Moderator`, `StaffMember`, `Issuer`, etc.? - it's arbitor
  - TESTING TESTING TESTING TESTING TESTING!!! - everyone!
 
 ##########################################

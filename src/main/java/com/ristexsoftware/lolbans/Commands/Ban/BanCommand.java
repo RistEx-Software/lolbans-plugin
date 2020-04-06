@@ -12,8 +12,6 @@ import org.bukkit.OfflinePlayer;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.User;
-import com.ristexsoftware.lolbans.Utils.PunishID;
-import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
@@ -25,7 +23,6 @@ import java.lang.Long;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.Map;
-import java.util.concurrent.Future;
 
 public class BanCommand implements CommandExecutor
 {

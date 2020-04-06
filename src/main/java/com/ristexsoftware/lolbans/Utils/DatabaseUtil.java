@@ -7,12 +7,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Runnables.QueryRunnable;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-
-
 
 public class DatabaseUtil
 {
@@ -51,12 +45,13 @@ public class DatabaseUtil
                                             +"TimePunished TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
                                             +"Expiry TIMESTAMP NULL,"
                                             // Who banned (punshied) them
-                                            +"ExecutionerName VARCHAR(17) NOT NULL,"
-                                            +"ExecutionerUUID VARCHAR(36) NOT NULL,"
+                                            +"ArbiterName VARCHAR(17) NOT NULL,"
+                                            +"ArbiterUUID VARCHAR(36) NOT NULL,"
                                             // Who un-punished (appealed their punishment) them
                                             +"AppealReason TEXT NULL,"
-                                            +"AppealStaff VARCHAR(17) NULL,"
-                                            +"AppealUUID VARCHAR(36) NULL,"
+                                            // Who has reviewed and approved/denied the appeal.
+                                            +"AppelleeName VARCHAR(17) NULL,"
+                                            +"AppelleeUUID VARCHAR(36) NULL,"
                                             +"AppealTime TIMESTAMP NULL,"
                                             // this will just make checking if they're banned or not easier...
                                             +"Appealed BOOLEAN DEFAULT FALSE,"
@@ -81,8 +76,8 @@ public class DatabaseUtil
                                             +"PlayerName varchar(17) NOT NULL,"
                                             +"IPAddress varchar(48) NOT NULL,"
                                             +"Reason TEXT NULL,"
-                                            +"ExecutionerName varchar(17) NOT NULL,"
-                                            +"ExecutionerUUID varchar(36) NOT NULL,"
+                                            +"ArbiterName varchar(17) NOT NULL,"
+                                            +"ArbiterUUID varchar(36) NOT NULL,"
                                             +"PunishID varchar(20) NOT NULL,"
                                             +"TimePunished TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
                                             +"Expiry TIMESTAMP NULL"

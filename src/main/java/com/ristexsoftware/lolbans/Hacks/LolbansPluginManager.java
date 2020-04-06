@@ -12,8 +12,6 @@ import org.bukkit.plugin.*;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
 
-import com.ristexsoftware.lolbans.Hacks.Hacks;
-
 /**
  * Synopsys: According to md_5 (see 
  * https://bukkit.org/threads/event-handler-to-listen-to-all-events-in-one-method.99068/#post-1323406)
