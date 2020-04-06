@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
@@ -29,9 +30,18 @@ public class BanCommand extends RistExCommand
     private static Main self = Main.getPlugin(Main.class);
 
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args) {
-        sender.sendMessage("Syntax Error!");
-        sender.sendMessage("Usage: /ban [-s] <PlayerName> <Time|*> <Reason>");
+    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args) 
+    {
+        try 
+        {
+            sender.sendMessage(Messages.InvalidSyntax);
+            sender.sendMessage(Messages.Translate("Syntax.Ban", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+        }
+        catch (InvalidConfigurationException e)
+        {
+            e.printStackTrace();
+            sender.sendMessage(Messages.ServerError);
+        }
     }
 
     @Override

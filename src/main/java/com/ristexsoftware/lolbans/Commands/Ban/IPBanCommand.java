@@ -106,8 +106,16 @@ public class IPBanCommand extends RistExCommand
     @Override
     public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
     {
-        sender.sendMessage(Messages.InvalidSyntax);
-        sender.sendMessage("Usage: /ipban [-s] <ip address>[/<cidr>] <Time|*> <Reason>");
+        try 
+        {
+            sender.sendMessage(Messages.InvalidSyntax);
+            sender.sendMessage(Messages.Translate("Syntax.IPBan", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+        }
+        catch (InvalidConfigurationException e)
+        {
+            e.printStackTrace();
+            sender.sendMessage(Messages.ServerError);
+        }
     }
 
     @Override

@@ -18,9 +18,16 @@ public class BroadcastCommand extends RistExCommand
     @Override
     public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
     {
-        // TODO: Messages.yml-ify this
-        sender.sendMessage("Syntax Error!");
-        sender.sendMessage("Usage: /broadcast <message>");
+        try 
+        {
+            sender.sendMessage(Messages.InvalidSyntax);
+            sender.sendMessage(Messages.Translate("Syntax.Broadcast", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+        }
+        catch (InvalidConfigurationException e)
+        {
+            e.printStackTrace();
+            sender.sendMessage(Messages.ServerError);
+        }
     }
 
     @Override

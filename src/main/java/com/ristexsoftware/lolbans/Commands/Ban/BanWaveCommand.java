@@ -151,10 +151,16 @@ public class BanWaveCommand extends RistExCommand
     @Override
     public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
     {
-        sender.sendMessage(Messages.InvalidSyntax);
-        sender.sendMessage("Usage: /banwave [-s] add <Player> <Time|*> <Reason>");
-        sender.sendMessage("Usage: /banwave [-s] rm|remove|delete|del <Player>");
-        sender.sendMessage("Usage: /banwave [-s] enforce|run|start|exec|execute");
+        try 
+        {
+            sender.sendMessage(Messages.InvalidSyntax);
+            sender.sendMessage(Messages.Translate("Syntax.BanWave", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+        }
+        catch (InvalidConfigurationException e)
+        {
+            e.printStackTrace();
+            sender.sendMessage(Messages.ServerError);
+        }
     }
         
     @Override

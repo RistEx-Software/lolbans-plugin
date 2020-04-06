@@ -28,8 +28,16 @@ public class WarnCommand extends RistExCommand
     @Override
     public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
     {
-        sender.sendMessage(Messages.InvalidSyntax);
-        sender.sendMessage("Usage: /warn [-s] <Player> <Reason>");
+        try 
+        {
+            sender.sendMessage(Messages.InvalidSyntax);
+            sender.sendMessage(Messages.Translate("Syntax.Warn", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+        }
+        catch (InvalidConfigurationException e)
+        {
+            e.printStackTrace();
+            sender.sendMessage(Messages.ServerError);
+        }
     }
 
     @Override
