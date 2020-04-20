@@ -95,7 +95,7 @@ public class BanWaveRunnable extends BukkitRunnable
                 for (BannedUser bu : BannedPlayers)
                 {
                     if (bu.BannedPlayer.isOnline())
-                        User.KickPlayer(bu.ExecutionerName, (Player)bu.BannedPlayer, bu.PunishID, bu.BanReason, null);
+                        User.KickPlayerBan(bu.ExecutionerName, (Player)bu.BannedPlayer, bu.PunishID, bu.BanReason, null);
 
                     self.getLogger().info(String.format("%s was banned: %s (#%s)", bu.BannedPlayer.getName(), bu.BanReason, bu.PunishID));
                 }

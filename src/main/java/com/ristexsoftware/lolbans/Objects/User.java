@@ -263,17 +263,12 @@ public class User
     public static void KickPlayer(Punishment p)
     {
         if (p.GetPunishmentType() != PunishmentType.PUNISH_KICK)
-        {
-            if (p.GetExpiry() != null)
-                User.KickPlayer(p.GetExecutioner().getName(), (Player)p.GetPlayer(), p.GetPunishmentID(), p.GetReason(), p.GetTimePunished(), p.GetIPAddress());
-            else
-                User.KickPlayer(p.GetExecutioner().getName(), (Player)p.GetPlayer(), p.GetPunishmentID(), p.GetReason(), p.GetTimePunished());
-        }
+            User.KickPlayerBan(p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getName(), (Player)p.GetPlayer(), p.GetPunishmentID(), p.GetReason(), p.GetTimePunished());
         else
-            User.KickPlayer(p.GetExecutioner().getName(), (Player)p.GetPlayer(), p.GetPunishmentID(), p.GetReason());
+            User.KickPlayer(p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getName(), (Player)p.GetPlayer(), p.GetPunishmentID(), p.GetReason());
     }
 
-    public static void KickPlayer(String sender, Player target, String PunishID, String reason, Timestamp BanTime)
+    public static void KickPlayerBan(String sender, Player target, String PunishID, String reason, Timestamp BanTime)
     {
         try
         {
@@ -283,7 +278,7 @@ public class User
                 {{
                     put("player", target.getName());
                     put("reason", reason);
-                    put("banner", sender);
+                    put("ARBITER", sender);
                     put("fullexpiry", BanTime != null ? String.format("%s (%s)", TimeUtil.TimeString(BanTime), TimeUtil.Expires(BanTime)) : "Never");
                     put("expiryduration", BanTime != null ? TimeUtil.Expires(BanTime) : "Never");
                     put("dateexpiry", BanTime != null ? TimeUtil.TimeString(BanTime) : "Never");
@@ -298,7 +293,7 @@ public class User
         }
     }
 
-    public static void KickPlayer(String sender, Player target, String PunishID, String reason, Timestamp BanTime, String IP)
+    public static void KickPlayerIP(String sender, Player target, String PunishID, String reason, Timestamp BanTime, String IP)
     {
         try
         {
@@ -308,7 +303,7 @@ public class User
                 {{
                     put("player", target.getName());
                     put("reason", reason);
-                    put("banner", sender);
+                    put("ARBITER", sender);
                     put("fullexpiry", BanTime != null ? String.format("%s (%s)", TimeUtil.TimeString(BanTime), TimeUtil.Expires(BanTime)) : "Never");
                     put("expiryduration", BanTime != null ? TimeUtil.Expires(BanTime) : "Never");
                     put("dateexpiry", BanTime != null ? TimeUtil.TimeString(BanTime) : "Never");
@@ -334,8 +329,8 @@ public class User
                 {{
                     put("player", target.getName());
                     put("reason", reason);
-                    put("KICKER", sender);
-                    put("kickid", KickID);
+                    put("ARBITER", sender);
+                    put("punishid", KickID);
                 }}
             );
             target.kickPlayer(KickMessage);

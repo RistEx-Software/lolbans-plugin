@@ -77,7 +77,7 @@ public class KickCommand extends RistExCommand
                     put("player", target.getName());
                     put("reason", reason);
                     put("punishid", punish.GetPunishmentID());
-                    put("arbiter", sender.getName());
+                    put("ARBITER", sender.getName());
                 }};
 
             String KickAnnouncement = Messages.Translate(silent ? "Kick.SilentKickAnnouncement" : "Kick.KickAnnouncement", Variables);

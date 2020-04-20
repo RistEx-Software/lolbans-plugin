@@ -202,7 +202,7 @@ public class IPBanCommand extends RistExCommand
                 // Once the func gets the inputs, it'll kick the player with a message specified in the config
                 if (thingy.contains(hn.asAddress()))
                 {
-                    User.KickPlayer(sender.getName(), p, banid, reason, bantime, thingy.toString());
+                    User.KickPlayerIP(sender.getName(), p, banid, reason, bantime, thingy.toString());
                     continue;
                 }
 

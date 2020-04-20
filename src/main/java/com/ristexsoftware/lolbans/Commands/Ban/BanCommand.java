@@ -82,7 +82,7 @@ public class BanCommand extends RistExCommand
                 Optional<Long> dur = TimeUtil.Duration(TimePeriod);
                 if (dur.isPresent())
                     bantime = new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
-                else
+                else // TODO: Handle this better?
                     return false;
             }
 

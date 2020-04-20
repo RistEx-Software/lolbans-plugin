@@ -169,6 +169,13 @@
             <artifactId>ipaddress</artifactId>
             <version>5.1.0</version>
         </dependency>
+        <!-- Paper lib -->
+        <dependency>
+            <groupId>io.papermc</groupId>
+            <artifactId>paperlib</artifactId>
+            <version>1.0.2</version>
+            <scope>compile</scope>
+        </dependency>
 
         <!-- For testing -->       
         <dependency>

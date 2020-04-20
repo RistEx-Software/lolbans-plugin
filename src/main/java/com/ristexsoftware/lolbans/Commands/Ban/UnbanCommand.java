@@ -74,7 +74,7 @@ public class UnbanCommand extends RistExCommand
             Punishment punish = op.get();
             punish.SetAppealReason(reason);
             punish.SetAppealed(true);
-            punish.SetAppealStaff((OfflinePlayer)sender);
+            punish.SetAppealStaff(sender instanceof OfflinePlayer ? (OfflinePlayer)sender : null);
             punish.Commit(sender);
 
             // Prepare our announce message

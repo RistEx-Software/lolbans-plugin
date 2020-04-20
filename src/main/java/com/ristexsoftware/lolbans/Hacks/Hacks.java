@@ -7,6 +7,7 @@ import com.ristexsoftware.lolbans.Utils.ReflectionUtil;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
+import io.papermc.lib.PaperLib;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -72,18 +73,33 @@ public class Hacks implements Listener
             };
             EventExecutor executor = (ignored, event) -> Hacks.hacks.CallEvent(event);
 
+            boolean paper = PaperLib.isPaper();
+
             // Attempt to listen to all events.
             try 
             {
                 for (ClassInfo event : events) 
                 {
+                    // PaperSpigot has a custom PlayerHandshakeEvent that if any other plugin registers it
+                    // it will prevent people using BungeeCord/Waterfall from connecting properly. As such
+                    // we don't listen for this event. LolBans won't have much use for the event anyway so
+                    // there isn't much point in listening to it.
+                    if (paper)
+                    {
+                        if (event.getSimpleName().equalsIgnoreCase("PlayerHandshakeEvent"))
+                        {
+                            System.out.println("[LolBans] Using PaperSpigot, skipping registration of PlayerHandshakeEvent");
+                            continue;
+                        }
+                    }
+                    System.out.println("[LolBans] Registering event " + event.getSimpleName());
                     // noinspection unchecked
                     @SuppressWarnings("unchecked")
                     Class<? extends Event> eventClass = (Class<? extends Event>) Class.forName(event.getName());
 
                     if (Arrays.stream(eventClass.getDeclaredMethods()).anyMatch(
                             method -> method.getParameterCount() == 0 && method.getName().equals("getHandlers"))) 
-                            {
+                    {
                         // We could do this further filtering on the ClassInfoList instance instead,
                         // but that would mean that we have to enable method info scanning.
                         // I believe the overhead of initializing ~20 more classes
@@ -146,7 +162,7 @@ public class Hacks implements Listener
             if (event instanceof PlayerKickEvent)
                 ConnectionListeners.OnPlayerKick((PlayerKickEvent)event);
         }
-        catch (InterruptedException | ExecutionException | InvalidConfigurationException e)
+        catch (Exception e)
         {
             e.printStackTrace();
         }

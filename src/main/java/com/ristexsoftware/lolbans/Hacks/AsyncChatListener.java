@@ -15,6 +15,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
+import com.ristexsoftware.lolbans.Utils.PunishmentType;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
 
 public class AsyncChatListener 
@@ -37,8 +38,9 @@ public class AsyncChatListener
 
             // Otherwise check if they're individually muted.
             PreparedStatement MuteStatement = self.connection.prepareStatement(
-                    "SELECT * FROM Punishments WHERE UUID = ? AND Type = 2 AND (Expiry IS NULL OR Expiry >= NOW())");
+                    "SELECT * FROM Punishments WHERE UUID = ? AND Type = ? AND (Expiry IS NULL OR Expiry >= NOW()) AND Appealed = False");
             MuteStatement.setString(1, event.getPlayer().getUniqueId().toString());
+            MuteStatement.setInt(2, PunishmentType.PUNISH_MUTE.ordinal());
 
             Future<Optional<ResultSet>> MuteRecord = DatabaseUtil.ExecuteLater(MuteStatement);
             Optional<ResultSet> MuteResult = MuteRecord.get();
@@ -58,7 +60,7 @@ public class AsyncChatListener
                             {{
                                 put("player", event.getPlayer().getName());
                                 put("reason", result.getString("Reason"));
-                                put("arbiter", result.getString("Executioner"));
+                                put("arbiter", result.getString("ArbiterName"));
                                 put("muteid", result.getString("PunishID"));
                                 put("fullexpiry",MuteTime != null ? String.format("%s (%s)",TimeUtil.TimeString(MuteTime), TimeUtil.Expires(MuteTime)) : "Never");
                                 put("expiryduration", MuteTime != null ? TimeUtil.Expires(MuteTime) : "Never");

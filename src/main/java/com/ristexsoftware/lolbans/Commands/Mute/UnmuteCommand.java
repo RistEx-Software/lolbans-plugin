@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 
@@ -69,7 +70,7 @@ public class UnmuteCommand extends RistExCommand
             Punishment punish = op.get();
             punish.SetAppealReason(reason);
             punish.SetAppealed(true);
-            punish.SetAppealStaff((OfflinePlayer)sender);
+            punish.SetAppealStaff(sender instanceof OfflinePlayer ? (OfflinePlayer)sender : null);
             punish.Commit(sender);
 
             TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)

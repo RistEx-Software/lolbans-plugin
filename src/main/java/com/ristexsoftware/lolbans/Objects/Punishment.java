@@ -70,12 +70,12 @@ public class Punishment
 
         switch (Type)
         {
-            case PUNISH_BAN: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("Punishments"));
-            case PUNISH_KICK: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("Punishments"));
-            case PUNISH_MUTE: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("Punishments"));
-            case PUNISH_WARN: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("Punishments"));
+            case PUNISH_BAN: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("Punishments")); break;
+            case PUNISH_KICK: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("Punishments")); break;
+            case PUNISH_MUTE: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("Punishments")); break;
+            case PUNISH_WARN: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("Punishments")); break;
             default:
-                throw new UnknownError("Unknown Punishment Type for " + target.getName() + " " + Reason);
+                throw new UnknownError("Unknown Punishment Type \"" + Type.DisplayName() + "\" for " + target.getName() + " " + Reason);
         }
     }
 
@@ -109,16 +109,24 @@ public class Punishment
 
                     // Find players now.
                     p.player = Bukkit.getOfflinePlayer(p.uuid);
+                    String ArbiterUUID = res.getString("ArbiterUUID"),
+                           AppelleeUUID = res.getString("AppelleeUUID");
 
-                    if (res.getString("ArbiterUUID").equalsIgnoreCase("CONSOLE"))
-                        p.IsConsoleExectioner = true;
-                    else
-                        p.Executioner = Bukkit.getOfflinePlayer(UUID.fromString(res.getString("ArbiterUUID")));
+                    if (ArbiterUUID != null)
+                    {
+                        if (ArbiterUUID.equalsIgnoreCase("CONSOLE"))
+                            p.IsConsoleExectioner = true;
+                        else
+                            p.Executioner = Bukkit.getOfflinePlayer(UUID.fromString(res.getString("ArbiterUUID")));
+                    }
 
-                    if (res.getString("AppelleeUUID").equalsIgnoreCase("CONSOLE"))
-                        p.IsConsoleAppealer = true;
-                    else
-                        p.AppealStaff = Bukkit.getOfflinePlayer(UUID.fromString(res.getString("AppelleeUUID")));
+                    if (AppelleeUUID != null)
+                    {
+                        if (AppelleeUUID.equalsIgnoreCase("CONSOLE"))
+                            p.IsConsoleAppealer = true;
+                        else
+                            p.AppealStaff = Bukkit.getOfflinePlayer(UUID.fromString(res.getString("AppelleeUUID")));
+                    }
 
                     return Optional.of(p);
                 }
@@ -136,8 +144,8 @@ public class Punishment
         try
         {
             PreparedStatement pst3 = self.connection.prepareStatement("SELECT PunishID FROM Punishments WHERE UUID = ? AND Type = ? AND Appealed = ?");
-            pst3.setInt(1, Type.ordinal());
-            pst3.setString(2, Player.getUniqueId().toString());
+            pst3.setString(1, Player.getUniqueId().toString());
+            pst3.setInt(2, Type.ordinal());
             pst3.setBoolean(3, Appealed);
 
             Optional<ResultSet> ores = DatabaseUtil.ExecuteLater(pst3).get();
@@ -168,7 +176,6 @@ public class Punishment
             @Override
             public Void call()
             {
-
                 //This is where you should do your database interaction
                 try 
                 {
@@ -180,25 +187,25 @@ public class Punishment
                             me.AppealedTime = TimeUtil.TimestampNow();
 
                         InsertBan = self.connection.prepareStatement("UPDATE Punishments SET UUID = ?, PlayerName = ?, IPAddress = ?, Reason = ?, ArbiterName = ?, ArbiterUUID = ?, PunishID = ?, Expiry = ?, Type = ?, TimePunished = ?, AppealReason = ?, AppelleeName = ?, AppelleeUUID = ?, AppealTime = ?, Appealed = ?, WarningAck = ? WHERE id = ?");
-                        InsertBan.setString(i++, me.uuid.toString());
-                        InsertBan.setString(i++, me.PlayerName);
-                        InsertBan.setString(i++, me.IPAddress);
-                        InsertBan.setString(i++, me.Reason);
-                        InsertBan.setString(i++, Executioner.getName().toString());
-                        InsertBan.setString(i++, me.IsConsoleExectioner ? "CONSOLE" : ((Player)me.Executioner).getUniqueId().toString());
-                        InsertBan.setString(i++, me.IsConsoleExectioner ? "CONSOLE" : ((Player)me.Executioner).getUniqueId().toString());
-                        InsertBan.setString(i++, me.PID);
-                        InsertBan.setTimestamp(i++, Expiry);
+                        InsertBan.setString(i++, me.uuid.toString()); // UUID
+                        InsertBan.setString(i++, me.PlayerName); // PlayerName
+                        InsertBan.setString(i++, me.IPAddress); // IP Address
+                        InsertBan.setString(i++, me.Reason); // Reason
+                        InsertBan.setString(i++, me.IsConsoleExectioner ? "CONSOLE" : Executioner.getName().toString()); // ArbiterName 
+                        InsertBan.setString(i++, me.IsConsoleExectioner ? "CONSOLE" : ((Player)me.Executioner).getUniqueId().toString()); // ArbiterUUID
+                        InsertBan.setString(i++, me.PID); // PunishID
+                        InsertBan.setTimestamp(i++, Expiry); // Expiry
                         InsertBan.setInt(i++, Type.ordinal());
                         // TimePunished = ?, AppealReason = ?, AppealStaff = ?, AppealUUID = ?, AppealTime = ?, Appealed = ?, WarningAck = ? WHERE id = ?
-                        InsertBan.setTimestamp(i++, me.TimePunished);
-                        InsertBan.setString(i++, me.AppealReason);
-                        InsertBan.setString(i++, me.IsConsoleAppealer ? "CONSOLE" : ((Player)me.AppealStaff).getName());
-                        InsertBan.setString(i++, me.IsConsoleAppealer ? "CONSOLE" : ((Player)me.AppealStaff).getUniqueId().toString());
-                        InsertBan.setTimestamp(i++, me.AppealedTime);
-                        InsertBan.setBoolean(i++, me.Appealed);
-                        InsertBan.setBoolean(i++, me.WarningAcknowledged);
-                        InsertBan.setString(i++, me.DatabaseID);
+                        InsertBan.setTimestamp(i++, me.TimePunished); // TimePunished
+                        InsertBan.setString(i++, me.AppealReason); // AppealReason 
+                        InsertBan.setString(i++, me.IsConsoleAppealer ? "CONSOLE" : ((Player)me.AppealStaff).getName()); // AppelleeName
+                        InsertBan.setString(i++, me.IsConsoleAppealer ? "CONSOLE" : ((Player)me.AppealStaff).getUniqueId().toString()); // AppelleeUUID
+                        InsertBan.setTimestamp(i++, me.AppealedTime); //AppealTime
+                        InsertBan.setBoolean(i++, me.Appealed); //Appealed
+                        InsertBan.setBoolean(i++, me.WarningAcknowledged); //WarningAck
+                        InsertBan.setString(i++, me.DatabaseID); //id
+                        System.out.println("Executing update...");
                     }
                     else
                     {                    
@@ -208,12 +215,12 @@ public class Punishment
                         InsertBan.setString(i++, me.PlayerName);
                         InsertBan.setString(i++, me.IPAddress);
                         InsertBan.setString(i++, me.Reason);
-                        InsertBan.setString(i++, Executioner.getName().toString());
-                        InsertBan.setString(i++, me.IsConsoleExectioner ? "CONSOLE" : ((Player)me.Executioner).getUniqueId().toString());
+                        InsertBan.setString(i++, me.IsConsoleExectioner ? "CONSOLE" : Executioner.getName().toString());
                         InsertBan.setString(i++, me.IsConsoleExectioner ? "CONSOLE" : ((Player)me.Executioner).getUniqueId().toString());
                         InsertBan.setString(i++, me.PID);
                         InsertBan.setTimestamp(i++, Expiry);
                         InsertBan.setInt(i++, Type.ordinal());
+                        System.out.println("Executing insert!");
                     }
                     InsertBan.executeUpdate();
                 } 

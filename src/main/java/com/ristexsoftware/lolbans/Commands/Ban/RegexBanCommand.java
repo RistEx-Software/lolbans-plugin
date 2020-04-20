@@ -240,7 +240,7 @@ public class RegexBanCommand extends RistExCommand
                     // there are multiple "KickPlayer" funcs but this one is for IPBans (hence why the IP is on the end)
                     // Once the func gets the inputs, it'll kick the player with a message specified in the config
                     // FIXME: Is this message personalized for each banned player to describe what is matched?
-                    User.KickPlayer(sender.getName(), player, banid, reason, bantime);
+                    User.KickPlayerBan(sender.getName(), player, banid, reason, bantime);
                 }
                 // TODO: Global announcement
             }

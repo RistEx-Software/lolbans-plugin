@@ -79,6 +79,7 @@ public class Messages
         
         Variables.put("prefix", Messages.Prefix);
         Variables.put("networkname", Messages.NetworkName);
+        Variables.put("website", Messages.Website);
 
         return TranslationUtil.Translate(ConfigMessage, "&", Variables);
     }

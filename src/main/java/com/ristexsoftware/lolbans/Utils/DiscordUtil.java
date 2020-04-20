@@ -149,11 +149,11 @@ public class DiscordUtil
 
                 switch(p.GetPunishmentType())
                 {
-                   case PUNISH_BAN: action = p.GetAppealed() ? "unbanned" : "banned";
-                   case PUNISH_KICK: action = p.GetAppealed() ? "unkicked" : "kicked";
-                   case PUNISH_MUTE: action = p.GetAppealed() ? "unmuted" : "muted";
-                   case PUNISH_WARN: action = p.GetAppealed() ? "removed warning for" : "warned";
-                   default: action = "did an unknown action to";
+                   case PUNISH_BAN: action = p.GetAppealed() ? "unbanned" : "banned"; break;
+                   case PUNISH_KICK: action = p.GetAppealed() ? "unkicked" : "kicked"; break;
+                   case PUNISH_MUTE: action = p.GetAppealed() ? "unmuted" : "muted"; break;
+                   case PUNISH_WARN: action = p.GetAppealed() ? "removed warning for" : "warned"; break;
+                   default: action = "did an unknown action to"; break;
                 }
                 
                 DiscordUtil.SendDiscord(ExecutionerName, action, p.GetPlayerName(), ExecutionerUUID, p.GetUUID().toString(), p.GetReason(), p.GetPunishmentID(), silent);

@@ -18,6 +18,7 @@ import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
+import com.ristexsoftware.lolbans.Utils.PunishmentType;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
 import com.ristexsoftware.lolbans.Objects.User;
 
@@ -49,6 +50,7 @@ public class ConnectionListeners implements Listener
     // Adding players to a hashmap and account linking
     public static void OnPlayerConnect(PlayerJoinEvent event) 
     {
+        self.getLogger().warning("Doing OnPlayerConnect");
         if (LinkMessages == null)
             LinkMessages = new HashMap<UUID, String>();
 
@@ -87,6 +89,7 @@ public class ConnectionListeners implements Listener
     // This event is already async, no need.
     public static void OnPlayerConnectAsync(AsyncPlayerPreLoginEvent event) 
     {
+        self.getLogger().warning("Doing OnPlayerConnectAsync");
         try 
         {
             // To save time, we do a few things here:
@@ -101,13 +104,15 @@ public class ConnectionListeners implements Listener
             // 4. If they don't match any queries, we let them join.
 
             // Ask the database for any ban records
-            PreparedStatement BanStatement = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ? AND Type = 0 AND (Expiry IS NULL OR Expiry >= NOW()) AND Appealed = FALSE");
+            PreparedStatement BanStatement = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ? AND Type = ? AND (Expiry IS NULL OR Expiry >= NOW()) AND Appealed = FALSE");
             BanStatement.setString(1, event.getUniqueId().toString());
+            BanStatement.setInt(2, PunishmentType.PUNISH_BAN.ordinal());
 
             // Also ask for any warning records
-            PreparedStatement WarnStatement = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ? AND Type = 3 AND WarningAck = ?");
+            PreparedStatement WarnStatement = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ? AND Type = ? AND WarningAck = ?");
             WarnStatement.setString(1, event.getUniqueId().toString());
-            WarnStatement.setBoolean(2, false);
+            WarnStatement.setInt(2, PunishmentType.PUNISH_WARN.ordinal());
+            WarnStatement.setBoolean(3, false);
 
             // Also ask to see if we have any linked account confirmations waiting.
             PreparedStatement LinkedStatement = self.connection.prepareStatement("SELECT * FROM LinkConfirmations WHERE UUID = ? AND Expiry >= NOW()");
@@ -339,7 +344,7 @@ public class ConnectionListeners implements Listener
 
             // They're not banned and have no pending warnings, allow them to connect or other plugins to perform their actions.
         }
-        catch (SQLException | InterruptedException | ExecutionException | InvalidConfigurationException ex)
+        catch (Exception ex)
         {
             ex.printStackTrace();
             // Kick if there was a server error.

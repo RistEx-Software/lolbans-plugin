@@ -15,6 +15,7 @@ import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
+import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
 public class AcceptCommand extends RistExCommand
 {    
@@ -60,8 +61,9 @@ public class AcceptCommand extends RistExCommand
                 // Unset them warned locally
                 u.SetWarned(false, null, null);
                 // Preapre a statement
-                PreparedStatement pst3 = self.connection.prepareStatement("UPDATE Punishments SET WarningAck = true WHERE UUID = ? AND Type = 3");
+                PreparedStatement pst3 = self.connection.prepareStatement("UPDATE Punishments SET WarningAck = true WHERE UUID = ? AND Type = ?");
                 pst3.setString(1, u.getPlayer().getUniqueId().toString());
+                pst3.setInt(2, PunishmentType.PUNISH_WARN.ordinal());
                 DatabaseUtil.ExecuteUpdate(pst3);
 
                 User.PlayerOnlyVariableMessage("Warn.AcceptMessage", sender, sender.getName(), false);
