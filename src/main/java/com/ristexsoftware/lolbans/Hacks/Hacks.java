@@ -92,7 +92,7 @@ public class Hacks implements Listener
                             continue;
                         }
                     }
-                    System.out.println("[LolBans] Registering event " + event.getSimpleName());
+                    //System.out.println("[LolBans] Registering event " + event.getSimpleName());
                     // noinspection unchecked
                     @SuppressWarnings("unchecked")
                     Class<? extends Event> eventClass = (Class<? extends Event>) Class.forName(event.getName());

@@ -12,6 +12,7 @@ import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
+import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
@@ -21,7 +22,7 @@ import java.sql.*;
 import java.util.TreeMap;
 
 
-public class KickCommand extends RistExCommand
+public class KickCommand extends RistExCommandAsync
 {
     private static Main self = Main.getPlugin(Main.class);
 
@@ -70,7 +71,7 @@ public class KickCommand extends RistExCommand
             punish.Commit(sender);
 
             // Kick the player
-            User.KickPlayer(punish);
+            Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayer(punish), 1L);
 
             TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{

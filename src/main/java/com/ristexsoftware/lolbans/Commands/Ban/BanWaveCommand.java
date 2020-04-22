@@ -50,7 +50,7 @@ public class BanWaveCommand extends RistExCommand
 
             if (!(sender instanceof ConsoleCommandSender) && target.getUniqueId().equals(((Player) sender).getUniqueId()))
             {
-                sender.sendMessage(Messages.Translate("BanWave.CannotAddSelf", null));
+                sender.sendMessage(Messages.Translate("BanWave.CannotAddSelf", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
                 return true;
             }
 
@@ -62,7 +62,7 @@ public class BanWaveCommand extends RistExCommand
                 
             // TODO: Cleanup this query...
             int i = 1;
-            PreparedStatement pst = self.connection.prepareStatement("INSERT INTO BanWave (UUID, PlayerName, IPAddress, Reason, ExecutionerName, ExecutionerUUID, PunishID) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement pst = self.connection.prepareStatement("INSERT INTO BanWave (UUID, PlayerName, IPAddress, Reason, ArbiterName, ArbiterUUID, PunishID) VALUES (?, ?, ?, ?, ?, ?, ?)");
             pst.setString(i++, target.getUniqueId().toString());
             pst.setString(i++, target.getName());
             pst.setString(i++, target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN");

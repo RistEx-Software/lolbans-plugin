@@ -6,40 +6,114 @@ authors: [Zachery Coleman, Justasic]
 description: A ban system for minecraft, nothing fancy
 permission-message: &noperms "§cError: §fAccess Denied!"
 website: https://github.com/notzachery
+permissions:
+  lolbans.ban:
+    description: Able to use ban command
+  lolbans.ban.perm:
+    description: Allow permanent bans
+  lolbans.alerts:
+    description: Receive notification on silent bans
+  lolbans.banwave.add:
+    description: Add a player to the next ban wave
+  lolbans.banwave.remove:
+    description: Remove a player from the next ban wave
+  lolbans.banwave.enforce:
+    description: Start a ban wave
+  lolbans.banwave:
+    description: Able to use ban wave command
+  lolbans.insanityoverride:
+    description: Allow over-reaching bans
+  lolbans.ipban:
+    description: Able to use ip ban command
+  lolbans.ipban.perm:
+    description: Able to perform permanent IP Bans
+  lolbans.regexban:
+    description: Able to perform regex bans
+  lolbans.unban:
+    description: Able to unban users
+  lolbans.history:
+    description: Able to use/view history of bans
+  lolbans.clearhistory:
+    description: Able to clear history
+  lolbans.history.prune:
+    description: Able to prune history
+  lolbans.staffhistory:
+    description: Able to view history of staff members
+  lolbans.broadcast:
+    description: Able to use broadcast command
+  lolbans.freeze:
+    description: Able to (un)freeze a player in place
+  lolbans.kick:
+    description: Able to kick players from the server
+  lolbans.report:
+    description: Able to report other players to server admins
+  lolbans.staffrollback:
+    description: Able to roll back actions of other staff members
+  lolbans.chatmute:
+    description: Able to mute/unmute global chat
+  lolbans.mute:
+    description: Able to mute other players
+  lolbans.mute.perm:
+    description: Able to permanently mute other players
+  lolbans.unmute:
+    description: Able to unmute players
+  lolbans.warnaccept:
+    description: Able to accept a warning from chat
+  lolbans.warn:
+    description: Able to issue a warning against a player
+  lolbans.mute.bypass:
+    description: Able to bypass mutes
 commands:
   ban:
     description: Ban a player
+    permission: lolbans.ban
   staffrollback:
     description: Rollback a staff member's actions
+    permission: lolbans.staffrollback
   staffhistory:
     descripton: Show staff history
+    permission: lolbans.staffhistory
   ipban:
     description: Ban an ip address or CIDR range
+    permission: lolbans.ipban
   regexban:
     description: Ban a username/hostname/ip address based on a Regular Expression
+    permission: lolbans.regexban
   kick:
     description: Ban a player
+    permission: lolbans.kick
   mute:
     description: mute a player
+    permission: lolbans.mute
   unban:
     description: Unban a payer
+    permission: lolbans.unban
   mutechat:
     description: Mute the chat for all players (togglable)
+    permission: lolbans.chatmute
   unmute:
     description: Unban a payer
+    permission: lolbans.mute
   history:
     description: Get history of users punishments
     aliases: [h]
+    permission: lolbans.history
   clearhistory:
     description: Clear history of a player
     aliases: [ch]
+    permission: lolbans.clearhistory
   banwave:
     description: add user to the banwave
+    permission: lolbans.banwave
   warn:
     description: Warn a player
+    permission: lolbans.warn
   accept:
     description: accept a warning
+    permission: lolbans.warnaccept
   broadcast:
     description: Broadcast a message to all online players
+    permission: lolbans.broadcast
   report:
     description: Report a user
+    permission: lolbans.report

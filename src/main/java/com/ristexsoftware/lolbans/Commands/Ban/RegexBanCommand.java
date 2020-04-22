@@ -15,6 +15,7 @@ import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
+import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
@@ -27,7 +28,7 @@ import java.util.TreeMap;
 
 import inet.ipaddr.HostName;
 
-public class RegexBanCommand extends RistExCommand
+public class RegexBanCommand extends RistExCommandAsync
 {
     private static Main self = Main.getPlugin(Main.class);
 
@@ -222,6 +223,8 @@ public class RegexBanCommand extends RistExCommand
                 p.sendMessage(IPBanAnnouncement);
             }
 
+            final Timestamp ThanksJavaAgain = bantime;
+
             // Kick players who match the ban
             for (Player player : Bukkit.getOnlinePlayers())
             {
@@ -240,7 +243,7 @@ public class RegexBanCommand extends RistExCommand
                     // there are multiple "KickPlayer" funcs but this one is for IPBans (hence why the IP is on the end)
                     // Once the func gets the inputs, it'll kick the player with a message specified in the config
                     // FIXME: Is this message personalized for each banned player to describe what is matched?
-                    User.KickPlayerBan(sender.getName(), player, banid, reason, bantime);
+                    Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayerBan(sender.getName(), player, banid, reason, ThanksJavaAgain), 1L);
                 }
                 // TODO: Global announcement
             }

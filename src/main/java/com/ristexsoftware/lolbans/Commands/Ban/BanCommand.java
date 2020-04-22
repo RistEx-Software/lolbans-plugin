@@ -12,7 +12,7 @@ import org.bukkit.OfflinePlayer;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.User;
-import com.ristexsoftware.lolbans.Objects.RistExCommand;
+import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.Map;
 
-public class BanCommand extends RistExCommand
+public class BanCommand extends RistExCommandAsync
 {
     private static Main self = Main.getPlugin(Main.class);
 
@@ -94,14 +94,14 @@ public class BanCommand extends RistExCommand
 
             // Kick the player first, they're officially banned.
             if (target.isOnline())
-                User.KickPlayer(punish);
+                Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayer(punish) , 1L);
             
             // Format our messages.
             Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("player", punish.GetPlayerName());
                     put("reason", punish.GetReason());
-                    put("arbiter", punish.GetExecutioner().getName());
+                    put("arbiter", punish.GetExecutionerName());
                     put("punishid", punish.GetPunishmentID());
                     put("fullexpiry", punish.GetExpiryDateAndDuration());
                     put("expiryduration", punish.GetExpiryDuration());

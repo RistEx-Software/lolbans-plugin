@@ -50,7 +50,6 @@ public class ConnectionListeners implements Listener
     // Adding players to a hashmap and account linking
     public static void OnPlayerConnect(PlayerJoinEvent event) 
     {
-        self.getLogger().warning("Doing OnPlayerConnect");
         if (LinkMessages == null)
             LinkMessages = new HashMap<UUID, String>();
 
@@ -89,7 +88,6 @@ public class ConnectionListeners implements Listener
     // This event is already async, no need.
     public static void OnPlayerConnectAsync(AsyncPlayerPreLoginEvent event) 
     {
-        self.getLogger().warning("Doing OnPlayerConnectAsync");
         try 
         {
             // To save time, we do a few things here:
@@ -104,7 +102,7 @@ public class ConnectionListeners implements Listener
             // 4. If they don't match any queries, we let them join.
 
             // Ask the database for any ban records
-            PreparedStatement BanStatement = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ? AND Type = ? AND (Expiry IS NULL OR Expiry >= NOW()) AND Appealed = FALSE");
+            PreparedStatement BanStatement = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ? AND Type = ? AND Appealed = FALSE OR (Expiry IS NOT NULL AND Expiry >= NOW())");
             BanStatement.setString(1, event.getUniqueId().toString());
             BanStatement.setInt(2, PunishmentType.PUNISH_BAN.ordinal());
 
@@ -280,7 +278,7 @@ public class ConnectionListeners implements Listener
                     event.disallow(Result.KICK_OTHER, WarnKickMessage);
 
                     // Now accept the warning
-                    PreparedStatement pst3 = self.connection.prepareStatement("UPDATE Warnings SET Accepted = true WHERE UUID = ?");
+                    PreparedStatement pst3 = self.connection.prepareStatement("UPDATE Punishments SET WarningAck = true WHERE UUID = ?");
                     pst3.setString(1, event.getUniqueId().toString());
                     pst3.executeUpdate();
                 }

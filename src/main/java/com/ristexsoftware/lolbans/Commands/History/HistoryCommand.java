@@ -131,7 +131,7 @@ public class HistoryCommand extends RistExCommand
     private boolean HandleClearHistory(CommandSender sender, Command command, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.clearhistory"))
-            return User.PermissionDenied(sender, "lolbans.ban");
+            return User.PermissionDenied(sender, "lolbans.clearhistory");
 
         if (args.length < 1)
             return false;

@@ -15,6 +15,7 @@ import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
+import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
@@ -30,7 +31,7 @@ import inet.ipaddr.IPAddressString;
 
 // FIXME: Hostname-based bans?
 
-public class IPBanCommand extends RistExCommand
+public class IPBanCommand extends RistExCommandAsync
 {
     private static Main self = Main.getPlugin(Main.class);
 
@@ -190,6 +191,8 @@ public class IPBanCommand extends RistExCommand
                 }}
             );
 
+            final Timestamp ThanksJava = bantime;
+
             // Send messages to all players (if not silent) or only to admins (if silent)
             // and also kick players who match the ban.
             for (Player p : Bukkit.getOnlinePlayers())
@@ -202,7 +205,7 @@ public class IPBanCommand extends RistExCommand
                 // Once the func gets the inputs, it'll kick the player with a message specified in the config
                 if (thingy.contains(hn.asAddress()))
                 {
-                    User.KickPlayerIP(sender.getName(), p, banid, reason, bantime, thingy.toString());
+                    Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayerIP(sender.getName(), p, banid, reason, ThanksJava, thingy.toString()), 1L);
                     continue;
                 }
 

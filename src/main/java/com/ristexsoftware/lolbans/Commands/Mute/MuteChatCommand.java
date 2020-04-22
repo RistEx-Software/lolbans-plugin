@@ -36,7 +36,7 @@ public class MuteChatCommand extends RistExCommand
     public boolean Execute(CommandSender sender, Command command, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.chatmute"))
-            return User.PermissionDenied(sender, "lolbans.staffrollback");
+            return User.PermissionDenied(sender, "lolbans.chatmute");
         
         // Nice toggle feature
         self.ChatMuted = !self.ChatMuted;

@@ -205,7 +205,6 @@ public class Punishment
                         InsertBan.setBoolean(i++, me.Appealed); //Appealed
                         InsertBan.setBoolean(i++, me.WarningAcknowledged); //WarningAck
                         InsertBan.setString(i++, me.DatabaseID); //id
-                        System.out.println("Executing update...");
                     }
                     else
                     {                    
@@ -220,7 +219,6 @@ public class Punishment
                         InsertBan.setString(i++, me.PID);
                         InsertBan.setTimestamp(i++, Expiry);
                         InsertBan.setInt(i++, Type.ordinal());
-                        System.out.println("Executing insert!");
                     }
                     InsertBan.executeUpdate();
                 } 
@@ -291,6 +289,7 @@ public class Punishment
     /************************************
      * Getters/Setters
      */
+    /* clang-format: off */
     public OfflinePlayer GetPlayer() { return this.player; }
     public String GetPunishmentID() { return this.PID; }
     public UUID GetUUID() { return this.uuid; }
@@ -301,6 +300,7 @@ public class Punishment
     public Timestamp GetTimePunished() { return this.TimePunished; }
     public Timestamp GetExpiry() { return this.Expiry; }
     public OfflinePlayer GetExecutioner() { return this.Executioner; }
+    public String GetExecutionerName() { return this.IsConsoleExectioner ? "CONSOLE" : this.Executioner.getName(); }
     public boolean IsConsoleExectioner() { return this.IsConsoleExectioner; }
     public String GetAppealReason() { return this.AppealReason; }
     public Timestamp GetAppealTime() { return this.AppealedTime; }
@@ -319,6 +319,7 @@ public class Punishment
     public void SetAppealTime(Timestamp time) { this.AppealedTime = time; }
     public void SetAppealed(Boolean value) { this.Appealed = value; }
     public void SetWarningAcknowledged(Boolean value) { this.WarningAcknowledged = value; }
+    public void SetAppealStaff(CommandSender sender) { this.SetAppealStaff(sender instanceof OfflinePlayer ? (OfflinePlayer)sender : null); }
     public void SetAppealStaff(OfflinePlayer player)
     {
         if (player == null)
