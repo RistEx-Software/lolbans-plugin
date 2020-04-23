@@ -22,7 +22,7 @@ while still making money. (Maybe make the service free and have premium features
 but you don't get the appeal/reporting system. This needs to be appealing, so it ends up actually making profit, maybe make the plugin beta paid and full release cheaper/free?
 People donate like crazy anyway..)
 
-lol may/june release pls
+lol may/june release pls - hah! if we're lucky!
 
 ##########################################
 Minimum Viable Product (MVP) / Feature Freeze:
@@ -30,10 +30,12 @@ Minimum Viable Product (MVP) / Feature Freeze:
  - Reports show up in /history
  - /dupeip, /iphistory - Justin/Zachery
  - Temp and Permanent ban messages get mixed up.
+ - Rewrite messages.yml to use new variables and cyan/white text stylization.
  - UnIPBan, UnWarn, UnRegexBan commands need to be created
  - List bans, regex bans, ip bans, warnings, etc. and ensure they're easy to remove.
  - Permissions (make sure they're granular enough?) - Zachery
  - REST api for website.
+ - dynamic permissions...
  - Discord Messages need to be announced for all actions
  - TESTING TESTING TESTING TESTING TESTING!!! - everyone!
 
@@ -41,8 +43,7 @@ Minimum Viable Product (MVP) / Feature Freeze:
 # Future (or nice to have after the MVP)
 ##########################################
  - Hover Text (JSON) - Zachery/Justin?
- - dynamic permissions...
- - Inventory-based UI for management of bans and whatnot.
+ - Inventory-based UI for management of bans and whatnot. IMPORTANT!!
 5. Mass unbans (??) / Regex-based unbans?
 6. Ensure targets can be names, uuids, ip addresses, or ip address ranges (CIDRs).
 7. Lockdown support (incl., per-server lockdowns)

@@ -26,7 +26,6 @@ import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
-import com.ristexsoftware.lolbans.Utils.TimeUtil;
 
 public class User
 {
@@ -237,7 +236,6 @@ public class User
             bplay.setString(2, PunishID);
             bplay.setString(3, PunishID);
 
-
             Optional<ResultSet> bpres = DatabaseUtil.ExecuteLater(bplay).get();
             
             if (bpres.isPresent())
@@ -246,11 +244,9 @@ public class User
                 if (res.next())
                 {
                     UUID uuid = UUID.fromString(res.getString("UUID"));
-                    System.out.println("UUID: " + uuid.toString());
                     return Bukkit.getOfflinePlayer(uuid);
                 }
             }
-            System.out.println("No results!");
         }
         catch (SQLException | InterruptedException | ExecutionException ex)
         {

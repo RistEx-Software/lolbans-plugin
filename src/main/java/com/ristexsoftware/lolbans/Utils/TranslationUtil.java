@@ -38,7 +38,7 @@ public class TranslationUtil
     public static TreeMap<String, BiFunction<String, String, String>> Functions = new TreeMap<String, BiFunction<String, String, String>>(String.CASE_INSENSITIVE_ORDER)
     {{
         put("pluralize", (String lvalue, String arg) -> { return Pluralize(lvalue, arg); });
-        put("datetime", (String lvalue, String args) -> { System.out.println(args); return lvalue.isEmpty() ? "" : (new SimpleDateFormat(args)).format(Timestamp.valueOf(lvalue)); });
+        put("datetime", (String lvalue, String args) -> { return lvalue.isEmpty() ? "" : (new SimpleDateFormat(args)).format(Timestamp.valueOf(lvalue)); });
         put("duration", (String lvalue, String unused) -> { return TimeUtil.DurationString(Timestamp.valueOf(lvalue)); });
         put("expiry", (String lvalue, String unused) -> { return TimeUtil.Expires(Timestamp.valueOf(lvalue)); });
         put("cut", (String lvalue, String arg) -> { return lvalue.replace(arg, ""); });

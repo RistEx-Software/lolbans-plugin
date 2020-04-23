@@ -18,8 +18,6 @@ import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
 
-import java.util.TreeMap;
-
 public class AsyncChatListener 
 {
     private static Main self = Main.getPlugin(Main.class);

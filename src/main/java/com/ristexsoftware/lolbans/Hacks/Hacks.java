@@ -1,12 +1,10 @@
 package com.ristexsoftware.lolbans.Hacks;
 
 import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
 
 import com.ristexsoftware.lolbans.Utils.ReflectionUtil;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.InvalidConfigurationException;
 import io.papermc.lib.PaperLib;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
