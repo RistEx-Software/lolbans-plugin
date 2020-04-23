@@ -279,9 +279,7 @@ public class User
                     put("player", target.getName());
                     put("reason", reason);
                     put("ARBITER", sender);
-                    put("fullexpiry", BanTime != null ? String.format("%s (%s)", TimeUtil.TimeString(BanTime), TimeUtil.Expires(BanTime)) : "Never");
-                    put("expiryduration", BanTime != null ? TimeUtil.Expires(BanTime) : "Never");
-                    put("dateexpiry", BanTime != null ? TimeUtil.TimeString(BanTime) : "Never");
+                    put("date", BanTime != null ? BanTime.toString() : "Never");
                     put("PunishID", PunishID);
                 }}
             );
@@ -304,9 +302,7 @@ public class User
                     put("player", target.getName());
                     put("reason", reason);
                     put("ARBITER", sender);
-                    put("fullexpiry", BanTime != null ? String.format("%s (%s)", TimeUtil.TimeString(BanTime), TimeUtil.Expires(BanTime)) : "Never");
-                    put("expiryduration", BanTime != null ? TimeUtil.Expires(BanTime) : "Never");
-                    put("dateexpiry", BanTime != null ? TimeUtil.TimeString(BanTime) : "Never");
+                    put("date", BanTime != null ? BanTime.toString() : "Never");
                     put("PunishID", PunishID);
                     put("IPAddress", IP);
                 }}

@@ -78,15 +78,16 @@ public class UnbanCommand extends RistExCommand
             punish.Commit(sender);
 
             // Prepare our announce message
-            String AnnounceMessage = Messages.Translate(silent ? "Ban.SilentUnbanAnnouncment" : "Ban.UnbanAnnouncment",
-                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                {{
-                    put("player", target.getName());
-                    put("reason", reason);
-                    put("arbiter", sender.getName());
-                    put("punishid", punish.GetPunishmentID());
-                }}
-            );
+            TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+            {{
+                put("player", target.getName());
+                put("reason", reason);
+                put("arbiter", sender.getName());
+                put("punishid", punish.GetPunishmentID());
+                put("silent", Boolean.toString(silent));
+            }};
+            
+            String AnnounceMessage = Messages.Translate("Ban.UnbanAnnouncment", Variables);
 
             // Log to console.
             self.getLogger().info(AnnounceMessage);
@@ -94,22 +95,12 @@ public class UnbanCommand extends RistExCommand
             // Post that to the database.
             for (Player p : Bukkit.getOnlinePlayers())
             {
-                if (!silent && (p.hasPermission("lolbans.alerts") || p.isOp()))
+                if (!silent && p.hasPermission("lolbans.alerts"))
                     p.sendMessage(AnnounceMessage);
             }
 
             if (DiscordUtil.UseSimplifiedMessage == true)
-            {
-                DiscordUtil.SendFormatted(Messages.Translate(silent ? "Discord.SimpMessageSilentUnban" : "Discord.SimpMessageUnban",
-                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                    {{
-                        put("player", target.getName());
-                        put("reason", reason);
-                        put("arbiter", sender.getName());
-                        put("punishid", punish.GetPunishmentID());
-                    }}
-                ));
-            }
+                DiscordUtil.SendFormatted(Messages.Translate("Discord.SimpMessageUnban", Variables));
             else
                 DiscordUtil.SendDiscord(punish, silent);
         }

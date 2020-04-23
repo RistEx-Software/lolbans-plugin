@@ -13,8 +13,10 @@ import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
+import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
+import com.ristexsoftware.lolbans.Utils.Timing;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
@@ -56,8 +58,7 @@ public class BanCommand extends RistExCommandAsync
         
         try 
         {
-            // debugging
-            Long now = System.currentTimeMillis();
+            Timing t = new Timing();
 
             boolean silent = args.length > 3 ? args[0].equalsIgnoreCase("-s") : false;
             String PlayerName = silent ? args[1] : args[0];
@@ -103,31 +104,16 @@ public class BanCommand extends RistExCommandAsync
                     put("reason", punish.GetReason());
                     put("arbiter", punish.GetExecutionerName());
                     put("punishid", punish.GetPunishmentID());
-                    put("fullexpiry", punish.GetExpiryDateAndDuration());
-                    put("expiryduration", punish.GetExpiryDuration());
-                    put("dateexpires", punish.GetExpiryDate());
+                    put("expiry", punish.GetExpiryString());
+                    put("silent", Boolean.toString(silent));
                 }};
 
-            String BanAnnouncement = Messages.Translate(silent ? "Ban.SilentBanAnnouncement" : "Ban.BanAnnouncement", Variables);
-
-            // Send it to the console.
-            self.getLogger().info(BanAnnouncement);
-        
-            // Send messages to all players (if not silent) or only to admins (if silent)
-            for (Player p : Bukkit.getOnlinePlayers())
-            {
-                if (!silent && (p.hasPermission("lolbans.alerts") || p.isOp()))
-                    p.sendMessage(BanAnnouncement);
-            }
-
-            // debugging
-            Long later = System.currentTimeMillis();
-            Long thingy = later - now;
-            sender.sendMessage(ChatColor.GRAY + "Done! " + ChatColor.RED + thingy + "ms");
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Ban.BanAnnouncement", Variables));
+            sender.sendMessage(ChatColor.GRAY + "Done! " + ChatColor.RED + t.Finish() + "ms");
 
             // Send to Discord. (New method)
             if (DiscordUtil.UseSimplifiedMessage == true)
-                DiscordUtil.SendFormatted(Messages.Translate(silent ? "Discord.SimpMessageSilentBan" : "Discord.SimpMessageBan", Variables));
+                DiscordUtil.SendFormatted(Messages.Translate("Discord.SimpMessageBan", Variables));
             else
                 DiscordUtil.SendDiscord(punish, silent);
         }

@@ -29,7 +29,7 @@ Minimum Viable Product (MVP) / Feature Freeze:
 ##########################################
  - Reports show up in /history
  - /dupeip, /iphistory - Justin/Zachery
- - Fix mutechat
+ - Temp and Permanent ban messages get mixed up.
  - UnIPBan, UnWarn, UnRegexBan commands need to be created
  - List bans, regex bans, ip bans, warnings, etc. and ensure they're easy to remove.
  - Permissions (make sure they're granular enough?) - Zachery

@@ -76,16 +76,15 @@ public class BanWaveCommand extends RistExCommand
 
             // Log to console.
             // TODO: Log to everyone with the alert permission?
-            // FIXME: Silents?
             // Format our messages.
-            Bukkit.getConsoleSender().sendMessage(Messages.Translate(silent ? "BanWave.AddedToWave" : "BanWave.AddedToWave",
+            sender.sendMessage(Messages.Translate("BanWave.AddedToWave",
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("player", target.getName());
                     put("reason", reason);
                     put("arbiter", sender.getName());
                     put("punishid", banid);
-                    put("silent", (silent ? " [silent]" : ""));
+                    put("silent", Boolean.toString(silent));
                 }}
             ));
 

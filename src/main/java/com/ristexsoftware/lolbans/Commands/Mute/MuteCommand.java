@@ -93,9 +93,7 @@ public class MuteCommand extends RistExCommand
                     put("reason", reason);
                     put("arbiter", sender.getName());
                     put("punishid", punish.GetPunishmentID());
-                    put("fullexpiry", punish.GetExpiryDateAndDuration());
-                    put("expiryduration", punish.GetExpiryDuration());
-                    put("dateexpiry", punish.GetExpiryDate());
+                    put("expiry", punish.GetExpiryString());
                 }};
 
             if (target.isOnline())

@@ -309,10 +309,7 @@ public class Punishment
     public boolean GetAppealed() { return this.Appealed; }
     public boolean AcknowledgedWarning() { return this.WarningAcknowledged; }
 
-    public String GetExpiryDateAndDuration() { return this.Expiry != null ? String.format("%s (%s)", TimeUtil.TimeString(this.Expiry), TimeUtil.Expires(this.Expiry)) : "Never"; }
-    public String GetExpiryDuration() { return this.Expiry != null ? TimeUtil.Expires(this.Expiry) : "Never"; }
-    public String GetExpiryDate() { return this.Expiry != null ? TimeUtil.TimeString(this.Expiry) : "Never"; }
-
+    public String GetExpiryString() { return this.Expiry != null ? this.Expiry.toString() : ""; }
 
     /// Setters
     public void SetAppealReason(String Reason) { this.AppealReason = Reason; }

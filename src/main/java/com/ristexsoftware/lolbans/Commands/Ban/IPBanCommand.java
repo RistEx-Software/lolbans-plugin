@@ -209,7 +209,7 @@ public class IPBanCommand extends RistExCommandAsync
                     continue;
                 }
 
-                if (silent && (!p.hasPermission("lolbans.alerts") && !p.isOp()))
+                if (silent && !p.hasPermission("lolbans.alerts"))
                     continue;
 
                 p.sendMessage(IPBanAnnouncement);

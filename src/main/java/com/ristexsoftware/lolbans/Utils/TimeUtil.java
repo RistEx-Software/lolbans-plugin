@@ -62,6 +62,11 @@ public class TimeUtil
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     };
 
+    public static String DurationString(Timestamp t)
+    {
+        return TimeUtil.DurationString(t.getTime() / 1000L);
+    }
+
     public static String DurationString(long t)
     {
         long years = t / 31449600;

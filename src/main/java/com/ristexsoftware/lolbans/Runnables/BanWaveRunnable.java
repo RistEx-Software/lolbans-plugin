@@ -3,17 +3,21 @@ package com.ristexsoftware.lolbans.Runnables;
 import java.sql.*;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import java.util.List;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.ArrayList;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
+import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
+import com.ristexsoftware.lolbans.Utils.Timing;
 import com.ristexsoftware.lolbans.Objects.User;
 
 
@@ -43,6 +47,7 @@ public class BanWaveRunnable extends BukkitRunnable
     public void run()
     {
         Main self = Main.getPlugin(Main.class);
+        Timing t = new Timing();
         try
         {
             //DiscordUtil.SendFormatted("%s started a ban wave.", sender.getName());
@@ -74,7 +79,6 @@ public class BanWaveRunnable extends BukkitRunnable
                 OfflinePlayer op = Bukkit.getOfflinePlayer(UUID.fromString(PlayersToBan.getString("UUID")));
                 BannedUser bp = new BannedUser(op, PlayersToBan.getString("ArbiterName"), PlayersToBan.getString("ArbiterUUID"), PlayersToBan.getString("PunishID"), PlayersToBan.getString("Reason"));
                 BannedPlayers.add(bp);
-
                 BanBatchQuery.setString(i++, PlayersToBan.getString("UUID"));
                 BanBatchQuery.setString(i++, PlayersToBan.getString("PlayerName"));
                 BanBatchQuery.setString(i++, PlayersToBan.getString("IPAddress"));
@@ -96,16 +100,21 @@ public class BanWaveRunnable extends BukkitRunnable
                 {
                     if (bu.BannedPlayer.isOnline())
                         User.KickPlayerBan(bu.ExecutionerName, (Player)bu.BannedPlayer, bu.PunishID, bu.BanReason, null);
-
-                    self.getLogger().info(String.format("%s was banned: %s (#%s)", bu.BannedPlayer.getName(), bu.BanReason, bu.PunishID));
+                    //self.getLogger().info(String.format("%s was banned: %s (#%s)", bu.BannedPlayer.getName(), bu.BanReason, bu.PunishID));
                 }
             }, 1L);
 
-            // FIXME: messages.yml this.
-            sender.sendMessage(String.format(ChatColor.RED + "Banned" + ChatColor.GRAY + " %d " + ChatColor.RED + "player%s.", BannedPlayers.size(), BannedPlayers.size() != 1 ? "s" : ""));
+            sender.sendMessage(Messages.Translate("BanWave.BanWaveFinished",
+                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                {{
+                    put("playercount", String.valueOf(BannedPlayers.size()));
+                    put("playercount_s", BannedPlayers.size() > 1 ? "s" : "");
+                    put("time", String.valueOf(t.Finish()));
+                }}
+            ));
             //DiscordUtil.SendFormatted("Banned %d player%s.", BannedPlayers.size(), BannedPlayers.size() != 1 ? "s" : "");
         }
-        catch(SQLException e)
+        catch(SQLException | InvalidConfigurationException e)
         {
             e.printStackTrace();
         }
