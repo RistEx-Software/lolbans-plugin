@@ -42,6 +42,7 @@ import com.ristexsoftware.lolbans.Commands.Misc.KickCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.ReportCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.StaffRollbackCommand;
 import com.ristexsoftware.lolbans.Commands.Mute.UnmuteCommand;
+import com.ristexsoftware.lolbans.Commands.Mute.MuteChatCommand;
 import com.ristexsoftware.lolbans.Commands.Mute.MuteCommand;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
@@ -155,6 +156,7 @@ public final class Main extends JavaPlugin
         this.getCommand("banwave").setExecutor(new BanWaveCommand());
         this.getCommand("warn").setExecutor(new WarnCommand());
         this.getCommand("accept").setExecutor(new AcceptCommand());
+        this.getCommand("mutechat").setExecutor(new MuteChatCommand());
         this.getCommand("mute").setExecutor(new MuteCommand());
         this.getCommand("unmute").setExecutor(new UnmuteCommand());
         this.getCommand("kick").setExecutor(new KickCommand());

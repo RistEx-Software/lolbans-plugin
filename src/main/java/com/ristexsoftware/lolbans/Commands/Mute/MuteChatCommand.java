@@ -41,10 +41,17 @@ public class MuteChatCommand extends RistExCommand
         // Nice toggle feature
         self.ChatMuted = !self.ChatMuted;
 
-        if (self.ChatMuted)
-            Bukkit.broadcastMessage(Messages.GetMessages().GetConfig().getString("Mute.GlobalMuted"));
-        else
-            Bukkit.broadcastMessage(Messages.GetMessages().GetConfig().getString("Mute.GlobalUnmuted"));
+        try 
+        {
+            if (self.ChatMuted)
+                Bukkit.broadcastMessage(Messages.Translate("Mute.GlobalMuted", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+            else
+                Bukkit.broadcastMessage(Messages.Translate("Mute.GlobalUnmuted", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+        }
+        catch (InvalidConfigurationException ex)
+        {
+            ex.printStackTrace();
+        }
 
         return true;
     }

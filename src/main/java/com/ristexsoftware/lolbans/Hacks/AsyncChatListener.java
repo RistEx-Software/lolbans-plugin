@@ -18,6 +18,8 @@ import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
 
+import java.util.TreeMap;
+
 public class AsyncChatListener 
 {
     private static Main self = Main.getPlugin(Main.class);
@@ -29,10 +31,10 @@ public class AsyncChatListener
             // Send a message to the user if the chat is muted globally
             if (self.ChatMuted)
             {
-                if (event.getPlayer().hasPermission("lolbans.mute.bypass") || event.getPlayer().isOp())
+                if (event.getPlayer().hasPermission("lolbans.mute.bypass"))
                     return;
                 event.setCancelled(true);
-                event.getPlayer().sendMessage(Messages.GetMessages().GetConfig().getString("Mute.GlobalMuted"));
+                event.getPlayer().sendMessage(Messages.Translate("Mute.GlobalMuted", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
                 return;
             }
 
@@ -75,7 +77,7 @@ public class AsyncChatListener
                 }
             }
         }
-        catch (SQLException e)
+        catch (SQLException | InvalidConfigurationException e)
         {
             e.printStackTrace();
         }
