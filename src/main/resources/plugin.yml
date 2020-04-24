@@ -47,6 +47,8 @@ permissions:
     description: Able to kick players from the server
   lolbans.report:
     description: Able to report other players to server admins
+  lolbans.ReceiveReports:
+    description: Able to receive reports from other players
   lolbans.staffrollback:
     description: Able to roll back actions of other staff members
   lolbans.chatmute:

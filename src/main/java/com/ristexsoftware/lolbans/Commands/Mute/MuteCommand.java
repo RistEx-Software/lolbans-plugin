@@ -60,7 +60,7 @@ public class MuteCommand extends RistExCommand
             String TimePeriod = args[silent ? 2 : 1];
             String reason = Messages.ConcatenateRest(args, silent ? 3 : 2).trim();
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
-            Timestamp mutetime = null;
+            Timestamp mutetime = TimeUtil.ParseToTimestamp(TimePeriod);
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
@@ -70,16 +70,6 @@ public class MuteCommand extends RistExCommand
 
             if (User.IsPlayerMuted(target))
                 return User.PlayerOnlyVariableMessage("Mute.PlayerIsMuted", sender, target.getName(), true);
-
-            // Parse ban time.
-            if (!Messages.CompareMany(TimePeriod, new String[]{"*", "0"}))
-            {
-                Optional<Long> dur = TimeUtil.Duration(TimePeriod);
-                if (dur.isPresent())
-                    mutetime = new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
-                else
-                    return false;
-            }
 
             if (mutetime == null && !PermissionUtil.Check(sender, "lolbans.mute.perm"))
                 return User.PermissionDenied(sender, "lolbans.mute.perm");
@@ -94,6 +84,7 @@ public class MuteCommand extends RistExCommand
                     put("arbiter", sender.getName());
                     put("punishid", punish.GetPunishmentID());
                     put("expiry", punish.GetExpiryString());
+                    put("silent", Boolean.toString(silent));
                 }};
 
             if (target.isOnline())

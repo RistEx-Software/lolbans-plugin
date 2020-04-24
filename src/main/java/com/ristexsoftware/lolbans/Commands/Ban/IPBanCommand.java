@@ -70,8 +70,6 @@ public class IPBanCommand extends RistExCommandAsync
             if (sender.hasPermission("lolbans.insanityoverride"))
                 return false;
 
-            // Because Java requries effective finality, we have to redeclare shit.
-
             // Format our messages.
             try 
             {
@@ -133,25 +131,10 @@ public class IPBanCommand extends RistExCommandAsync
             boolean silent = args.length > 3 ? args[0].equalsIgnoreCase("-s") : false;
             String reason = Messages.ConcatenateRest(args, silent ? 3 : 2);
             String TimePeriod = silent ? args[2] : args[1];
-            
-            Timestamp bantime = null;
-            // Parse ban time.
-            if (!TimePeriod.trim().contentEquals("0") && !TimePeriod.trim().contentEquals("*"))
-            {
-                Optional<Long> dur = TimeUtil.Duration(TimePeriod);
-                if (dur.isPresent())
-                    bantime = new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
-                else
-                    return false;
-            }
+            Timestamp bantime = TimeUtil.ParseToTimestamp(TimePeriod);
 
             if (bantime == null && !PermissionUtil.Check(sender, "lolbans.ipban.perm"))
                 return User.PermissionDenied(sender, "lolbans.ipban.perm"); 
-
-            // ItS gOtTa Be FiNaL thanks java.
-            final String FuckingJava2 = new String(bantime != null ? String.format("%s (%s)", TimeUtil.TimeString(bantime), TimeUtil.Expires(bantime)) : "Never");
-            final String FuckingJava3 = new String(bantime != null ? TimeUtil.Expires(bantime) : "Never");
-            final String FuckingJava4 = new String(bantime != null ? TimeUtil.TimeString(bantime) : "Never");
             
             // Is a future, needed != null for some reason.
             IPAddress thingy = new IPAddressString(args[silent ? 1 : 0]).toAddress();
@@ -176,7 +159,7 @@ public class IPBanCommand extends RistExCommandAsync
 
             // Format our messages.
             // FIXME: Is this even the right message?
-            String messagenode = silent ? (bantime != null ? "IPBan.SilentTempIPBanMessage" : "IPBan.SilentPermIPBanMessage") : (bantime != null ? "IPBan.TempIPBanMessage" : "IPBan.PermIPBanMessage");
+            String messagenode = bantime != null ? "IPBan.TempIPBanMessage" : "IPBan.PermIPBanMessage";
             String IPBanAnnouncement = Messages.Translate(messagenode,
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
@@ -184,13 +167,11 @@ public class IPBanCommand extends RistExCommandAsync
                     put("reason", reason);
                     put("arbiter", sender.getName());
                     put("punishid", banid);
-                    put("fullexpiry", FuckingJava2);
-                    put("expiryduration", FuckingJava3);
-                    put("dateexpiry", FuckingJava4);
+                    put("silent", Boolean.toString(silent));
+                    put("expiry", bantime.toString());
                 }}
             );
 
-            final Timestamp ThanksJava = bantime;
 
             // Send messages to all players (if not silent) or only to admins (if silent)
             // and also kick players who match the ban.
@@ -204,7 +185,7 @@ public class IPBanCommand extends RistExCommandAsync
                 // Once the func gets the inputs, it'll kick the player with a message specified in the config
                 if (thingy.contains(hn.asAddress()))
                 {
-                    Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayerIP(sender.getName(), p, banid, reason, ThanksJava, thingy.toString()), 1L);
+                    Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayerIP(sender.getName(), p, banid, reason, bantime, thingy.toString()), 1L);
                     continue;
                 }
 

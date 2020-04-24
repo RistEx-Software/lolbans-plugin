@@ -144,9 +144,7 @@ public class ConnectionListeners implements Listener
                         put("player", event.getName());
                         put("reason", result.getString("Reason"));
                         put("arbiter", result.getString("ArbiterName"));
-                        put("fullexpiry", Expiry != null ? String.format("%s (%s)", TimeUtil.TimeString(Expiry), TimeUtil.Expires(Expiry)) : "Never");
-                        put("expiryduration", Expiry != null ? TimeUtil.Expires(Expiry) : "Never");
-                        put("dateexpiry", Expiry != null ? TimeUtil.TimeString(Expiry) : "Never");
+                        put("expiry", Expiry != null ? Expiry.toString() : "Never");
                         put("punishid", result.getString("PunishID"));
                     }};
 
@@ -187,9 +185,7 @@ public class ConnectionListeners implements Listener
                         put("regex", regex.pattern());
                         put("reason", result.getString("Reason"));
                         put("arbiter", result.getString("ArbiterName"));
-                        put("fullexpiry", Expiry != null ? String.format("%s (%s)", TimeUtil.TimeString(Expiry), TimeUtil.Expires(Expiry)) : "Never");
-                        put("expiryduration", Expiry != null ? TimeUtil.Expires(Expiry) : "Never");
-                        put("dateexpiry", Expiry != null ? TimeUtil.TimeString(Expiry) : "Never");
+                        put("expiry", Expiry != null ? Expiry.toString() : "Never");
                         put("punishid", result.getString("PunishID"));
                     }};
 
@@ -233,9 +229,7 @@ public class ConnectionListeners implements Listener
                         put("player", event.getName());
                         put("reason", result.getString("Reason"));
                         put("arbiter", result.getString("ArbiterName"));
-                        put("fullexpiry", BanTime != null ? String.format("%s (%s)", TimeUtil.TimeString(BanTime), TimeUtil.Expires(BanTime)) : "Never");
-                        put("expiryduration", BanTime != null ? TimeUtil.Expires(BanTime) : "Never");
-                        put("dateexpiry", BanTime != null ? TimeUtil.TimeString(BanTime) : "Never");
+                        put("expiry", BanTime != null ? BanTime.toString() : "Never");
                         put("punishid", result.getString("PunishID"));
                         put("LinkMessage", LinkedAccountMessage);
                     }};

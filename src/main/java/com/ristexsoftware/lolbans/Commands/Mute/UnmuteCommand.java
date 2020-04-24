@@ -73,12 +73,13 @@ public class UnmuteCommand extends RistExCommand
             punish.Commit(sender);
 
             TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                {{
-                    put("player", target.getName());
-                    put("reason", reason);
-                    put("arbiter", sender.getName());
-                    put("punishid", punish.GetPunishmentID());
-                }};
+            {{
+                put("player", target.getName());
+                put("reason", reason);
+                put("arbiter", sender.getName());
+                put("punishid", punish.GetPunishmentID());
+                put("silent", Boolean.toString(silent));
+            }};
 
             // Post that to the database.
             for (Player p : Bukkit.getOnlinePlayers())

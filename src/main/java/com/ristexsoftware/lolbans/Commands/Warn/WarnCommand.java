@@ -69,6 +69,7 @@ public class WarnCommand extends RistExCommand
                 put("reason", reason);
                 put("punishid", punish.GetPunishmentID());
                 put("arbiter", sender.getName());
+                put("silent", Boolean.toString(silent));
             }};
                 
             // If they're online, require acknowledgement immediately by freezing them and sending a message.

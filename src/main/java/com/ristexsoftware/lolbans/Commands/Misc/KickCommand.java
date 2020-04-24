@@ -78,9 +78,10 @@ public class KickCommand extends RistExCommandAsync
                     put("reason", reason);
                     put("punishid", punish.GetPunishmentID());
                     put("ARBITER", sender.getName());
+                    put("silent", Boolean.toString(silent));
                 }};
 
-            String KickAnnouncement = Messages.Translate(silent ? "Kick.SilentKickAnnouncement" : "Kick.KickAnnouncement", Variables);
+            String KickAnnouncement = Messages.Translate("Kick.KickAnnouncement", Variables);
         
             // Log to console.
             self.getLogger().info(KickAnnouncement);

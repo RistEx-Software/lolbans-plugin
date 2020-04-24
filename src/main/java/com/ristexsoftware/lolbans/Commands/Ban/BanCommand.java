@@ -65,6 +65,7 @@ public class BanCommand extends RistExCommandAsync
             String TimePeriod = silent ? args[2] : args[1];
             String reason = Messages.ConcatenateRest(args, silent ? 3 : 2).trim();
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
+            Timestamp bantime = TimeUtil.ParseToTimestamp(TimePeriod);
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
@@ -74,18 +75,6 @@ public class BanCommand extends RistExCommandAsync
 
             if (User.IsPlayerBanned(target))
                 return User.PlayerOnlyVariableMessage("Ban.PlayerIsBanned", sender, target.getName(), true);
-            
-            Timestamp bantime = null;
-
-            // Parse ban time.
-            if (!Messages.CompareMany(TimePeriod, new String[]{"*", "0"}))
-            {
-                Optional<Long> dur = TimeUtil.Duration(TimePeriod);
-                if (dur.isPresent())
-                    bantime = new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
-                else // TODO: Handle this better?
-                    return false;
-            }
 
             if (bantime == null && !PermissionUtil.Check(sender, "lolbans.ban.perm"))
                 return User.PermissionDenied(sender, "lolbans.ban.perm"); 

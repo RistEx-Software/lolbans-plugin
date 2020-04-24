@@ -53,25 +53,17 @@ public class AsyncChatListener
                 {
                     event.setCancelled(true);
                     Timestamp MuteTime = result.getTimestamp("Expiry");
-                    try 
-                    {
-                        event.getPlayer().sendMessage(Messages.Translate("Mute.YouAreMuted",
-                            new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) 
-                            {{
-                                put("player", event.getPlayer().getName());
-                                put("reason", result.getString("Reason"));
-                                put("arbiter", result.getString("ArbiterName"));
-                                put("muteid", result.getString("PunishID"));
-                                put("fullexpiry",MuteTime != null ? String.format("%s (%s)",TimeUtil.TimeString(MuteTime), TimeUtil.Expires(MuteTime)) : "Never");
-                                put("expiryduration", MuteTime != null ? TimeUtil.Expires(MuteTime) : "Never");
-                                put("dateexpiry", MuteTime != null ? TimeUtil.TimeString(MuteTime) : "Never");
-                            }}
-                        ));
-                    } 
-                    catch (InvalidConfigurationException e) 
-                    {
-                        e.printStackTrace();
-                    }
+
+                    event.getPlayer().sendMessage(Messages.Translate("Mute.YouAreMuted",
+                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) 
+                        {{
+                            put("player", event.getPlayer().getName());
+                            put("reason", result.getString("Reason"));
+                            put("arbiter", result.getString("ArbiterName"));
+                            put("punishid", result.getString("PunishID"));
+                            put("expiry", MuteTime != null ? MuteTime.toString() : "Never");
+                        }}
+                    ));
                 }
             }
         }

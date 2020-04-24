@@ -181,6 +181,19 @@ public class TimeUtil
         return sdf.format(ts);
     }
 
+    public static Timestamp ParseToTimestamp(String TimePeriod)
+    {
+        // Parse ban time.
+        if (!Messages.CompareMany(TimePeriod, new String[]{"*", "0"}))
+        {
+            Optional<Long> dur = TimeUtil.Duration(TimePeriod);
+            if (dur.isPresent())
+                return new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
+        }
+            
+        return null;
+    }
+
     public static long GetUnixTime()
     {
         return System.currentTimeMillis() / 1000L;

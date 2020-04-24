@@ -82,9 +82,8 @@ public class HistoryCommand extends RistExCommand
                         put("reason", result.getString("Reason"));
                         put("arbiter", result.getString("ArbiterName"));
                         put("type", GodForbidJava8HasUsableLambdaExpressionsSoICanAvoidDefiningSuperflouosFunctionsLikeThisOne(Type, ts));
-                        put("punishdate", TimeUtil.TimeString(result.getTimestamp("TimePunished")));
-                        put("expirydate", TimeUtil.TimeString(ts));
-                        put("expiryduration", TimeUtil.Expires(ts));
+                        put("date", TimeUtil.TimeString(result.getTimestamp("TimePunished")));
+                        put("expiry", ts.toString());
                         // TODO: Add more variables for people who want more info?
                     }}
                 ));
@@ -103,10 +102,7 @@ public class HistoryCommand extends RistExCommand
             for (Object str : page.GetPage(pageno))
                 Message += (String)str;
 
-            //if (sender instanceof Player)
-            //    ((Player)sender).sendRawMessage("{\"text\":\"" + Message + "\"}");
-            //else
-                sender.sendMessage(Message);
+            sender.sendMessage(Message);
 
             // Check if the paginator needs the page text or not.
             if (page.GetTotalPages() > 1)
@@ -182,6 +178,7 @@ public class HistoryCommand extends RistExCommand
             return this.HandleHistory(sender, command, label, args);
 
         // Handle the clear history
+        // TODO: Deprecate this, it's a duplicate command of /prunehistory
         if (Messages.CompareMany(command.getName(), new String[]{"clearhistory", "ch"}))
             return this.HandleClearHistory(sender, command, label, args);
             

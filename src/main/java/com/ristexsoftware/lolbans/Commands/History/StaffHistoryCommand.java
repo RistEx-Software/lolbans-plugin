@@ -105,8 +105,7 @@ public class StaffHistoryCommand extends RistExCommand
                         put("reason", result.getString("Reason"));
                         put("arbiter", result.getString("ArbiterName"));
                         put("type", GodForbidJava8HasUsableLambdaExpressionsSoICanAvoidDefiningSuperflouosFunctionsLikeThisOne(Type, ts));
-                        put("expirydate", TimeUtil.TimeString(ts));
-                        put("expiryduration", TimeUtil.Expires(ts));
+                        put("expiry", ts.toString());
                         // TODO: Add more variables for people who want more info?
                     }}
                 ));

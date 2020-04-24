@@ -59,27 +59,19 @@ public class FreezeCommand extends RistExCommand
                 return User.PlayerOnlyVariableMessage("Freeze.PlayerOffline", sender, PlayerName, true);
 
             User u = Main.USERS.get(target.getUniqueId());
-            String FrozenMessage = null;
-            String FrozenAnnouncement = null;
 
             Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
             {{
                 put("player", target.getName());
                 put("arbiter", sender.getName());
+                put("silent", Boolean.toString(silent));
             }};
-
-            if (u.IsFrozen())
-            {
-                FrozenMessage = Messages.Translate("Freeze.FrozenMessage", Variables);
-                FrozenAnnouncement = Messages.Translate(silent ? "Freeze.SilentFreezeAnnouncement" : "Freeze.FreezeAnnouncement", Variables);
-            }
-            else
-            {
-                FrozenMessage = Messages.Translate("Freeze.UnFrozenMessage", Variables);
-                FrozenAnnouncement = Messages.Translate(silent ? "Freeze.SilentUnfreezeAnnouncement" : "Freeze.UnfreezeAnnouncement", Variables);
-            }
-
+            
             u.SetFrozen(!u.IsFrozen());
+
+            String FrozenMessage = Messages.Translate(u.IsFrozen() ? "Freeze.FrozenMessage" : "Freeze.UnFrozenMessage", Variables);
+            String FrozenAnnouncement = Messages.Translate(u.IsFrozen() ? "Freeze.FreezeAnnouncement" : "Freeze.UnfreezeAnnouncement", Variables);
+            
             u.SendMessage(FrozenMessage);
 
             // Send them a box as well. This will disallow them from sending move events.

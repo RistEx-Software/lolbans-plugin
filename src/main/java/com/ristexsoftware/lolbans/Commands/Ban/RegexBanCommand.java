@@ -150,24 +150,7 @@ public class RegexBanCommand extends RistExCommandAsync
                 return false;
             }
             
-            Timestamp bantime = null;
-            // Parse ban time.
-            if (!args[1].trim().contentEquals("0") && !args[1].trim().contentEquals("*"))
-            {
-                Optional<Long> dur = TimeUtil.Duration(args[1]);
-                if (dur.isPresent())
-                bantime = new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
-                else
-                {
-                    sender.sendMessage(Messages.InvalidSyntax);
-                    return false;
-                }
-            }
-
-            // ItS gOtTa Be FiNaL thanks java.
-            final String FuckingJava2 = new String(bantime != null ? String.format("%s (%s)", TimeUtil.TimeString(bantime), TimeUtil.Expires(bantime)) : "Never");
-            final String FuckingJava3 = new String(bantime != null ? TimeUtil.Expires(bantime) : "Never");
-            final String FuckingJava4 = new String(bantime != null ? TimeUtil.TimeString(bantime) : "Never");
+            Timestamp bantime = TimeUtil.ParseToTimestamp(args[1]);
             
             if (SanityCheck(regex, sender))
                 return true;
@@ -206,10 +189,8 @@ public class RegexBanCommand extends RistExCommandAsync
                     put("regex", ThanksJava);
                     put("reason", reason);
                     put("arbiter", sender.getName());
-                    put("banid", banid);
-                    put("fullexpiry", FuckingJava2);
-                    put("expiryduration", FuckingJava3);
-                    put("dateexpiry", FuckingJava4);
+                    put("punishid", banid);
+                    put("expiry", bantime.toString());
                 }}
             );
 
@@ -221,8 +202,6 @@ public class RegexBanCommand extends RistExCommandAsync
 
                 p.sendMessage(IPBanAnnouncement);
             }
-
-            final Timestamp ThanksJavaAgain = bantime;
 
             // Kick players who match the ban
             for (Player player : Bukkit.getOnlinePlayers())
@@ -242,7 +221,7 @@ public class RegexBanCommand extends RistExCommandAsync
                     // there are multiple "KickPlayer" funcs but this one is for IPBans (hence why the IP is on the end)
                     // Once the func gets the inputs, it'll kick the player with a message specified in the config
                     // FIXME: Is this message personalized for each banned player to describe what is matched?
-                    Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayerBan(sender.getName(), player, banid, reason, ThanksJavaAgain), 1L);
+                    Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayerBan(sender.getName(), player, banid, reason, bantime), 1L);
                 }
                 // TODO: Global announcement
             }

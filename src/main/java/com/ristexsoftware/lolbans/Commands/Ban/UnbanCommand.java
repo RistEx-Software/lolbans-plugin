@@ -64,7 +64,6 @@ public class UnbanCommand extends RistExCommand
             // Preapre a statement
             // We need to get the latest banid first.
             Optional<Punishment> op = Punishment.FindPunishment(PunishmentType.PUNISH_BAN, target, false);
-
             if (!op.isPresent())
             {
                 sender.sendMessage("Congratulations!! You've found a bug!! Please report it to the lolbans developers to get it fixed! :D");
