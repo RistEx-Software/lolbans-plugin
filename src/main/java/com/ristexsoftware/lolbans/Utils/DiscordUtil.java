@@ -1,11 +1,17 @@
 package com.ristexsoftware.lolbans.Utils; // Zachery's package owo :spray:
 
+import java.security.InvalidKeyException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.TreeMap;
 
 import com.mrpowergamerbr.temmiewebhook.DiscordEmbed;
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage;
 import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
+import com.mrpowergamerbr.temmiewebhook.DiscordEmbed.DiscordEmbedBuilder;
+import com.mrpowergamerbr.temmiewebhook.DiscordMessage.DiscordMessageBuilder;
 import com.mrpowergamerbr.temmiewebhook.embed.FieldEmbed;
 import com.mrpowergamerbr.temmiewebhook.embed.FooterEmbed;
 import com.mrpowergamerbr.temmiewebhook.embed.ThumbnailEmbed;
@@ -14,229 +20,210 @@ import com.ristexsoftware.lolbans.Objects.Punishment;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Player;
 
 /*
-               _   ___      ___   _ 
-              | | | \ \ /\ / / | | |
-              | |_| |\ V  V /| |_| |
-               \__,_| \_/\_/  \__,_|
-                               ᵈᵃᵈᵈʸ
+			   _   ___      ___   _ 
+			  | | | \ \ /\ / / | | |
+			  | |_| |\ V  V /| |_| |
+			   \__,_| \_/\_/  \__,_|
+							   ᵈᵃᵈᵈʸ
 */
 
 public class DiscordUtil 
 {
-    public static String Webhook;
-    public static Boolean UseSimplifiedMessage;
-    
-    public static String SimpMessageBan;
-    public static String SimpMessageUnban;
-    public static String SimpMessageSilentBan;
-    public static String SimpMessageSilentUnban;
-    public static String SimpMessageMute;
-    public static String SimpMessageUnmute;
-    public static String SimpMessageSilentMute;
-    public static String SimpMessageSilentUnmute;
-    public static String SimpMessageKick;
-    public static String SimpMessageSilentKick;
-    public static String SimpMessageWarn;
-    public static String SimpMessageSilentWarn;
+		public Boolean UseSimplifiedMessage;
+		public String WebhookProfilePicture;
 
-    public static String WebhookProfilePicture;
-    public static String ReportWebhook;
+		private TemmieWebhook ModeratorWebhook;
+		private TemmieWebhook ReportWebhook;
+		private static DiscordUtil me = null;
 
-        //sender.getName().toString(), target.getName(), 
-        //((Entity) sender).getUniqueId().toString(), target.getUniqueId().toString(), reason, silent
+		public DiscordUtil(String ModeratorWebhook, String ReportWebhook)
+		{
+			// TODO: handle /reload better?
+			DiscordUtil.me = this;
+			this.reload(ModeratorWebhook, ReportWebhook);
+		}
 
-        public static void SendDiscord(String sender, String title, String target, String SenderUUID, String TargetUUID, String reason, String PunishID, Timestamp bantime, Boolean silent)
-        {
-            String st = silent ? " [Silent]" : "";
-            TemmieWebhook temmie = new TemmieWebhook(Webhook);
+		public static DiscordUtil GetDiscord() { return DiscordUtil.me; }
+		
+		public void reload(String ModeratorWebhook, String ReportWebhook)
+		{
+			this.ModeratorWebhook = new TemmieWebhook(ModeratorWebhook);
+			this.ReportWebhook = new TemmieWebhook(ReportWebhook);
+		}
 
-            // https://crafatar.com/renders/head/e296a7d7-7c25-4d90-894b-feba23665a98?overlay
-            String fuckingjava = "https://crafatar.com/renders/head/" + TargetUUID + "?overlay&default=MHF_Steve";        
-            String Color = PunishID.replaceAll("[^0-9]","");
-            DiscordEmbed de = DiscordEmbed.builder()
-                    .color(Integer.parseInt(Color))
-                    .title(sender + " " + title + " " + target + st) // We are creating a embed with this title...
-                    .description(reason) // with this description...
-                    // Maybe a link to the ban id if a website is configured?
-                    .footer(FooterEmbed.builder() // with a fancy footer...
-                            .text(target) // this footer will have the text "TemmieWebhook!"...
-                            .icon_url("https://crafatar.com/avatars/" + TargetUUID + "?overlay") // with this icon on the footer
-                    .build()) // and now we build the footer...
-                    .thumbnail(ThumbnailEmbed.builder() // with a fancy thumbnail...
-                            .url(fuckingjava) // with this thumbnail...
-                            //.height(64) // not too big because we don't want to flood the user chats with a huge image, right?
-                            .build()) // and now we build the thumbnail...
-                    //.url("https://github.com/MrPowerGamerBR/TemmieWebhook") // that, when clicked, goes to the TemmieWebhook repo...
-                    .fields(Arrays.asList( // with fields...
-                        FieldEmbed.builder()
-                        .name("PunishID")
-                        .value("#" + PunishID)
-                        .build(),
-                        FieldEmbed.builder()
-                        .name("Expires")
-                        .value(bantime != null ? TimeUtil.TimeString(bantime) : "Indefinite")
-                        .build()))
-                    .build(); // and finally, we build the embed
-                
-            DiscordMessage dm = DiscordMessage.builder()
-                    .username(sender) // We are creating a message with the username "LolBans"...
-                    .avatarUrl("https://crafatar.com/avatars/" + SenderUUID) // with this avatar...
-                    .embeds(Arrays.asList(de)) // with the our embed...
-                    .build(); // and now we build the message!
-                
-            temmie.sendMessage(dm);
-        }
+		// message.yml
+		// - Title
+		// - Expiry
 
-        public static void SendDiscord(String sender, String title, String target, String SenderUUID, String TargetUUID, String reason, String PunishID, Boolean silent)
-        {
-            String st = silent ? " [Silent]" : "";
-            TemmieWebhook temmie = new TemmieWebhook(Webhook);
+		// Variables must contain the following:
+		// - PlayerUUID  -- The UUID of the person being punished
+		// - ArbiterName -- The Name of the person who executes the command
+		// - ArbiterUUID -- The UUID of the person who executes the command
+		// - Reason      -- The primary text to make part of the embed.
+		// - FooterText  -- Text to show on the footer
+		// - Expiry      -- If present, will add the "expires" field
+		// - PunishID    -- If present, will add the "PunishID" field 
+		public void SendEmbed(String MessageNode, TreeMap<String, String> Variables) throws InvalidConfigurationException, InvalidKeyException
+		{
+			if (!Variables.containsKey("PlayerUUID") || !Variables.containsKey("ArbiterName") || !Variables.containsKey("ArbiterUUID") || !Variables.containsKey("FooterText") || !Variables.containsKey("Reason"))
+				throw new InvalidKeyException("Missing a required key for Discord Embeds.");
 
-            // https://crafatar.com/renders/head/e296a7d7-7c25-4d90-894b-feba23665a98?overlay
-            String fuckingjava = "https://crafatar.com/renders/head/" + TargetUUID + "?overlay&default=MHF_Steve";       
-            String Color = PunishID.replaceAll("[^0-9]",""); 
-            DiscordEmbed de = DiscordEmbed.builder()
-                    .color(Integer.parseInt(Color))
-                    .title(sender + " " + title + " " + target + st) // We are creating a embed with this title...
-                    .description(reason) // with this description...
-                    // Maybe a link to the ban id if a website is configured?
-                    .footer(FooterEmbed.builder() // with a fancy footer...
-                            .text(target) // this footer will have the text "TemmieWebhook!"...
-                            .icon_url("https://crafatar.com/avatars/" + TargetUUID + "?overlay") // with this icon on the footer
-                    .build()) // and now we build the footer...
-                    .thumbnail(ThumbnailEmbed.builder() // with a fancy thumbnail...
-                            .url(fuckingjava) // with this thumbnail...
-                            //.height(64) // not too big because we don't want to flood the user chats with a huge image, right?
-                            .build()) // and now we build the thumbnail...
-                    //.url("https://github.com/MrPowerGamerBR/TemmieWebhook") // that, when clicked, goes to the TemmieWebhook repo...
-                    .fields(Arrays.asList( // with fields...
-                        FieldEmbed.builder()
-                        .name("PunishID")
-                        .value("#" + PunishID)
-                        .build()))
-                    .build(); // and finally, we build the embed
-                
-            DiscordMessage dm = DiscordMessage.builder()
-                    .username(sender) // We are creating a message with the username "LolBans"...
-                    .avatarUrl("https://crafatar.com/avatars/" + SenderUUID) // with this avatar...
-                    .embeds(Arrays.asList(de)) // with the our embed...
-                    .build(); // and now we build the message!
-                
-            temmie.sendMessage(dm);
-        }
+			// Dynamically add the various fields we may need
+			List<FieldEmbed> Fields = new ArrayList<FieldEmbed>();
 
-        public static void SendDiscord(CommandSender sender, String title, OfflinePlayer target, String reason, String PunishID, Boolean silent)
-        {
-                DiscordUtil.SendDiscord(sender.getName().toString(), title, target.getName().toString(),
-                (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((OfflinePlayer)sender).getUniqueId().toString(),
-                target.getUniqueId().toString(), reason, PunishID, silent);
-        }
+			// TODO: Find a reasonable way to messages.yml-ify this?
+			if (Variables.containsKey("PunishID"))
+				Fields.add(FieldEmbed.builder().name("PunishID").value("#" + Variables.get("PunishID")).build());
+			if (Variables.containsKey("Expires"))
+				Fields.add(FieldEmbed.builder().name("Expires").value(Variables.get("Expires")).build());
 
-        public static void SendDiscord(CommandSender sender, String title, OfflinePlayer target, String reason, String PunishID, Timestamp expiry, Boolean silent)
-        {
-                DiscordUtil.SendDiscord(sender.getName().toString(), title, target.getName().toString(),
-                (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((OfflinePlayer)sender).getUniqueId().toString(),
-                target.getUniqueId().toString(), reason, PunishID, expiry, silent);
-        }
+			// Start a discord embed builder
+			DiscordEmbedBuilder build = DiscordEmbed.builder();
+			// Set the color based on the PunishID (if available)
+			if (Variables.containsKey("PunishID"))
+				build.color(Integer.parseInt(Variables.get("PunishID").replaceAll("[^0-9]", "")));
 
-        public static void SendDiscord(Punishment p, boolean silent)
-        {
-                String ExecutionerName = p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getName();
-                String ExecutionerUUID = p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getUniqueId().toString();
-                String action = null;
+			// Set the title
+			build.title(Messages.Translate(MessageNode, Variables));
+			// Set the description
+			build.description(Variables.get("Reason"));
+			// Set the fields from above
+			build.fields(Fields);
+			// Build the footer with the avatar
+			build.footer(FooterEmbed.builder().text(Variables.get("FooterText")).icon_url(Messages.Translate("Discord.AvatarPictures",
+				new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+				{{
+					put("PlayerUUID", Variables.get("PlayerUUID"));
+				}}
+			)).build());
 
-                switch(p.GetPunishmentType())
-                {
-                   case PUNISH_BAN: action = p.GetAppealed() ? "unbanned" : "banned"; break;
-                   case PUNISH_KICK: action = p.GetAppealed() ? "unkicked" : "kicked"; break;
-                   case PUNISH_MUTE: action = p.GetAppealed() ? "unmuted" : "muted"; break;
-                   case PUNISH_WARN: action = p.GetAppealed() ? "removed warning for" : "warned"; break;
-                   default: action = "did an unknown action to"; break;
-                }
-                
-                DiscordUtil.SendDiscord(ExecutionerName, action, p.GetPlayerName(), ExecutionerUUID, p.GetUUID().toString(), p.GetReason(), p.GetPunishmentID(), silent);
-        }
+			// Get the Avatar URL from the config. We provide the PlayerUUID and the ArbiterUUID
+			String AvatarURL = "";
+			if (!Variables.get("ArbiterUUID").equalsIgnoreCase("CONSOLE"))
+			{
+				AvatarURL = Messages.Translate("Discord.AvatarPictures",
+					new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) 
+					{{
+						put("PlayerUUID", Variables.get("ArbiterUUID"));
+					}});
+			}
+			else
+				AvatarURL = Messages.GetMessages().GetConfig().getString("Discord.ConsoleProfilePicture");
+
+			// Build an actual Discord message, set the avatar, and the embed.
+			
+			DiscordMessageBuilder dm = DiscordMessage.builder();
+			dm.username(Variables.get("ArbiterName"));
+			dm.avatarUrl(AvatarURL);
+			dm.embeds(Arrays.asList(build.build()));
+
+			// Send the message to discord.
+			this.ModeratorWebhook.sendMessage(dm.build());
+		}
+
+		public void SendDiscord(Punishment p, boolean silent) throws InvalidConfigurationException
+		{
+				String ExecutionerName = p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getName();
+				String ExecutionerUUID = p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getUniqueId().toString();
+				String action = null;
+
+				switch(p.GetPunishmentType())
+				{
+				   case PUNISH_BAN: action = "Discord.Embedded.BanTitle"; break;
+				   case PUNISH_KICK: action = "Discord.Embedded.KickTitle"; break;
+				   case PUNISH_MUTE: action = "Discord.Embedded.MuteTitle"; break;
+				   case PUNISH_WARN: action = "Discord.Embedded.WarnTitle"; break;
+				   default: action = "Discord.Embedded.UnknownTitle"; break;
+				}
+
+				try
+				{
+					this.SendEmbed(action, new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+						{{
+							put("PlayerName", p.GetPlayerName());
+							put("PlayerUUID", p.GetUUID().toString());
+							put("ArbiterName", ExecutionerName);
+							put("ArbiterUUID", ExecutionerUUID);
+							put("Reason", p.GetReason());
+							put("FooterText", p.GetPlayerName());
+							if (p.GetExpiry() != null)
+								put("Expiry", p.GetExpiry().toString());
+							put("PunishID", p.GetPunishmentID());
+							put("Applealed", Boolean.toString(p.GetAppealed()));
+						}}
+					);
+				}
+				catch (InvalidKeyException ex)
+				{
+					ex.printStackTrace();
+				}
+				
+				//this.SendDiscord(ExecutionerName, action, p.GetPlayerName(), ExecutionerUUID, p.GetUUID().toString(), p.GetReason(), p.GetPunishmentID(), silent);
+		}
 
 
-        public static void SendBanWave(String message, String ptbqa)
-        {
-                TemmieWebhook temmie = new TemmieWebhook(Webhook);
-                DiscordEmbed de = DiscordEmbed.builder()
-                        .title(message) // We are creating a embed with this title...
-                        .description("The following users are being banned! \n" + ptbqa)
-                        .color(255)
-                        // Maybe a link to the ban id if a website is configured?
-                        //.url("https://github.com/MrPowerGamerBR/TemmieWebhook") // that, when clicked, goes to the TemmieWebhook repo...
-                        //ntbq
+		public void SendBanWave(String message, String ptbqa)
+		{
+				DiscordEmbed de = DiscordEmbed.builder()
+						.title(message) // We are creating a embed with this title...
+						.description("The following users are being banned! \n" + ptbqa)
+						.color(255)
+						// Maybe a link to the ban id if a website is configured?
+						//.url("https://github.com/MrPowerGamerBR/TemmieWebhook") // that, when clicked, goes to the TemmieWebhook repo...
+						//ntbq
 
-                        .footer(FooterEmbed.builder() // with a fancy footer...
-                                .text("LolBans") // this footer will have the text "TemmieWebhook!"...
-                        .build()) // and now we build the footer...
-                        .build(); // and finally, we build the embed
-                        
-                        
-                DiscordMessage dm = DiscordMessage.builder()
-                .username("BanWave") // We are creating a message with the username "LolBans"...
-                .avatarUrl("https://crafatar.com/avatars/" + "f78a4d8d-d51b-4b39-98a3-230f2de0c670" + "?&overlay") // with this avatar
-                .embeds(Arrays.asList(de)) // with the our embed...
-                .build(); // and now we build the message!
+						.footer(FooterEmbed.builder() // with a fancy footer...
+								.text("LolBans") // this footer will have the text "TemmieWebhook!"...
+						.build()) // and now we build the footer...
+						.build(); // and finally, we build the embed
+						
+						
+				DiscordMessage dm = DiscordMessage.builder()
+				.username("BanWave") // We are creating a message with the username "LolBans"...
+				.avatarUrl(this.WebhookProfilePicture) // with this avatar
+				.embeds(Arrays.asList(de)) // with the our embed...
+				.build(); // and now we build the message!
 
-                temmie.sendMessage(dm);
-        }
+				this.ModeratorWebhook.sendMessage(dm);
+		}
 
-        public static void SendBanWaveAdd(String sender, String target, String TargetUUID, String SenderUUID, String reason, String PunishID)
-        {
-                TemmieWebhook temmie = new TemmieWebhook(Webhook);
-                String fuckingjava = "https://crafatar.com/renders/head/" + TargetUUID + "?overlay";
-                String Color = PunishID.replaceAll("[^0-9]","");
+		public void SendBanWaveAdd(CommandSender sender, OfflinePlayer target, String reason, String PunishID, Timestamp Expiry)
+		{
+			try
+			{
+				this.SendEmbed("Discord.Embedded.BanwaveAdd", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+					{{
+						put("PlayerName", target.getName());
+						put("PlayerUUID", target.getUniqueId().toString());
+						put("ArbiterName", sender.getName());
+						put("ArbiterUUID", sender instanceof Player ? ((Player)sender).getUniqueId().toString() : "CONSOLE");
+						put("Reason", reason);
+						put("FooterText", target.getName());
+						if (Expiry != null)
+							put("Expiry", Expiry.toString());
+						put("PunishID", PunishID);
+						put("Applealed", Boolean.toString(false));
+					}}
+				);
+			}
+			catch (InvalidKeyException | InvalidConfigurationException ex)
+			{
+				ex.printStackTrace();
+			}
+		}
 
-                DiscordEmbed de = DiscordEmbed.builder()
-                        .title(sender + " has added " + target + " to the ban wave") // We are creating a embed with this title...
-                        .color(Integer.parseInt(Color))
-                        // Maybe a link to the ban id if a website is configured?
-                        //.url("https://github.com/MrPowerGamerBR/TemmieWebhook") // that, when clicked, goes to the TemmieWebhook repo...
-                        .footer(FooterEmbed.builder() // with a fancy footer...
-                                .text(target) // this footer will have the text "TemmieWebhook!"...
-                                .icon_url("https://crafatar.com/avatars/" + TargetUUID + "?overlay") // with this icon on the footer
-                        .build()) // and now we build the footer...
-                        .description(reason) // with this description...
-                        // Maybe a link to the ban id if a website is configured?
-                        .thumbnail(ThumbnailEmbed.builder() // with a fancy thumbnail...
-                                .url(fuckingjava) // with this thumbnail...
-                                //.height(64) // not too big because we don't want to flood the user chats with a huge image, right?
-                                .build()) // and now we build the thumbnail...
-                        //.url("https://github.com/MrPowerGamerBR/TemmieWebhook") // that, when clicked, goes to the TemmieWebhook repo...
-                        .fields(Arrays.asList( // with fields...
-                                FieldEmbed.builder()
-                                .name("PunishID")
-                                .value("#" + PunishID)
-                                .build(),
-                                FieldEmbed.builder()
-                                .name("Expires")
-                                .value("Indefinite")
-                                .build() ))
-                        .build(); // and finally, we build the embed
-                        
-                DiscordMessage dm = DiscordMessage.builder()
-                        .username(sender) // We are creating a message with the username "LolBans"...
-                        .avatarUrl("https://crafatar.com/avatars/" + SenderUUID) // with this avatar...
-                        .embeds(Arrays.asList(de)) // with the our embed...
-                        .build(); // and now we build the message!
-
-                temmie.sendMessage(dm);
-        }
-
-        public static void SendFormatted(String message)
-        {
-                TemmieWebhook temmie = new TemmieWebhook(Webhook);
-                DiscordMessage dm = DiscordMessage.builder()
-                        .username("LolBans") // We are creating a message with the username "Temmie"...
-                        .content(message) // with this content...
-                        .avatarUrl(DiscordUtil.WebhookProfilePicture) // with this avatar...
-                        .build(); // and now we build the message!
-                        
-                temmie.sendMessage(dm);
-        }
+		public void SendFormatted(String message)
+		{
+				DiscordMessage dm = DiscordMessage.builder()
+						.username("LolBans") // We are creating a message with the username "Temmie"...
+						.content(message) // with this content...
+						.avatarUrl(this.WebhookProfilePicture) // with this avatar...
+						.build(); // and now we build the message!
+						
+				this.ModeratorWebhook.sendMessage(dm);
+		}
 }

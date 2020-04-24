@@ -125,7 +125,7 @@ public class ReportCommand extends RistExCommand
                     p.sendMessage(AnnounceMessage);
             }
 
-            DiscordUtil.SendDiscord(sender, "reported", u, reason, ReportID, false);
+            //DiscordUtil.SendDiscord(sender, "reported", u, reason, ReportID, false);
 
             // TODO: Discord notifs, email notifs, whatever else notifs?
         }

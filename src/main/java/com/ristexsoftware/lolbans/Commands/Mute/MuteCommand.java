@@ -1,14 +1,11 @@
 package com.ristexsoftware.lolbans.Commands.Mute;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
-import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
@@ -20,15 +17,11 @@ import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
 import java.sql.*;
-import java.lang.Long;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.Map;
 
 public class MuteCommand extends RistExCommand
 {
-    private static Main self = Main.getPlugin(Main.class);
-
     @Override
     public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
     {
@@ -91,10 +84,10 @@ public class MuteCommand extends RistExCommand
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Mute.MuteAnnouncement", Variables));
 
             // Send to Discord. (New method)
-            if (DiscordUtil.UseSimplifiedMessage)
-                DiscordUtil.SendFormatted(Messages.Translate("Discord.SimpMessageMute", Variables));
+            if (DiscordUtil.GetDiscord().UseSimplifiedMessage)
+                DiscordUtil.GetDiscord().SendFormatted(Messages.Translate("Discord.SimpMessageMute", Variables));
             else
-                DiscordUtil.SendDiscord(punish, silent);
+                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (Exception e)
         {

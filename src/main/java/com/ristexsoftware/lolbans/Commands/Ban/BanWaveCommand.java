@@ -10,10 +10,12 @@ import org.bukkit.OfflinePlayer;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Runnables.BanWaveRunnable;
 import com.ristexsoftware.lolbans.Utils.PunishID;
+import com.ristexsoftware.lolbans.Utils.TimeUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Utils.Messages;
+import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 
@@ -36,12 +38,11 @@ public class BanWaveCommand extends RistExCommand
             return false; // Show syntax.
         }
 
-        // Syntax: /banwave add <playername> <reason>
+        // Syntax: /banwave add <playername> <Time|*> <reason>
         try 
         {
-            // TODO: Fix this too.
-            // TODO: Fix expiries.
-            String reason = Messages.ConcatenateRest(args, 2).trim();
+            Timestamp Expiry = TimeUtil.ParseToTimestamp(args[1]);
+            String reason = Messages.ConcatenateRest(args, 3).trim();
             OfflinePlayer target = User.FindPlayerByAny(args[0]);
 
             if (target == null)
@@ -53,9 +54,8 @@ public class BanWaveCommand extends RistExCommand
             // Get the latest ID of the banned players to generate a PunishID form it.
             String banid = PunishID.GenerateID(DatabaseUtil.GenID("BanWave"));
                 
-            // TODO: Cleanup this query...
             int i = 1;
-            PreparedStatement pst = self.connection.prepareStatement("INSERT INTO BanWave (UUID, PlayerName, IPAddress, Reason, ArbiterName, ArbiterUUID, PunishID) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement pst = self.connection.prepareStatement("INSERT INTO BanWave (UUID, PlayerName, IPAddress, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
             pst.setString(i++, target.getUniqueId().toString());
             pst.setString(i++, target.getName());
             pst.setString(i++, target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN");
@@ -63,6 +63,7 @@ public class BanWaveCommand extends RistExCommand
             pst.setString(i++, sender.getName());
             pst.setString(i++, sender instanceof ConsoleCommandSender ? "CONSOLE" : ((Player)sender).getUniqueId().toString());
             pst.setString(i++, banid);
+            pst.setTimestamp(i++, Expiry);
 
             // Commit to the database.
             DatabaseUtil.ExecuteUpdate(pst);
@@ -77,13 +78,15 @@ public class BanWaveCommand extends RistExCommand
                     put("reason", reason);
                     put("arbiter", sender.getName());
                     put("punishid", banid);
+                    put("expiry", Expiry.toString());
                     put("silent", Boolean.toString(silent));
                 }}
             ));
 
+            // TODO: BroadcastUtil.BroadcastEvent(silent, );
+
             // Send to Discord.
-            // TODO: Uhhh this is different now?
-            DiscordUtil.SendBanWaveAdd(sender.getName(), target.getName(), target.getUniqueId().toString(), "f78a4d8d-d51b-4b39-98a3-230f2de0c670", reason, banid);
+            DiscordUtil.GetDiscord().SendBanWaveAdd(sender, target, reason, banid, Expiry);
             return true;
         }
         catch (SQLException | InvalidConfigurationException e)

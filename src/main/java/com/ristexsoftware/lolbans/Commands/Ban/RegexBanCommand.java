@@ -213,17 +213,17 @@ public class RegexBanCommand extends RistExCommandAsync
             
             // SendIP
             // Send to Discord. (New method)
-            if (DiscordUtil.UseSimplifiedMessage == true)
+            if (DiscordUtil.GetDiscord().UseSimplifiedMessage == true)
             {
                 // this is broken still, don't use it
                 //DiscordUtil.SendFormatted(SimplifiedMessage);
             }
             else
             {
-                DiscordUtil.SendDiscord(sender.getName().toString(), "Regex Banned", regex.pattern(),
-                        // if they're the console, use a hard-defined UUID instead of the player's UUID.
-                        (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((Entity) sender).getUniqueId().toString(), 
-                        regex.pattern(), reason, banid, bantime, false);
+                // DiscordUtil.SendDiscord(sender.getName().toString(), "Regex Banned", regex.pattern(),
+                //         // if they're the console, use a hard-defined UUID instead of the player's UUID.
+                //         (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((Entity) sender).getUniqueId().toString(), 
+                //         regex.pattern(), reason, banid, bantime, false);
             }
 
             return true;

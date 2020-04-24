@@ -153,7 +153,6 @@ public final class Main extends JavaPlugin
         this.getCommand("ipban").setExecutor(new IPBanCommand());
         this.getCommand("unban").setExecutor(new UnbanCommand());
         this.getCommand("history").setExecutor(new HistoryCommand());
-        this.getCommand("clearhistory").setExecutor(new HistoryCommand());
         this.getCommand("banwave").setExecutor(new BanWaveCommand());
         this.getCommand("warn").setExecutor(new WarnCommand());
         this.getCommand("accept").setExecutor(new AcceptCommand());

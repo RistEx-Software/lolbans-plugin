@@ -4,9 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
@@ -22,8 +20,6 @@ import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
 import java.sql.*;
-import java.lang.Long;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.Map;
 
@@ -98,10 +94,10 @@ public class BanCommand extends RistExCommandAsync
             sender.sendMessage(ChatColor.GRAY + "Done! " + ChatColor.RED + t.Finish() + "ms");
 
             // Send to Discord. (New method)
-            if (DiscordUtil.UseSimplifiedMessage == true)
-                DiscordUtil.SendFormatted(Messages.Translate("Discord.SimpMessageBan", Variables));
+            if (DiscordUtil.GetDiscord().UseSimplifiedMessage == true)
+                DiscordUtil.GetDiscord().SendFormatted(Messages.Translate("Discord.SimpMessageBan", Variables));
             else
-                DiscordUtil.SendDiscord(punish, silent);
+                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (Exception e)
         {

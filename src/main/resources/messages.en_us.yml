@@ -41,17 +41,29 @@ UserRequired: "{PREFIX}&cYou have to be a user to this command."
 NoPermission: "{PREFIX}&cYou do not have permission to use this command!"
 
 Discord:
-  SimpMessageBan: ":hammer: **{ARBITER}** banned **{PLAYER}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
-  SimpMessageUnban: ":hammer: **{ARBITER}** un-banned **{PLAYER}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
-  SimpMessageMute: ":hammer: **{ARBITER}** muted **{PLAYER}** for **{REASON}** [#*{PUNISHID}*]"
-  SimpMessageUnmute: ":hammer: **{ARBITER}** un-muted **{PLAYER}** for **{REASON}** [#*{PUNISHID}*]"
-  SimpMessageSilentMute: ":hammer: **{ARBITER}** muted **{PLAYER}** for **{REASON}** *[SILENT]* [#*{PUNISHID}*]"
-  SimpMessageSilentUnmute: ":hammer: **{ARBITER}** un-muted **{PLAYER}** for **{REASON}** *[SILENT]* [#*{PUNISHID}*]"
-  SimpMessageKick: ":hammer: **{ARBITER}** kicked **{PLAYER}** for **{REASON}** [#*{PUNISHID}*]"
-  SimpMessageSilentKick: ":hammer: **{ARBITER}** kicked **{PLAYER}** for **{REASON}** *[SILENT]* [#*{PUNISHID}*]"
-  SimpMessageWarn: ":hammer: **{ARBITER}** warned **{PLAYER}** for **{REASON}** [#*{PUNISHID}*]"
-  SimpMessageSilentWarn: ":hammer: **{ARBITER}** warned **{PLAYER}** for **{REASON}** *[SILENT]* [#*{PUNISHID}*]"
-
+  # The large picture shown on the right side of the embed (Can be full body render, just the player head, etc.)
+  ThumbnailPictures: "https://crafatar.com/renders/head/{PLAYERUUID}?overlay&default=MHF_Steve"
+  # The picture shown in the footer of the embed
+  AvatarPictures: "https://crafatar.com/renders/head/{PLAYERUUID}?overlay&default=MHF_Steve"
+  # Profile picture to set for the CONSOLE user
+  ConsoleProfilePicture: "https://crafatar.com/renders/head/f78a4d8d-d51b-4b39-98a3-230f2de0c670?overlay&default=MHF_Steve"
+  # Simple message style is just lines of text sent as a messgage instead of an embed.
+  Simple:
+    MessageBan: ":hammer: **{ARBITER}** banned **{PLAYER}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    MessageUnban: ":hammer: **{ARBITER}** un-banned **{PLAYER}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    MessageMute: ":hammer: **{ARBITER}** muted **{PLAYER}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    MessageUnmute: ":hammer: **{ARBITER}** un-muted **{PLAYER}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    MessageKick: ":boot: **{ARBITER}** kicked **{PLAYER}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    MessageWarn: ":hammer: **{ARBITER}** warned **{PLAYER}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+  # Embedded discord messages.
+  Embedded:
+    BanTitle: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}banned {PLAYERNAME}"
+    KickTitle: "{ARBITERNAME} kicked {PLAYERNAME}"
+    MuteTitle: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}muted {PLAYERNAME}"
+    WarnTitle: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}warned {PLAYERNAME}"
+    UnknownTitle: "{ARBITERNAME} did an unknown action to {PLAYERNAME}"
+    BanwaveAdd: "{ARBITERNAME} added {PLAYERNAME} to the next ban wave."
+    
 Link:
   LinkedAccountMessage: "&bYour Account Link Confirmation Code is &f{LINKID}"
 

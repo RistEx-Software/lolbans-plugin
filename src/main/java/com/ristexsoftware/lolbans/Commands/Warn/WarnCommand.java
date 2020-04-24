@@ -1,6 +1,5 @@
 package com.ristexsoftware.lolbans.Commands.Warn;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -24,8 +23,6 @@ import java.util.Map;
 
 public class WarnCommand extends RistExCommand
 {
-    private static Main self = Main.getPlugin(Main.class);
-
     @Override
     public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
     {
@@ -90,10 +87,10 @@ public class WarnCommand extends RistExCommand
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Warn.WarnAnnouncment", Variables));
 
             // Send to Discord. (New method)
-            if (DiscordUtil.UseSimplifiedMessage == true)
-                DiscordUtil.SendFormatted(Messages.Translate("Discord.SimpMessageWarn", Variables));
+            if (DiscordUtil.GetDiscord().UseSimplifiedMessage == true)
+                DiscordUtil.GetDiscord().SendFormatted(Messages.Translate("Discord.SimpMessageWarn", Variables));
             else
-                DiscordUtil.SendDiscord(punish, silent);
+                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (SQLException | InvalidConfigurationException e)
         {

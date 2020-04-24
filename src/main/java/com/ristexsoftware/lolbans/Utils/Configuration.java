@@ -41,13 +41,8 @@ public class Configuration
         Configuration.QueryUpdateLong = config.getLong("database.QueryUpdate");
 
         // Discord
-        DiscordUtil.Webhook = config.getString("Discord.Webhook");
-        DiscordUtil.UseSimplifiedMessage = config.getBoolean("Discord.UseSimplifiedMessage");
-/*         DiscordUtil.SimplifiedMessage = config.getString("Discord.SimplifiedMessage");
-        DiscordUtil.SimplifiedMessageUnban = config.getString("Discord.SimplifiedMessageUnban");
-        DiscordUtil.SimplifiedMessageSilent = config.getString("Discord.SimplifiedMessageSilent");
-        DiscordUtil.SimplifiedMessageSilentUnban = config.getString("Discord.SimplifiedMessageUnbanSilent"); */
-        DiscordUtil.WebhookProfilePicture = config.getString("Discord.WebhookProfilePicture");
-        DiscordUtil.ReportWebhook = config.getString("Discord.ReportWebhook");
+        DiscordUtil du = new DiscordUtil(config.getString("Discord.Webhook"), config.getString("Discord.ReportWebhook"));
+        du.UseSimplifiedMessage = config.getBoolean("Discord.UseSimplifiedMessage");
+        du.WebhookProfilePicture = config.getString("Discord.WebhookProfilePicture");
     }
 }

@@ -20,7 +20,6 @@ import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 
 import java.sql.*;
-import java.lang.Long;
 import java.util.Optional;
 import java.util.TreeMap;
 
@@ -197,7 +196,7 @@ public class IPBanCommand extends RistExCommandAsync
             
             // SendIP
             // Send to Discord. (New method)
-            if (DiscordUtil.UseSimplifiedMessage == true)
+            if (DiscordUtil.GetDiscord().UseSimplifiedMessage == true)
             {
                 // this is broken still, don't use it
                 // TODO: send this.
@@ -205,10 +204,10 @@ public class IPBanCommand extends RistExCommandAsync
             }
             else
             {
-                DiscordUtil.SendDiscord(sender.getName().toString(), "IPBanned", thingy.toString(),
-                        // if they're the console, use a hard-defined UUID instead of the player's UUID.
-                        (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((Entity) sender).getUniqueId().toString(), 
-                        thingy.toString(), reason, banid, bantime, silent);
+                // DiscordUtil.SendDiscord(sender.getName().toString(), "IPBanned", thingy.toString(),
+                //         // if they're the console, use a hard-defined UUID instead of the player's UUID.
+                //         (sender instanceof ConsoleCommandSender) ? "f78a4d8d-d51b-4b39-98a3-230f2de0c670" : ((Entity) sender).getUniqueId().toString(), 
+                //         thingy.toString(), reason, banid, bantime, silent);
             }
 
             return true;

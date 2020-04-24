@@ -16,7 +16,6 @@ import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
-import com.ristexsoftware.lolbans.Utils.TimeUtil;
 
 public class AsyncChatListener 
 {

@@ -1,13 +1,10 @@
 package com.ristexsoftware.lolbans.Commands.Ban;
 
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.entity.Player;
 
-import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.Punishment;
@@ -22,8 +19,6 @@ import java.util.TreeMap;
 
 public class UnbanCommand extends RistExCommand
 {
-    private static Main self = Main.getPlugin(Main.class);
-
     @Override
     public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
     {
@@ -89,10 +84,10 @@ public class UnbanCommand extends RistExCommand
             
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Ban.UnbanAnnouncment", Variables));
 
-            if (DiscordUtil.UseSimplifiedMessage == true)
-                DiscordUtil.SendFormatted(Messages.Translate("Discord.SimpMessageUnban", Variables));
+            if (DiscordUtil.GetDiscord().UseSimplifiedMessage == true)
+                DiscordUtil.GetDiscord().SendFormatted(Messages.Translate("Discord.SimpMessageUnban", Variables));
             else
-                DiscordUtil.SendDiscord(punish, silent);
+                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (InvalidConfigurationException e)
         {

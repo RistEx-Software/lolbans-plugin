@@ -37,6 +37,7 @@ Minimum Viable Product (MVP) / Feature Freeze:
  - [Feature] REST api for website.
  - [Bug] The entirety of PruneHistoryCommand.java
  - [Bug] Discord Messages need to be announced for all actions
+    `- [Feature] DiscordUtil should Just Work™️ and figure out simple or embed message formats.
  - TESTING TESTING TESTING TESTING TESTING!!! - everyone!
 
 ##########################################

@@ -70,7 +70,7 @@ public class BanWaveRunnable extends BukkitRunnable
             // just announcing the banned players
             String nameslist = String.join(", ", ptbqr.getString("PlayerNames").split(","));
             // Java is stupid, comand sender doesn't exist.
-            DiscordUtil.SendBanWave("A ban wave was executed.", nameslist);
+            DiscordUtil.GetDiscord().SendBanWave("A ban wave was executed.", nameslist);
             // Iterate the banned users, move them to be banned tables
             ResultSet PlayersToBan = PlayersToBanQuery.executeQuery();
             while (PlayersToBan.next())

@@ -79,10 +79,10 @@ public class KickCommand extends RistExCommandAsync
                 
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Kick.KickAnnouncement", Variables));
 
-            if (DiscordUtil.UseSimplifiedMessage == true)
-                DiscordUtil.SendFormatted(Messages.Translate(silent ? "Discord.SimpMessageSilentKick" : "Discord.SimpMessageKick", Variables));
+            if (DiscordUtil.GetDiscord().UseSimplifiedMessage == true)
+                DiscordUtil.GetDiscord().SendFormatted(Messages.Translate(silent ? "Discord.SimpMessageSilentKick" : "Discord.SimpMessageKick", Variables));
             else
-                DiscordUtil.SendDiscord(punish, silent);
+                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (SQLException | InvalidConfigurationException e)
         {

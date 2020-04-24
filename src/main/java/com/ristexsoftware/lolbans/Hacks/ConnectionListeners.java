@@ -312,9 +312,9 @@ public class ConnectionListeners implements Listener
                 }
 
                 // TODO: Send to discord?
-                if (DiscordUtil.UseSimplifiedMessage)
+                if (DiscordUtil.GetDiscord().UseSimplifiedMessage)
                 {
-                    DiscordUtil.SendFormatted(Messages.Translate("Discord.KickedAltAccount", 
+                    DiscordUtil.GetDiscord().SendFormatted(Messages.Translate("Discord.KickedAltAccount", 
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                         {{
                             put("", "");

@@ -1,6 +1,5 @@
 package com.ristexsoftware.lolbans.Commands.Mute;
 
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -86,10 +85,10 @@ public class UnmuteCommand extends RistExCommand
 
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Mute.UnmuteAnnouncment", Variables));
 
-            if (DiscordUtil.UseSimplifiedMessage == true)
-                DiscordUtil.SendFormatted(Messages.Translate("Discord.SimpMessageUnmute", Variables));
+            if (DiscordUtil.GetDiscord().UseSimplifiedMessage == true)
+                DiscordUtil.GetDiscord().SendFormatted(Messages.Translate("Discord.SimpMessageUnmute", Variables));
             else
-                DiscordUtil.SendDiscord(punish, silent);
+                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (InvalidConfigurationException e)
         {
