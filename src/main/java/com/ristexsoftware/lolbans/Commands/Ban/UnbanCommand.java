@@ -8,6 +8,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
@@ -86,17 +87,7 @@ public class UnbanCommand extends RistExCommand
                 put("silent", Boolean.toString(silent));
             }};
             
-            String AnnounceMessage = Messages.Translate("Ban.UnbanAnnouncment", Variables);
-
-            // Log to console.
-            self.getLogger().info(AnnounceMessage);
-
-            // Post that to the database.
-            for (Player p : Bukkit.getOnlinePlayers())
-            {
-                if (!silent && p.hasPermission("lolbans.alerts"))
-                    p.sendMessage(AnnounceMessage);
-            }
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Ban.UnbanAnnouncment", Variables));
 
             if (DiscordUtil.UseSimplifiedMessage == true)
                 DiscordUtil.SendFormatted(Messages.Translate("Discord.SimpMessageUnban", Variables));

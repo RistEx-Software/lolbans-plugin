@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
 import com.ristexsoftware.lolbans.Objects.Punishment;
@@ -87,22 +88,11 @@ public class MuteCommand extends RistExCommand
             if (target.isOnline())
                 ((Player)target).sendMessage(Messages.Translate("Mute.YouWereMuted", Variables));
 
-            // Format our messages.
-            String MuteAnnouncement = Messages.Translate("Mute.MuteAnnouncement", Variables);
-
-            // Send it to the console.
-            self.getLogger().info(MuteAnnouncement);
-        
-            // Send messages to all players (if not silent) or only to admins (if silent)
-            for (Player p : Bukkit.getOnlinePlayers())
-            {
-                if (!silent && (p.hasPermission("lolbans.alerts") || p.isOp()))
-                    p.sendMessage(MuteAnnouncement);
-            }
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Mute.MuteAnnouncement", Variables));
 
             // Send to Discord. (New method)
             if (DiscordUtil.UseSimplifiedMessage)
-                DiscordUtil.SendFormatted(Messages.Translate(silent ? "Discord.SimpMessageSilentMute" : "Discord.SimpMessageMute", Variables));
+                DiscordUtil.SendFormatted(Messages.Translate("Discord.SimpMessageMute", Variables));
             else
                 DiscordUtil.SendDiscord(punish, silent);
         }

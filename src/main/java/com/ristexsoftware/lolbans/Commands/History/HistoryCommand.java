@@ -38,7 +38,23 @@ public class HistoryCommand extends RistExCommand
             return Type.DisplayName();
     }
 
-    private boolean HandleHistory(CommandSender sender, Command command, String label, String[] args)
+    @Override
+    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    {
+        try 
+        {
+            sender.sendMessage(Messages.InvalidSyntax);
+            sender.sendMessage(Messages.Translate("Syntax.History", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+        }
+        catch (InvalidConfigurationException e)
+        {
+            e.printStackTrace();
+            sender.sendMessage(Messages.ServerError);
+        }
+    }
+
+    @Override
+    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.history"))
             return User.PermissionDenied(sender, "lolbans.history");
@@ -122,67 +138,5 @@ public class HistoryCommand extends RistExCommand
             sender.sendMessage(Messages.ServerError);
         }
         return true;
-    }
-    
-    private boolean HandleClearHistory(CommandSender sender, Command command, String label, String[] args)
-    {
-        if (!PermissionUtil.Check(sender, "lolbans.clearhistory"))
-            return User.PermissionDenied(sender, "lolbans.clearhistory");
-
-        if (args.length < 1)
-            return false;
-            
-        try 
-        {
-            OfflinePlayer target = User.FindPlayerByAny(args[0]);
-
-            if (target == null)
-                return User.NoSuchPlayer(sender, args[0], true);
-
-            // Also unban the user (as they no longer have any history)
-            PreparedStatement pst2 = self.connection.prepareStatement("DELETE FROM Punishments WHERE UUID = ? AND AppealStaff != NULL AND WarningAck != NULL");
-            pst2.setString(1, target.getUniqueId().toString());
-            DatabaseUtil.ExecuteUpdate(pst2);
-
-            // Send response.
-            User.PlayerOnlyVariableMessage("History.ClearedHistory", sender, target.getName(), false);
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-            sender.sendMessage(Messages.ServerError);
-        }
-        return true;
-    }
-
-    @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
-    {
-        try 
-        {
-            sender.sendMessage(Messages.InvalidSyntax);
-            sender.sendMessage(Messages.Translate("Syntax.History", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-        }
-        catch (InvalidConfigurationException e)
-        {
-            e.printStackTrace();
-            sender.sendMessage(Messages.ServerError);
-        }
-    }
-
-    @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
-    {
-        // Handle the History command
-        if (Messages.CompareMany(command.getName(), new String[]{"history", "h"}))
-            return this.HandleHistory(sender, command, label, args);
-
-        // Handle the clear history
-        // TODO: Deprecate this, it's a duplicate command of /prunehistory
-        if (Messages.CompareMany(command.getName(), new String[]{"clearhistory", "ch"}))
-            return this.HandleClearHistory(sender, command, label, args);
-            
-        // Invalid command.
-        return false;
     }
 }

@@ -33,8 +33,6 @@ permissions:
     description: Able to unban users
   lolbans.history:
     description: Able to use/view history of bans
-  lolbans.clearhistory:
-    description: Able to clear history
   lolbans.history.prune:
     description: Able to prune history
   lolbans.staffhistory:
@@ -100,10 +98,6 @@ commands:
     description: Get history of users punishments
     aliases: [h]
     permission: lolbans.history
-  clearhistory:
-    description: Clear history of a player
-    aliases: [ch]
-    permission: lolbans.clearhistory
   banwave:
     description: add user to the banwave
     permission: lolbans.banwave

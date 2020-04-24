@@ -10,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
+import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 
@@ -19,8 +20,6 @@ import java.util.Map;
 
 public class FreezeCommand extends RistExCommand
 {
-    private static Main self = Main.getPlugin(Main.class);
-
     @Override
     public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
     {
@@ -69,24 +68,14 @@ public class FreezeCommand extends RistExCommand
             
             u.SetFrozen(!u.IsFrozen());
 
-            String FrozenMessage = Messages.Translate(u.IsFrozen() ? "Freeze.FrozenMessage" : "Freeze.UnFrozenMessage", Variables);
-            String FrozenAnnouncement = Messages.Translate(u.IsFrozen() ? "Freeze.FreezeAnnouncement" : "Freeze.UnfreezeAnnouncement", Variables);
-            
-            u.SendMessage(FrozenMessage);
+            u.SendMessage(Messages.Translate(u.IsFrozen() ? "Freeze.FrozenMessage" : "Freeze.UnFrozenMessage", Variables));
 
             // Send them a box as well. This will disallow them from sending move events.
             // However, client-side enforcement is not guaranteed so we also enforce the
             // same thing using the MovementListener, this just helps stop rubberbanding.
             u.SpawnBox(true, null);
 
-            self.getLogger().info(FrozenAnnouncement);
-
-            // Send the message to all online players.
-            for (Player p : Bukkit.getOnlinePlayers())
-            {
-                if (silent && (!p.hasPermission("lolbans.alerts") && !p.isOp() && p == target))
-                    p.sendMessage(FrozenAnnouncement);
-            }
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate(u.IsFrozen() ? "Freeze.FreezeAnnouncement" : "Freeze.UnfreezeAnnouncement", Variables));
         }
         catch (InvalidConfigurationException e)
         {

@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 
+import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
@@ -80,15 +81,10 @@ public class UnmuteCommand extends RistExCommand
                 put("silent", Boolean.toString(silent));
             }};
 
-            // Post that to the database.
-            for (Player p : Bukkit.getOnlinePlayers())
-            {
-                if (!silent && (p.hasPermission("lolbans.alerts")) && !p.equals(target))
-                    p.sendMessage(Messages.Translate("Mute.UnmuteAnnouncment", Variables));
-            }
-
             if (target.isOnline())
                 ((Player)target).sendMessage(Messages.Translate("Mute.YouWereUnMuted", Variables));
+
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Mute.UnmuteAnnouncment", Variables));
 
             if (DiscordUtil.UseSimplifiedMessage == true)
                 DiscordUtil.SendFormatted(Messages.Translate("Discord.SimpMessageUnmute", Variables));

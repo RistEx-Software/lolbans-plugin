@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.IPBanUtil;
 import com.ristexsoftware.lolbans.Utils.PunishID;
+import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
@@ -130,16 +131,16 @@ public class RegexBanCommand extends RistExCommandAsync
         if (args.length < 3 || args == null)
             return false;
 
-        // /regexban <regex> <time> <Reason here unlimited length>
-        // FIXME: How do we handle the <regex> if there's spaces in the regex?
-        // Should spaces even be allowed? I don't think anything allows spaces...
+        // /regexban [-s] <regex> <time> <Reason here unlimited length>
         try
         {
-            String reason = Messages.ConcatenateRest(args, 2);
+            boolean silent = args.length > 3 ? args[0].equalsIgnoreCase("-s") : false;
+            String reason = Messages.ConcatenateRest(args, silent ? 3 : 2);
+            Timestamp bantime = TimeUtil.ParseToTimestamp(args[silent ? 2 : 1]);
             Pattern regex = null;
             try 
             {
-                regex = Pattern.compile(args[0]);
+                regex = Pattern.compile(args[silent ? 1 : 0]);
             }
             catch (PatternSyntaxException ex)
             {
@@ -147,8 +148,6 @@ public class RegexBanCommand extends RistExCommandAsync
                 sender.sendMessage(Messages.InvalidSyntax);
                 return false;
             }
-            
-            Timestamp bantime = TimeUtil.ParseToTimestamp(args[1]);
             
             if (SanityCheck(regex, sender))
                 return true;
@@ -175,13 +174,12 @@ public class RegexBanCommand extends RistExCommandAsync
             {
                 self.getLogger().severe("Cannot get ID for regex " + regex.pattern() + " punish id " + banid + ", this will not allow the regex to be enforced!");
                 self.getLogger().severe("Please try restarting the server! If this error persists, please report it to the lolbans team.");
+                return true;
             }
 
-            // Format our messages.
-            // TODO: This.
-            String messagenode = bantime != null ? "RegexBan.TempBanMessage" : "RegexBan.PermBanMessage";
             String ThanksJava = regex.pattern();
-            String IPBanAnnouncement = Messages.Translate(messagenode,
+            // Send messages to all players (if not silent) or only to admins (if silent)
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate(bantime != null ? "RegexBan.TempBanMessage" : "RegexBan.PermBanMessage",
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("regex", ThanksJava);
@@ -190,16 +188,7 @@ public class RegexBanCommand extends RistExCommandAsync
                     put("punishid", banid);
                     put("expiry", bantime.toString());
                 }}
-            );
-
-            // Send messages to all players (if not silent) or only to admins (if silent)
-            for (Player p : Bukkit.getOnlinePlayers())
-            {
-                if (/*silent &&*/ !p.hasPermission("lolbans.alerts"))
-                    continue;
-
-                p.sendMessage(IPBanAnnouncement);
-            }
+            ));
 
             // Kick players who match the ban
             for (Player player : Bukkit.getOnlinePlayers())
@@ -214,14 +203,12 @@ public class RegexBanCommand extends RistExCommandAsync
                 // then disconnect them for matching something.
                 if (NameMatch.matches() || IPMatch.matches() || HostMatch.matches())
                 {
-                    // FIXME: Do we use a custom message? what's this func even doing?
                     // "KickPlayer" sends the inputed strings into the function in the User class
                     // there are multiple "KickPlayer" funcs but this one is for IPBans (hence why the IP is on the end)
                     // Once the func gets the inputs, it'll kick the player with a message specified in the config
                     // FIXME: Is this message personalized for each banned player to describe what is matched?
                     Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayerBan(sender.getName(), player, banid, reason, bantime), 1L);
                 }
-                // TODO: Global announcement
             }
             
             // SendIP

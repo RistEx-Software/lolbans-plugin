@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
@@ -77,7 +78,7 @@ public class WarnCommand extends RistExCommand
             {
                 String WarnedMessage = Messages.Translate("Warn.WarnedMessage", Variables);
                 User u = Main.USERS.get(target.getUniqueId());
-                u.SetWarned(true, ((Player)target).getLocation(), WarnedMessage);
+                u.SetWarned(true, ((Player) target).getLocation(), WarnedMessage);
                 u.SendMessage(WarnedMessage);
 
                 // Send them a box as well. This will disallow them from sending move events.
@@ -85,18 +86,8 @@ public class WarnCommand extends RistExCommand
                 // same thing using the MovementListener, this just helps stop rubberbanding.
                 u.SpawnBox(true, null);
             }
-        
-            String WarnAnnouncement = Messages.Translate("Warn.WarnAnnouncment", Variables);
-
-            // Log to console.
-            self.getLogger().info(WarnAnnouncement);
-                
-            // Send the message to all online players.
-            for (Player p : Bukkit.getOnlinePlayers())
-            {
-                if (!silent && (p.hasPermission("lolbans.alerts") || p.isOp() && p != target))
-                    p.sendMessage(WarnAnnouncement);
-            }
+            
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Warn.WarnAnnouncment", Variables));
 
             // Send to Discord. (New method)
             if (DiscordUtil.UseSimplifiedMessage == true)

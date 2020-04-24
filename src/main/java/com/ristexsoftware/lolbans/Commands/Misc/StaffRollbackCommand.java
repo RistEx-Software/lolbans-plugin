@@ -6,6 +6,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
@@ -51,9 +52,10 @@ public class StaffRollbackCommand extends RistExCommand
         
         try 
         {
-            String username = args[0];
+            boolean silent = args.length > 2 ? args[0].equalsIgnoreCase("-s") : false;
+            String username = args[silent ? 1 : 0];
             OfflinePlayer u = User.FindPlayerByAny(username);
-            Optional<Long> amount = TimeUtil.Duration(args[1]);
+            Optional<Long> amount = TimeUtil.Duration(args[silent ? 2 : 1]);
 
             if (u == null)
                 return User.NoSuchPlayer(sender, username, true);
@@ -74,14 +76,14 @@ public class StaffRollbackCommand extends RistExCommand
             Future<Integer> fores = DatabaseUtil.ExecuteUpdate(ps);
 
             Integer ores = fores.get();
-            sender.sendMessage(Messages.Translate(ores > 0 ? "StaffRollback.RollbackComplete" : "StaffRollback.NoRollback", 
-                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                {{
-                    put("affected", String.valueOf(ores));
-                    put("player", u.getName());
-                }}
-            ));
-            // TODO: Discord notifs, email notifs, whatever else notifs?
+            TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+            {{
+                put("affected", String.valueOf(ores));
+                put("player", u.getName());
+            }};
+            
+            sender.sendMessage(Messages.Translate(ores > 0 ? "StaffRollback.RollbackComplete" : "StaffRollback.NoRollback", Variables ));
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("StaffRollback.Announcement", Variables));
         }
         catch (Exception ex)
         {

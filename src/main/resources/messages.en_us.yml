@@ -133,6 +133,7 @@ Warn:
   WarnedOnAction: "{PREFIX}&bYou have been warned and cannot perform that action!\n{PREFIX}&bPlease acknowledge that you've been warned by typing &a/accept."
   WarnKickMessage: "&bYou have been warned!\n\n&bReason: {REASON}\n\n&fBy rejoining you acknowledge that you've been warned!"
   AcceptMessage: "&aThank you for accepting, you may resume your gameplay!"
+  NotWarned: "{PREFIX}&bYou have not been warned so there's nothing to accept!"
   
 History:
   NoHistory: "{PREFIX}&bPlayer &f{PLAYER}&b has no punishment history."

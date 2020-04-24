@@ -35,6 +35,7 @@ Minimum Viable Product (MVP) / Feature Freeze:
  - [Feature] List bans, regex bans, ip bans, warnings, etc. and ensure they're easy to remove.
  - [Feature] Permissions (make sure they're granular enough?) / dynamic permissions - Zachery
  - [Feature] REST api for website.
+ - [Bug] The entirety of PruneHistoryCommand.java
  - [Bug] Discord Messages need to be announced for all actions
  - TESTING TESTING TESTING TESTING TESTING!!! - everyone!
 

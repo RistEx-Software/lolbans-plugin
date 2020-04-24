@@ -3,12 +3,11 @@ package com.ristexsoftware.lolbans.Commands.Misc;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
@@ -70,25 +69,15 @@ public class KickCommand extends RistExCommandAsync
             Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayer(punish), 1L);
 
             TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                {{
-                    put("player", target.getName());
-                    put("reason", reason);
-                    put("punishid", punish.GetPunishmentID());
-                    put("ARBITER", sender.getName());
-                    put("silent", Boolean.toString(silent));
-                }};
-
-            String KickAnnouncement = Messages.Translate("Kick.KickAnnouncement", Variables);
-        
-            // Log to console.
-            self.getLogger().info(KickAnnouncement);
+            {{
+                put("player", target.getName());
+                put("reason", reason);
+                put("punishid", punish.GetPunishmentID());
+                put("ARBITER", sender.getName());
+                put("silent", Boolean.toString(silent));
+            }};
                 
-            // Send the message to all online players.
-            for (Player p : Bukkit.getOnlinePlayers())
-            {
-                if (silent && (!p.hasPermission("lolbans.alerts") && !p.isOp() && p == target))
-                    p.sendMessage(KickAnnouncement);
-            }
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Kick.KickAnnouncement", Variables));
 
             if (DiscordUtil.UseSimplifiedMessage == true)
                 DiscordUtil.SendFormatted(Messages.Translate(silent ? "Discord.SimpMessageSilentKick" : "Discord.SimpMessageKick", Variables));
