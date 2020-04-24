@@ -69,9 +69,6 @@ public class BanCommand extends RistExCommandAsync
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
-            
-            if (!(sender instanceof ConsoleCommandSender) && target.getUniqueId().equals(((Player) sender).getUniqueId()))
-                return User.PlayerOnlyVariableMessage("Ban.CannotBanSelf", sender, target.getName(), true);  
 
             if (User.IsPlayerBanned(target))
                 return User.PlayerOnlyVariableMessage("Ban.PlayerIsBanned", sender, target.getName(), true);

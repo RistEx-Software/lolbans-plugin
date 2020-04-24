@@ -100,7 +100,7 @@ public class WarnCommand extends RistExCommand
 
             // Send to Discord. (New method)
             if (DiscordUtil.UseSimplifiedMessage == true)
-                DiscordUtil.SendFormatted(Messages.Translate(silent ? "Discord.SimpMessageSilentWarn" : "Discord.SimpMessageWarn", Variables));
+                DiscordUtil.SendFormatted(Messages.Translate("Discord.SimpMessageWarn", Variables));
             else
                 DiscordUtil.SendDiscord(punish, silent);
         }

@@ -59,7 +59,6 @@ public class UnmuteCommand extends RistExCommand
                 return User.PlayerOnlyVariableMessage("Mute.PlayerIsNotMuted", sender, target.getName(), true);
 
             Optional<Punishment> op = Punishment.FindPunishment(PunishmentType.PUNISH_MUTE, target, false);
-
             if (!op.isPresent())
             {
                 sender.sendMessage("Congratulations!! You've found a bug!! Please report it to the lolbans developers to get it fixed! :D");
@@ -69,7 +68,7 @@ public class UnmuteCommand extends RistExCommand
             Punishment punish = op.get();
             punish.SetAppealReason(reason);
             punish.SetAppealed(true);
-            punish.SetAppealStaff(sender instanceof OfflinePlayer ? (OfflinePlayer)sender : null);
+            punish.SetAppealStaff(sender);
             punish.Commit(sender);
 
             TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
@@ -84,15 +83,15 @@ public class UnmuteCommand extends RistExCommand
             // Post that to the database.
             for (Player p : Bukkit.getOnlinePlayers())
             {
-                if (!silent && (p.hasPermission("lolbans.alerts") || p.isOp()) && !p.equals(target))
-                    p.sendMessage(Messages.Translate(silent ? "Mute.SilentUnmuteAnnouncment" : "Mute.UnmuteAnnouncment", Variables));
+                if (!silent && (p.hasPermission("lolbans.alerts")) && !p.equals(target))
+                    p.sendMessage(Messages.Translate("Mute.UnmuteAnnouncment", Variables));
             }
 
             if (target.isOnline())
                 ((Player)target).sendMessage(Messages.Translate("Mute.YouWereUnMuted", Variables));
 
             if (DiscordUtil.UseSimplifiedMessage == true)
-                DiscordUtil.SendFormatted(Messages.Translate(silent ? "Discord.SimpMessageSilentUnmute" : "Discord.SimpMessageUnmute", Variables));
+                DiscordUtil.SendFormatted(Messages.Translate("Discord.SimpMessageUnmute", Variables));
             else
                 DiscordUtil.SendDiscord(punish, silent);
         }

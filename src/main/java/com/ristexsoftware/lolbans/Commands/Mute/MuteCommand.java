@@ -65,9 +65,6 @@ public class MuteCommand extends RistExCommand
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
 
-            if (!(sender instanceof ConsoleCommandSender) && target.getUniqueId().equals(((Player) sender).getUniqueId()))
-                return User.PlayerOnlyVariableMessage("Mute.CannotMuteSelf", sender, target.getName(), true);
-
             if (User.IsPlayerMuted(target))
                 return User.PlayerOnlyVariableMessage("Mute.PlayerIsMuted", sender, target.getName(), true);
 
@@ -91,7 +88,7 @@ public class MuteCommand extends RistExCommand
                 ((Player)target).sendMessage(Messages.Translate("Mute.YouWereMuted", Variables));
 
             // Format our messages.
-            String MuteAnnouncement = Messages.Translate(silent ? "Mute.SilentMuteAnnouncement" : "Mute.MuteAnnouncement", Variables);
+            String MuteAnnouncement = Messages.Translate("Mute.MuteAnnouncement", Variables);
 
             // Send it to the console.
             self.getLogger().info(MuteAnnouncement);

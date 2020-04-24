@@ -21,8 +21,6 @@ import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 
 import java.sql.*;
 import java.util.regex.*;
-import java.lang.Long;
-import java.util.Optional;
 import java.util.TreeMap;
 
 import inet.ipaddr.HostName;
@@ -197,7 +195,7 @@ public class RegexBanCommand extends RistExCommandAsync
             // Send messages to all players (if not silent) or only to admins (if silent)
             for (Player p : Bukkit.getOnlinePlayers())
             {
-                if (/*silent &&*/ (!p.hasPermission("lolbans.alerts") && !p.isOp()))
+                if (/*silent &&*/ !p.hasPermission("lolbans.alerts"))
                     continue;
 
                 p.sendMessage(IPBanAnnouncement);

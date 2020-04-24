@@ -47,12 +47,6 @@ public class BanWaveCommand extends RistExCommand
             if (target == null)
                 return User.NoSuchPlayer(sender, args[0], true);
 
-            if (!(sender instanceof ConsoleCommandSender) && target.getUniqueId().equals(((Player) sender).getUniqueId()))
-            {
-                sender.sendMessage(Messages.Translate("BanWave.CannotAddSelf", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-                return true;
-            }
-
             if (User.IsPlayerInWave(target))
                 return User.PlayerOnlyVariableMessage("BanWave.PlayerIsInBanWave", sender, target.getName(), true);
 

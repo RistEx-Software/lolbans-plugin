@@ -63,9 +63,6 @@ public class KickCommand extends RistExCommandAsync
             if (!target.isOnline())
                 return User.PlayerIsOffline(sender, PlayerName, true);
 
-            if (!(sender instanceof ConsoleCommandSender) && target.getUniqueId().equals(((Player) sender).getUniqueId()))
-                return User.PlayerOnlyVariableMessage("Kick.CannotKickSelf", sender, target.getName(), true);
-
             Punishment punish = new Punishment(PunishmentType.PUNISH_KICK, sender, target, reason, null);
             punish.Commit(sender);
 
