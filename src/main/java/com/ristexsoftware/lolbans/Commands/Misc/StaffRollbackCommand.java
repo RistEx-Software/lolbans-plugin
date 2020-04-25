@@ -84,6 +84,7 @@ public class StaffRollbackCommand extends RistExCommand
             
             sender.sendMessage(Messages.Translate(ores > 0 ? "StaffRollback.RollbackComplete" : "StaffRollback.NoRollback", Variables ));
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("StaffRollback.Announcement", Variables));
+            // TODO: Discord
         }
         catch (Exception ex)
         {

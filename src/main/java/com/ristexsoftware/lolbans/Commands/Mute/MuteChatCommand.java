@@ -47,6 +47,7 @@ public class MuteChatCommand extends RistExCommand
                 Bukkit.broadcastMessage(Messages.Translate("Mute.GlobalMuted", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
             else
                 Bukkit.broadcastMessage(Messages.Translate("Mute.GlobalUnmuted", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+            // TODO: Discord/BroadcastOps
         }
         catch (InvalidConfigurationException ex)
         {

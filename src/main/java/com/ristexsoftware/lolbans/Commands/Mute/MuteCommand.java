@@ -82,12 +82,7 @@ public class MuteCommand extends RistExCommand
                 ((Player)target).sendMessage(Messages.Translate("Mute.YouWereMuted", Variables));
 
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Mute.MuteAnnouncement", Variables));
-
-            // Send to Discord. (New method)
-            if (DiscordUtil.GetDiscord().UseSimplifiedMessage)
-                DiscordUtil.GetDiscord().SendFormatted(Messages.Translate("Discord.SimpMessageMute", Variables));
-            else
-                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+            DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (Exception e)
         {

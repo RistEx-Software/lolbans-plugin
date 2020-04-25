@@ -43,7 +43,8 @@ public class TranslationUtil
         put("expiry", (String lvalue, String unused) -> { return TimeUtil.Expires(Timestamp.valueOf(lvalue)); });
         put("cut", (String lvalue, String arg) -> { return lvalue.replace(arg, ""); });
         put("empty_if_false", (String lvalue, String arg) -> { return Boolean.valueOf(lvalue) ? arg : ""; });
-        put("default_if_none", (String lvalue, String arg) -> { return lvalue.isEmpty() ? arg : lvalue; });
+        put("empty_if_none", (String lvalue, String arg) -> { return lvalue == null ? "" : arg; });
+        put("default_if_none", (String lvalue, String arg) -> { return lvalue == null ? arg : lvalue; });
         put("lower", (String lvalue, String unused) -> { return lvalue.toLowerCase(); });
         put("upper", (String lvalue, String unused) -> { return lvalue.toUpperCase(); });
         put("yesno", (String lvalue, String arg) -> {return yesno(lvalue, arg); });
@@ -149,7 +150,6 @@ public class TranslationUtil
                     rvalue = rvalue.substring(0, nextsplit);
                     String argument = values[1].substring(nextsplit + 2, values[1].length() - 1);
                     
-                    // FIXME: What if Variables.get(lvalue) is null?
                     replacement = Functions.get(rvalue.trim()).apply(Variables.get(lvalue.trim()), argument);
                 }
                 else if (Functions.containsKey(rvalue.trim()) && Variables.containsKey(lvalue.trim()))

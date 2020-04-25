@@ -119,6 +119,7 @@ public class BanWaveCommand extends RistExCommand
             DatabaseUtil.ExecuteUpdate(fuckingdumb);
 
             User.PlayerOnlyVariableMessage("BanWave.RemovedFromWave", sender, target.getName(), false);
+            // TODO: Discord/Broadcast
             return true;
             
         }

@@ -91,13 +91,8 @@ public class BanCommand extends RistExCommandAsync
                 }};
 
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Ban.BanAnnouncement", Variables));
+            DiscordUtil.GetDiscord().SendDiscord(punish, silent);
             sender.sendMessage(ChatColor.GRAY + "Done! " + ChatColor.RED + t.Finish() + "ms");
-
-            // Send to Discord. (New method)
-            if (DiscordUtil.GetDiscord().UseSimplifiedMessage == true)
-                DiscordUtil.GetDiscord().SendFormatted(Messages.Translate("Discord.SimpMessageBan", Variables));
-            else
-                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (Exception e)
         {

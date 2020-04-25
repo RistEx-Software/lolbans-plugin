@@ -85,12 +85,7 @@ public class WarnCommand extends RistExCommand
             }
             
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Warn.WarnAnnouncment", Variables));
-
-            // Send to Discord. (New method)
-            if (DiscordUtil.GetDiscord().UseSimplifiedMessage == true)
-                DiscordUtil.GetDiscord().SendFormatted(Messages.Translate("Discord.SimpMessageWarn", Variables));
-            else
-                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+            DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (SQLException | InvalidConfigurationException e)
         {

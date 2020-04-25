@@ -74,6 +74,7 @@ public class FreezeCommand extends RistExCommand
             u.SpawnBox(true, null);
 
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate(u.IsFrozen() ? "Freeze.FreezeAnnouncement" : "Freeze.UnfreezeAnnouncement", Variables));
+            // TODO: Discord
         }
         catch (InvalidConfigurationException e)
         {

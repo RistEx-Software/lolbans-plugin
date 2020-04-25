@@ -68,6 +68,7 @@ public class AcceptCommand extends RistExCommand
                 DatabaseUtil.ExecuteUpdate(pst3);
 
                 User.PlayerOnlyVariableMessage("Warn.AcceptMessage", sender, sender.getName(), false);
+                // TODO: Discord/BroadcastOps
             } 
             catch (SQLException e)
             {

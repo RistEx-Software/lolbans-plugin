@@ -83,11 +83,7 @@ public class UnbanCommand extends RistExCommand
             }};
             
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Ban.UnbanAnnouncment", Variables));
-
-            if (DiscordUtil.GetDiscord().UseSimplifiedMessage == true)
-                DiscordUtil.GetDiscord().SendFormatted(Messages.Translate("Discord.SimpMessageUnban", Variables));
-            else
-                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+            DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (InvalidConfigurationException e)
         {

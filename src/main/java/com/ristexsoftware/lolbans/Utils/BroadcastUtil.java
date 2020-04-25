@@ -22,13 +22,20 @@ public class BroadcastUtil
         }
     }
 
-    public static void BroadcastEvent(boolean silent, String Annoucement)
+    public static void BroadcastEvent(boolean silent, String Announcement)
     {
-        self.getLogger().info(Annoucement);
+        BroadcastUtil.BroadcastEvent(silent, Announcement, "lolbans.alerts");
+    }
+
+    public static void BroadcastEvent(boolean silent, String Announcement, String Permission)
+    {
+        self.getLogger().info(Announcement);
         for (Player p : Bukkit.getOnlinePlayers())
         {
-            if (silent && p.hasPermission("lolbans.alerts"))
-                p.sendMessage(Annoucement);
+            if (silent && !p.hasPermission(Permission))
+                continue;
+            
+            p.sendMessage(Announcement);
         }
     }
 }

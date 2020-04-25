@@ -49,12 +49,14 @@ Discord:
   ConsoleProfilePicture: "https://crafatar.com/renders/head/f78a4d8d-d51b-4b39-98a3-230f2de0c670?overlay&default=MHF_Steve"
   # Simple message style is just lines of text sent as a messgage instead of an embed.
   Simple:
-    MessageBan: ":hammer: **{ARBITER}** banned **{PLAYER}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
-    MessageUnban: ":hammer: **{ARBITER}** un-banned **{PLAYER}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
-    MessageMute: ":hammer: **{ARBITER}** muted **{PLAYER}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
-    MessageUnmute: ":hammer: **{ARBITER}** un-muted **{PLAYER}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
-    MessageKick: ":boot: **{ARBITER}** kicked **{PLAYER}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
-    MessageWarn: ":hammer: **{ARBITER}** warned **{PLAYER}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    MessageBan: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}banned **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    MessageMute: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}muted **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    MessageKick: ":boot: **{ARBITERNAME}** kicked **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    MessageWarn: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}warned **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    BanwaveAdd: ":wave: **{ARBITERNAME}** added **{PLAYERNAME}** to the next ban wave."
+    BanwaveStart: ":hammer: **{ARBITERNAME}** started a ban wave which bans the following users:\n```\n{USERLIST}\n```"
+    Report: ":orange_book: **{ARBITERNAME}** reported **{PLAYERNAME}**: `{REASON}` [{REPORTTYPE} - #{PUNISHID}]"
+    BanObject: ":hammer: **{ARBITERNAME}** banned `{OBJECT}`{EXPIRES|empty_if_none:\" which expires on \"}{EXPIRES|datetime:\"**EEE, MMM d yyyy HH:mm:ss**\"}"
   # Embedded discord messages.
   Embedded:
     BanTitle: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}banned {PLAYERNAME}"
@@ -63,6 +65,10 @@ Discord:
     WarnTitle: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}warned {PLAYERNAME}"
     UnknownTitle: "{ARBITERNAME} did an unknown action to {PLAYERNAME}"
     BanwaveAdd: "{ARBITERNAME} added {PLAYERNAME} to the next ban wave."
+    BanwaveStartTitle: "{ARBITERNAME} started a ban wave!"
+    BanwaveStartText: "The following users have been banned:\n{USERLIST}"
+    ReportTitle: "{ARBITERNAME} reported {PLAYERNAME}"
+    BanObjectTitle: "{ARBITERNAME} created a new ban"
     
 Link:
   LinkedAccountMessage: "&bYour Account Link Confirmation Code is &f{LINKID}"
@@ -72,7 +78,7 @@ Report:
   # {REASON} is also a possible config option.
   ReportSuccess: "{PREFIX}&aThank you for reporting &f{PLAYER}&a!"
   # Message sent to everyone who is important
-  ReportAnnouncement: "{PREFIX}&f{ARBITER} &breported &f{PLAYER}&b: &f{REASON}"
+  ReportAnnouncement: "{PREFIX}&f{ARBITER} &breported &f{PLAYER}&b: &f{REASON} &7[{TYPE} - #{PUNISHID}]"
   # If a user attempts to report a player more than once
   TooManyTries: "{PREFIX}&bYou have already filed a report against &f{PLAYER}&b!"
 

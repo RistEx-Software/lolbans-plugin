@@ -10,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.PunishID;
+import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
@@ -64,10 +65,7 @@ public class ReportCommand extends RistExCommand
                 return User.NoSuchPlayer(sender, username, true);
 
             if (!Messages.CompareMany(type, (String[])self.getConfig().getStringList("ReportSettings.Types").toArray()))
-            {
-                sender.sendMessage(Messages.InvalidSyntax);
                 return false; // Show syntax. 
-            }
 
             // They must have *something* in their report message.
             if (reason.isEmpty())
@@ -93,41 +91,25 @@ public class ReportCommand extends RistExCommand
             ps.setString(i++, ((Player)sender).getName());
             ps.setString(i++, u.getUniqueId().toString());
             ps.setString(i++, u.getName());
-            ps.setString(i++, ReportID);
             ps.setString(i++, reason);
+            ps.setString(i++, ReportID);
+            ps.setString(i++, type);
 
             DatabaseUtil.ExecuteUpdate(ps);
+            
+            TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+            {{
+                put("player", u.getName());
+                put("reporter", sender.getName());
+                put("reason", reason);
+                put("punishid", ReportID);
+                put("type", type);
+            }};
 
-            sender.sendMessage(Messages.Translate("Report.ReportSuccess",
-                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                {{
-                    put("player", u.getName());
-                    put("reason", reason);
-                    put("punishid", ReportID);
-                }}
-            ));
-
-            String AnnounceMessage = Messages.Translate("Report.ReportAnnouncement",
-                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                {{
-                    put("player", u.getName());
-                    put("reporter", sender.getName());
-                    put("reason", reason);
-                    put("punishid", ReportID);
-                }}
-            );
-
-            self.getLogger().warning(AnnounceMessage);
-
-            for (Player p : Bukkit.getOnlinePlayers())
-            {
-                if (PermissionUtil.Check(sender, "lolbans.ReceiveReports"))
-                    p.sendMessage(AnnounceMessage);
-            }
-
-            //DiscordUtil.SendDiscord(sender, "reported", u, reason, ReportID, false);
-
-            // TODO: Discord notifs, email notifs, whatever else notifs?
+            sender.sendMessage(Messages.Translate("Report.ReportSuccess", Variables));
+                
+            BroadcastUtil.BroadcastEvent(false, Messages.Translate("Report.ReportAnnouncement", Variables), "lolbans.ReceiveReports");
+            DiscordUtil.GetDiscord().SendReport(sender, u, reason, ReportID, type);
         }
         catch (Exception ex)
         {
