@@ -35,6 +35,8 @@ import com.ristexsoftware.lolbans.Commands.Ban.UnbanCommand;
 import com.ristexsoftware.lolbans.Commands.Ban.BanWaveCommand;
 import com.ristexsoftware.lolbans.Commands.Ban.IPBanCommand;
 import com.ristexsoftware.lolbans.Commands.Ban.RegexBanCommand;
+import com.ristexsoftware.lolbans.Commands.Ban.RegexUnbanCommand;
+import com.ristexsoftware.lolbans.Commands.Ban.UnIPBanCommand;
 import com.ristexsoftware.lolbans.Commands.History.HistoryCommand;
 import com.ristexsoftware.lolbans.Commands.History.StaffHistoryCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.BroadcastCommand;
@@ -151,6 +153,8 @@ public final class Main extends JavaPlugin
         this.getCommand("ban").setExecutor(new BanCommand());
         this.getCommand("ip-ban").setExecutor(new IPBanCommand());
         this.getCommand("unban").setExecutor(new UnbanCommand());
+        this.getCommand("unregexban").setExecutor(new RegexUnbanCommand());
+        this.getCommand("unipban").setExecutor(new UnIPBanCommand());
         this.getCommand("history").setExecutor(new HistoryCommand());
         this.getCommand("banwave").setExecutor(new BanWaveCommand());
         this.getCommand("warn").setExecutor(new WarnCommand());

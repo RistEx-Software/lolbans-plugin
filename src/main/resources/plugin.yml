@@ -27,8 +27,12 @@ permissions:
     description: Able to use ip ban command
   lolbans.ipban.perm:
     description: Able to perform permanent IP Bans
+  lolbans.ipunban:
+    description: Able to unban an IP or CIDR ban.
   lolbans.regexban:
-    description: Able to perform regex bans
+    description: Able to perform regular expression bans
+  lolbans.regexunban:
+    description: Able to remove a regular expression ban
   lolbans.unban:
     description: Able to unban users
   lolbans.history:
@@ -86,13 +90,18 @@ commands:
     description: mute a player
     permission: lolbans.mute
   unban:
-    description: Unban a payer
+    description: Remove a player ban
     permission: lolbans.unban
+  unbanip:
+    description: Remove an IP or CIDR range ban
+    permission: lolbans.ipunban
+  regexunban:
+    description: Remove a regular expression ban
   mutechat:
     description: Mute the chat for all players (togglable)
     permission: lolbans.chatmute
   unmute:
-    description: Unban a payer
+    description: Remove a mute on a player
     permission: lolbans.mute
   history:
     description: Get history of users punishments
