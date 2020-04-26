@@ -88,8 +88,8 @@ public class DiscordUtil
 			// TODO: Find a reasonable way to messages.yml-ify this?
 			if (Variables.containsKey("PunishID"))
 				Fields.add(FieldEmbed.builder().name("PunishID").value("#" + Variables.get("PunishID")).build());
-			if (Variables.containsKey("Expires"))
-				Fields.add(FieldEmbed.builder().name("Expires").value(Variables.get("Expires")).build());
+			if (Variables.containsKey("Expiry"))
+				Fields.add(FieldEmbed.builder().name("Expires").value(Variables.get("Expiry")).build());
 			if (Variables.containsKey("ReportType"))
 				Fields.add(FieldEmbed.builder().name("Type").value(Variables.get("ReportType")).build());
 

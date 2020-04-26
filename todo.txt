@@ -27,22 +27,20 @@ lol may/june release pls - hah! if we're lucky!
 ##########################################
 Minimum Viable Product (MVP) / Feature Freeze:
 ##########################################
- - [Feature] Reports show up in /history
+ - [Feature] create /reports
  - [Feature] /dupeip, /iphistory - Justin/Zachery
- - [Bug] Temp and Permanent ban messages get mixed up.
- - [Feature] Rewrite messages.yml to use new variables and cyan/white text stylization.
+ - [Feature] Rewrite messages.yml to use new variables.
  - [Feature] UnIPBan, UnWarn, UnRegexBan commands need to be created
  - [Feature] List bans, regex bans, ip bans, warnings, etc. and ensure they're easy to remove.
  - [Feature] Permissions (make sure they're granular enough?) / dynamic permissions - Zachery
- - [Feature] REST api for website.
  - [Bug] The entirety of PruneHistoryCommand.java
  - [Bug] Discord Messages need to be announced for all actions
-    `- [Feature] DiscordUtil should Just Work™️ and figure out simple or embed message formats.
  - TESTING TESTING TESTING TESTING TESTING!!! - everyone!
 
 ##########################################
 # Future (or nice to have after the MVP)
 ##########################################
+ - [Feature] REST api for website.
  - Hover Text (JSON) - Zachery/Justin?
  - Inventory-based UI for management of bans and whatnot. IMPORTANT!!
 5. Mass unbans (??) / Regex-based unbans?

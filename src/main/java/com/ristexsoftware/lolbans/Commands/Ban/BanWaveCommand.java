@@ -68,25 +68,20 @@ public class BanWaveCommand extends RistExCommand
             // Commit to the database.
             DatabaseUtil.ExecuteUpdate(pst);
 
-            // Log to console.
-            // TODO: Log to everyone with the alert permission?
-            // Format our messages.
-            sender.sendMessage(Messages.Translate("BanWave.AddedToWave",
-                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                {{
-                    put("player", target.getName());
-                    put("reason", reason);
-                    put("arbiter", sender.getName());
-                    put("punishid", banid);
-                    put("expiry", Expiry.toString());
-                    put("silent", Boolean.toString(silent));
-                }}
-            ));
+            TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+            {{
+                put("player", target.getName());
+                put("reason", reason);
+                put("arbiter", sender.getName());
+                put("punishid", banid);
+                put("expiry", Expiry.toString());
+                put("silent", Boolean.toString(silent));
+            }};
 
-            // TODO: BroadcastUtil.BroadcastEvent(silent, );
-
-            // Send to Discord.
+            sender.sendMessage(Messages.Translate("BanWave.AddedToWave", Variables));
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("BanWave.AddedToWaveAnnouncement", Variables));
             DiscordUtil.GetDiscord().SendBanWaveAdd(sender, target, reason, banid, Expiry);
+
             return true;
         }
         catch (SQLException | InvalidConfigurationException e)
@@ -140,6 +135,7 @@ public class BanWaveCommand extends RistExCommand
         User.PlayerOnlyVariableMessage("BanWave.BanWaveStart", sender, sender.getName(), false);
         BanWaveRunnable bwr = new BanWaveRunnable();
         bwr.sender = sender;
+        bwr.silent = silent;
         bwr.runTaskAsynchronously(self);
         return true;
     }

@@ -1,7 +1,6 @@
 package com.ristexsoftware.lolbans.Commands.Ban;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -92,7 +91,7 @@ public class BanCommand extends RistExCommandAsync
 
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Ban.BanAnnouncement", Variables));
             DiscordUtil.GetDiscord().SendDiscord(punish, silent);
-            sender.sendMessage(ChatColor.GRAY + "Done! " + ChatColor.RED + t.Finish() + "ms");
+            t.Finish(sender);
         }
         catch (Exception e)
         {

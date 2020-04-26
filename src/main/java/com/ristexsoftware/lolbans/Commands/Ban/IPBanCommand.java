@@ -184,7 +184,7 @@ public class IPBanCommand extends RistExCommandAsync
                 // Once the func gets the inputs, it'll kick the player with a message specified in the config
                 if (thingy.contains(hn.asAddress()))
                 {
-                    Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayerIP(sender.getName(), p, banid, reason, bantime, thingy.toString()), 1L);
+                    Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayerIP(sender.getName(), p, banid, reason, bantime, TimeUtil.TimestampNow(), thingy.toString()), 1L);
                     continue;
                 }
 

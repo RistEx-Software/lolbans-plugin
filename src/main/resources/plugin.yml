@@ -73,7 +73,7 @@ commands:
   staffhistory:
     descripton: Show staff history
     permission: lolbans.staffhistory
-  ipban:
+  ip-ban:
     description: Ban an ip address or CIDR range
     permission: lolbans.ipban
   regexban:

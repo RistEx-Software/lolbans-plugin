@@ -259,23 +259,25 @@ public class User
     public static void KickPlayer(Punishment p)
     {
         if (p.GetPunishmentType() != PunishmentType.PUNISH_KICK)
-            User.KickPlayerBan(p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getName(), (Player)p.GetPlayer(), p.GetPunishmentID(), p.GetReason(), p.GetTimePunished());
+            User.KickPlayerBan(p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getName(), (Player)p.GetPlayer(), p.GetPunishmentID(), p.GetReason(), p.GetTimePunished(), p.GetExpiry());
         else
             User.KickPlayer(p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getName(), (Player)p.GetPlayer(), p.GetPunishmentID(), p.GetReason());
     }
 
-    public static void KickPlayerBan(String sender, Player target, String PunishID, String reason, Timestamp BanTime)
+    public static void KickPlayerBan(String sender, Player target, String PunishID, String reason, Timestamp TimePunished, Timestamp Expiry)
     {
         try
         {
             // (String message, String ColorChars, Map<String, String> Variables)
-            String KickMessage = Messages.Translate(BanTime != null ? "Ban.TempBanMessage" : "Ban.PermBanMessage",
+            String KickMessage = Messages.Translate(Expiry != null ? "Ban.TempBanMessage" : "Ban.PermBanMessage",
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("player", target.getName());
                     put("reason", reason);
                     put("ARBITER", sender);
-                    put("date", BanTime != null ? BanTime.toString() : "Never");
+                    put("TimePunished", TimePunished.toString());
+                    if (Expiry != null)
+                        put("expiry", Expiry.toString());
                     put("PunishID", PunishID);
                 }}
             );
@@ -287,18 +289,20 @@ public class User
         }
     }
 
-    public static void KickPlayerIP(String sender, Player target, String PunishID, String reason, Timestamp BanTime, String IP)
+    public static void KickPlayerIP(String sender, Player target, String PunishID, String reason, Timestamp BanTime, Timestamp Expiry, String IP)
     {
         try
         {
             // (String message, String ColorChars, Map<String, String> Variables)
-            String KickMessage = Messages.Translate(BanTime != null ? "IPBan.TempIPBanMessage" : "IPBan.PermIPBanMessage",
+            String KickMessage = Messages.Translate(Expiry != null ? "IPBan.TempIPBanMessage" : "IPBan.PermIPBanMessage",
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("player", target.getName());
                     put("reason", reason);
                     put("ARBITER", sender);
-                    put("date", BanTime != null ? BanTime.toString() : "Never");
+                    if (BanTime != null)
+                        put("date", BanTime.toString());
+                    put("Expiry", Expiry.toString());
                     put("PunishID", PunishID);
                     put("IPAddress", IP);
                 }}

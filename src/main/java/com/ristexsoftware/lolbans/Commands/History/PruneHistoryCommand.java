@@ -12,7 +12,7 @@ import inet.ipaddr.IPAddressString;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
 import com.ristexsoftware.lolbans.Objects.Punishment;
-import com.ristexsoftware.lolbans.Objects.RistExCommand;
+import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.sql.*;
 
-public class PruneHistoryCommand extends RistExCommand
+public class PruneHistoryCommand extends RistExCommandAsync
 {
     private static Main self = Main.getPlugin(Main.class);
 
@@ -96,7 +96,6 @@ public class PruneHistoryCommand extends RistExCommand
                     {
                         if (cb.contains(thingy))
                         {
-                            // TODO: make async
                             PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM IPBans WHERE IPAddress = ?");
                             pst.setString(1, cb.toString());
             

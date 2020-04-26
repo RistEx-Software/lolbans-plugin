@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 
 public class TranslationUtil
 {
+    // {VARIABLE|pluralize:"y,ies"}
     private static String Pluralize(String lvalue, String arg)
     {
         String singlar = "", plural = (arg.isEmpty() ? "s" : arg);
@@ -35,6 +36,7 @@ public class TranslationUtil
             return Boolean.valueOf(lvalue) ? arg : "no";
     }
 
+    // {VARIABLE|function:"HH:MM:SS"}
     public static TreeMap<String, BiFunction<String, String, String>> Functions = new TreeMap<String, BiFunction<String, String, String>>(String.CASE_INSENSITIVE_ORDER)
     {{
         put("pluralize", (String lvalue, String arg) -> { return Pluralize(lvalue, arg); });
@@ -152,10 +154,8 @@ public class TranslationUtil
                     
                     replacement = Functions.get(rvalue.trim()).apply(Variables.get(lvalue.trim()), argument);
                 }
-                else if (Functions.containsKey(rvalue.trim()) && Variables.containsKey(lvalue.trim()))
+                else //(Functions.containsKey(rvalue.trim()) && Variables.containsKey(lvalue.trim()))
                     replacement = Functions.get(rvalue.trim()).apply(Variables.get(lvalue.trim()), "");
-                else if (!Functions.containsKey(rvalue.trim()) && Variables.containsKey(lvalue.trim()))
-                    replacement = Variables.get(lvalue.trim());
             }
             else if (Variables.containsKey(variable))
             {

@@ -39,6 +39,7 @@ PlayerDoesntExist: "{PREFIX}&cError! &f{PLAYER} &bdoesn't exist!"
 PlayerIsOffline: "{PREFIX}&cError! &f{PLAYER} &bis offline!"
 UserRequired: "{PREFIX}&cYou have to be a user to this command."
 NoPermission: "{PREFIX}&cYou do not have permission to use this command!"
+CommandComplete: "{PREFIX}&bDone! &f{MILLISECONDS}ms."
 
 Discord:
   # The large picture shown on the right side of the embed (Can be full body render, just the player head, etc.)
@@ -85,27 +86,22 @@ Report:
 # MESSAGES
 # BanMessage, {PLAYER} {REASON} {ARBITER} {EXPIRY} {PUNISHID}
 Ban:
-  TempBanMessage: "&bThe account &f{PLAYER} &bhas been suspended from {NETWORKNAME} &buntil &f{DATE|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|expiry} \n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
+  TempBanMessage: "&bThe account &f{PLAYER} &bhas been suspended from {NETWORKNAME} &buntil &f{EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|expiry} \n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
   PermBanMessage: "&bThe account &f{PLAYER} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
   BanAnnouncement: "&b{ARBITER} &fbanned &b{PLAYER}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
   UnbanAnnouncment: "&b{ARBITER} &fun-banned &b{PLAYER}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
-  CannotBanSelf: "{PREFIX}&cYes, you have permissions! You cannot ban yourself!"
   PlayerIsBanned: "{PREFIX}&cError! &f{PLAYER} is already banned!"
   PlayerIsNotBanned: "{PREFIX}&cError! &f{PLAYER} is not banned!"
 
 IPBan:
-  PermIPBanMessage: "&bThe IP &f{IPADDRESS} &bhas been TEMPORARILY suspended from {NETWORKNAME} &buntil &f {DATEEXPIRY}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRYDURATION} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
+  PermIPBanMessage: "&bThe IP &f{IPADDRESS} &bhas been TEMPORARILY suspended from {NETWORKNAME} &buntil &f {EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|expiry} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
   TempIPBanMessage: "&bThe IP &f{IPADDRESS} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
-  SilentTempIPBanMessage: "3"
-  SilentPermIPBanMessage: "4"
   UnIPbanAnnouncement: "5" 
-  SilentUnIPbanAnnouncement: "6"
-  CannotIPBanSelf: "7"
   IPIsBanned: "{PREFIX}&cError! &f{IPADDRESS} is already banned!"
   IPIsNotBanned: "{PREFIX}&cError! &f{IPADDRESS} is not banned!"
   Insanity: "{PREFIX}&cBanning {IPADDRESS} would ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
   IPAltNotification: "{PREFIX}&f{PLAYER} &cjoined, is alt account of &f{BANNEDPLAYER} &7[{IPADDRESS}]"
-  IPAltBanMessage: "&bThe Player &f{PLAYERNAME} &bis an alternate account of {ALTACCOUNT} which has been suspended on {NETWORKNAME} and is disallowed from connection.\n\n&bBanned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRYDURATION} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
+  IPAltBanMessage: "&bThe Player &f{PLAYERNAME} &bis an alternate account of {ALTACCOUNT} which has been suspended on {NETWORKNAME} and is disallowed from connection.\n\n&bBanned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|expiry} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
   
 RegexBan:
   # TODO: Fix these messages for regex-based bans.
@@ -115,25 +111,22 @@ RegexBan:
 
 BanWave:
   AddedToWave: "{PREFIX}&f{PLAYER} &bhas been added to the next ban wave."
+  AddedToWaveAnnouncement: "{PREFIX}&f{ARBITER} &bhas added &f{PLAYER} &bto the next ban wave: &f{REASON}{SILENT|empty_if_false:\" &7[SILENT]\"}"
   RemovedFromWave: "{PREFIX}&f{PLAYER} &bhas been removed from the next ban wave."
-  CannotAddSelf: "{PREFIX}&bYou cannot add yourself to the banwave!"
   PlayerIsInBanWave: "{PREFIX}&bError! &f{PLAYER} is already in the ban wave!"
   PlayerNotInBanWave: "{PREFIX}&bError! &f{PLAYER} is not part of any ban waves!"
+  EmptyWave: "{PREFIX}&bThere are no players in the current ban wave."
   BannedPlayersInBanWave: "&bBanned &f{AMOUNT} &bplayer{AMOUNT|pluralize}!"
   BanWaveStart: "{PREFIX}&b{PLAYER} started a ban wave, please stand by..."
   BanWaveFinished: "{PREFIX}Banned {PLAYERCOUNT} player{PLAYERCOUNT|pluralize} in {TIME}ms."
 
 Mute:
-  YouWereMuted: "{PREFIX}&bYou &fwere muted by &b{ARBITER} &ffor: &b{REASON} &f[#{PUNISHID}]\n&fYour mute expires on: &b{dateexpiry}&f!"
+  YouWereMuted: "{PREFIX}&bYou &fwere muted by &b{ARBITER} &ffor: &b{REASON} &f[#{PUNISHID}]\n&fYour mute expires on: &b{EXPIRY|expiry}&f!"
   YouWereUnMuted: "{PREFIX}&bYou &fwere un-muted by &b{ARBITER} &ffor: &b{REASON} &f[#{PUNISHID}]"
-  YouAreMuted: "{PREFIX}&bYou are muted and may not speak.\n&fYour mute expires on: &b{dateexpiry}&f! &f[#{PUNISHID}]"
-  CannotMuteConsole: "{PREFIX}&bThe CONSOLE cannot be muted."
-  CannotMuteSelf: "{PREFIX}&bYes, you have permissions! You cannot mute yourself!"
+  YouAreMuted: "{PREFIX}&bYou are muted and may not speak.\n&fYour mute expires on: &b{EXPIRY|expiry}&f! &f[#{PUNISHID}]"
   PlayerIsMuted: "{PREFIX}&bError! &f{PLAYER} is already muted!"
   PlayerIsNotMuted: "{PREFIX}&bError! &f{PLAYER} is not muted!"
   MuteAnnouncement: "&b{ARBITER} &fhas muted &b{PLAYER}&f: &b{REASON} &f[#{PUNISHID}]"
-  SilentMuteAnnouncement: "&b{ARBITER} &fhas muted &b{PLAYER}&f: &b{REASON} &f[#{PUNISHID}] &8[SILENT]"
-  SilentUnmuteAnnouncment: "&b{ARBITER} &fhas un-muted &b{PLAYER}&f: &b{REASON} &f[#{PUNISHID}] &8[SILENT]"
   UnmuteAnnouncment: "&b{ARBITER} &fhas un-muted &b{PLAYER}&f: &b{REASON} &f[#{PUNISHID}]"
   GlobalMuted: "&bThe chat is currently muted and you may not send messages."
   GlobalUnmuted: "&aThe chat is now unmuted, you may now converse."
@@ -142,7 +135,6 @@ Kick:
   KickMessage: "&bYou were kicked from {NETWORKNAME}\n\n&bYou were kicked by: &f{ARBITER}\n&bReason: &f{REASON}"
   KickAnnouncement: "&b{ARBITER} &fkicked &b{PLAYER}&f: &b{REASON}"
   SilentKickAnnouncement: "&b{ARBITER} &fkicked &b{PLAYER}&f: &b{REASON} &8[SILENT]"
-  CannotKickSelf: "{PREFIX}&bYou may not kick yourself!"
 
 Warn:
   WarnAnnouncment: "&b{ARBITER} &fhas warned &b{PLAYER} &f: &b{REASON}"

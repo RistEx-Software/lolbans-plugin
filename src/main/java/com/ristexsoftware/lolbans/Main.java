@@ -149,8 +149,7 @@ public final class Main extends JavaPlugin
 
         // Register commands
         this.getCommand("ban").setExecutor(new BanCommand());
-        // TODO: minecraft has /ip-ban which is dumb but we should override it.
-        this.getCommand("ipban").setExecutor(new IPBanCommand());
+        this.getCommand("ip-ban").setExecutor(new IPBanCommand());
         this.getCommand("unban").setExecutor(new UnbanCommand());
         this.getCommand("history").setExecutor(new HistoryCommand());
         this.getCommand("banwave").setExecutor(new BanWaveCommand());

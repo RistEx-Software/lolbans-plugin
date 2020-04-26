@@ -83,7 +83,6 @@ public class IPBanUtil
 				try
 				{
 					// Now query the database for ALL ip addresses and we have to check each one.
-					// TODO: Left outter join BanWaves too?
 					ResultSet results = self.connection.prepareStatement("SELECT UUID,IPAddress FROM Punishments WHERE Type = 0 AND Appealed = False").executeQuery();
 
 					// Iterate the results and check to see if anyone matches.

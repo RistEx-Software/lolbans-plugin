@@ -208,7 +208,7 @@ public class RegexBanCommand extends RistExCommandAsync
                     // there are multiple "KickPlayer" funcs but this one is for IPBans (hence why the IP is on the end)
                     // Once the func gets the inputs, it'll kick the player with a message specified in the config
                     // FIXME: Is this message personalized for each banned player to describe what is matched?
-                    Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayerBan(sender.getName(), player, banid, reason, bantime), 1L);
+                    Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayerBan(sender.getName(), player, banid, reason, TimeUtil.TimestampNow(), bantime), 1L);
                 }
             }
             

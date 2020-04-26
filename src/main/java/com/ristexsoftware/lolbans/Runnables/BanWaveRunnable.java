@@ -7,30 +7,31 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 
 import java.util.List;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.ArrayList;
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 import com.ristexsoftware.lolbans.Utils.Timing;
+import com.ristexsoftware.lolbans.Utils.TimeUtil;
 import com.ristexsoftware.lolbans.Objects.User;
 
 
-//     public static void KickPlayer(String sender, Player target, String PunishID, String reason, Timestamp BanTime)
 class BannedUser
 {
-    public BannedUser(OfflinePlayer op, String ExecutionerName, String ExecutionerUUID, String PunishID, String BanReason)
+    public BannedUser(OfflinePlayer op, String ExecutionerName, String ExecutionerUUID, String PunishID, String BanReason, Timestamp Expiry)
     {
         this.BannedPlayer = op;
         this.ExecutionerName = ExecutionerName;
         this.ExecutionerUUID = ExecutionerUUID;
         this.PunishID = PunishID;
         this.BanReason = BanReason;
+        this.Expiry = Expiry;
     }
 
     public OfflinePlayer BannedPlayer;
@@ -38,24 +39,25 @@ class BannedUser
     public String ExecutionerUUID;
     public String PunishID;
     public String BanReason;
+    public Timestamp Expiry;
 }
 
 public class BanWaveRunnable extends BukkitRunnable
 {
     public CommandSender sender;
+    public boolean silent;
 
     public void run()
     {
         Main self = Main.getPlugin(Main.class);
-        Timing t = new Timing();
         try
         {
-            //DiscordUtil.SendFormatted("%s started a ban wave.", sender.getName());
+            Timing t = new Timing();
             // First we query for all the people in the BanWave database.
             PreparedStatement PlayersToBanQuery = self.connection.prepareStatement("SELECT * FROM BanWave");
             // Array of users to be banned so we can send it to Discord.
             PreparedStatement PlayersToBanQueryArr = self.connection.prepareStatement("SELECT GROUP_CONCAT(PlayerName) AS PlayerNames FROM BanWave");
-            PreparedStatement BanBatchQuery = self.connection.prepareStatement("INSERT INTO Punishments (UUID, PlayerName, IPAddress, Reason, PunishID, Type, ArbiterName, ArbiterUUID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement BanBatchQuery = self.connection.prepareStatement("INSERT INTO Punishments (UUID, PlayerName, IPAddress, Reason, PunishID, Type, ArbiterName, ArbiterUUID, Expiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
             
             List<BannedUser> BannedPlayers = new ArrayList<BannedUser>();
             ResultSet ptbqr = PlayersToBanQueryArr.executeQuery();
@@ -63,7 +65,7 @@ public class BanWaveRunnable extends BukkitRunnable
             // Make sure there are actually people in the database!!!!
             if (!ptbqr.next())
             {
-                sender.sendMessage(ChatColor.RED + "Error! No users in the ban wave!");
+                User.PlayerOnlyVariableMessage("BanWave.EmptyWave", sender, "", false);
                 return;
             }
         
@@ -77,7 +79,7 @@ public class BanWaveRunnable extends BukkitRunnable
             {
                 int i = 1;
                 OfflinePlayer op = Bukkit.getOfflinePlayer(UUID.fromString(PlayersToBan.getString("UUID")));
-                BannedUser bp = new BannedUser(op, PlayersToBan.getString("ArbiterName"), PlayersToBan.getString("ArbiterUUID"), PlayersToBan.getString("PunishID"), PlayersToBan.getString("Reason"));
+                BannedUser bp = new BannedUser(op, PlayersToBan.getString("ArbiterName"), PlayersToBan.getString("ArbiterUUID"), PlayersToBan.getString("PunishID"), PlayersToBan.getString("Reason"), PlayersToBan.getTimestamp("Expiry"));
                 BannedPlayers.add(bp);
                 BanBatchQuery.setString(i++, PlayersToBan.getString("UUID"));
                 BanBatchQuery.setString(i++, PlayersToBan.getString("PlayerName"));
@@ -87,6 +89,7 @@ public class BanWaveRunnable extends BukkitRunnable
                 BanBatchQuery.setInt(i++, PunishmentType.PUNISH_BAN.ordinal());
                 BanBatchQuery.setString(i++, bp.ExecutionerName);
                 BanBatchQuery.setString(i++, bp.ExecutionerUUID);
+                BanBatchQuery.setTimestamp(i++, bp.Expiry);
                 BanBatchQuery.addBatch();
             }
 
@@ -99,11 +102,31 @@ public class BanWaveRunnable extends BukkitRunnable
                 for (BannedUser bu : BannedPlayers)
                 {
                     if (bu.BannedPlayer.isOnline())
-                        User.KickPlayerBan(bu.ExecutionerName, (Player)bu.BannedPlayer, bu.PunishID, bu.BanReason, null);
-                    //self.getLogger().info(String.format("%s was banned: %s (#%s)", bu.BannedPlayer.getName(), bu.BanReason, bu.PunishID));
+                    {
+                        User.KickPlayerBan(bu.ExecutionerName, (Player)bu.BannedPlayer, bu.PunishID, bu.BanReason, TimeUtil.TimestampNow(), bu.Expiry);
+                        try
+                        {
+                            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Ban.BanAnnouncement",
+                                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                                    {{
+                                        put("ARBITER", bu.ExecutionerName);
+                                        put("PLAYER", bu.BannedPlayer.getName());
+                                        put("REASON", bu.BanReason);
+                                        put("PUNISHID", bu.PunishID);
+                                        put("SILENT", Boolean.toString(silent));
+                                    }}
+                            ));
+                        }
+                        catch (InvalidConfigurationException ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                    }
                 }
             }, 1L);
 
+            // TODO: Broadcast to discord and ops on server that
+            // the ban wave has completed.
             sender.sendMessage(Messages.Translate("BanWave.BanWaveFinished",
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
@@ -111,7 +134,6 @@ public class BanWaveRunnable extends BukkitRunnable
                     put("time", String.valueOf(t.Finish()));
                 }}
             ));
-            //DiscordUtil.SendFormatted("Banned %d player%s.", BannedPlayers.size(), BannedPlayers.size() != 1 ? "s" : "");
         }
         catch(SQLException | InvalidConfigurationException e)
         {
