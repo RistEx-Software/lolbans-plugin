@@ -49,7 +49,7 @@ public class UnbanCommand extends RistExCommand
             boolean silent = args.length > 3 ? args[0].equalsIgnoreCase("-s") : false;
             String PlayerName = args[silent ? 1 : 0];
             String reason = Messages.ConcatenateRest(args, silent ? 2 : 1).trim();
-            OfflinePlayer target = User.FindPlayerByAny(args[0]);
+            OfflinePlayer target = User.FindPlayerByAny(PlayerName);
             
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);

@@ -148,10 +148,11 @@ public class IPBanCommand extends RistExCommandAsync
             String banid = PunishID.GenerateID(DatabaseUtil.GenID("IPBans"));
 
             int i = 1;
-            PreparedStatement pst = self.connection.prepareStatement("INSERT INTO IPBans (IPAddress, Reason, Executioner, PunishID, Expiry) VALUES (?, ?, ?, ?, ?)");
+            PreparedStatement pst = self.connection.prepareStatement("INSERT INTO IPBans (IPAddress, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?)");
             pst.setString(i++, thingy.toString());
             pst.setString(i++, reason);
             pst.setString(i++, sender.getName());
+            pst.setString(i++, sender instanceof Player ? ((Player)sender).getUniqueId().toString() : "CONSOLE");
             pst.setString(i++, banid);
             pst.setTimestamp(i++, bantime);
             DatabaseUtil.ExecuteUpdate(pst);

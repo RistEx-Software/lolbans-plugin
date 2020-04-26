@@ -35,7 +35,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class ConnectionListeners implements Listener 
 {
     private static Main self = Main.getPlugin(Main.class);
-    private static HashMap<UUID, String> LinkMessages = null;
+    // private static HashMap<UUID, String> LinkMessages = null;
 
     /************************************************************************************
      * Convenience Functions
@@ -48,8 +48,8 @@ public class ConnectionListeners implements Listener
     // Adding players to a hashmap and account linking
     public static void OnPlayerConnect(PlayerJoinEvent event) 
     {
-        if (LinkMessages == null)
-            LinkMessages = new HashMap<UUID, String>();
+        // if (LinkMessages == null)
+        //     LinkMessages = new HashMap<UUID, String>();
 
         Player player = event.getPlayer();
         String puuid = player.getUniqueId().toString();
@@ -76,9 +76,9 @@ public class ConnectionListeners implements Listener
         }
 
         // Link accounts via the website
-        String JoinMessage = LinkMessages.get(player.getUniqueId());
-        if (JoinMessage != null)
-            player.sendMessage(JoinMessage);
+        // String JoinMessage = LinkMessages.get(player.getUniqueId());
+        // if (JoinMessage != null)
+        //     player.sendMessage(JoinMessage);
     }
 
     // We need to make this async so the database stuff doesn't run on the main
@@ -111,13 +111,13 @@ public class ConnectionListeners implements Listener
             WarnStatement.setBoolean(3, false);
 
             // Also ask to see if we have any linked account confirmations waiting.
-            PreparedStatement LinkedStatement = self.connection.prepareStatement("SELECT * FROM LinkConfirmations WHERE UUID = ? AND Expiry >= NOW()");
-            LinkedStatement.setString(1, event.getUniqueId().toString());
+            // PreparedStatement LinkedStatement = self.connection.prepareStatement("SELECT * FROM LinkConfirmations WHERE UUID = ? AND Expiry >= NOW()");
+            // LinkedStatement.setString(1, event.getUniqueId().toString());
 
             // Send off to other threads to query the database while we do other things.
             Future<Optional<ResultSet>> BanRecord = DatabaseUtil.ExecuteLater(BanStatement);
             Future<Optional<ResultSet>> WarnRecord = DatabaseUtil.ExecuteLater(WarnStatement);
-            Future<Optional<ResultSet>> LinkedRecord = DatabaseUtil.ExecuteLater(LinkedStatement);
+            // Future<Optional<ResultSet>> LinkedRecord = DatabaseUtil.ExecuteLater(LinkedStatement);
             Future<Optional<ResultSet>> IPBanRecord = IPBanUtil.IsBanned(event.getAddress());
             Future<UUID> AltRecords  = IPBanUtil.CheckAlts(event.getAddress());
 
@@ -197,22 +197,22 @@ public class ConnectionListeners implements Listener
             // NOTICE: We grab their linked account ID before we ban them (IP Bans don't matter though)
             // so we can kick with their linked account ID as part of the ban message to confirm their UUID.
             // As such we must grab their link id before we process kicks for bans and the like.
-            Optional<ResultSet> LinkedResult = LinkedRecord.get();
-            String TempMsg = null;
-            if (LinkedResult.isPresent())
-            {
-                ResultSet result = LinkedResult.get();
-                if (result.next())
-                {
-                    TempMsg = Messages.Translate("Link.LinkedAccountMessage",
-                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                    {{
-                        put("LinkID", result.getString("LinkID"));
-                    }});
-                }
-            }
+            // Optional<ResultSet> LinkedResult = LinkedRecord.get();
+            // String TempMsg = null;
+            // if (LinkedResult.isPresent())
+            // {
+            //     ResultSet result = LinkedResult.get();
+            //     if (result.next())
+            //     {
+            //         TempMsg = Messages.Translate("Link.LinkedAccountMessage",
+            //         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+            //         {{
+            //             put("LinkID", result.getString("LinkID"));
+            //         }});
+            //     }
+            // }
 
-            final String LinkedAccountMessage = TempMsg;
+            // final String LinkedAccountMessage = TempMsg;
 
             // Now we wait for the ban record to return
             Optional<ResultSet> BanResult = BanRecord.get();
@@ -231,7 +231,7 @@ public class ConnectionListeners implements Listener
                         put("arbiter", result.getString("ArbiterName"));
                         put("expiry", BanTime != null ? BanTime.toString() : "Never");
                         put("punishid", result.getString("PunishID"));
-                        put("LinkMessage", LinkedAccountMessage);
+                        // put("LinkMessage", LinkedAccountMessage);
                     }};
                     //(String message, String ColorChars, Map<String, String> Variables)
                     event.disallow(Result.KICK_BANNED, Messages.Translate(BanTime != null ? "Ban.TempBanMessage" : "Ban.PermBanMessage", Variables));
@@ -327,10 +327,10 @@ public class ConnectionListeners implements Listener
                 }
             }
 
-            if (LinkMessages == null)
-                LinkMessages = new HashMap<UUID, String>();
+            // if (LinkMessages == null)
+            //     LinkMessages = new HashMap<UUID, String>();
 
-            LinkMessages.put(event.getUniqueId(), LinkedAccountMessage);
+            // LinkMessages.put(event.getUniqueId(), LinkedAccountMessage);
 
             // They're not banned and have no pending warnings, allow them to connect or other plugins to perform their actions.
         }

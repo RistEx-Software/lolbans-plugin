@@ -60,7 +60,8 @@ public class AsyncChatListener
                             put("reason", result.getString("Reason"));
                             put("arbiter", result.getString("ArbiterName"));
                             put("punishid", result.getString("PunishID"));
-                            put("expiry", MuteTime != null ? MuteTime.toString() : "Never");
+                            if (MuteTime != null)
+                                put("expiry", MuteTime.toString());
                         }}
                     ));
                 }
