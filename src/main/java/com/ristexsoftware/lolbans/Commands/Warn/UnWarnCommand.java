@@ -2,7 +2,6 @@ package com.ristexsoftware.lolbans.Commands.Warn;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.OfflinePlayer;
 
@@ -16,18 +15,18 @@ import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
-import java.sql.*;
 import java.util.TreeMap;
 import java.util.Map;
+import java.util.Optional;
 
 
-public class WarnCommand extends RistExCommand
+public class UnWarnCommand extends RistExCommand
 {
-    public WarnCommand(Plugin owner)
+    public UnWarnCommand(Plugin owner)
     {
-        super("warn", owner);
-        this.setDescription("Issue a warning against a player");
-        this.setPermission("lolbans.warn");
+        super("unwarn", owner);
+        this.setDescription("Remove a warning previously issued to a player");
+        this.setPermission("lolbans.unwarn");
     }
 
     @Override
@@ -36,7 +35,7 @@ public class WarnCommand extends RistExCommand
         try 
         {
             sender.sendMessage(Messages.InvalidSyntax);
-            sender.sendMessage(Messages.Translate("Syntax.Warn", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+            sender.sendMessage(Messages.Translate("Syntax.UnWarn", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
         }
         catch (InvalidConfigurationException e)
         {
@@ -48,53 +47,54 @@ public class WarnCommand extends RistExCommand
     @Override
     public boolean Execute(CommandSender sender, String label, String[] args)
     {
-        if (!PermissionUtil.Check(sender, "lolbans.warn"))
-            return User.PermissionDenied(sender, "lolbans.warn");
+        if (!PermissionUtil.Check(sender, "lolbans.unwarn"))
+            return User.PermissionDenied(sender, "lolbans.unwarn");
 
-        // /warn [-s] <PlayerName> <Reason>
+        // /unwarn [-s] <PlayerName|PunishID>
         if (args.length < 2)
             return false;
 
         try 
         {
-            boolean silent = args.length > 2 ? args[0].equalsIgnoreCase("-s") : false;
+            boolean silent = args.length > 1 ? args[0].equalsIgnoreCase("-s") : false;
             String PlayerName = args[silent ? 1 : 0];
-            String reason = Messages.ConcatenateRest(args, silent ? 2 : 1).trim();
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
 
-            Punishment punish = new Punishment(PunishmentType.PUNISH_WARN, sender, target, reason, null);
-            punish.Commit(sender);
+			Optional<Punishment> opunish = Punishment.FindPunishment(PunishmentType.PUNISH_WARN, target, false);
+			if (!opunish.isPresent())
+			{
+				sender.sendMessage("Congratulations!! You've found a bug!! Please report it to the lolbans developers to get it fixed! :D");
+                return true;
+			}
+			Punishment punish = opunish.get();
 
             Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
             {{
                 put("player", target.getName());
-                put("reason", reason);
                 put("punishid", punish.GetPunishmentID());
                 put("arbiter", sender.getName());
                 put("silent", Boolean.toString(silent));
-            }};
+			}};
+			
+			// We don't track punishments that were removed so we just delete them.
+			punish.Delete();
                 
             // If they're online, require acknowledgement immediately by freezing them and sending a message.
             if (target.isOnline())
             {
-                String WarnedMessage = Messages.Translate("Warn.WarnedMessage", Variables);
                 User u = Main.USERS.get(target.getUniqueId());
-                u.SetWarned(true, ((Player) target).getLocation(), WarnedMessage);
-                u.SendMessage(WarnedMessage);
-
-                // Send them a box as well. This will disallow them from sending move events.
-                // However, client-side enforcement is not guaranteed so we also enforce the
-                // same thing using the MovementListener, this just helps stop rubberbanding.
-                u.SpawnBox(true, null);
+                u.SetWarned(false, null, null);
+                u.SendMessage(Messages.Translate("Warn.RemovedWarning", Variables));
             }
-            
-            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Warn.WarnAnnouncment", Variables));
-            DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+			
+			sender.sendMessage(Messages.Translate("Warn.RemovedSuccess", Variables));
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Warn.RemovedWarnAnnouncment", Variables));
+            // TODO: DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
-        catch (SQLException | InvalidConfigurationException e)
+        catch (InvalidConfigurationException e)
         {
             e.printStackTrace();
             sender.sendMessage(Messages.ServerError);

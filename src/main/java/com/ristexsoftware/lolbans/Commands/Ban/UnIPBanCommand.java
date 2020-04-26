@@ -1,9 +1,9 @@
 package com.ristexsoftware.lolbans.Commands.Ban;
 
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import inet.ipaddr.HostName;
 
@@ -27,10 +27,17 @@ import java.util.concurrent.ExecutionException;
 
 public class UnIPBanCommand extends RistExCommandAsync
 {
-    private static Main self = Main.getPlugin(Main.class);
+	private Main self = (Main)this.getPlugin();
+	
+	public UnIPBanCommand(Plugin owner)
+    {
+        super("unipban", owner);
+        this.setDescription("Remove an IP or CIDR range ban");
+        this.setPermission("lolbans.ban");
+    }
 
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -45,7 +52,7 @@ public class UnIPBanCommand extends RistExCommandAsync
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.ipunban"))
             return User.PermissionDenied(sender, "lolbans.ipunban");

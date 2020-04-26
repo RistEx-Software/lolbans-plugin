@@ -28,9 +28,8 @@ lol may/june release pls - hah! if we're lucky!
 Minimum Viable Product (MVP) / Feature Freeze:
 ##########################################
  - [Feature] create /reports
- - [Feature] /dupeip, /iphistory - Justin/Zachery
+ - [Feature] /alt, /iphistory, /regexhistory - Justin/Zachery
  - [Feature] Rewrite messages.yml to use new variables.
- - [Feature] UnWarn command needs to be created
  - [Feature] List bans, regex bans, ip bans, warnings, etc. and ensure they're easy to remove.
  - [Feature] Permissions (make sure they're granular enough?) / dynamic permissions - Zachery
  - [Bug] The entirety of PruneHistoryCommand.java

@@ -1,12 +1,10 @@
 package com.ristexsoftware.lolbans.Commands.Ban;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.IPBanUtil;
@@ -31,7 +29,14 @@ import inet.ipaddr.IPAddressString;
 
 public class IPBanCommand extends RistExCommandAsync
 {
-    private static Main self = Main.getPlugin(Main.class);
+    private Main self = (Main)this.getPlugin();
+
+    public IPBanCommand(Plugin owner)
+    {
+        super("ip-ban", owner);
+        this.setDescription("Ban an ip address or CIDR range");
+        this.setPermission("lolbans.ipban");
+    }
 
     /**
      * Check to make sure that the address is sane.
@@ -101,7 +106,7 @@ public class IPBanCommand extends RistExCommandAsync
     }
 
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -116,7 +121,7 @@ public class IPBanCommand extends RistExCommandAsync
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.ipban"))
             return User.PermissionDenied(sender, "lolbans.ipban");

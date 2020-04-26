@@ -1,10 +1,10 @@
 package com.ristexsoftware.lolbans.Commands.Ban;
 
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
@@ -25,9 +25,16 @@ import java.util.TreeMap;
 
 public class BanWaveCommand extends RistExCommand
 {
-    private static Main self = Main.getPlugin(Main.class);
+    private Main self = (Main)this.getPlugin();
 
-    private boolean BanWaveAdd(CommandSender sender, boolean silent, Command command, String label, String[] args)
+    public BanWaveCommand(Plugin owner)
+    {
+        super("banwave", owner);
+        this.setDescription("Manage ban waves");
+        this.setPermission("lolbans.banwave");
+    }
+
+    private boolean BanWaveAdd(CommandSender sender, boolean silent, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.banwave.add"))
             return User.PermissionDenied(sender, "lolbans.banwave.add");
@@ -92,7 +99,7 @@ public class BanWaveCommand extends RistExCommand
         }
     }
 
-    private boolean BanWaveRemove(CommandSender sender, boolean silent, Command command, String label, String[] args)
+    private boolean BanWaveRemove(CommandSender sender, boolean silent, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.banwave.remove"))
             return User.PermissionDenied(sender, "lolbans.banwave.remove");
@@ -126,7 +133,7 @@ public class BanWaveCommand extends RistExCommand
         }
     }
 
-    private boolean BanWaveExecute(CommandSender sender, boolean silent, Command command, String label, String[] args)
+    private boolean BanWaveExecute(CommandSender sender, boolean silent, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.banwave.enforce"))
             return User.PermissionDenied(sender, "lolbans.banwave.enforce");
@@ -141,7 +148,7 @@ public class BanWaveCommand extends RistExCommand
     }
 
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -156,7 +163,7 @@ public class BanWaveCommand extends RistExCommand
     }
         
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.banwave"))
             return User.PermissionDenied(sender, "lolbans.banwave");
@@ -171,11 +178,11 @@ public class BanWaveCommand extends RistExCommand
 
         // TODO: Help commands with this which explains everything
         if (SubCommand.equalsIgnoreCase("add"))
-            return this.BanWaveAdd(sender, silent, command, label, Subargs);
+            return this.BanWaveAdd(sender, silent, label, Subargs);
         else if (Messages.CompareMany(SubCommand, new String[]{"remove", "rm", "delete", "del"}))
-            return this.BanWaveRemove(sender, silent, command, label, Subargs);
+            return this.BanWaveRemove(sender, silent, label, Subargs);
         else if (Messages.CompareMany(SubCommand, new String[]{"enforce", "run", "start", "exec", "execute"}))
-            return this.BanWaveExecute(sender, silent, command, label, Subargs);
+            return this.BanWaveExecute(sender, silent, label, Subargs);
             
         // If they run a sub command we don't know
         return false;

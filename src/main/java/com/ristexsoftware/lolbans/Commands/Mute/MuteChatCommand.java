@@ -1,9 +1,9 @@
 package com.ristexsoftware.lolbans.Commands.Mute;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.plugin.Plugin;
 
 import java.util.TreeMap;
 
@@ -15,10 +15,17 @@ import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 
 public class MuteChatCommand extends RistExCommand
 {
-    private static Main self = Main.getPlugin(Main.class);
+    private Main self = (Main)this.getPlugin();
+
+    public MuteChatCommand(Plugin owner)
+    {
+        super("mutechat", owner);
+        this.setDescription("Mute the chat for all players (toggleable)");
+        this.setPermission("lolbans.mutechat");
+    }
 
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -33,7 +40,7 @@ public class MuteChatCommand extends RistExCommand
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.chatmute"))
             return User.PermissionDenied(sender, "lolbans.chatmute");

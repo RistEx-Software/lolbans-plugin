@@ -2,9 +2,9 @@ package com.ristexsoftware.lolbans.Commands.History;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.plugin.Plugin;
 
 // import inet.ipaddr.AddressStringException;
 import inet.ipaddr.IPAddressString;
@@ -27,10 +27,17 @@ import java.sql.*;
 
 public class PruneHistoryCommand extends RistExCommandAsync
 {
-    private static Main self = Main.getPlugin(Main.class);
+    private Main self = (Main) this.getPlugin();
+    
+    public PruneHistoryCommand(Plugin owner)
+    {
+        super("prunehistory", owner);
+        this.setDescription("Delete the punishment history for a date range");
+        this.setPermission("lolbans.history.prune");
+    }
 
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -45,7 +52,7 @@ public class PruneHistoryCommand extends RistExCommandAsync
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.history.prune"))
             return User.PermissionDenied(sender, "lolbans.history.prune");

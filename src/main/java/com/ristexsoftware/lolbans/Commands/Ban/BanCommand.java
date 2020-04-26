@@ -1,9 +1,9 @@
 package com.ristexsoftware.lolbans.Commands.Ban;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
@@ -26,8 +26,15 @@ public class BanCommand extends RistExCommandAsync
 {
     private static Main self = Main.getPlugin(Main.class);
 
+    public BanCommand(Plugin owner)
+    {
+        super("ban", owner);
+        this.setDescription("Ban a player");
+        this.setPermission("lolbans.ban");
+    }
+
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args) 
+    public void onSyntaxError(CommandSender sender, String label, String[] args) 
     {
         try 
         {
@@ -42,7 +49,7 @@ public class BanCommand extends RistExCommandAsync
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.ban"))
             return User.PermissionDenied(sender, "lolbans.ban");

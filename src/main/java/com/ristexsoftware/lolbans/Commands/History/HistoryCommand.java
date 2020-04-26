@@ -1,9 +1,9 @@
 package com.ristexsoftware.lolbans.Commands.History;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.plugin.Plugin;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
@@ -15,13 +15,22 @@ import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.List;
 import java.sql.*;
 
 public class HistoryCommand extends RistExCommand
 {
-    private static Main self = Main.getPlugin(Main.class);
+    private Main self = (Main)this.getPlugin();
+
+    public HistoryCommand(Plugin owner)
+    {
+        super("history", owner);
+        this.setDescription("Get history of player punishments");
+        this.setPermission("lolbans.history");
+        this.setAliases(Arrays.asList(new String[]{"h"}));
+    }
 
     private String GodForbidJava8HasUsableLambdaExpressionsSoICanAvoidDefiningSuperflouosFunctionsLikeThisOne(PunishmentType Type, Timestamp ts)
     {
@@ -38,7 +47,7 @@ public class HistoryCommand extends RistExCommand
     }
 
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -53,7 +62,7 @@ public class HistoryCommand extends RistExCommand
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.history"))
             return User.PermissionDenied(sender, "lolbans.history");

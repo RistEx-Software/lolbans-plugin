@@ -1,10 +1,10 @@
 package com.ristexsoftware.lolbans.Commands.Mute;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
@@ -20,8 +20,15 @@ import java.util.TreeMap;
 
 public class UnmuteCommand extends RistExCommand
 {
+    public UnmuteCommand(Plugin owner)
+    {
+        super("unmute", owner);
+        this.setDescription("Allow the player to send chat messages");
+        this.setPermission("lolbans.unmute");
+    }
+
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -36,7 +43,7 @@ public class UnmuteCommand extends RistExCommand
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.unmute"))
             return User.PermissionDenied(sender, "lolbans.unmute");

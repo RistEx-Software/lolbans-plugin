@@ -1,10 +1,10 @@
 package com.ristexsoftware.lolbans.Commands.Misc;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import com.ristexsoftware.lolbans.Objects.User;
 
@@ -19,8 +19,15 @@ import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 // TODO: Prefix broadcasts?
 public class BroadcastCommand extends RistExCommand
 {
+    public BroadcastCommand(Plugin owner)
+    {
+        super("broadcast", owner);
+        this.setDescription("Broadcast a message to all online players");
+        this.setPermission("lolbans.broadcast");
+    }
+
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -35,7 +42,7 @@ public class BroadcastCommand extends RistExCommand
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.broadcast"))
             return User.PermissionDenied(sender, "lolbans.broadcast");

@@ -1,8 +1,8 @@
 package com.ristexsoftware.lolbans.Commands.Misc;
 
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
@@ -23,10 +23,17 @@ import java.util.Optional;
 
 public class StaffRollbackCommand extends RistExCommand
 {
-    private static Main self = Main.getPlugin(Main.class);
+    private Main self = (Main)this.getPlugin();
+
+    public StaffRollbackCommand(Plugin owner)
+    {
+        super("staffrollback", owner);
+        this.setDescription("Rollback a staff member's actions");
+        this.setPermission("lolbans.staffrollback");
+    }
 
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -41,7 +48,7 @@ public class StaffRollbackCommand extends RistExCommand
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.staffrollback"))
             return User.PermissionDenied(sender, "lolbans.staffrollback");

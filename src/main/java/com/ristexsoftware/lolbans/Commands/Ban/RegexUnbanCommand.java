@@ -1,9 +1,9 @@
 package com.ristexsoftware.lolbans.Commands.Ban;
 
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
@@ -26,10 +26,17 @@ import java.util.regex.PatternSyntaxException;
 
 public class RegexUnbanCommand extends RistExCommandAsync
 {
-    private static Main self = Main.getPlugin(Main.class);
+    private Main self = (Main) this.getPlugin();
+    
+    public RegexUnbanCommand(Plugin owner)
+    {
+        super("regexunban", owner);
+        this.setDescription("Remove a regular expression ban");
+        this.setPermission("lolbans.regexunban");
+    }
 
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -44,7 +51,7 @@ public class RegexUnbanCommand extends RistExCommandAsync
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.regexunban"))
             return User.PermissionDenied(sender, "lolbans.regexunban");

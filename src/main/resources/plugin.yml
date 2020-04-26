@@ -4,7 +4,6 @@ main: com.ristexsoftware.lolbans.Main
 api-version: 1.13
 authors: [Zachery Coleman, Justasic]
 description: A ban system for minecraft, nothing fancy
-permission-message: &noperms "§cError: §fAccess Denied!"
 website: https://github.com/notzachery
 permissions:
   lolbans.ban:
@@ -65,60 +64,7 @@ permissions:
     description: Able to accept a warning from chat
   lolbans.warn:
     description: Able to issue a warning against a player
+  lolbans.unwarn:
+    description: Able to remove a warning previously issued
   lolbans.mute.bypass:
     description: Able to bypass mutes
-commands:
-  ban:
-    description: Ban a player
-    permission: lolbans.ban
-  staffrollback:
-    description: Rollback a staff member's actions
-    permission: lolbans.staffrollback
-  staffhistory:
-    descripton: Show staff history
-    permission: lolbans.staffhistory
-  ip-ban:
-    description: Ban an ip address or CIDR range
-    permission: lolbans.ipban
-  regexban:
-    description: Ban a username/hostname/ip address based on a Regular Expression
-    permission: lolbans.regexban
-  kick:
-    description: Ban a player
-    permission: lolbans.kick
-  mute:
-    description: mute a player
-    permission: lolbans.mute
-  unban:
-    description: Remove a player ban
-    permission: lolbans.unban
-  unbanip:
-    description: Remove an IP or CIDR range ban
-    permission: lolbans.ipunban
-  regexunban:
-    description: Remove a regular expression ban
-  mutechat:
-    description: Mute the chat for all players (togglable)
-    permission: lolbans.chatmute
-  unmute:
-    description: Remove a mute on a player
-    permission: lolbans.mute
-  history:
-    description: Get history of users punishments
-    aliases: [h]
-    permission: lolbans.history
-  banwave:
-    description: add user to the banwave
-    permission: lolbans.banwave
-  warn:
-    description: Warn a player
-    permission: lolbans.warn
-  accept:
-    description: accept a warning
-    permission: lolbans.warnaccept
-  broadcast:
-    description: Broadcast a message to all online players
-    permission: lolbans.broadcast
-  report:
-    description: Report a user
-    permission: lolbans.report

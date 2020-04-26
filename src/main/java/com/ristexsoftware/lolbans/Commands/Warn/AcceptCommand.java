@@ -4,10 +4,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.TreeMap;
 
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
@@ -18,11 +18,18 @@ import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
 public class AcceptCommand extends RistExCommand
-{    
-    private static Main self = Main.getPlugin(Main.class);
+{
+    private Main self = (Main)this.getPlugin();
+
+    public AcceptCommand(Plugin owner)
+    {
+        super("accept", owner);
+        this.setDescription("Accept a warning");
+        this.setPermission("lolbans.warnaccept");
+    }    
 
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -37,7 +44,7 @@ public class AcceptCommand extends RistExCommand
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args) 
+    public boolean Execute(CommandSender sender, String label, String[] args) 
     {
         if (!PermissionUtil.Check(sender, "lolbans.warnaccept"))
             return User.PermissionDenied(sender, "lolbans.warnaccept");

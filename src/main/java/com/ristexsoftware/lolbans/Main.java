@@ -26,9 +26,12 @@ package com.ristexsoftware.lolbans;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
 import org.bukkit.entity.Player;
 
 import com.ristexsoftware.lolbans.Commands.Warn.AcceptCommand;
+import com.ristexsoftware.lolbans.Commands.Warn.UnWarnCommand;
 import com.ristexsoftware.lolbans.Commands.Warn.WarnCommand;
 import com.ristexsoftware.lolbans.Commands.Ban.BanCommand;
 import com.ristexsoftware.lolbans.Commands.Ban.UnbanCommand;
@@ -49,6 +52,7 @@ import com.ristexsoftware.lolbans.Commands.Mute.MuteCommand;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
+import com.ristexsoftware.lolbans.Utils.ReflectionUtil;
 import com.ristexsoftware.lolbans.Hacks.Hacks;
 import com.ristexsoftware.lolbans.Objects.User;
 
@@ -57,6 +61,7 @@ import inet.ipaddr.IPAddressString;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -149,25 +154,33 @@ public final class Main extends JavaPlugin
         // Run our hacks
         Hacks.HackIn(this);
 
-        // Register commands
-        this.getCommand("ban").setExecutor(new BanCommand());
-        this.getCommand("ip-ban").setExecutor(new IPBanCommand());
-        this.getCommand("unban").setExecutor(new UnbanCommand());
-        this.getCommand("unregexban").setExecutor(new RegexUnbanCommand());
-        this.getCommand("unipban").setExecutor(new UnIPBanCommand());
-        this.getCommand("history").setExecutor(new HistoryCommand());
-        this.getCommand("banwave").setExecutor(new BanWaveCommand());
-        this.getCommand("warn").setExecutor(new WarnCommand());
-        this.getCommand("accept").setExecutor(new AcceptCommand());
-        this.getCommand("mutechat").setExecutor(new MuteChatCommand());
-        this.getCommand("mute").setExecutor(new MuteCommand());
-        this.getCommand("unmute").setExecutor(new UnmuteCommand());
-        this.getCommand("kick").setExecutor(new KickCommand());
-        this.getCommand("broadcast").setExecutor(new BroadcastCommand());
-        this.getCommand("report").setExecutor(new ReportCommand());
-        this.getCommand("regexban").setExecutor(new RegexBanCommand());
-        this.getCommand("staffrollback").setExecutor(new StaffRollbackCommand());
-        this.getCommand("staffhistory").setExecutor(new StaffHistoryCommand());
+        List<Command> CommandList = new ArrayList<Command>();
+        CommandList.add(new BanCommand(this));
+        CommandList.add(new IPBanCommand(this));
+        CommandList.add(new UnbanCommand(this));
+        CommandList.add(new RegexUnbanCommand(this));
+        CommandList.add(new UnIPBanCommand(this));
+        CommandList.add(new HistoryCommand(this));
+        CommandList.add(new BanWaveCommand(this));
+        CommandList.add(new WarnCommand(this));
+        CommandList.add(new UnWarnCommand(this));
+        CommandList.add(new AcceptCommand(this));
+        CommandList.add(new MuteChatCommand(this));
+        CommandList.add(new MuteCommand(this));
+        CommandList.add(new UnmuteCommand(this));
+        CommandList.add(new KickCommand(this));
+        CommandList.add(new BroadcastCommand(this));
+        CommandList.add(new ReportCommand(this));
+        CommandList.add(new RegexBanCommand(this));
+        CommandList.add(new StaffRollbackCommand(this));
+        CommandList.add(new StaffHistoryCommand(this));
+
+        // MD_5 and his knobbery continues. the CraftServer.java class has a `getCommandMap()`
+        // method and CommandMap is documented but there's no reasonable way to get the command
+        // map from within the server. Because MD_5 couldn't help but program like a 12 year old
+        // we now have to use reflection to get a more reasonable way to register commands.
+        CommandMap cmap = ReflectionUtil.getProtectedValue(Bukkit.getServer(), "commandMap");
+        cmap.registerAll(this.getName().toLowerCase(), CommandList);
     }
 
     @Override

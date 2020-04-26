@@ -1,9 +1,9 @@
 package com.ristexsoftware.lolbans.Commands.Misc;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
@@ -22,10 +22,17 @@ import java.util.TreeMap;
 
 public class KickCommand extends RistExCommandAsync
 {
-    private static Main self = Main.getPlugin(Main.class);
+    private Main self = (Main)this.getPlugin();
+
+    public KickCommand(Plugin owner)
+    {
+        super("kick", owner);
+        this.setDescription("Kick a player from the server");
+        this.setPermission("lolbans.kick");
+    }
 
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -40,7 +47,7 @@ public class KickCommand extends RistExCommandAsync
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.kick"))
             return User.PermissionDenied(sender, "lolbans.kick");

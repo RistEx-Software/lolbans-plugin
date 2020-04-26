@@ -1,12 +1,10 @@
 package com.ristexsoftware.lolbans.Commands.Ban;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.IPBanUtil;
@@ -28,7 +26,14 @@ import inet.ipaddr.HostName;
 
 public class RegexBanCommand extends RistExCommandAsync
 {
-    private static Main self = Main.getPlugin(Main.class);
+    private Main self = (Main) this.getPlugin();
+    
+    public RegexBanCommand(Plugin owner)
+    {
+        super("regexban", owner);
+        this.setDescription("Ban a username/hostname/ip address based on a Regular Expression");
+        this.setPermission("lolbans.regexban");
+    }
 
     /**
      * Check to make sure that the address is sane.
@@ -108,7 +113,7 @@ public class RegexBanCommand extends RistExCommandAsync
     }
 
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -123,7 +128,7 @@ public class RegexBanCommand extends RistExCommandAsync
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.regexban"))
             return User.PermissionDenied(sender, "lolbans.regexban");

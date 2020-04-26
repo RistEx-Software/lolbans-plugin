@@ -1,8 +1,8 @@
 package com.ristexsoftware.lolbans.Commands.Misc;
 
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
@@ -18,8 +18,15 @@ import java.util.Map;
 
 public class FreezeCommand extends RistExCommand
 {
+    public FreezeCommand(Plugin owner)
+    {
+        super("freeze", owner);
+        this.setDescription("Prevent a player from doing any actions");
+        this.setPermission("lolbans.freeze");
+    }
+
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -34,7 +41,7 @@ public class FreezeCommand extends RistExCommand
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.freeze"))
             return User.PermissionDenied(sender, "lolbans.freeze");

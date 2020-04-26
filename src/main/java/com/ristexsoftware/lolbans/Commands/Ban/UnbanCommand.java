@@ -1,9 +1,9 @@
 package com.ristexsoftware.lolbans.Commands.Ban;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.plugin.Plugin;
 
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
@@ -19,8 +19,15 @@ import java.util.TreeMap;
 
 public class UnbanCommand extends RistExCommand
 {
+    public UnbanCommand(Plugin owner)
+    {
+        super("unban", owner);
+        this.setDescription("Remove a player ban");
+        this.setPermission("lolbans.unban");
+    }
+
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -35,7 +42,7 @@ public class UnbanCommand extends RistExCommand
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.unban"))
             return true;

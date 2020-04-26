@@ -1,9 +1,9 @@
 package com.ristexsoftware.lolbans.Commands.Mute;
 
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
@@ -22,8 +22,15 @@ import java.util.Map;
 
 public class MuteCommand extends RistExCommand
 {
+    public MuteCommand(Plugin owner)
+    {
+        super("mute", owner);
+        this.setDescription("Prevent a player from sending messages in chat");
+        this.setPermission("lolbans.mute");
+    }
+
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -38,7 +45,7 @@ public class MuteCommand extends RistExCommand
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.mute"))
             return User.PermissionDenied(sender, "lolbans.mute");

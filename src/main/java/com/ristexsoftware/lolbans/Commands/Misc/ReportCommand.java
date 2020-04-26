@@ -1,11 +1,10 @@
 package com.ristexsoftware.lolbans.Commands.Misc;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
@@ -24,10 +23,17 @@ import java.util.Optional;
 
 public class ReportCommand extends RistExCommand
 {
-    private static Main self = Main.getPlugin(Main.class);
+    private Main self = (Main)this.getPlugin();
+
+    public ReportCommand(Plugin owner)
+    {
+        super("report", owner);
+        this.setDescription("Report a user to server administration");
+        this.setPermission("lolbans.report");
+    }
 
     @Override
-    public void onSyntaxError(CommandSender sender, Command command, String label, String[] args)
+    public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
         try 
         {
@@ -42,7 +48,7 @@ public class ReportCommand extends RistExCommand
     }
 
     @Override
-    public boolean Execute(CommandSender sender, Command command, String label, String[] args)
+    public boolean Execute(CommandSender sender, String label, String[] args)
     {
         if (!PermissionUtil.Check(sender, "lolbans.report"))
             return User.PermissionDenied(sender, "lolbans.report");
