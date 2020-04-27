@@ -93,16 +93,6 @@ public class Messages
         return _Translate(ConfigMessage, Variables);
     }
 
-    public static String ConcatenateRest(String[] args, int offset, String delim)
-    {
-        return args.length > 1 ? String.join(delim, Arrays.copyOfRange(args, offset, args.length)) : args[1];
-    }
-
-    public static String ConcatenateRest(String[] args, int offset)
-    {
-        return Messages.ConcatenateRest(args, offset, " ");
-    }
-
     public static boolean CompareMany(String haystack, String[] needles)
     {
         for (String needle : needles)

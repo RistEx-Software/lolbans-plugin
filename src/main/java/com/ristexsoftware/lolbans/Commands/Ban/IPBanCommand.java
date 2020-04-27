@@ -9,6 +9,7 @@ import org.bukkit.plugin.Plugin;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.IPBanUtil;
 import com.ristexsoftware.lolbans.Utils.PunishID;
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
@@ -126,22 +127,27 @@ public class IPBanCommand extends RistExCommandAsync
         if (!PermissionUtil.Check(sender, "lolbans.ipban"))
             return User.PermissionDenied(sender, "lolbans.ipban");
 
-        if (args.length < 3)
-            return false;
-
         // /ipban [-s] <ip address>[/<cidr>] <time> <Reason here unlimited length>
         try
         {
-            boolean silent = args.length > 3 ? args[0].equalsIgnoreCase("-s") : false;
-            String reason = Messages.ConcatenateRest(args, silent ? 3 : 2);
-            String TimePeriod = silent ? args[2] : args[1];
-            Timestamp bantime = TimeUtil.ParseToTimestamp(TimePeriod);
+            ArgumentUtil a = new ArgumentUtil(args);
+            a.OptionalFlag("Silent", "-s");
+            a.RequiredString("CIDR", 0);
+            a.RequiredString("Time", 1);
+            a.RequiredSentence("Reason", 2);
+
+            if (!a.IsValid())
+                return false;
+
+            boolean silent = a.get("Silent") != null;
+            String reason = a.get("Reason");
+            Timestamp bantime = TimeUtil.ParseToTimestamp(a.get("Time"));
 
             if (bantime == null && !PermissionUtil.Check(sender, "lolbans.ipban.perm"))
                 return User.PermissionDenied(sender, "lolbans.ipban.perm"); 
             
             // Is a future, needed != null for some reason.
-            IPAddress thingy = new IPAddressString(args[silent ? 1 : 0]).toAddress();
+            IPAddress thingy = new IPAddressString(a.get("CIDR")).toAddress();
             // TODO: handle this better? Send the banned subnet string instead of the address they tried to ban?
             Optional<ResultSet> res = IPBanUtil.IsBanned(thingy.toInetAddress()).get();
             if (res.isPresent() && res.get().next())

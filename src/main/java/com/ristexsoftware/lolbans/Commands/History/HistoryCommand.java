@@ -107,7 +107,8 @@ public class HistoryCommand extends RistExCommand
                         put("arbiter", result.getString("ArbiterName"));
                         put("type", GodForbidJava8HasUsableLambdaExpressionsSoICanAvoidDefiningSuperflouosFunctionsLikeThisOne(Type, ts));
                         put("date", TimeUtil.TimeString(result.getTimestamp("TimePunished")));
-                        put("expiry", ts.toString());
+                        if (ts != null)
+                            put("expiry", ts.toString());
                         // TODO: Add more variables for people who want more info?
                     }}
                 ));

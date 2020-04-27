@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.OfflinePlayer;
 
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
@@ -51,17 +52,22 @@ public class MuteCommand extends RistExCommand
             return User.PermissionDenied(sender, "lolbans.mute");
 
         // /mute [-s] <PlayerName> <TimePeriod|*> <Reason>
-        if (args.length < 3)
-            return false;
-        
         try 
         {
-            boolean silent = args.length > 3 ? args[0].equalsIgnoreCase("-s") : false;
-            String PlayerName = args[silent ? 1 : 0];
-            String TimePeriod = args[silent ? 2 : 1];
-            String reason = Messages.ConcatenateRest(args, silent ? 3 : 2).trim();
+            ArgumentUtil a = new ArgumentUtil(args);
+            a.OptionalFlag("Silent", "-s");
+            a.RequiredString("PlayerName", 0);
+            a.RequiredString("Time", 1);
+            a.RequiredSentence("Reason", 2);
+
+            if (!a.IsValid())
+                return false;
+
+            boolean silent = a.get("Silent") != null;
+            String PlayerName = a.get("PlayerName");
+            String reason = a.get("Reason");
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
-            Timestamp mutetime = TimeUtil.ParseToTimestamp(TimePeriod);
+            Timestamp mutetime = TimeUtil.ParseToTimestamp(a.get("Time"));
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);

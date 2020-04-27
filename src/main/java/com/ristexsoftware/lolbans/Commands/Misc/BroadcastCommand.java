@@ -11,6 +11,7 @@ import com.ristexsoftware.lolbans.Objects.User;
 import java.util.TreeMap;
 
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.TranslationUtil;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
@@ -48,7 +49,7 @@ public class BroadcastCommand extends RistExCommand
             return User.PermissionDenied(sender, "lolbans.broadcast");
 
         // Syntax is really just "/broadcast This is the broadcasted message here"
-        String message = Messages.ConcatenateRest(args, 1);
+        String message = ArgumentUtil.ConcatenateRest(args, 1, -1, " ");
 
         if (message == null || message.isEmpty())
             return false;

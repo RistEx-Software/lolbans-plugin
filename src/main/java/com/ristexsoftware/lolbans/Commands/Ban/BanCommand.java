@@ -10,6 +10,7 @@ import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
@@ -53,21 +54,27 @@ public class BanCommand extends RistExCommandAsync
     {
         if (!PermissionUtil.Check(sender, "lolbans.ban"))
             return User.PermissionDenied(sender, "lolbans.ban");
-
-        // /ban [-s] <PlayerName> <Time|*> <Reason>
-        if (args.length < 2)
-            return false;
         
         try 
         {
             Timing t = new Timing();
 
-            boolean silent = args.length > 3 ? args[0].equalsIgnoreCase("-s") : false;
-            String PlayerName = silent ? args[1] : args[0];
-            String TimePeriod = silent ? args[2] : args[1];
-            String reason = Messages.ConcatenateRest(args, silent ? 3 : 2).trim();
+            // /ban [-s] <PlayerName> <Time|*> <Reason>
+            ArgumentUtil a = new ArgumentUtil(args);
+            a.OptionalFlag("Silent", "-s");
+            a.RequiredString("PlayerName", 0);
+            a.RequiredString("TimePeriod", 1);
+            a.RequiredSentence("Reason", 2);
+
+            if (!a.IsValid())
+                return false;
+
+            boolean silent = a.get("Silent") != null;
+            String PlayerName = a.get("PlayerName");
+            String reason = a.get("Reason");
+
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
-            Timestamp bantime = TimeUtil.ParseToTimestamp(TimePeriod);
+            Timestamp bantime = TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);

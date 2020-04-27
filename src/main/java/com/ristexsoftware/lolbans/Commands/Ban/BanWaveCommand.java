@@ -15,6 +15,7 @@ import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Utils.Messages;
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
@@ -39,21 +40,23 @@ public class BanWaveCommand extends RistExCommand
         if (!PermissionUtil.Check(sender, "lolbans.banwave.add"))
             return User.PermissionDenied(sender, "lolbans.banwave.add");
 
-        if (args.length < 2)
-        {
-            sender.sendMessage(Messages.InvalidSyntax);
-            return false; // Show syntax.
-        }
-
         // Syntax: /banwave add <playername> <Time|*> <reason>
         try 
         {
-            Timestamp Expiry = TimeUtil.ParseToTimestamp(args[1]);
-            String reason = Messages.ConcatenateRest(args, 3).trim();
-            OfflinePlayer target = User.FindPlayerByAny(args[0]);
+            ArgumentUtil a = new ArgumentUtil(args);
+            a.RequiredString("PlayerName", 0);
+            a.RequiredString("Time", 1);
+            a.RequiredSentence("reason", 2);
+
+            if (!a.IsValid())
+                return false;
+
+            Timestamp Expiry = TimeUtil.ParseToTimestamp(a.get("Time"));
+            String reason = a.get("reason");
+            OfflinePlayer target = User.FindPlayerByAny(a.get("PlayerName"));
 
             if (target == null)
-                return User.NoSuchPlayer(sender, args[0], true);
+                return User.NoSuchPlayer(sender, a.get("PlayerName"), true);
 
             if (User.IsPlayerInWave(target))
                 return User.PlayerOnlyVariableMessage("BanWave.PlayerIsInBanWave", sender, target.getName(), true);
@@ -104,10 +107,16 @@ public class BanWaveCommand extends RistExCommand
         if (!PermissionUtil.Check(sender, "lolbans.banwave.remove"))
             return User.PermissionDenied(sender, "lolbans.banwave.remove");
 
+        ArgumentUtil a = new ArgumentUtil(args);
+        a.RequiredString("PlayerName", 0);
+
+        if (!a.IsValid())
+            return false;
+
         // Check and make sure the user actually exists.
-        OfflinePlayer target = User.FindPlayerByAny(args[0]);
+        OfflinePlayer target = User.FindPlayerByAny(a.get("PlayerName"));
         if (target == null)
-            return User.NoSuchPlayer(sender, args[0], true);
+            return User.NoSuchPlayer(sender, a.get("PlayerName"), true);
 
         // Check if they're banned normally
         if (!User.IsPlayerInWave(target))
@@ -138,7 +147,6 @@ public class BanWaveCommand extends RistExCommand
         if (!PermissionUtil.Check(sender, "lolbans.banwave.enforce"))
             return User.PermissionDenied(sender, "lolbans.banwave.enforce");
 
-        // TODO: handle -s
         User.PlayerOnlyVariableMessage("BanWave.BanWaveStart", sender, sender.getName(), false);
         BanWaveRunnable bwr = new BanWaveRunnable();
         bwr.sender = sender;
@@ -168,15 +176,18 @@ public class BanWaveCommand extends RistExCommand
         if (!PermissionUtil.Check(sender, "lolbans.banwave"))
             return User.PermissionDenied(sender, "lolbans.banwave");
         
-        // Invalid arguments.
-        if (args.length < 1)
+        ArgumentUtil a = new ArgumentUtil(args);
+        a.OptionalFlag("Silent", "-s");
+        a.RequiredString("Command", 0);
+
+        if (!a.IsValid())
             return false;
 
-        boolean silent = args[0].equalsIgnoreCase("-s");
-        String SubCommand = silent ? args[1] : args[0];
-        String[] Subargs = Arrays.copyOfRange(args, silent ? 2 : 1, args.length);
+        boolean silent = a.get("Silent") != null;
+        String SubCommand = a.get("Command");
+        args = a.GetUnparsedArgs();
+        String[] Subargs = Arrays.copyOfRange(args, 1, args.length);
 
-        // TODO: Help commands with this which explains everything
         if (SubCommand.equalsIgnoreCase("add"))
             return this.BanWaveAdd(sender, silent, label, Subargs);
         else if (Messages.CompareMany(SubCommand, new String[]{"remove", "rm", "delete", "del"}))

@@ -57,22 +57,15 @@ public class ConnectionListeners implements Listener
 
         Main.USERS.put(player.getUniqueId(), new User(player));
 
-        try 
+        if (!player.hasPlayedBefore())
         {
-            if (!player.hasPlayedBefore())
-            {
-                Timestamp firstjoin = TimeUtil.TimestampNow();
-                DatabaseUtil.InsertUser(puuid, player.getName(), ipaddr, firstjoin, firstjoin);
-            }
-            else
-            {
-                Timestamp lastjoin = TimeUtil.TimestampNow();
-                DatabaseUtil.UpdateUser(lastjoin, player.getName(), ipaddr, puuid);
-            }
+            Timestamp firstjoin = TimeUtil.TimestampNow();
+            DatabaseUtil.InsertUser(puuid, player.getName(), ipaddr, firstjoin, firstjoin);
         }
-        catch (SQLException e)
+        else
         {
-            e.printStackTrace();
+            Timestamp lastjoin = TimeUtil.TimestampNow();
+            DatabaseUtil.UpdateUser(lastjoin, player.getName(), ipaddr, puuid);
         }
 
         // Link accounts via the website
@@ -224,12 +217,15 @@ public class ConnectionListeners implements Listener
                 if (result.next())
                 {
                     Timestamp BanTime = result.getTimestamp("Expiry");
+                    System.out.println("REASON: " + result.getString("Reason"));
                     Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
                         put("player", event.getName());
                         put("reason", result.getString("Reason"));
                         put("arbiter", result.getString("ArbiterName"));
-                        put("expiry", BanTime != null ? BanTime.toString() : "Never");
+                        put("TimePunished", result.getTime("TimePunished").toString());
+                        if (BanTime != null)
+                            put("expiry", BanTime.toString());
                         put("punishid", result.getString("PunishID"));
                         // put("LinkMessage", LinkedAccountMessage);
                     }};

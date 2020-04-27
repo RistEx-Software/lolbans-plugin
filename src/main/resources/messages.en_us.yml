@@ -86,7 +86,7 @@ Report:
 # MESSAGES
 # BanMessage, {PLAYER} {REASON} {ARBITER} {EXPIRY} {PUNISHID}
 Ban:
-  TempBanMessage: "&bThe account &f{PLAYER} &bhas been suspended from {NETWORKNAME} &buntil &f{EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|expiry} \n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
+  TempBanMessage: "&bThe account &f{PLAYER} &bhas been suspended from {NETWORKNAME} &buntil &f{EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
   PermBanMessage: "&bThe account &f{PLAYER} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
   BanAnnouncement: "&b{ARBITER} &fbanned &b{PLAYER}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
   UnbanAnnouncment: "&b{ARBITER} &fun-banned &b{PLAYER}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
@@ -94,14 +94,14 @@ Ban:
   PlayerIsNotBanned: "{PREFIX}&cError! &f{PLAYER} is not banned!"
 
 IPBan:
-  PermIPBanMessage: "&bThe IP &f{IPADDRESS} &bhas been TEMPORARILY suspended from {NETWORKNAME} &buntil &f {EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|expiry} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
+  PermIPBanMessage: "&bThe IP &f{IPADDRESS} &bhas been TEMPORARILY suspended from {NETWORKNAME} &buntil &f {EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
   TempIPBanMessage: "&bThe IP &f{IPADDRESS} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
   UnIPbanAnnouncement: "5" 
   IPIsBanned: "{PREFIX}&cError! &f{IPADDRESS} is already banned!"
   IPIsNotBanned: "{PREFIX}&cError! &f{IPADDRESS} is not banned!"
   Insanity: "{PREFIX}&cBanning {IPADDRESS} would ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
   IPAltNotification: "{PREFIX}&f{PLAYER} &cjoined, is alt account of &f{BANNEDPLAYER} &7[{IPADDRESS}]"
-  IPAltBanMessage: "&bThe Player &f{PLAYERNAME} &bis an alternate account of {ALTACCOUNT} which has been suspended on {NETWORKNAME} and is disallowed from connection.\n\n&bBanned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|expiry} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
+  IPAltBanMessage: "&bThe Player &f{PLAYERNAME} &bis an alternate account of {ALTACCOUNT} which has been suspended on {NETWORKNAME} and is disallowed from connection.\n\n&bBanned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
   
 RegexBan:
   # TODO: Fix these messages for regex-based bans.
@@ -121,9 +121,9 @@ BanWave:
   BanWaveFinished: "{PREFIX}Banned {PLAYERCOUNT} player{PLAYERCOUNT|pluralize} in {TIME}ms."
 
 Mute:
-  YouWereMuted: "{PREFIX}&bYou &fwere muted by &b{ARBITER} &ffor: &b{REASON} &f[#{PUNISHID}]\n&fYour mute expires on: &b{EXPIRY|expiry}&f!"
+  YouWereMuted: "{PREFIX}&bYou &fwere muted by &b{ARBITER} &ffor: &b{REASON} &f[#{PUNISHID}]\n&fYour mute expires on: &b{EXPIRY|duration}&f!"
   YouWereUnMuted: "{PREFIX}&bYou &fwere un-muted by &b{ARBITER} &ffor: &b{REASON} &f[#{PUNISHID}]"
-  YouAreMuted: "{PREFIX}&bYou are muted and may not speak.\n&fYour mute expires on: &b{EXPIRY|expiry}&f! &f[#{PUNISHID}]"
+  YouAreMuted: "{PREFIX}&bYou are muted and may not speak.\n&fYour mute expires on: &b{EXPIRY|duration}&f! &f[#{PUNISHID}]"
   PlayerIsMuted: "{PREFIX}&bError! &f{PLAYER} is already muted!"
   PlayerIsNotMuted: "{PREFIX}&bError! &f{PLAYER} is not muted!"
   MuteAnnouncement: "&b{ARBITER} &fhas muted &b{PLAYER}&f: &b{REASON} &f[#{PUNISHID}]"

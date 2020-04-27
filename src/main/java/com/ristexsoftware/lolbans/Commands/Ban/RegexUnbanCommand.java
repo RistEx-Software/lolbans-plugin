@@ -5,6 +5,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
@@ -55,16 +56,21 @@ public class RegexUnbanCommand extends RistExCommandAsync
     {
         if (!PermissionUtil.Check(sender, "lolbans.regexunban"))
             return User.PermissionDenied(sender, "lolbans.regexunban");
-
-        if (args.length < 2)
-            return false;
         
         // Syntax: /regexunban [-s] <Regular Expression|PunishID> <Reason>
         try 
         {
-            boolean silent = args.length > 2 ? args[0].equalsIgnoreCase("-s") : false;
-            String Regex = args[silent ? 1 : 0];
-            String reason = Messages.ConcatenateRest(args, silent ? 2 : 1).trim();
+            ArgumentUtil a = new ArgumentUtil(args);
+            a.OptionalFlag("Silent", "-s");
+            a.RequiredString("Regex", 0);
+            a.RequiredSentence("Reason", 1);
+
+            if (!a.IsValid())
+                return false;
+
+            boolean silent = a.get("Silent") != null;
+            String Regex = a.get("Regex");
+            String reason = a.get("Reason");
             PreparedStatement ps = null;
             Pattern rx = null;
 

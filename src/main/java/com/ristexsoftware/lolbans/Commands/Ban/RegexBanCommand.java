@@ -9,6 +9,7 @@ import org.bukkit.plugin.Plugin;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.IPBanUtil;
 import com.ristexsoftware.lolbans.Utils.PunishID;
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
@@ -133,19 +134,25 @@ public class RegexBanCommand extends RistExCommandAsync
         if (!PermissionUtil.Check(sender, "lolbans.regexban"))
             return User.PermissionDenied(sender, "lolbans.regexban");
 
-        if (args.length < 3 || args == null)
-            return false;
-
         // /regexban [-s] <regex> <time> <Reason here unlimited length>
         try
         {
-            boolean silent = args.length > 3 ? args[0].equalsIgnoreCase("-s") : false;
-            String reason = Messages.ConcatenateRest(args, silent ? 3 : 2);
-            Timestamp bantime = TimeUtil.ParseToTimestamp(args[silent ? 2 : 1]);
+            ArgumentUtil a = new ArgumentUtil(args);
+            a.OptionalFlag("Silent", "-s");
+            a.RequiredString("Regex", 0);
+            a.RequiredString("Time", 1);
+            a.RequiredSentence("Reason", 2);
+
+            if (!a.IsValid())
+                return false;
+
+            boolean silent = a.get("Silent") != null;
+            String reason = a.get("Reason");
+            Timestamp bantime = TimeUtil.ParseToTimestamp(a.get("Time"));
             Pattern regex = null;
             try 
             {
-                regex = Pattern.compile(args[silent ? 1 : 0]);
+                regex = Pattern.compile(a.get("Regex"));
             }
             catch (PatternSyntaxException ex)
             {

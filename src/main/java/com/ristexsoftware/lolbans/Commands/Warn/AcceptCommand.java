@@ -50,6 +50,7 @@ public class AcceptCommand extends RistExCommand
             return User.PermissionDenied(sender, "lolbans.warnaccept");
 
         // /accept [<PlayerName>]
+        // TODO: What? This needs to handle args?
         if(!(sender instanceof Player))
             return User.PlayerOnlyVariableMessage("UserRequired", sender, sender.getName(), true);
 

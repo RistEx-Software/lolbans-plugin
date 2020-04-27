@@ -6,6 +6,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
@@ -54,15 +55,21 @@ public class StaffRollbackCommand extends RistExCommand
             return User.PermissionDenied(sender, "lolbans.staffrollback");
 
         // Syntax: /staffrollback [-s] <staffmember> <duration>
-        if (args.length < 2)
-            return false;
         
         try 
         {
-            boolean silent = args.length > 2 ? args[0].equalsIgnoreCase("-s") : false;
-            String username = args[silent ? 1 : 0];
+            ArgumentUtil a = new ArgumentUtil(args);
+            a.OptionalFlag("Silent", "-s");
+            a.RequiredString("PlayerName", 0);
+            a.RequiredString("Time", 0);
+
+            if (!a.IsValid())
+                return false;
+
+            boolean silent = a.get("-s") != null;
+            String username = a.get("PlayerName");
             OfflinePlayer u = User.FindPlayerByAny(username);
-            Optional<Long> amount = TimeUtil.Duration(args[silent ? 2 : 1]);
+            Optional<Long> amount = TimeUtil.Duration(a.get("Time"));
 
             if (u == null)
                 return User.NoSuchPlayer(sender, username, true);

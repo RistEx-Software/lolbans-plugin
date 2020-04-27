@@ -9,6 +9,7 @@ import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.PunishID;
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
@@ -54,14 +55,19 @@ public class ReportCommand extends RistExCommand
             return User.PermissionDenied(sender, "lolbans.report");
 
         // /report <type> <player> <reason>
-        if (args.length < 3)
-            return false;
-
         try 
         {
-            String type = args[0];
-            String username = args[1];
-            String reason = Messages.ConcatenateRest(args, 2).trim();
+            ArgumentUtil a = new ArgumentUtil(args);
+            a.RequiredString("Type", 0);
+            a.RequiredString("PlayerName", 1);
+            a.RequiredString("Reason", 2);
+
+            if (!a.IsValid())
+                return false;
+
+            String type = a.get("Type");
+            String username = a.get("PlayerName");
+            String reason = a.get("Reason");
             OfflinePlayer u = User.FindPlayerByAny(username);
 
             if (sender instanceof ConsoleCommandSender)

@@ -184,7 +184,7 @@ public class DatabaseUtil
                 {
                     return Optional.ofNullable(statement.executeQuery());
                 } 
-                catch (SQLException e) 
+                catch (Throwable e) 
                 {
                     e.printStackTrace();
                     return Optional.empty();
@@ -209,7 +209,7 @@ public class DatabaseUtil
                 {
                     return statement.executeUpdate();
                 } 
-                catch (SQLException e) 
+                catch (Throwable e) 
                 {
                     e.printStackTrace();
                 }
@@ -242,7 +242,7 @@ public class DatabaseUtil
     /*
     USER UTILS
     */
-    public static Future<Boolean> InsertUser(String UUID, String PlayerName, String IPAddress, Timestamp FirstLogin, Timestamp LastLogin) throws SQLException
+    public static Future<Boolean> InsertUser(String UUID, String PlayerName, String IPAddress, Timestamp FirstLogin, Timestamp LastLogin)
     {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
         {
@@ -263,7 +263,7 @@ public class DatabaseUtil
                     InsertUser.setTimestamp(i++, LastLogin);
                     InsertUser.executeUpdate();
                 } 
-                catch (SQLException e) 
+                catch (Throwable e) 
                 {
                     e.printStackTrace();
                     return false;
@@ -277,7 +277,7 @@ public class DatabaseUtil
         return (Future<Boolean>)t;
     }
 
-    public static Future<Boolean> UpdateUser(Timestamp LastLogin, String PlayerName, String IPAddress, String UUID) throws SQLException
+    public static Future<Boolean> UpdateUser(Timestamp LastLogin, String PlayerName, String IPAddress, String UUID)
     {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
         {
@@ -297,7 +297,7 @@ public class DatabaseUtil
                     UpdateUser.setString(i++, UUID);
                     UpdateUser.executeUpdate();
                 } 
-                catch (SQLException e) 
+                catch (Throwable e) 
                 {
                     e.printStackTrace();
                     return false;

@@ -7,6 +7,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.Punishment;
@@ -53,14 +54,19 @@ public class KickCommand extends RistExCommandAsync
             return User.PermissionDenied(sender, "lolbans.kick");
     
         // /kick [-s] <PlayerName> <Reason>
-        if (args.length < 2)
-            return false;
-
         try 
         {
-            boolean silent = args.length > 2 ? args[0].equalsIgnoreCase("-s") : false;
-            String PlayerName = args[silent ? 1 : 0];
-            String reason = Messages.ConcatenateRest(args, silent ? 2 : 1).trim();
+            ArgumentUtil a = new ArgumentUtil(args);
+            a.OptionalFlag("Silent", "-s");
+            a.RequiredString("PlayerName", 0);
+            a.RequiredSentence("Reason", 1);
+
+            if (!a.IsValid())
+                return false;
+
+            boolean silent = a.get("Silent") != null;
+            String PlayerName = a.get("PlayerName");
+            String reason = a.get("Reason");
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
 
             if (target == null)

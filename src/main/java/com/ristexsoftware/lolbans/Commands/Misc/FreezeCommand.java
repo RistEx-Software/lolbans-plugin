@@ -8,6 +8,7 @@ import org.bukkit.OfflinePlayer;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
@@ -47,13 +48,17 @@ public class FreezeCommand extends RistExCommand
             return User.PermissionDenied(sender, "lolbans.freeze");
 
         // /freeze [-s] <PlayerName>
-        if (args.length < 2)
-            return false;
-        
         try 
         {
-            boolean silent = args.length > 1 ? args[0].equalsIgnoreCase("-s") : false;
-            String PlayerName = args[silent ? 1 : 0];
+            ArgumentUtil a = new ArgumentUtil(args);
+            a.OptionalFlag("Silent", "-s");
+            a.RequiredString("PlayerName", 0);
+
+            if (!a.IsValid())
+                return false;
+
+            boolean silent = a.get("Silent") != null;
+            String PlayerName = a.get("PlayerName");
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
 
             if (target == null)

@@ -7,6 +7,7 @@ import org.bukkit.plugin.Plugin;
 
 import inet.ipaddr.HostName;
 
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
@@ -56,16 +57,21 @@ public class UnIPBanCommand extends RistExCommandAsync
     {
         if (!PermissionUtil.Check(sender, "lolbans.ipunban"))
             return User.PermissionDenied(sender, "lolbans.ipunban");
-
-        if (args.length < 2)
-            return false;
         
         // Syntax: /unipban [-s] <CIDR|PunishID> <Reason>
         try 
-        {
-            boolean silent = args.length > 2 ? args[0].equalsIgnoreCase("-s") : false;
-            String CIDR = args[silent ? 1 : 0];
-            String reason = Messages.ConcatenateRest(args, silent ? 2 : 1).trim();
+		{
+			ArgumentUtil a = new ArgumentUtil(args);
+			a.OptionalFlag("Silent", "-s");
+			a.RequiredString("CIDR", 0);
+			a.RequiredSentence("Reason", 1);
+
+			if (!a.IsValid())
+				return false;
+
+            boolean silent = a.get("-s") != null;
+            String CIDR = a.get("CIDR");
+            String reason = a.get("Reason");
 			PreparedStatement ps = null;
 			ResultSet res = null;
 

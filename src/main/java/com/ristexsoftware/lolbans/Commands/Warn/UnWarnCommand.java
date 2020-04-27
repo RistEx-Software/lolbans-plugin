@@ -6,6 +6,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.OfflinePlayer;
 
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.Punishment;
@@ -51,13 +52,17 @@ public class UnWarnCommand extends RistExCommand
             return User.PermissionDenied(sender, "lolbans.unwarn");
 
         // /unwarn [-s] <PlayerName|PunishID>
-        if (args.length < 2)
-            return false;
-
         try 
-        {
-            boolean silent = args.length > 1 ? args[0].equalsIgnoreCase("-s") : false;
-            String PlayerName = args[silent ? 1 : 0];
+		{
+			ArgumentUtil a = new ArgumentUtil(args);
+			a.OptionalFlag("Silent", "-s");
+			a.RequiredString("PlayerName", 0);
+
+			if (!a.IsValid())
+                return false;
+
+            boolean silent = a.get("Silent") != null;
+            String PlayerName = a.get("PlayerName");
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
 
             if (target == null)

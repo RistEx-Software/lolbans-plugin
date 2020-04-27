@@ -5,6 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.Plugin;
 
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.Punishment;
@@ -13,6 +14,7 @@ import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
+import com.ristexsoftware.lolbans.Utils.TimeUtil;
 
 import java.util.Optional;
 import java.util.TreeMap;
@@ -46,16 +48,21 @@ public class UnbanCommand extends RistExCommand
     {
         if (!PermissionUtil.Check(sender, "lolbans.unban"))
             return true;
-
-        if (args.length < 2)
-            return false;
         
         // Syntax: /unban [-s] <PlayerName|PunishID> <Reason>
         try 
         {
-            boolean silent = args.length > 3 ? args[0].equalsIgnoreCase("-s") : false;
-            String PlayerName = args[silent ? 1 : 0];
-            String reason = Messages.ConcatenateRest(args, silent ? 2 : 1).trim();
+            ArgumentUtil a = new ArgumentUtil(args);
+            a.OptionalFlag("Silent", "-s");
+            a.RequiredString("PlayerName", 0);
+            a.RequiredSentence("Reason", 1);
+
+            if (!a.IsValid())
+                return false;
+
+            boolean silent = a.get("Silent") != null;
+            String PlayerName = a.get("PlayerName");
+            String reason = a.get("Reason");
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
             
             if (target == null)
@@ -76,6 +83,7 @@ public class UnbanCommand extends RistExCommand
             Punishment punish = op.get();
             punish.SetAppealReason(reason);
             punish.SetAppealed(true);
+            punish.SetAppealTime(TimeUtil.TimestampNow());
             punish.SetAppealStaff(sender);
             punish.Commit(sender);
 
