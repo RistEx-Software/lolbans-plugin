@@ -93,7 +93,7 @@ public class ConnectionListeners implements Listener
             // 4. If they don't match any queries, we let them join.
 
             // Ask the database for any ban records
-            PreparedStatement BanStatement = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ? AND Type = ? AND Appealed = FALSE OR (Expiry IS NOT NULL AND Expiry >= NOW())");
+            PreparedStatement BanStatement = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ? AND Type = ? AND Appealed = FALSE OR (Expiry IS NOT NULL >= NOW())");
             BanStatement.setString(1, event.getUniqueId().toString());
             BanStatement.setInt(2, PunishmentType.PUNISH_BAN.ordinal());
 

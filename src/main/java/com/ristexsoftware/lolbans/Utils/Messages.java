@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.Arrays;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -76,12 +75,24 @@ public class Messages
     {
         if (ConfigMessage == null)
             return null;
-        
+
         Variables.put("prefix", Messages.Prefix);
         Variables.put("networkname", Messages.NetworkName);
         Variables.put("website", Messages.Website);
 
         return TranslationUtil.Translate(ConfigMessage, "&", Variables);
+    }
+    
+    private static String _TranslateNoColor(String ConfigMessage, Map<String, String> Variables)
+    {
+        if (ConfigMessage == null)
+            return null;
+        
+        Variables.put("prefix", Messages.Prefix);
+        Variables.put("networkname", Messages.NetworkName);
+        Variables.put("website", Messages.Website);
+
+        return TranslationUtil.TranslateVariables(ConfigMessage, Variables);
     }
 
     public static String Translate(String ConfigNode, Map<String, String> Variables) throws InvalidConfigurationException
@@ -91,6 +102,15 @@ public class Messages
             throw new InvalidConfigurationException("Configuration Node is invalid or does not exist: " + ConfigNode);
 
         return _Translate(ConfigMessage, Variables);
+    }
+
+    public static String TranslateNC(String ConfigNode, Map<String, String> Variables) throws InvalidConfigurationException
+    {
+        String ConfigMessage = GetMessages().CustomConfig.getString(ConfigNode);
+        if (ConfigMessage == null)
+            throw new InvalidConfigurationException("Configuration Node is invalid or does not exist: " + ConfigNode);
+
+        return _TranslateNoColor(ConfigMessage, Variables);
     }
 
     public static boolean CompareMany(String haystack, String[] needles)

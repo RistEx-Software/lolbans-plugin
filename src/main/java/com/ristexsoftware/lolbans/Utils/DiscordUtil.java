@@ -19,7 +19,6 @@ import com.ristexsoftware.lolbans.Objects.Punishment;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 
@@ -106,20 +105,15 @@ public class DiscordUtil
 			// Set the fields from above
 			build.fields(Fields);
 			// Set the thumbnail picture
-			build.thumbnail(ThumbnailEmbed.builder().url(Messages.Translate("Discord.ThumbnailPictures", Variables)).build());
+			build.thumbnail(ThumbnailEmbed.builder().url(Messages.TranslateNC("Discord.ThumbnailPictures", Variables)).build());
 			// Build the footer with the avatar
-			build.footer(FooterEmbed.builder().text(Variables.get("FooterText")).icon_url(Messages.Translate("Discord.AvatarPictures",
-				new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-				{{
-					put("PlayerUUID", Variables.get("PlayerUUID"));
-				}}
-			)).build());
+			build.footer(FooterEmbed.builder().text(Variables.get("FooterText")).icon_url(Messages.TranslateNC("Discord.AvatarPictures", Variables)).build());
 
 			// Get the Avatar URL from the config. We provide the PlayerUUID and the ArbiterUUID
 			String AvatarURL = "";
 			if (!Variables.get("ArbiterUUID").equalsIgnoreCase("CONSOLE"))
 			{
-				AvatarURL = Messages.Translate("Discord.AvatarPictures",
+				AvatarURL = Messages.TranslateNC("Discord.AvatarPictures",
 					new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) 
 					{{
 						put("PlayerUUID", Variables.get("ArbiterUUID"));
@@ -129,7 +123,6 @@ public class DiscordUtil
 				AvatarURL = Messages.GetMessages().GetConfig().getString("Discord.ConsoleProfilePicture");
 
 			// Build an actual Discord message, set the avatar, and the embed.
-			
 			DiscordMessageBuilder dm = DiscordMessage.builder();
 			dm.username(Variables.get("ArbiterName"));
 			dm.avatarUrl(AvatarURL);
