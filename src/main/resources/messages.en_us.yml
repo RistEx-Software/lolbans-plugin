@@ -32,8 +32,7 @@ NetworkName: "&fMy Network"
 Website: "YourWebsiteHere.com"
 
 # Common error messages used throughout the plugin
-InvalidSyntax: "{PREFIX}&cInvalid Syntax! &f{SYNTAX}"
-InvalidArguments: "{PREFIX}&cInvalid Arguments!"
+InvalidSyntax: "{PREFIX}&cInvalid Syntax!"
 ServerError: "{PREFIX}&cThe server encountered an error, please try again later."
 PlayerDoesntExist: "{PREFIX}&cError! &f{PLAYER} &bdoesn't exist!"
 PlayerIsOffline: "{PREFIX}&cError! &f{PLAYER} &bis offline!"
@@ -88,15 +87,17 @@ Report:
 Ban:
   TempBanMessage: "&bThe account &f{PLAYER} &bhas been suspended from {NETWORKNAME} &buntil &f{EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
   PermBanMessage: "&bThe account &f{PLAYER} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
-  BanAnnouncement: "&b{ARBITER} &fbanned &b{PLAYER}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
-  UnbanAnnouncment: "&b{ARBITER} &fun-banned &b{PLAYER}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
+  BanAnnouncement: "{PREFIX}&b{ARBITER} &fbanned &b{PLAYER}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
+  UnbanAnnouncment: "{PREFIX}&b{ARBITER} &fun-banned &b{PLAYER}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
   PlayerIsBanned: "{PREFIX}&cError! &f{PLAYER} is already banned!"
   PlayerIsNotBanned: "{PREFIX}&cError! &f{PLAYER} is not banned!"
 
 IPBan:
-  PermIPBanMessage: "&bThe IP &f{IPADDRESS} &bhas been TEMPORARILY suspended from {NETWORKNAME} &buntil &f {EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
-  TempIPBanMessage: "&bThe IP &f{IPADDRESS} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
-  UnIPbanAnnouncement: "5" 
+  PermIPBanMessage: "&bThe IP &f{IPADDRESS} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
+  TempIPBanMessage: "&bThe IP &f{IPADDRESS} &bhas been TEMPORARILY suspended from {NETWORKNAME} &buntil &f {EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
+  BanAnnouncement: "{PREFIX}&b{ARBITER} &fbanned &b{IPADDRESS}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
+  UnbanAnnouncement: "{PREFIX}&f{ARBITER} &bhas unbanned &f{IPADDRESS}&b: &7{REASON} &7[#{PUNISHID}{SILENT|empty_if_false:\" - SILENT\"}]"
+  UnbanSuccess: "{PREFIX}&f{IPADDRESS} &bhas been successfully unbanned."
   IPIsBanned: "{PREFIX}&cError! &f{IPADDRESS} is already banned!"
   IPIsNotBanned: "{PREFIX}&cError! &f{IPADDRESS} is not banned!"
   Insanity: "{PREFIX}&cBanning {IPADDRESS} would ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
@@ -126,15 +127,14 @@ Mute:
   YouAreMuted: "{PREFIX}&bYou are muted and may not speak.\n&fYour mute expires on: &b{EXPIRY|duration}&f! &f[#{PUNISHID}]"
   PlayerIsMuted: "{PREFIX}&bError! &f{PLAYER} is already muted!"
   PlayerIsNotMuted: "{PREFIX}&bError! &f{PLAYER} is not muted!"
-  MuteAnnouncement: "&b{ARBITER} &fhas muted &b{PLAYER}&f: &b{REASON} &f[#{PUNISHID}]"
-  UnmuteAnnouncment: "&b{ARBITER} &fhas un-muted &b{PLAYER}&f: &b{REASON} &f[#{PUNISHID}]"
+  MuteAnnouncement: "{PREFIX}&b{ARBITER} &fhas muted &b{PLAYER}&f: &b{REASON} &f[#{PUNISHID}]"
+  UnmuteAnnouncment: "{PREFIX}&b{ARBITER} &fhas un-muted &b{PLAYER}&f: &b{REASON} &f[#{PUNISHID}]"
   GlobalMuted: "&bThe chat is currently muted and you may not send messages."
   GlobalUnmuted: "&aThe chat is now unmuted, you may now converse."
 
 Kick:
   KickMessage: "&bYou were kicked from {NETWORKNAME}\n\n&bYou were kicked by: &f{ARBITER}\n&bReason: &f{REASON}"
-  KickAnnouncement: "&b{ARBITER} &fkicked &b{PLAYER}&f: &b{REASON}"
-  SilentKickAnnouncement: "&b{ARBITER} &fkicked &b{PLAYER}&f: &b{REASON} &8[SILENT]"
+  KickAnnouncement: "{PREFIX}&b{ARBITER} &fkicked &b{PLAYER}&f: &b{REASON}{SILENT|empty_if_false:\" &8[SILENT]\"}"
 
 Warn:
   WarnAnnouncment: "&b{ARBITER} &fhas warned &b{PLAYER} &f: &b{REASON}"
@@ -168,6 +168,7 @@ Syntax:
   Unban: "Usage: /unban [-s] <PlayerName|PunishID> <Reason>"
   BanWave: "Usage: /banwave [-s] add <Player> <Time|*> <Reason>\nUsage: /banwave [-s] rm|remove|delete|del <Player>\nUsage: /banwave [-s] enforce|run|start|exec|execute"
   IPBan: "Usage: /ipban [-s] <ip address>[/<cidr>] <Time|*> <Reason>"
+  IPUnban: "Usage: /unipban [-s] <ip address>[/<cidr>] <Reason>"
   RegexBan: "Usage: /regexban [-s] <Regex> <Time|*> <Reason>"
   History: "Usage: /history <PlayerName> [<Page>]\nUsage: /clearhistory <PlayerName> [<DateRange>]"
   PruneHistory: "Usage: /prunehistory <Player|PunishID|CIDR|Regex> <Time|*>"

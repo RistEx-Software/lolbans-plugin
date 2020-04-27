@@ -289,7 +289,7 @@ public class User
         }
     }
 
-    public static void KickPlayerIP(String sender, Player target, String PunishID, String reason, Timestamp BanTime, Timestamp Expiry, String IP)
+    public static void KickPlayerIP(String sender, Player target, String PunishID, String reason, Timestamp TimePunished, Timestamp Expiry, String IP)
     {
         try
         {
@@ -300,9 +300,9 @@ public class User
                     put("player", target.getName());
                     put("reason", reason);
                     put("ARBITER", sender);
-                    if (BanTime != null)
-                        put("date", BanTime.toString());
-                    put("Expiry", Expiry.toString());
+                    put("TimePunished", TimePunished.toString());
+                    if (Expiry != null)
+                        put("Expiry", Expiry.toString());
                     put("PunishID", PunishID);
                     put("IPAddress", IP);
                 }}

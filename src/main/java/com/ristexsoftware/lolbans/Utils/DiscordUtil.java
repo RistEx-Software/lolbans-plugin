@@ -205,7 +205,7 @@ public class DiscordUtil
 					String AvatarURL = "";
 					if (!Variables.get("ArbiterUUID").equalsIgnoreCase("CONSOLE"))
 					{
-						AvatarURL = Messages.Translate("Discord.AvatarPictures",
+						AvatarURL = Messages.TranslateNC("Discord.AvatarPictures",
 							new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) 
 							{{
 								put("PlayerUUID", Variables.get("ArbiterUUID"));

@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import inet.ipaddr.HostName;
+import inet.ipaddr.IPAddressString;
 
 import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
@@ -22,6 +23,7 @@ import com.ristexsoftware.lolbans.Utils.PunishID;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
@@ -34,7 +36,8 @@ public class UnIPBanCommand extends RistExCommandAsync
     {
         super("unipban", owner);
         this.setDescription("Remove an IP or CIDR range ban");
-        this.setPermission("lolbans.ban");
+		this.setPermission("lolbans.ban");
+		this.setAliases(Arrays.asList(new String[] { "unbanip" }));
     }
 
     @Override
@@ -75,6 +78,7 @@ public class UnIPBanCommand extends RistExCommandAsync
 			PreparedStatement ps = null;
 			ResultSet res = null;
 
+
 			if (PunishID.ValidateID(CIDR.replaceAll("#", "")))
 			{
 				ps = self.connection.prepareStatement("SELECT * FROM IPBans WHERE PunishID = ?");
@@ -103,8 +107,20 @@ public class UnIPBanCommand extends RistExCommandAsync
             ps.setString(i++, sender.getName());
             ps.setString(i++, sender instanceof Player ? ((Player)sender).getUniqueId().toString() : "CONSOLE");
             ps.setInt(i++, res.getInt("id"));
+			DatabaseUtil.ExecuteUpdate(ps);
 
-            DatabaseUtil.ExecuteUpdate(ps);
+
+			// Remove the banned address from BannedAddresses
+			IPAddressString addr = new IPAddressString(res.getString("IPAddress"));
+			for (IPAddressString anotheraddress : Main.BannedAddresses)
+			{
+				if (anotheraddress.equals(addr))
+				{
+					Main.BannedAddresses.remove(anotheraddress);
+					break;
+				}
+			}
+
 
 			// Prepare our announce message
 			final String IPAddress = res.getString("IPAddress");
@@ -120,7 +136,7 @@ public class UnIPBanCommand extends RistExCommandAsync
 			
 			sender.sendMessage(Messages.Translate("IPBan.UnbanSuccess", Variables));
             
-            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("IPBan.UnbanAnnouncment", Variables));
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("IPBan.UnbanAnnouncement", Variables));
             // TODO: DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (InvalidConfigurationException | SQLException | InterruptedException | ExecutionException e)
