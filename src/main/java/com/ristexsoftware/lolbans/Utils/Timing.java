@@ -5,6 +5,13 @@ import org.bukkit.configuration.InvalidConfigurationException;
 
 import java.util.TreeMap;
 
+/**
+ * <h1>Timing Functions</h1>
+ * The timing class will measure how long it takes between
+ * the class being created to when the Finish() function is
+ * called. This allows us to time how long certain operations
+ * have taken.
+ */
 public class Timing 
 {
 	private Long start = System.currentTimeMillis();

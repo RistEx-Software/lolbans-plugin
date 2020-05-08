@@ -38,6 +38,10 @@ public class Messages
         this.Reload();
     }
 
+    /**
+     * Get the messages object associated with messages.yml
+     * @return A Messages object referencing the messages.yml file.
+     */
     public static Messages GetMessages()
     {
         if (Messages.localself == null)
@@ -45,6 +49,9 @@ public class Messages
         return Messages.localself;
     }
 
+    /**
+     * Reload the messages.yml file and update the internal configuration values.
+     */
     public void Reload()
     {
         FileConfiguration fc = new YamlConfiguration();
@@ -66,6 +73,10 @@ public class Messages
         }
     }
 
+    /**
+     * Get the configuration object for messages.yml
+     * @return {@link org.bukkit.configuration.file.FileConfiguration}
+     */
     public FileConfiguration GetConfig()
     {
         return this.CustomConfig;
@@ -95,6 +106,14 @@ public class Messages
         return TranslationUtil.TranslateVariables(ConfigMessage, Variables);
     }
 
+    /**
+     * Lookup the string from messages.yml, replace the placeholders and convert the color codes into colors
+     * then return the resulting string for sending to a minecraft client.
+     * @param ConfigNode The config node for the message in messages.yml
+     * @param Variables Variables to use for placeholders
+     * @return A string to send to the minecraft client with all colors and placeholders converted.
+     * @throws InvalidConfigurationException if the message node does not exist in messages.yml
+     */
     public static String Translate(String ConfigNode, Map<String, String> Variables) throws InvalidConfigurationException
     {
         String ConfigMessage = GetMessages().CustomConfig.getString(ConfigNode);
@@ -104,6 +123,14 @@ public class Messages
         return _Translate(ConfigMessage, Variables);
     }
 
+    /**
+     * Lookup a string from the messages.yml file and replace the placeholders with the variables but do not 
+     * convert the sequences which may be interpreted as color characters.
+     * @param ConfigNode the node from messages.yml to lookup for the string
+     * @param Variables Placeholders to replace in the string looked up from messages.yml
+     * @return A string with all the placeholders converted
+     * @throws InvalidConfigurationException If the messages.yml node does not exist
+     */
     public static String TranslateNC(String ConfigNode, Map<String, String> Variables) throws InvalidConfigurationException
     {
         String ConfigMessage = GetMessages().CustomConfig.getString(ConfigNode);
@@ -113,6 +140,12 @@ public class Messages
         return _TranslateNoColor(ConfigMessage, Variables);
     }
 
+    /**
+     * Check if many strings equal a single comparison string
+     * @param haystack the string to compare to
+     * @param needles things that may match the comparison string
+     * @return Whether something matches.
+     */
     public static boolean CompareMany(String haystack, String[] needles)
     {
         for (String needle : needles)

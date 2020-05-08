@@ -11,6 +11,12 @@ public class PermissionUtil
 {
     private static Main self = Main.getPlugin(Main.class);
 
+    /**
+     * Check if the command sender has been grated the permission
+     * @param sender Command Sender to check a permission against
+     * @param Perm the permission node to check
+     * @return True if the command sender has the permission
+     */
     public static boolean Check(CommandSender sender, String Perm)
     {
         // Console ALWAYS has full perms

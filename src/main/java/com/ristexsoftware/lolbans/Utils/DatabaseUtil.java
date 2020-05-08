@@ -13,6 +13,10 @@ public class DatabaseUtil
     private static Main self = Main.getPlugin(Main.class);
     private static QueryRunnable CheckThread;
 
+    /**
+     * Initialize the database tables and connection. This also starts the synchronization thread for the database.
+     * @return True if the tables were created successfully and the connection completed successfully.
+     */
     public static boolean InitializeDatabase()
     {
         try 
@@ -136,6 +140,9 @@ public class DatabaseUtil
         return true;
     }
 
+    /**
+     * Terminate the connection to the database.
+     */
     public static void Terminate()
     {
         // Terminate our thread.
@@ -156,6 +163,10 @@ public class DatabaseUtil
         }
     }
 
+    /**
+     * Actually open the conenction to the database, this should not be used outside this class.
+     * @throws SQLException SQL exception if the connection fails
+     */
     public static void OpenConnection() throws SQLException
     {
         if (self.connection != null && !self.connection.isClosed())
@@ -172,6 +183,11 @@ public class DatabaseUtil
         }
     }
 
+    /**
+     * Execute a database query asynchronously and return the result later.
+     * @param statement A {@link java.sql.PreparedStatement} to execute later.
+     * @return A future optional ResultSet of the results from the database query
+     */
     public static Future<Optional<ResultSet>> ExecuteLater(PreparedStatement statement)
     {
         FutureTask<Optional<ResultSet>> t = new FutureTask<>(new Callable<Optional<ResultSet>>()
@@ -197,6 +213,11 @@ public class DatabaseUtil
         return t;
     }
 
+    /**
+     * Asynchronously execute an update query for the database.
+     * @param statement the {@link java.sql.PreparedStatement} to execute later.
+     * @return An integer of the number of rows updated by the statement.
+     */
     public static Future<Integer> ExecuteUpdate(PreparedStatement statement)
     {
         FutureTask<Integer> t = new FutureTask<>(new Callable<Integer>()
@@ -225,6 +246,12 @@ public class DatabaseUtil
     PUNISHMENT UTILS
     */
 
+    /**
+     * Get the latest ID from the database table
+     * @param table Table to get the latest id from
+     * @return The latest id
+     * @throws SQLException An exception if the database query fails.
+     */
     public static int GenID(String table) throws SQLException
     {
         // Get the latest ID of the banned players to generate a PunishID form it.
@@ -238,10 +265,15 @@ public class DatabaseUtil
         return id;
     }
 
-
-    /*
-    USER UTILS
-    */
+    /**
+     * Insert a user into the database.
+     * @param UUID UUID of the minecraft user
+     * @param PlayerName Name of the minecraft player
+     * @param IPAddress IP address of the minecraft player
+     * @param FirstLogin The first time they logged in (as a timestamp)
+     * @param LastLogin The last time  they logged in (as a timestamp)
+     * @return True if the user was created successfully
+     */
     public static Future<Boolean> InsertUser(String UUID, String PlayerName, String IPAddress, Timestamp FirstLogin, Timestamp LastLogin)
     {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
@@ -277,6 +309,14 @@ public class DatabaseUtil
         return (Future<Boolean>)t;
     }
 
+    /**
+     * Update a user record
+     * @param LastLogin The timestamp of the last time they logged in
+     * @param PlayerName Their current player name
+     * @param IPAddress Their current IP address
+     * @param UUID Their current UUID
+     * @return True if the update was successful.
+     */
     public static Future<Boolean> UpdateUser(Timestamp LastLogin, String PlayerName, String IPAddress, String UUID)
     {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()

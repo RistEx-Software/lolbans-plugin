@@ -36,6 +36,21 @@ public class PruneHistoryCommand extends RistExCommandAsync
         this.setPermission("lolbans.history.prune");
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @Override
     public void onSyntaxError(CommandSender sender, String label, String[] args)
     {
@@ -84,6 +99,8 @@ public class PruneHistoryCommand extends RistExCommandAsync
                 PreparedStatement RegexStatement = self.connection.prepareStatement("SELECT * FROM RegexBans WHERE PunishID = ?");
                 PreparedStatement IPBanStatement = self.connection.prepareStatement("SELECT * FROM IPBans WHERE PunishID = ?");
                 PreparedStatement Reports = self.connection.prepareStatement("SELECT * FROM Reports WHERE PunishID = ?");
+
+                
                 
                 // TODO: What about Regex bans or others
                 Optional<Punishment> punish = Punishment.FindPunishment(searchable);

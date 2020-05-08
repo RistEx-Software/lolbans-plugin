@@ -18,17 +18,29 @@ public class Configuration
 
     public static Long QueryUpdateLong;
 
+    /**
+     * Parse the configuration file.
+     * @param config Config from spigot's system.
+     */
     public Configuration(FileConfiguration config)
     {
         this.Reload(config);
         Configuration.me = this;
     }
 
+    /**
+     * Get the current plugin configuration
+     * @return the currently allocated version of this object.
+     */
     public static Configuration GetConfig()
     {
         return me;
     }
 
+    /**
+     * Reload the configuration from the file.
+     * @param config Config from spigot's system
+     */
     public void Reload(FileConfiguration config)
     {
         // Database

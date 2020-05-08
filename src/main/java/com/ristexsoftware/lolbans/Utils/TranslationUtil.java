@@ -36,7 +36,21 @@ public class TranslationUtil
             return Boolean.valueOf(lvalue) ? arg : "no";
     }
 
-    // {VARIABLE|function:"HH:MM:SS"}
+    /**
+     * List of functions which are executed as part of the translation functions.
+     * When the placeholder parser begins parsing a string, it will parse the following
+     * format as below:
+     * {@code {VARIABLE|function:"HH:MM:SS"}}
+     * Where `VARIABLE` would be the name of the variables passed to the TranslateVariables function,
+     * `function` would be the name of the function in this class to execute, and everything in quotes
+     * after the colon would be the 2nd argument passed to the functions in this map.
+     * 
+     * Each function takes 2 arguments, the first being the dereferenced value of the variable itself as a string
+     * and the 2nd being the additional arguments provided in quotes after the colon in the placeholder string.
+     * For example a string with `{TimeBanned|datetime:"HH:MM:SS"}` would execute the `datetime` function in the map
+     * below as:
+     * {@code datetime(Variables.get("TimeBanned"), "HH:MM:SS")}
+     */
     public static TreeMap<String, BiFunction<String, String, String>> Functions = new TreeMap<String, BiFunction<String, String, String>>(String.CASE_INSENSITIVE_ORDER)
     {{
         put("pluralize", (String lvalue, String arg) -> { return Pluralize(lvalue, arg); });
@@ -55,6 +69,12 @@ public class TranslationUtil
     // Java apparently has no capabiliy to do something even a simple language like C can do
     // which is parse hexidecimal numbers and tell me if they're fucking valid. This function
     // will do exactly what I need by checking if the char is A through F, 0 through 9.
+    /**
+     * Checks if the character is a valid minecraft color code
+     * @param ch The character to check for a valid color code char
+     * @return True if the character is valid minecraft colorcode
+     * @deprecated Since Minecraft 1.16 supports 32 bit colors, this function will be deprecated.
+     */
     public static boolean isxdigit(char ch)
     {
         // First check if the char is a digit, Java can manage to do this one amazingly.
@@ -80,7 +100,14 @@ public class TranslationUtil
     }
 
     public static final char SPECIAL_CHAR = '\u00A7';
-    // Used to translate colors
+    
+    /**
+     * Replace the character sequence in `chars` to swap out with the minecraft color char while
+     * also validating that the color code sequence is valid.
+     * @param chars Character sequence to replace with the section character minecraft uses for color codes
+     * @param message Message containing sequences of `chars` in it
+     * @return A color formatted message for Minecraft clients.
+     */
     public static String TranslateColors(String chars, String message)
     {
         if (message == null)
@@ -116,6 +143,12 @@ public class TranslationUtil
     // Used to replace variables inside of strings.
     // {Player} has been banned by {Executioner}: {Reason}
     // {Player has been banned by CONSOLE: fuck you.
+    /**
+     * Replace all placeholders in a string, executing placeholder functions in the process to format strings with variables provided.
+     * @param message The message to have placeholders replaced
+     * @param Variables The variables to be utilized in this message for the placeholders and their functions
+     * @return Formatted string with all placeholders from Variables replaced.
+     */
     public static String TranslateVariables(String message, Map<String, String> Variables)
     {
         // If it doesn't have the starting char for variables, skip it.
@@ -169,6 +202,14 @@ public class TranslationUtil
         return retstr;
     }
 
+    /**
+     * Translate the preformatted string to a fully formatted string ready for players to see, switching out color codes and placeholders.
+     * @param message The message containing placeholders and untranslated color code sequences
+     * @param ColorChars The character used as the prefix for color strings (bukkit/spigot use `&amp;` and so do we most of the time)
+     * @param Variables A list of variables to be parsed by the placeholder
+     * @return A string with color sequences and placeholders translated to their formatted message ready for the player.
+     * @see TranslateVariables
+     */
     public static String Translate(String message, String ColorChars, Map<String, String> Variables)
     {
         String retstr = TranslationUtil.TranslateColors(ColorChars, message);

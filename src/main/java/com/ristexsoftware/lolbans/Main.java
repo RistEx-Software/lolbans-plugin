@@ -74,6 +74,15 @@ import java.util.concurrent.Executors;
 
 // welcome.
 // TAKE YOUR SHOES OFF DONT BE DRAGGING NO DIRT IN HERE
+/**
+ * <h1>LolBans Banning Plugin</h1>
+ * The lolbans plugin. Implementing only the most excellent banning
+ * system possible for Minecraft.
+ *
+ * @author Justin Crawford &amp; Zachery Coleman
+ * @version 1.0
+ * @since 2019-11-13
+ */
 public final class Main extends JavaPlugin
 {
     public static HashMap<UUID, User> USERS = new HashMap<UUID, User>();

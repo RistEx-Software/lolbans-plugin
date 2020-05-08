@@ -54,7 +54,11 @@ public class Punishment
     // Create a new punishment from scratch.
     public Punishment(PunishmentType Type, CommandSender sender, OfflinePlayer target, String Reason, Timestamp Expiry) throws SQLException
     {
-        this.Type = Type;
+        // Not supported yet, will be in the future.
+		if (Type == PunishmentType.PUNISH_REGEX || Type == PunishmentType.PUNISH_IP)
+			throw new UnknownError("Unsupported Punishment type");
+
+		this.Type = Type;
         this.player = target;
         this.uuid = target.getUniqueId();
         this.PlayerName = target.getName();
@@ -74,10 +78,12 @@ public class Punishment
             case PUNISH_KICK: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("Punishments")); break;
             case PUNISH_MUTE: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("Punishments")); break;
             case PUNISH_WARN: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("Punishments")); break;
+            case PUNISH_REGEX: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("RegexBan")); break;
+            case PUNISH_IP: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("IPBans")); break;
             default:
                 throw new UnknownError("Unknown Punishment Type \"" + Type.DisplayName() + "\" for " + target.getName() + " " + Reason);
         }
-    }
+	}
 
     public static Optional<Punishment> FindPunishment(String PunishmentID)
     {
@@ -167,6 +173,7 @@ public class Punishment
 
     /**
      * Commit the punishment to the database.
+     * @param sender The command sender to notify if an error occures.
      */
     public void Commit(CommandSender sender)
     {
@@ -301,7 +308,7 @@ public class Punishment
     }
 
 
-    /************************************
+    /* ***********************************
      * Getters/Setters
      */
     /* clang-format: off */
@@ -326,7 +333,7 @@ public class Punishment
 
     public String GetExpiryString() { return this.Expiry != null ? this.Expiry.toString() : ""; }
 
-    /// Setters
+    // Setters
     public void SetAppealReason(String Reason) { this.AppealReason = Reason; }
     public void SetAppealTime(Timestamp time) { this.AppealedTime = time; }
     public void SetAppealed(Boolean value) { this.Appealed = value; }

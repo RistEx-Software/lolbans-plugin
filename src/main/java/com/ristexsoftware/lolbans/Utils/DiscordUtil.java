@@ -48,6 +48,11 @@ public class DiscordUtil
 		private TemmieWebhook ReportWebhook;
 		private static DiscordUtil me = null;
 
+		/**
+		 * Create a DiscordUtil object against the webhooks to announce reports and punishments on.
+		 * @param ModeratorWebhook The webhook to send reports to
+		 * @param ReportWebhook The webhook to send punishment announcements to
+		 */
 		public DiscordUtil(String ModeratorWebhook, String ReportWebhook)
 		{
 			// TODO: handle /reload better?
@@ -55,8 +60,17 @@ public class DiscordUtil
 			this.reload(ModeratorWebhook, ReportWebhook);
 		}
 
+		/**
+		 * Get the DiscordUtil object currently allocated.
+		 * @return DiscordUtil object
+		 */
 		public static DiscordUtil GetDiscord() { return DiscordUtil.me; }
 		
+		/**
+		 * Change the webhooks in use with new ones.
+		 * @param ModeratorWebhook The new webhook for punishment announcements
+		 * @param ReportWebhook The new webhook for report announcements
+		 */
 		public void reload(String ModeratorWebhook, String ReportWebhook)
 		{
 			this.ModeratorWebhook = new TemmieWebhook(ModeratorWebhook);
@@ -67,16 +81,27 @@ public class DiscordUtil
 		// - Title
 		// - Expiry
 
-		// Variables must contain the following:
-		// - PlayerUUID  -- The UUID of the person being punished
-		// - ArbiterName -- The Name of the person who executes the command
-		// - ArbiterUUID -- The UUID of the person who executes the command
-		// - Reason      -- The primary text to make part of the embed.
-		// - FooterText  -- Text to show on the footer
-		// - Expiry      -- If present, will add the "expires" field
-		// - PunishID    -- If present, will add the "PunishID" field 
-		// - ReportType  -- If present, will add the "Type" field
-		private DiscordMessage SendEmbed(String MessageNode, TreeMap<String, String> Variables) throws InvalidConfigurationException, InvalidKeyException
+		/**
+		 * Send a discord embed in accordance to the variables specified
+		 * <br>
+		 * Variables must contain the following:
+		 * - PlayerUUID  -- The UUID of the person being punished
+		 * - ArbiterName -- The Name of the person who executes the command
+		 * - ArbiterUUID -- The UUID of the person who executes the command
+		 * - Reason      -- The primary text to make part of the embed.
+		 * - FooterText  -- Text to show on the footer
+		 * - Expiry      -- If present, will add the "expires" field
+		 * - PunishID    -- If present, will add the "PunishID" field
+		 * - ReportType  -- If present, will add the "Type" field
+		 * @param MessageNode The title of the embed from messages.yml
+		 * @param Variables Variables to use for both placeholders and for parts of the embed.
+		 * @return A {@link com.mrpowergamerbr.temmiewebhook.DiscordMessage} generated object for sending to a Discord webhook.
+		 * @throws InvalidConfigurationException When the messages.yml node does not exist
+		 * @throws InvalidKeyException When a key is not provided but required to be in the Variables parameter.
+		 */
+	  private
+		DiscordMessage SendEmbed(String MessageNode, TreeMap<String, String> Variables) throws InvalidConfigurationException,
+			InvalidKeyException
 		{
 			if (!Variables.containsKey("PlayerUUID") || !Variables.containsKey("ArbiterName") || !Variables.containsKey("ArbiterUUID") || !Variables.containsKey("FooterText") || !Variables.containsKey("Reason"))
 				throw new InvalidKeyException("Missing a required key for Discord Embeds.");
@@ -131,6 +156,12 @@ public class DiscordUtil
 			return dm.build();
 		}
 
+		/**
+		 * Send a discord message using the data from the punishment object.
+		 * @param p The punishment object to send to discord
+		 * @param silent Whether this punishment was silent
+		 * @throws InvalidConfigurationException If the discord messages cannot be found in messages.yml
+		 */
 		public void SendDiscord(Punishment p, boolean silent) throws InvalidConfigurationException
 		{
 				String ExecutionerName = p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getName();
@@ -174,6 +205,14 @@ public class DiscordUtil
 				}		
 		}
 
+		/**
+		 * Send a discord message formatted for an object being punished (such as a Regular Expression or IP ban)
+		 * @param sender Who is performing the action
+		 * @param Object The object expression being punished
+		 * @param Reason The reason for the punishment
+		 * @param PunishID The ID of this punishment
+		 * @param Expiry When this ban expires (if applicable, may be null if never expires)
+		 */
 		public void SendBanObject(CommandSender sender, String Object, String Reason, String PunishID, Timestamp Expiry)
 		{
 			TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
@@ -236,7 +275,12 @@ public class DiscordUtil
 			}
 		}
 
-
+		/**
+		 * Send a message to discord saying that a banwave has been initiated.
+		 * @param ArbiterName The person who started the ban wave
+		 * @param UserList The formatted list of players being banned to include with the message
+		 * @throws InvalidConfigurationException If the messages.yml node doesn't exist.
+		 */
 		public void SendBanWave(String ArbiterName, String UserList) throws InvalidConfigurationException
 		{
 			TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
@@ -272,6 +316,14 @@ public class DiscordUtil
 			}
 		}
 
+		/**
+		 * Send a message to discord stating that someone was added to a ban wave.
+		 * @param sender The person who executed the command
+		 * @param target The person being added to the ban wave
+		 * @param reason The reason they're being banned.
+		 * @param PunishID The Punishment ID assigned to their ban
+		 * @param Expiry The expiration time (if applicable, may be null of never)
+		 */
 		public void SendBanWaveAdd(CommandSender sender, OfflinePlayer target, String reason, String PunishID, Timestamp Expiry)
 		{
 			TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
@@ -300,6 +352,14 @@ public class DiscordUtil
 			}
 		}
 
+		/**
+		 * Send a message to discord saying a report has been filed against a player.
+		 * @param sender The person filing the report
+		 * @param target The person the report is filed against
+		 * @param Reason The reason for the report
+		 * @param PunishID The punishment id of the report
+		 * @param Type The type of report (based on the config)
+		 */
 		public void SendReport(CommandSender sender, OfflinePlayer target, String Reason, String PunishID, String Type)
 		{
 			TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
@@ -335,6 +395,11 @@ public class DiscordUtil
 			}
 		}
 
+		/**
+		 * Send a basic formatted message to discord.
+		 * @param message Message to send.
+		 * @deprecated This should not be used.
+		 */
 		public void SendFormatted(String message)
 		{
 			DiscordMessage dm = DiscordMessage.builder()

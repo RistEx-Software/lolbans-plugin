@@ -65,6 +65,11 @@ class Luhn
 
 public class PunishID
 {
+	/**
+	 * Generate a punishment ID unique for the punishment.
+	 * @param idstart An identifier to start the ID with (usually the position in the SQL table)
+	 * @return a Luhn-passable identifier
+	 */
     public static String GenerateID(int idstart)
     {
         CRC32 crc = new CRC32();
@@ -82,6 +87,11 @@ public class PunishID
         return crc32hash.toUpperCase();
     }
 
+	/**
+	 * Validate that a string passes the Luhn test
+	 * @param id a string to test against the Luhn algorithm
+	 * @return Whether the string passes the Luhn test
+	 */
     public static boolean ValidateID(String id)
     {
         return Luhn.LuhnCheck(id);

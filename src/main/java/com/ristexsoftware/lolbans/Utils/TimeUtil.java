@@ -62,11 +62,21 @@ public class TimeUtil
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     };
 
+    /**
+     * Convert the unix timestamp to a human readable duration string
+     * @param t {@link java.sql.Timestamp}
+     * @return a human readable duration
+     */
     public static String DurationString(Timestamp t)
     {
         return TimeUtil.DurationString(t.getTime() / 1000L);
     }
 
+    /**
+     * Convert the unix timestamp to a human readable duration string
+     * @param t unix timestamp
+     * @return human readable duration
+     */
     public static String DurationString(long t)
     {
         long years = t / 31449600;
@@ -120,6 +130,11 @@ public class TimeUtil
         }
     }
 
+    /**
+     * Convert unix timestamp to a duration forward or backward to current system time
+     * @param ts {@link java.sql.Timestamp}
+     * @return A string stating the duration forward or backward in time.
+     */
     public static String Expires(Timestamp ts)
     {
         if (ts == null)
@@ -127,6 +142,11 @@ public class TimeUtil
         return TimeUtil.Expires(ts.getTime() / 1000L);
     }
 
+    /**
+     * Convert unix timestamp to a duration forward or backward to current system time
+     * @param expires A unix timestamp
+     * @return A string stating the duration forward or backward in time.
+     */
     public static String Expires(long expires)
     {
         long CurTime = TimeUtil.GetUnixTime();
@@ -138,6 +158,11 @@ public class TimeUtil
             return String.format("%s from now", TimeUtil.DurationString(expires - CurTime));
     }
 
+    /**
+     * Parse a duration string to a length of time in seconds.
+     * @param s the string of characters to convert to a quantity of seconds
+     * @return The duration converted to seconds
+     */
     public static Optional<Long> Duration(String s)
     {
         long total = 0;
@@ -169,18 +194,37 @@ public class TimeUtil
         return Optional.of(total + subtotal);
     }
 
+    /**
+     * Convert a unix timestamp to a human readable date string
+     * @param t Number of seconds since unix epoch
+     * @return A string with the format "EEE, MMM d yyyy HH:mm:ss"
+     * @deprecated Use the {@link com.ristexsoftware.lolbans.Utils.TranslationUtil} functions for converting timestamps to human readable strings.
+     * {@link java.text.SimpleDateFormat}
+     */
     public static String TimeString(long t)
     {
         return TimeUtil.TimeString(new Timestamp(t));
     }
 
-    public static String TimeString(Timestamp ts)
+	  /**
+	   * Convert a SQL Timestamp to a human readable date string
+	   * @param ts The time as a Timestamp object
+	   * @return A string with the format "EEE, MMM d yyyy HH:mm:ss"
+	   * @deprecated Use the {@link com.ristexsoftware.lolbans.Utils.TranslationUtil} functions for converting timestamps to human readable strings.
+	   * {@link java.text.SimpleDateFormat}
+	   */
+	public static String TimeString(Timestamp ts)
     {
         if (ts == null)
             return "";
         return sdf.format(ts);
     }
 
+    /**
+     * Convert a human-readable duration to a SQL Timestamp object
+     * @param TimePeriod A duration string (eg, "2y1w10d40m6s")
+     * @return {@link java.sql.Timestamp}
+     */
     public static Timestamp ParseToTimestamp(String TimePeriod)
     {
         // Parse ban time.
@@ -194,11 +238,19 @@ public class TimeUtil
         return null;
     }
 
+    /**
+     * Get the current system time as a Unix timestamp
+     * @return Current number of seconds since Unix Epoch
+     */
     public static long GetUnixTime()
     {
         return System.currentTimeMillis() / 1000L;
     }
 
+    /**
+     * Get the current system time as a SQL Timestamp object
+     * @return {@link java.sql.Timestamp}
+     */
     public static Timestamp TimestampNow()
     {
         return new Timestamp(TimeUtil.GetUnixTime() * 1000L);

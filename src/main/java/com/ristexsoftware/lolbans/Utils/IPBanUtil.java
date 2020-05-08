@@ -17,6 +17,11 @@ public class IPBanUtil
 {
 	private static Main self = Main.getPlugin(Main.class);
 	
+	/**
+	 * Asynchronously check if an IP address is banned
+	 * @param address The suspect banned address
+	 * @return SQL ResultSet of the banned address, if banned this object will have the returned data from the database or be null.
+	 */
 	public static Future<Optional<ResultSet>> IsBanned(InetAddress address)
 	{
 		FutureTask<Optional<ResultSet>> t = new FutureTask<>(new Callable<Optional<ResultSet>>()
@@ -63,6 +68,12 @@ public class IPBanUtil
 	// Check if a UUID's currently connecting IP address matches one which has
 	// already been banned, making their account an alternate account.
 	// This can enforce additional bans or help identify alts
+	/**
+	 * Check if the UUID's currently connecting IP address matches one which has already
+	 * been banned, making their account an alternate account.
+	 * @param address The ip address of the suspect account
+	 * @return A UUID of the banned account or null
+	 */
 	public static Future<UUID> CheckAlts(InetAddress address)
 	{
 		FutureTask<UUID> t = new FutureTask<>(new Callable<UUID>()
@@ -107,6 +118,7 @@ public class IPBanUtil
 	/**
 	 * Query the Reverse DNS of an address and return the DNS result
 	 * as a string.
+	 * @param address The address to query for a reverse DNS result.
 	 * @return String with the DNS result or null
 	 */
 	public static String rDNSQUery(String address)
