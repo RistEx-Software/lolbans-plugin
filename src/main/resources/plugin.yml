@@ -1,9 +1,9 @@
 name: LolBans
 version: ${project.version}
 main: com.ristexsoftware.lolbans.Main
-api-version: 1.13
+api-version: 1.14
 authors: [Zachery Coleman, Justasic]
-description: A ban system for minecraft, nothing fancy
+description: An advanced punishment management system made for Minecraft
 website: https://github.com/notzachery
 permissions:
   lolbans.ban:
@@ -48,6 +48,8 @@ permissions:
     description: Able to kick players from the server
   lolbans.report:
     description: Able to report other players to server admins
+  lolbans.report.history:
+    description: Able to history of reports of a specific player or all reports
   lolbans.ReceiveReports:
     description: Able to receive reports from other players
   lolbans.staffrollback:

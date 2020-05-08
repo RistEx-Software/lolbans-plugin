@@ -44,11 +44,12 @@ import com.ristexsoftware.lolbans.Commands.History.HistoryCommand;
 import com.ristexsoftware.lolbans.Commands.History.StaffHistoryCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.BroadcastCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.KickCommand;
-import com.ristexsoftware.lolbans.Commands.Misc.ReportCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.StaffRollbackCommand;
 import com.ristexsoftware.lolbans.Commands.Mute.UnmuteCommand;
 import com.ristexsoftware.lolbans.Commands.Mute.MuteChatCommand;
 import com.ristexsoftware.lolbans.Commands.Mute.MuteCommand;
+import com.ristexsoftware.lolbans.Commands.Report.ReportCommand;
+import com.ristexsoftware.lolbans.Commands.Report.ReportHistoryCommand;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
@@ -75,9 +76,8 @@ import java.util.concurrent.Executors;
 // welcome.
 // TAKE YOUR SHOES OFF DONT BE DRAGGING NO DIRT IN HERE
 /**
- * <h1>LolBans Banning Plugin</h1>
- * The lolbans plugin. Implementing only the most excellent banning
- * system possible for Minecraft.
+ * <h1>LolBans Punishment Plugin</h1>
+ * The lolbans plugin. The most advanced punishment management system made for Minecraft
  *
  * @author Justin Crawford &amp; Zachery Coleman
  * @version 1.0
@@ -183,6 +183,7 @@ public final class Main extends JavaPlugin
         CommandList.add(new RegexBanCommand(this));
         CommandList.add(new StaffRollbackCommand(this));
         CommandList.add(new StaffHistoryCommand(this));
+        CommandList.add(new ReportHistoryCommand(this));
 
         // MD_5 and his knobbery continues. the CraftServer.java class has a `getCommandMap()`
         // method and CommandMap is documented but there's no reasonable way to get the command

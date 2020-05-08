@@ -147,9 +147,11 @@ Warn:
   
 History:
   NoHistory: "{PREFIX}&bPlayer &f{PLAYER}&b has no punishment history."
+  NoHistory2: "{PREFIX}&bThere are currently no reports"
   ClearedHistory: "{PREFIX}&fCleared history for &b{PLAYER}&f."
   HistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f - &f&lExpires: &f{EXPIRYDATE}\n"
   HistoryMessagePerm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f\n"
+  HistoryMessageReport: "&3:=:=:= &b[{PLAYERNAME}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lReporter: &f{ARBITER}&f\n"
   StaffHistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f - &f&lExpires: &f{EXPIRYDATE}\n"
   StaffHistoryMessagePerm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f\n"
   # The number of times `HistoryMessageTemp` or `HistoryMessagePerm` is treated as a page. (Default is 2)
@@ -177,6 +179,7 @@ Syntax:
   Freeze: "Usage: /freeze [-s] <PlayerName>"
   Kick: "Usage: /kick [-s] <PlayerName> <Reason>"
   Report: "Usage: /report <type> <player> <reason>"
+  Reports: "Usage: /reports [PlayerName] [<page>]"
   StaffRollback: "Usage: /staffrollback [-s] <Staffmember> <Time|*>"
   ChatMute: "Usage: /chatmute"
   Mute: "Usage: /mute [-s] <Player> <Time|*> <Reason>"

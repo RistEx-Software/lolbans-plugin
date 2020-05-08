@@ -1,4 +1,4 @@
-package com.ristexsoftware.lolbans.Commands.Misc;
+package com.ristexsoftware.lolbans.Commands.Report;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;

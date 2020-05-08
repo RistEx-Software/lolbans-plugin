@@ -63,7 +63,7 @@ public class DatabaseUtil
                                             +"WarningAck BOOLEAN DEFAULT FALSE"
                                             +")").execute();
                                             
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Users "
+                                            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Users "
                                             +"(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                                             +"UUID VARCHAR(36) NOT NULL,"
                                             +"PlayerName VARCHAR(17),"
@@ -71,7 +71,8 @@ public class DatabaseUtil
                                             +"FirstLogin TIMESTAMP NOT NULL,"
                                             +"LastLogin TIMESTAMP NOT NULL,"
                                             +"Punishments INT NULL,"
-                                            +"LastPunished TIMESTAMP NULL"
+                                            +"LastPunished TIMESTAMP NULL,"
+                                            +"TimesConnected INT NULL"
                                             +")").execute();
 
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BanWave"
@@ -287,12 +288,13 @@ public class DatabaseUtil
                     // Preapre a statement
                     int i = 1;
                     PreparedStatement InsertUser = self.connection
-                    .prepareStatement(String.format("INSERT INTO Users (UUID, PlayerName, IPAddress, FirstLogin, LastLogin) VALUES (?, ?, ?, ?, ?)"));
+                    .prepareStatement(String.format("INSERT INTO Users (UUID, PlayerName, IPAddress, FirstLogin, LastLogin, TimesConnected) VALUES (?, ?, ?, ?, ?, ?)"));
                     InsertUser.setString(i++, UUID);
                     InsertUser.setString(i++, PlayerName);
                     InsertUser.setString(i++, IPAddress);
                     InsertUser.setTimestamp(i++, FirstLogin);
                     InsertUser.setTimestamp(i++, LastLogin);
+                    InsertUser.setInt   (i++, 1);
                     InsertUser.executeUpdate();
                 } 
                 catch (Throwable e) 
@@ -325,15 +327,32 @@ public class DatabaseUtil
             public Boolean call()
             {
                 //This is where you should do your database interaction
-                try 
+                try
                 {
+                    PreparedStatement gtc = self.connection.prepareStatement(String.format("SELECT TimesConnected FROM Users WHERE UUID = ?"));
+                    gtc.setString(1, UUID);
+
+                    ResultSet gtc2 = gtc.executeQuery();
+                    int tc = 1;
+                    if (gtc2.next())
+                    {
+                        if (!gtc2.wasNull()){
+                            tc = gtc2.getInt("TimesConnected");
+                        }
+                        else
+                        {
+                            tc = 0;
+                        }
+                    }
+
                     // Preapre a statement
                     int i = 1;
                     PreparedStatement UpdateUser = self.connection
-                    .prepareStatement(String.format("UPDATE Users SET LastLogin = ?, PlayerName = ?, IPAddress = ? WHERE UUID = ?"));
+                    .prepareStatement(String.format("UPDATE Users SET LastLogin = ?, PlayerName = ?, IPAddress = ?, TimesConnected = ? WHERE UUID = ?"));
                     UpdateUser.setTimestamp(i++, LastLogin);
                     UpdateUser.setString(i++, PlayerName);
                     UpdateUser.setString(i++, IPAddress);
+                    UpdateUser.setInt(i++, ++tc);
                     UpdateUser.setString(i++, UUID);
                     UpdateUser.executeUpdate();
                 } 

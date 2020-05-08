@@ -11,7 +11,6 @@ import inet.ipaddr.IPAddressString;
 import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
-import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.IPBanUtil;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
