@@ -51,7 +51,15 @@ public class Punishment
     // Used in FindPunishment
     private Punishment() {}
 
-    // Create a new punishment from scratch.
+    /**
+     * Create a new punishment to commit to the database
+     * @param Type The type of punishment to create
+     * @param sender Who is creating the punishment
+     * @param target Who (or what) is being punished
+     * @param Reason The reason for the punishment
+     * @param Expiry When the punishment expires (if applicable, null if permanent)
+     * @throws SQLException If it cannot communicate with the SQL database
+     */
     public Punishment(PunishmentType Type, CommandSender sender, OfflinePlayer target, String Reason, Timestamp Expiry) throws SQLException
     {
         // Not supported yet, will be in the future.
@@ -74,9 +82,9 @@ public class Punishment
 
         switch (Type)
         {
-            case PUNISH_BAN: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("Punishments")); break;
-            case PUNISH_KICK: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("Punishments")); break;
-            case PUNISH_MUTE: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("Punishments")); break;
+            case PUNISH_BAN:
+            case PUNISH_KICK:
+            case PUNISH_MUTE:
             case PUNISH_WARN: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("Punishments")); break;
             case PUNISH_REGEX: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("RegexBan")); break;
             case PUNISH_IP: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("IPBans")); break;
@@ -85,6 +93,11 @@ public class Punishment
         }
 	}
 
+    /**
+     * Find a punishment based on it's ID
+     * @param PunishmentID The ID of the punishment
+     * @return The punishment if found
+     */
     public static Optional<Punishment> FindPunishment(String PunishmentID)
     {
         try 
@@ -145,6 +158,13 @@ public class Punishment
         return Optional.empty();
     }
 
+    /**
+     * Find a punishment based on it's type and who was punished
+     * @param Type The type of punishment to look for
+     * @param Player The player being punished
+     * @param Appealed Whether the punishment was appealed
+     * @return The punishment if found.
+     */
     public static Optional<Punishment> FindPunishment(PunishmentType Type, OfflinePlayer Player, boolean Appealed)
     {
         try
@@ -256,6 +276,10 @@ public class Punishment
         Main.pool.execute(t);
     }
 
+    /**
+     * Erase this punishment record from the database.
+     * NOTE: This should not be used if you are unbanning someone.
+     */
     public void Delete()
     {
         Punishment me = this;

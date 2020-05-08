@@ -42,6 +42,7 @@ Minimum Viable Product (MVP) / Feature Freeze:
  - [Feature] REST api for website.
  - Hover Text (JSON) - Zachery/Justin?
  - Inventory-based UI for management of bans and whatnot. IMPORTANT!!
+ - /shun which disables their command processing.
 5. Mass unbans (??) / Regex-based unbans?
 6. Ensure targets can be names, uuids, ip addresses, or ip address ranges (CIDRs).
 7. Lockdown support (incl., per-server lockdowns)

@@ -153,7 +153,6 @@ public class ArgumentUtil
 			this.IsValidArgs = false;
 
 		return this;
-
 	}
 
 	/**

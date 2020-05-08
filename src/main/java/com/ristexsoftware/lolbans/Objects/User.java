@@ -37,47 +37,84 @@ public class User
     private Location WarnLocation;
     private String WarnMessage;
 
+    /**
+     * Create a new user based on a player
+     * @param pl The player we're making the user based on.
+     */
     public User(Player pl)
     {
         this.pl = pl;
     }
 
+    /**
+     * Get the player from this user
+     * @return the bukkit player object
+     */
     public Player getPlayer()
     {
         return this.pl;
     }
 
+    /**
+     * Get the current location of the player
+     * @return the bukkit location object
+     */
     public Location getLocation()
     {
         return this.pl.getLocation();
     }
 
+    /**
+     * Get the warned location of the player, freezing them in this spot if they are warned
+     * @return The location object of where the player was frozen for a warning
+     */
     public Location GetWarnLocation()
     {
         return this.WarnLocation;
     }
 
+    /**
+     * Get the warning message if the player was warned.
+     * @return a string with the warning message
+     */
     public String GetWarnMessage()
     {
         return this.WarnMessage;
     }
 
+    /**
+     * Get the user's name
+     * @return the name of the user/player
+     */
     public String getName()
     {
         return this.pl.getName();
     }
 
+    /**
+     * Checks if the player is currently warned
+     * @return True if the player has not acknowledged a warning
+     */
     public boolean IsWarn()
     {
         return this.IsWarn;
     }
 
+    /**
+     * Check if the player is frozen and unable to perform any actions
+     * @return True if the player is frozen in place.
+     */
     public boolean IsFrozen()
     {
         return this.frozen;
     }
 
-    // ALL VOIDS GO AFTER HERE
+    /**
+     * Sets whether this player has been warned and should be frozen until they acknowledge it.
+     * @param IsWarn Whether they are currently warned or not
+     * @param warnLocation The location where they should be frozen until the warning is acknowledged
+     * @param WarnMessage The message telling them the warning they received.
+     */
     public void SetWarned(boolean IsWarn, Location warnLocation, String WarnMessage)
     {
         this.IsWarn = IsWarn;
@@ -87,6 +124,10 @@ public class User
         this.WarnMessage = WarnMessage;
     }
 
+    /**
+     * Sets whether they're able to perform in game actions or not.
+     * @param IsFrozen True if they are frozen, false to unfreeze
+     */
     public void SetFrozen(boolean IsFrozen)
     {
         this.frozen = IsFrozen;
@@ -94,11 +135,21 @@ public class User
             this.SpawnBox(false, Material.AIR.createBlockData());
     }
 
+    /**
+     * Send the player/user a message
+     * @param message Message to send
+     */
     public void SendMessage(String message)
     {
         this.pl.sendMessage(message);
     }
 
+    /**
+     * Spawn a client-only box around the player, disallowing them from
+     * leaving the frozen space. This helps combat client-side rubberbanding.
+     * @param teleport Whether to teleport the player to a safe location on the ground, can trigger the server's anti-fly mechanism otherwise
+     * @param BlockType The kind of block to encase the player in (Barrier blocks by default)
+     */
     public void SpawnBox(boolean teleport, BlockData BlockType)
     {
         if (BlockType == null)
@@ -146,7 +197,11 @@ public class User
         this.pl.sendBlockChange(TeleportLoc.subtract(0, 1, 0), BlockType);
     }
 
-
+    /**
+     * Check if the player is in a ban wave
+     * @param user The player to check if they're in a ban wave
+     * @return True if they are in the next wave
+     */
     public static boolean IsPlayerInWave(OfflinePlayer user)
     {
         try 
@@ -163,6 +218,11 @@ public class User
         return false;
     }
 
+    /**
+     * Check if the player is banned by lolbans
+     * @param user the user to find
+     * @return True if the player is banned.
+     */
     public static boolean IsPlayerBanned(OfflinePlayer user)
     {
         try 
@@ -179,11 +239,17 @@ public class User
         return false;
     }
 
+    /**
+     * Check if the staff has performed any punishment actions
+     * @param user the user to check
+     * @return True if they have performed any punishments.
+     */
     public static boolean StaffHasHistory(CommandSender user)
     {
         try 
         {
-            PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM Punishments Kicks WHERE ExecutionerUUID = ? LIMIT 1");
+            // TODO: Update this.
+            PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM Punishments WHERE ExecutionerUUID = ? LIMIT 1");
             
             if (user instanceof Player)
             {
@@ -205,6 +271,11 @@ public class User
         return false;
     }
 
+    /**
+     * Check if the player is actively muted
+     * @param user Player to check
+     * @return True if the player has been muted.
+     */
     public static boolean IsPlayerMuted(OfflinePlayer user)
     {
         try 
@@ -221,8 +292,14 @@ public class User
         return false;
     }
 
+    /**
+     * Find the player by UUID, Punishment ID, or their name
+     * @param PunishID the Punishment ID, UUID, or player name
+     * @return The player if found
+     */
     public static OfflinePlayer FindPlayerByAny(String PunishID)
     {
+        // TODO: Find players by IP addresses too?
         // Try stupid first. If the PunishID is just a nickname, then avoid DB queries.
         @SuppressWarnings("deprecation") OfflinePlayer op = Bukkit.getOfflinePlayer(PunishID);
         if (op != null)
@@ -256,6 +333,10 @@ public class User
         return null;
     }
 
+    /**
+     * Kick the player from the server based on a punishment.
+     * @param p The punishment containing the player and reasons for punishment.
+     */
     public static void KickPlayer(Punishment p)
     {
         if (p.GetPunishmentType() != PunishmentType.PUNISH_KICK)
@@ -264,6 +345,15 @@ public class User
             User.KickPlayer(p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getName(), (Player)p.GetPlayer(), p.GetPunishmentID(), p.GetReason());
     }
 
+    /**
+     * Kick the player from the server
+     * @param sender The person kicking the player
+     * @param target The person being kicked from the server
+     * @param PunishID The punishment ID of the kick
+     * @param reason The reason for the kick
+     * @param TimePunished When the punishment happened
+     * @param Expiry If the punishment has an expiration
+     */
     public static void KickPlayerBan(String sender, Player target, String PunishID, String reason, Timestamp TimePunished, Timestamp Expiry)
     {
         try
@@ -289,6 +379,16 @@ public class User
         }
     }
 
+    /**
+     * Kick a player due to their IP address matching an IP or regex ban
+     * @param sender The person who ran the command
+     * @param target The person who is banned/kicked
+     * @param PunishID The punishment ID
+     * @param reason The reason for the kicking
+     * @param TimePunished The time the punishment was issued
+     * @param Expiry The time the punishment expires, if it expires
+     * @param IP The IP or regex of the punishment
+     */
     public static void KickPlayerIP(String sender, Player target, String PunishID, String reason, Timestamp TimePunished, Timestamp Expiry, String IP)
     {
         try
@@ -315,6 +415,13 @@ public class User
         }
     }
 
+    /**
+     * Kick a player for a reason with an ID
+     * @param sender The person who is kicking the player
+     * @param target The person being kicked from the server
+     * @param KickID The ID of the kick
+     * @param reason The reason for the kick
+     */
     public static void KickPlayer(String sender, Player target, String KickID, String reason)
     {
         try
@@ -337,10 +444,12 @@ public class User
         }
     }
 
-    /* ***********************************************************************
-     * Convenience functions to make the code cleaner.
+    /**
+     * Send the player a permission denied message
+     * @param sender the person who is executing the command
+     * @param PermissionNode The permission node they're being denied for
+     * @return always true, for use in the command classes.
      */
-
     public static boolean PermissionDenied(CommandSender sender, String PermissionNode)
     {
         try
@@ -361,21 +470,50 @@ public class User
         return true;
     }
 
+    /**
+     * Send the player the "No Such Player" message
+     * @param sender The person who executes the command
+     * @param PlayerName The name of the player that doesn't exist
+     * @param ret The value to return from this function
+     * @return the value provided as `ret`
+     */
     public static boolean NoSuchPlayer(CommandSender sender, String PlayerName, boolean ret)
     {
         return User.PlayerOnlyVariableMessage("PlayerDoesntExist", sender, PlayerName, ret);
     }
 
+    /**
+     * Send the player the "IP Is already banned" message
+     * @param sender The person who executed the command
+     * @param iPAddresString The ip address that is already banned
+     * @param ret The value to return from this function
+     * @return The value provided as `ret`
+     */
     public static boolean IPIsBanned(CommandSender sender, String iPAddresString, boolean ret)
     {
         return User.PlayerOnlyVariableMessage("IPIsBanned", sender, iPAddresString, ret);
     }
 
+    /**
+     * Send the player the "Player is offline" message
+     * @param sender The person who executed the command
+     * @param PlayerName The name of the offline player
+     * @param ret The value to return from this function
+     * @return The value provided as `ret`
+     */
     public static boolean PlayerIsOffline(CommandSender sender, String PlayerName, boolean ret)
     {
         return User.PlayerOnlyVariableMessage("PlayerIsOffline", sender, PlayerName, ret);
     }
 
+    /**
+     * Send a message to the player from messages.yml 
+     * @param MessageName The message node from messages.yml
+     * @param sender The person executing the command
+     * @param thingy An IP address passed as the "Player" variable
+     * @param ret The value to return from this function
+     * @return The value provided as `ret`
+     */
     public static boolean PlayerOnlyVariableMessage(String MessageName, CommandSender sender, IPAddress thingy, boolean ret)
     {
         try 
@@ -395,7 +533,16 @@ public class User
         return ret;
     }
 
-    public static boolean PlayerOnlyVariableMessage(String MessageName, CommandSender sender, String name, boolean ret)
+	/**
+	 * Send a message to a player from messages.yml whose only argument is the player name
+	 * @param MessageName The message node from messages.yml
+	 * @param sender The person executing the command
+	 * @param name The name of the player to use as a placeholder
+	 * @param ret The value to return from this function
+	 * @return The value provided as `ret`
+	 */
+  public
+	static boolean PlayerOnlyVariableMessage(String MessageName, CommandSender sender, String name, boolean ret)
     {
         try 
         {

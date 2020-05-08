@@ -19,13 +19,31 @@ public abstract class RistExCommandAsync extends Command implements PluginIdenti
 	private Plugin owner;
 	private TabCompleter completer;
 
+	/**
+	 * Create a new command for the associated plugin
+	 * @param CommandName The name of the command the user will execute
+	 * @param owner The plugin that owns this command.
+	 */
 	public RistExCommandAsync(String CommandName, Plugin owner)
 	{
 		super(CommandName);
 		this.owner = owner;
 	}
 
+	/**
+	 * Show a syntax error message when the user fails to enter thr proper syntax
+	 * @param sender Who failed the command
+	 * @param label The command itself
+	 * @param args Arguments provided to the command
+	 */
 	public abstract void onSyntaxError(CommandSender sender, String label, String[] args);
+	/**
+	 * Execute the command itself (part of the derived class)
+	 * @param sender Who is executing the command
+	 * @param commandLabel The command string triggering this command
+	 * @param args The arguments provided to this command
+	 * @return Whether or not the command succeeded, returning false will trigger onSyntaxError()
+	 */
 	public abstract boolean Execute(CommandSender sender, String commandLabel, String[] args);
 
 	/**
@@ -34,6 +52,10 @@ public abstract class RistExCommandAsync extends Command implements PluginIdenti
 	 * 
 	 * This also allows us to do async commands if we so desire and it nulls the point of
 	 * CommandExecutors because they were fucking pointless to begin with.
+	 * @param sender The person executing the command
+	 * @param commandLabel The command that was executed
+	 * @param args The arguments given to the command.
+	 * @return True if the command succeeded, otherwise it will execute onSyntaxError().
 	 */
 	@Override
 	public final boolean execute(CommandSender sender, String commandLabel, String[] args)
@@ -167,7 +189,11 @@ public abstract class RistExCommandAsync extends Command implements PluginIdenti
         return completions;
     }
 
-    @Override
+	/**
+	 * Convert this command name to a string
+	 * @return the human readable name of the class
+	 */
+	@Override
 	public String toString()
 	{
         StringBuilder stringBuilder = new StringBuilder(super.toString());
