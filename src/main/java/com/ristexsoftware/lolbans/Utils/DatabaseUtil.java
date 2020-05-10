@@ -69,7 +69,7 @@ public class DatabaseUtil
                                             +"PlayerName VARCHAR(17),"
                                             +"IPAddress VARCHAR(48) NOT NULL,"
                                             +"Country VARCHAR(64) NOT NULL,"
-                                            +"CountryCode VARCHAR(16) NOT NULL,"
+                                            +"CountryCode VARCHAR(3) NOT NULL,"
                                             +"FirstLogin TIMESTAMP NOT NULL,"
                                             +"LastLogin TIMESTAMP NOT NULL,"
                                             +"Punishments INT NULL,"
@@ -391,10 +391,11 @@ public class DatabaseUtil
                     UpdateUser.setString(i++, PlayerName);
                     UpdateUser.setString(i++, IPAddress);
                     UpdateUser.setInt(i++, ++tc);
-                    UpdateUser.setString(i++, UUID);
                     UpdateUser.setString(i++, geodata[1]);
                     UpdateUser.setString(i++, geodata[0]);
+                    UpdateUser.setString(i++, UUID);
                     UpdateUser.executeUpdate();
+                    System.out.println(UpdateUser.executeUpdate());
                 } 
                 catch (Throwable e) 
                 {

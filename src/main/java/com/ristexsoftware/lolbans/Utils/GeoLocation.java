@@ -28,6 +28,11 @@ public class GeoLocation {
         }
     }
 
+    /**
+     * Returns array of string with Country and CountryCode
+     * @param ipaddr The IP you want to get geolocaiton data from
+     * @return A string array with 2 things. (0 = CountryCode, 1 = CountryName)
+     */
     public static String[] GetIPLocation(String ipaddr) {
         try
         {

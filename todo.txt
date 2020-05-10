@@ -10,7 +10,7 @@ while the lite version is just strictly punishments.
 
 
 #########################################
-Business model
+Business model (Outdated)
 #########################################
 Website is now our profit capability, make the site similar to how LuckPerms manages permissions except for bans, force license keys to use the site
 for validation, the java plugin is now considered to be a loss (see also: purecore.io).
