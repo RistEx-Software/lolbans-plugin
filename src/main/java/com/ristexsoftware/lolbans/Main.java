@@ -52,6 +52,7 @@ import com.ristexsoftware.lolbans.Commands.Report.ReportCommand;
 import com.ristexsoftware.lolbans.Commands.Report.ReportHistoryCommand;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
+import com.ristexsoftware.lolbans.Utils.GeoLocation;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.ReflectionUtil;
 import com.ristexsoftware.lolbans.Hacks.Hacks;

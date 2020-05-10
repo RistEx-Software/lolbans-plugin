@@ -64,9 +64,8 @@ public class ConnectionListeners implements Listener
         else
         {
             Timestamp lastjoin = TimeUtil.TimestampNow();
-            DatabaseUtil.UpdateUser(lastjoin, player.getName(), ipaddr, puuid);
+            DatabaseUtil.UpdateUser(puuid, player.getName(), ipaddr, lastjoin);
         }
-
         // Link accounts via the website
         // String JoinMessage = LinkMessages.get(player.getUniqueId());
         // if (JoinMessage != null)

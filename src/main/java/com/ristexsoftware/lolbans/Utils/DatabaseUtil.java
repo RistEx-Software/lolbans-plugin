@@ -63,11 +63,13 @@ public class DatabaseUtil
                                             +"WarningAck BOOLEAN DEFAULT FALSE"
                                             +")").execute();
                                             
-                                            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Users "
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Users "
                                             +"(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                                             +"UUID VARCHAR(36) NOT NULL,"
                                             +"PlayerName VARCHAR(17),"
                                             +"IPAddress VARCHAR(48) NOT NULL,"
+                                            +"Country VARCHAR(64) NOT NULL,"
+                                            +"CountryCode VARCHAR(16) NOT NULL,"
                                             +"FirstLogin TIMESTAMP NOT NULL,"
                                             +"LastLogin TIMESTAMP NOT NULL,"
                                             +"Punishments INT NULL,"
@@ -285,16 +287,35 @@ public class DatabaseUtil
                 //This is where you should do your database interaction
                 try 
                 {
+                    String[] geodata = GeoLocation.GetIPLocation(IPAddress);
+
+                    // Make sure we're not duping data, if they already exist go ahead and update them
+                    // This happens because we insert every time they join for the first time, but if the playerdata is removed on the world
+                    // or the spigot plugin is setup in  multiple servers using the same database, it would add them a second time
+                    // lets not do that....
+                    int j = 1;
+                    PreparedStatement CheckUser = self.connection.
+                    prepareStatement("SELECT id FROM Users WHERE UUID = ?");
+                    CheckUser.setString(j++, UUID);
+                    ResultSet results = CheckUser.executeQuery();
+                    if (results.next() && !results.wasNull())
+                    {
+                        UpdateUser(UUID, PlayerName, IPAddress, LastLogin);
+                        return true;
+                    }
+
                     // Preapre a statement
                     int i = 1;
                     PreparedStatement InsertUser = self.connection
-                    .prepareStatement(String.format("INSERT INTO Users (UUID, PlayerName, IPAddress, FirstLogin, LastLogin, TimesConnected) VALUES (?, ?, ?, ?, ?, ?)"));
+                    .prepareStatement(String.format("INSERT INTO Users (UUID, PlayerName, IPAddress, FirstLogin, LastLogin, TimesConnected, Country, CountryCode) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"));
                     InsertUser.setString(i++, UUID);
                     InsertUser.setString(i++, PlayerName);
                     InsertUser.setString(i++, IPAddress);
                     InsertUser.setTimestamp(i++, FirstLogin);
                     InsertUser.setTimestamp(i++, LastLogin);
-                    InsertUser.setInt   (i++, 1);
+                    InsertUser.setInt(i++, 1);
+                    InsertUser.setString(i++, geodata[1]);
+                    InsertUser.setString(i++, geodata[0]);
                     InsertUser.executeUpdate();
                 } 
                 catch (Throwable e) 
@@ -313,13 +334,14 @@ public class DatabaseUtil
 
     /**
      * Update a user record
-     * @param LastLogin The timestamp of the last time they logged in
-     * @param PlayerName Their current player name
-     * @param IPAddress Their current IP address
-     * @param UUID Their current UUID
+     * @param UUID Users current UUID
+     * @param PlayerName Users current player name
+     * @param IPAddress Users current IP address
+     * @param LastLogin The timestamp of the last time a user logged in
      * @return True if the update was successful.
      */
-    public static Future<Boolean> UpdateUser(Timestamp LastLogin, String PlayerName, String IPAddress, String UUID)
+    public static Future<Boolean> UpdateUser(String UUID, String PlayerName, String IPAddress, Timestamp LastLogin)
+    //(Timestamp LastLogin, String PlayerName, String IPAddress, String UUID)
     {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
         {
@@ -329,6 +351,22 @@ public class DatabaseUtil
                 //This is where you should do your database interaction
                 try
                 {
+                    String[] geodata = GeoLocation.GetIPLocation(IPAddress);
+
+                    int j = 1;
+                    // This is a fail-safe just incase the table was dropped or the player joined the server BEFORE the plugin was added...
+                    // This will ensure they get added to the database no matter what.
+                    PreparedStatement CheckUser = self.connection.
+                    prepareStatement(String.format("SELECT id FROM Users WHERE UUID = ?"));
+                    CheckUser.setString(j++, UUID);
+                    ResultSet results = CheckUser.executeQuery();
+                    if (!results.next())
+                    {
+                        Timestamp FirstLogin = TimeUtil.TimestampNow();
+                        InsertUser(UUID, PlayerName, IPAddress, FirstLogin, LastLogin);
+                        return true;
+                    }
+
                     PreparedStatement gtc = self.connection.prepareStatement(String.format("SELECT TimesConnected FROM Users WHERE UUID = ?"));
                     gtc.setString(1, UUID);
 
@@ -348,12 +386,14 @@ public class DatabaseUtil
                     // Preapre a statement
                     int i = 1;
                     PreparedStatement UpdateUser = self.connection
-                    .prepareStatement(String.format("UPDATE Users SET LastLogin = ?, PlayerName = ?, IPAddress = ?, TimesConnected = ? WHERE UUID = ?"));
+                    .prepareStatement(String.format("UPDATE Users SET LastLogin = ?, PlayerName = ?, IPAddress = ?, TimesConnected = ?, Country = ?, CountryCode = ? WHERE UUID = ?"));
                     UpdateUser.setTimestamp(i++, LastLogin);
                     UpdateUser.setString(i++, PlayerName);
                     UpdateUser.setString(i++, IPAddress);
                     UpdateUser.setInt(i++, ++tc);
                     UpdateUser.setString(i++, UUID);
+                    UpdateUser.setString(i++, geodata[1]);
+                    UpdateUser.setString(i++, geodata[0]);
                     UpdateUser.executeUpdate();
                 } 
                 catch (Throwable e) 

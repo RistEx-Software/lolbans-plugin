@@ -19,6 +19,8 @@ import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
 public class AsyncChatListener 
 {
+
+    
     private static Main self = Main.getPlugin(Main.class);
 
     public static void OnAsyncPlayerChat(AsyncPlayerChatEvent event) throws InterruptedException, ExecutionException 
