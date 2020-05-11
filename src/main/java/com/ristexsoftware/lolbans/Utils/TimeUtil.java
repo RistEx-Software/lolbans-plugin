@@ -201,6 +201,7 @@ public class TimeUtil
      * @deprecated Use the {@link com.ristexsoftware.lolbans.Utils.TranslationUtil} functions for converting timestamps to human readable strings.
      * {@link java.text.SimpleDateFormat}
      */
+	@Deprecated
     public static String TimeString(long t)
     {
         return TimeUtil.TimeString(new Timestamp(t));
@@ -213,6 +214,7 @@ public class TimeUtil
 	   * @deprecated Use the {@link com.ristexsoftware.lolbans.Utils.TranslationUtil} functions for converting timestamps to human readable strings.
 	   * {@link java.text.SimpleDateFormat}
 	   */
+	@Deprecated
 	public static String TimeString(Timestamp ts)
     {
         if (ts == null)

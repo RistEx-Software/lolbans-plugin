@@ -395,7 +395,6 @@ public class DatabaseUtil
                     UpdateUser.setString(i++, geodata[0]);
                     UpdateUser.setString(i++, UUID);
                     UpdateUser.executeUpdate();
-                    System.out.println(UpdateUser.executeUpdate());
                 } 
                 catch (Throwable e) 
                 {

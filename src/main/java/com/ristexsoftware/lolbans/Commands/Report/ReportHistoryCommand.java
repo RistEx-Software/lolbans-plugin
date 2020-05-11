@@ -56,12 +56,10 @@ public class ReportHistoryCommand extends RistExCommand
 
         try
         {
-
             // There are two ways this command can work, it can either specify a player, or show all reports.
-            
             PreparedStatement pst = null;
             if (args.length < 1)
-                pst = self.connection.prepareStatement("SELECT * FROM Reports");
+                pst = self.connection.prepareStatement("SELECT * FROM Reports ORDER BY Closed, TimeAdded");
             else 
             {
                 OfflinePlayer target = User.FindPlayerByAny(args[0]);
@@ -91,7 +89,7 @@ public class ReportHistoryCommand extends RistExCommand
                         put("playername", result.getString("DefendantName"));
                         put("reason", result.getString("Reason"));
                         put("arbiter", result.getString("PlaintiffName"));
-                        put("date", TimeUtil.TimeString(result.getTimestamp("TimeAdded")));
+                        put("date", result.getTimestamp("TimeAdded").toString());
                         // TODO: Add more variables for people who want more info?
                     }}
                 ));
