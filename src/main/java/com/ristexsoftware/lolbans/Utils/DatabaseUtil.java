@@ -134,7 +134,7 @@ public class DatabaseUtil
         {
             e.printStackTrace();
             self.getLogger().severe("Cannot create database tables, please ensure your SQL user has the correct permissions.");
-            return false;
+            return false; 
         }
 
         // Schedule a repeating task to delete expired bans.

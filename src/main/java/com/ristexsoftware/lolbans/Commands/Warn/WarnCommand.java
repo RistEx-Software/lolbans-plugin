@@ -87,6 +87,8 @@ public class WarnCommand extends RistExCommand
             if (target.isOnline())
             {
                 String WarnedMessage = Messages.Translate("Warn.WarnedMessage", Variables);
+                if (Main.getPlugin(Main.class).getConfig().getBoolean("WarningSettings.SimpleWarning"))
+                    return true;
                 User u = Main.USERS.get(target.getUniqueId());
                 u.SetWarned(true, ((Player) target).getLocation(), WarnedMessage);
                 u.SendMessage(WarnedMessage);

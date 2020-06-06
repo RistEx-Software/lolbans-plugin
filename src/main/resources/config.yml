@@ -26,7 +26,7 @@ database:
 Discord:
   Webhook: https://discordapp.com/api/webhooks/675967628707102721/t0MTV1d4sdLwWvZw4cnUTe5Y5NOhpTruaIqC3fRJBzBedPIFTOn2dARX8QC9LYHum7SM
   ReportWebhook: https://discordapp.com/api/webhooks/675967628707102721/t0MTV1d4sdLwWvZw4cnUTe5Y5NOhpTruaIqC3fRJBzBedPIFTOn2dARX8QC9LYHum7SM
-  # Example: mod banned iZachery for abusing villagers [SILENT] [#B-BF7BD5C85]
+  # Example: mod banned iZachery for abusing villagers [SILENT] [#BF7BD5C85]
   UseSimplifiedMessage: false
   WebhookProfilePicture: "https://icon2.kisspng.com/20180407/jlw/kisspng-face-with-tears-of-joy-emoji-laughter-smile-crying-crying-5ac88fc80a4968.8005591115230934480421.jpg"
 

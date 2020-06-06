@@ -16,7 +16,7 @@ import com.ristexsoftware.lolbans.Main;
 public class IPBanUtil 
 {
 	private static Main self = Main.getPlugin(Main.class);
-	
+
 	/**
 	 * Asynchronously check if an IP address is banned
 	 * @param address The suspect banned address

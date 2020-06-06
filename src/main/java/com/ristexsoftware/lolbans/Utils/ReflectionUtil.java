@@ -1,4 +1,4 @@
-package com.ristexsoftware.lolbans.Utils; // Zachery's package owo
+package com.ristexsoftware.lolbans.Utils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

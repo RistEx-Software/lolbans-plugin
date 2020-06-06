@@ -23,6 +23,7 @@ import com.ristexsoftware.lolbans.Objects.User;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
@@ -45,6 +46,7 @@ public class ConnectionListeners implements Listener
      */
 
     // Adding players to a hashmap and account linking
+    @EventHandler
     public static void OnPlayerConnect(PlayerJoinEvent event) 
     {
         // if (LinkMessages == null)
@@ -75,6 +77,7 @@ public class ConnectionListeners implements Listener
     // We need to make this async so the database stuff doesn't run on the main
     // thread.
     // This event is already async, no need.
+    @EventHandler
     public static void OnPlayerConnectAsync(AsyncPlayerPreLoginEvent event) 
     {
         try 
@@ -337,12 +340,14 @@ public class ConnectionListeners implements Listener
         }
     }
 
+    @EventHandler
     public static void OnPlayerDisconnect(PlayerQuitEvent event) 
     {
         UUID PlayerUUID = event.getPlayer().getUniqueId();
         Main.USERS.remove(PlayerUUID);
     }
 
+    @EventHandler
     public static void OnPlayerKick(PlayerKickEvent event) 
     {
         Main.USERS.remove(event.getPlayer().getUniqueId());

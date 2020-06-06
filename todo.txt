@@ -1,28 +1,14 @@
 
 Basis of plugin design: https://www.spigotmc.org/resources/litebans.3715/
 
-
-
-The "Lite" version of lolbans should have everything litebans has, plus a little more
-the full version of lolbans should have everything under the sun (it's $20, it better have lots of features) this includes stupid thingys like
-analytics and other dumb shit, basically the full version is a core plugin with everything related to analytics and punishments.
-while the lite version is just strictly punishments.
-
-
 #########################################
-Business model (Outdated)
+Plugin model
 #########################################
-Website is now our profit capability, make the site similar to how LuckPerms manages permissions except for bans, force license keys to use the site
-for validation, the java plugin is now considered to be a loss (see also: purecore.io).
 
-With the website, we offer real-time analytics, punishments from web, appealing system, etc. This will be offered as a service 
-(the plugin itself will cost whatever amount). The service will be offered at a fixed rate 
-(x amount of free punishments then 0.005 cents per punishments or something stupid). I would like this to be a cheap service for people to use 
-while still making money. (Maybe make the service free and have premium features? For example, you can get punishment stats and punishments from web,
-but you don't get the appeal/reporting system. This needs to be appealing, so it ends up actually making profit, maybe make the plugin beta paid and full release cheaper/free?
-People donate like crazy anyway..)
+The plugin will eventually be free and possibly open source, but the alpha/beta will cost you $15-$20 but you get Premium for free (forever) on release.
+You will be able to do everything other plugins do and a more, all for free on release.
 
-lol may/june release pls - hah! if we're lucky!
+It should at the very least have more capabilities than all plugins on the market.
 
 ##########################################
 Minimum Viable Product (MVP) / Feature Freeze:
@@ -31,6 +17,7 @@ Minimum Viable Product (MVP) / Feature Freeze:
  - [Feature] Rewrite messages.yml to use new variables.
  - [Feature] List bans, regex bans, ip bans, warnings, etc. and ensure they're easy to remove.
  - [Feature] Permissions (make sure they're granular enough?) / dynamic permissions - Zachery
+ - [Bug/Feature] Change how arguemnts work to allow for things like "-p 1"
  - [Bug] Discord Messages need to be announced for all actions
  - [Bug] make it so /reports can use pages if no player is specified
  - TESTING TESTING TESTING TESTING TESTING!!! - everyone!
@@ -38,10 +25,10 @@ Minimum Viable Product (MVP) / Feature Freeze:
 ##########################################
 # Future (or nice to have after the MVP)
 ##########################################
- - [Feature] REST api for website.
- - Hover Text (JSON) - Zachery/Justin?
  - Inventory-based UI for management of bans and whatnot. IMPORTANT!!
+ - Hover Text (JSON) - Zachery/Justin?
  - /shun which disables their command processing.
+ - [Feature] REST api for website.
 5. Mass unbans (??) / Regex-based unbans?
 6. Ensure targets can be names, uuids, ip addresses, or ip address ranges (CIDRs).
 7. Lockdown support (incl., per-server lockdowns)

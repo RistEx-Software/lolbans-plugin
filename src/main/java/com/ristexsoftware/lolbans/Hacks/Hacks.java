@@ -32,6 +32,7 @@ public class Hacks implements Listener
     // Inject
     public static void HackIn(JavaPlugin plugin) 
     {
+        
         // Get spigot's command map and the plugin manager fields as read/writable
         // fields
         PluginManager pluginManager = ReflectionUtil.getProtectedValue(Bukkit.getServer(), "pluginManager");
@@ -61,9 +62,7 @@ public class Hacks implements Listener
             // The classes have to be loaded, we might be able to re-scan when a plugin is
             // loaded
             // but I'm not sure how much I want to support this behavior.
-            ClassInfoList events = new ClassGraph().enableClassInfo().scan() // you should use try-catch-resources
-                                                                             // instead
-                    .getClassInfo(Event.class.getName()).getSubclasses().filter(info -> !info.isAbstract());
+            ClassInfoList events = new ClassGraph().enableClassInfo().scan().getClassInfo(Event.class.getName()).getSubclasses().filter(info -> !info.isAbstract());
 
             // Our dummy event listener we use
             Listener listener = new Listener() 
@@ -139,11 +138,6 @@ public class Hacks implements Listener
         try 
         {
             // Listen to our player event.
-            if (event instanceof PlayerEvent)
-                PlayerEventListener.OnPlayerEvent((PlayerEvent)event);
-
-            if (event instanceof EntityEvent)
-                PlayerEventListener.OnEntityEvent((EntityEvent)event);
 
             if (event instanceof AsyncPlayerChatEvent)
                 AsyncChatListener.OnAsyncPlayerChat((AsyncPlayerChatEvent)event);

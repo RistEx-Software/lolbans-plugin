@@ -1,4 +1,4 @@
-package com.ristexsoftware.lolbans.Utils; // Zachery's package owo
+package com.ristexsoftware.lolbans.Utils;
 
 import java.lang.Character;
 import java.util.Map;
@@ -55,7 +55,7 @@ public class TranslationUtil
     {{
         put("pluralize", (String lvalue, String arg) -> { return Pluralize(lvalue, arg); });
         put("datetime", (String lvalue, String args) -> { return lvalue.isEmpty() ? "" : (new SimpleDateFormat(args)).format(Timestamp.valueOf(lvalue)); });
-        put("duration", (String lvalue, String unused) -> { return TimeUtil.DurationString(Timestamp.valueOf(lvalue)); });
+        put("duration", (String lvalue, String unused) -> { return TimeUtil.Expires(Timestamp.valueOf(lvalue)); });
         put("expiry", (String lvalue, String unused) -> { return TimeUtil.Expires(Timestamp.valueOf(lvalue)); });
         put("cut", (String lvalue, String arg) -> { return lvalue.replace(arg, ""); });
         put("empty_if_false", (String lvalue, String arg) -> { return Boolean.valueOf(lvalue) ? arg : ""; });

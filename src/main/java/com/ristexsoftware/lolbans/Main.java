@@ -52,10 +52,12 @@ import com.ristexsoftware.lolbans.Commands.Report.ReportCommand;
 import com.ristexsoftware.lolbans.Commands.Report.ReportHistoryCommand;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
-import com.ristexsoftware.lolbans.Utils.GeoLocation;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.ReflectionUtil;
+import com.ristexsoftware.lolbans.Hacks.AsyncChatListener;
+import com.ristexsoftware.lolbans.Hacks.ConnectionListeners;
 import com.ristexsoftware.lolbans.Hacks.Hacks;
+import com.ristexsoftware.lolbans.Hacks.PlayerEventListener;
 import com.ristexsoftware.lolbans.Objects.User;
 
 import inet.ipaddr.IPAddressString;
@@ -161,8 +163,16 @@ public final class Main extends JavaPlugin
         for (Player p : Bukkit.getOnlinePlayers())
             Main.USERS.put(p.getUniqueId(), new User(p));
 
+        // Java 11 is fucking retarded, so we have to NOT use are awesome hacks
+        // instead we have to just manually register each event...
         // Run our hacks
-        Hacks.HackIn(this);
+        //Hacks.HackIn(this);
+
+        // Thanks java 11, and thanks MD fucking 5 for not allowing us to just register PlayerEvent and EntityEvent
+        // because god forbid someone trying to cancel everything related to a player/entity....
+        getServer().getPluginManager().registerEvents(new AsyncChatListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
+        getServer().getPluginManager().registerEvents(new ConnectionListeners(), this);
 
         List<Command> CommandList = new ArrayList<Command>();
         CommandList.add(new BanCommand(this));
@@ -198,7 +208,8 @@ public final class Main extends JavaPlugin
     public void onDisable()
     {
         // Unregister our hacks.
-        Hacks.GetCaught();
+        // NOPE! We can't hack spigot anymore...
+        //Hacks.GetCaught();
         // Save our config values
         reloadConfig();
         // Close out or database.
