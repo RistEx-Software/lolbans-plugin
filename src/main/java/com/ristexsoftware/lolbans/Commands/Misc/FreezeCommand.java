@@ -85,7 +85,8 @@ public class FreezeCommand extends RistExCommand
             // same thing using the MovementListener, this just helps stop rubberbanding.
             u.SpawnBox(true, null);
 
-            BroadcastUtil.BroadcastEvent(silent, Messages.Translate(u.IsFrozen() ? "Freeze.FreezeAnnouncement" : "Freeze.UnfreezeAnnouncement", Variables));
+            if (Messages.Discord)
+                BroadcastUtil.BroadcastEvent(silent, Messages.Translate(u.IsFrozen() ? "Freeze.FreezeAnnouncement" : "Freeze.UnfreezeAnnouncement", Variables));
             // TODO: Discord
         }
         catch (InvalidConfigurationException e)

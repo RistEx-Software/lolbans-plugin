@@ -17,7 +17,6 @@ Minimum Viable Product (MVP) / Feature Freeze:
  - [Feature] Rewrite messages.yml to use new variables.
  - [Feature] List bans, regex bans, ip bans, warnings, etc. and ensure they're easy to remove.
  - [Feature] Permissions (make sure they're granular enough?) / dynamic permissions - Zachery
- - [Bug/Feature] Change how arguemnts work to allow for things like "-p 1"
  - [Bug] Discord Messages need to be announced for all actions
  - [Bug] make it so /reports can use pages if no player is specified
  - TESTING TESTING TESTING TESTING TESTING!!! - everyone!

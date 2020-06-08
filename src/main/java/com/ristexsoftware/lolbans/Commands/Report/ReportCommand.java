@@ -121,7 +121,8 @@ public class ReportCommand extends RistExCommand
             sender.sendMessage(Messages.Translate("Report.ReportSuccess", Variables));
                 
             BroadcastUtil.BroadcastEvent(false, Messages.Translate("Report.ReportAnnouncement", Variables), "lolbans.ReceiveReports");
-            DiscordUtil.GetDiscord().SendReport(sender, u, reason, ReportID, type);
+            if (Messages.Discord)
+                DiscordUtil.GetDiscord().SendReport(sender, u, reason, ReportID, type);
         }
         catch (Exception ex)
         {

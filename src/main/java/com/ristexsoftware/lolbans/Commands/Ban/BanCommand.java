@@ -101,10 +101,12 @@ public class BanCommand extends RistExCommandAsync
                     put("punishid", punish.GetPunishmentID());
                     put("expiry", punish.GetExpiryString());
                     put("silent", Boolean.toString(silent));
+                    put("appealed", Boolean.toString(punish.GetAppealed()));
                 }};
 
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Ban.BanAnnouncement", Variables));
-            DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+            if (Messages.Discord)
+                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
             t.Finish(sender);
         }
         catch (Exception e)

@@ -95,10 +95,12 @@ public class UnbanCommand extends RistExCommand
                 put("arbiter", sender.getName());
                 put("punishid", punish.GetPunishmentID());
                 put("silent", Boolean.toString(silent));
+                put("appealed", Boolean.toString(punish.GetAppealed()));
             }};
             
-            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Ban.UnbanAnnouncment", Variables));
-            DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Ban.BanAnnouncement", Variables));
+            if (Messages.Discord)
+                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (InvalidConfigurationException e)
         {

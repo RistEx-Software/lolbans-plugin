@@ -121,8 +121,8 @@ public class RegexUnbanCommand extends RistExCommandAsync
             }};
             
             sender.sendMessage(Messages.Translate("RegexBan.UnbanSuccess", Variables));
-            
-            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("RegexBan.UnbanAnnouncment", Variables));
+            if (Messages.Discord)
+                BroadcastUtil.BroadcastEvent(silent, Messages.Translate("RegexBan.UnbanAnnouncment", Variables));
             // TODO: DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (InvalidConfigurationException | SQLException | InterruptedException | ExecutionException e)

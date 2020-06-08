@@ -81,6 +81,7 @@ public class WarnCommand extends RistExCommand
                 put("punishid", punish.GetPunishmentID());
                 put("arbiter", sender.getName());
                 put("silent", Boolean.toString(silent));
+                put("appealed", Boolean.toString(punish.GetAppealed()));
             }};
                 
             // If they're online, require acknowledgement immediately by freezing them and sending a message.
@@ -100,7 +101,8 @@ public class WarnCommand extends RistExCommand
             }
             
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Warn.WarnAnnouncment", Variables));
-            DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+            if (Messages.Discord)
+                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (SQLException | InvalidConfigurationException e)
         {

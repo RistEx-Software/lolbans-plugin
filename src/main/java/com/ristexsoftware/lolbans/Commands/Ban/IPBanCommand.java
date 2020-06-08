@@ -181,6 +181,7 @@ public class IPBanCommand extends RistExCommandAsync
 					put("arbiter", sender.getName());
 					put("punishid", banid);
 					put("silent", Boolean.toString(silent));
+					put("appealed", Boolean.toString(false));
 					if (bantime != null)
 						put("expiry", bantime.toString());
 				}}
@@ -211,7 +212,8 @@ public class IPBanCommand extends RistExCommandAsync
 			}
 			
 			// SendIP
-			DiscordUtil.GetDiscord().SendBanObject(sender, thingy.toString(), reason, banid, bantime);
+			if (Messages.Discord)
+				DiscordUtil.GetDiscord().SendBanObject(sender, thingy.toString(), reason, banid, bantime);
 
 			return true;
 		}

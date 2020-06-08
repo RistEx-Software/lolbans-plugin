@@ -2,6 +2,7 @@ package com.ristexsoftware.lolbans.Commands.Warn;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.OfflinePlayer;
 
@@ -82,6 +83,7 @@ public class UnWarnCommand extends RistExCommand
                 put("punishid", punish.GetPunishmentID());
                 put("arbiter", sender.getName());
                 put("silent", Boolean.toString(silent));
+                put("appealed", Boolean.toString(punish.GetAppealed()));
 			}};
 			
 			// We don't track punishments that were removed so we just delete them.
@@ -91,13 +93,14 @@ public class UnWarnCommand extends RistExCommand
             if (target.isOnline())
             {
                 User u = Main.USERS.get(target.getUniqueId());
-                u.SetWarned(false, null, null);
-                u.SendMessage(Messages.Translate("Warn.RemovedWarning", Variables));
+                Player player = (Player) target;
+                u.SetWarned(false, player.getLocation(), "unwarned");
+                u.SendMessage(Messages.Translate("Warn.AcceptMessage", Variables));
             }
 			
 			sender.sendMessage(Messages.Translate("Warn.RemovedSuccess", Variables));
-            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Warn.RemovedWarnAnnouncment", Variables));
-            // TODO: DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+            if (Messages.Discord)
+                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (InvalidConfigurationException e)
         {

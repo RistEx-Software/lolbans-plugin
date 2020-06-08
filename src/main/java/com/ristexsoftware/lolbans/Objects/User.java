@@ -132,7 +132,7 @@ public class User
     {
         this.frozen = IsFrozen;
         if (!IsFrozen)
-            this.SpawnBox(false, Material.AIR.createBlockData());
+            this.SpawnBox(true, Material.AIR.createBlockData());
     }
 
     /**
@@ -153,7 +153,7 @@ public class User
     public void SpawnBox(boolean teleport, BlockData BlockType)
     {
         if (BlockType == null)
-            BlockType = Material.BARRIER.createBlockData();
+            BlockType = Material.IRON_BARS.createBlockData();
         Location loc = this.GetWarnLocation();
         // Create a barrier block.
         //BlockData BlockType = Material.GLASS.createBlockData();
@@ -168,7 +168,7 @@ public class User
         TeleportLoc.setPitch(loc.getPitch());
         TeleportLoc.setYaw(loc.getYaw());
         // Add to get to center of the block
-        TeleportLoc.add(0.5, 0, 0.5);
+        TeleportLoc.add(0.5, 1, 0.5);
         // Teleport.
         if (teleport)
             this.pl.teleport(TeleportLoc);
@@ -179,6 +179,9 @@ public class User
         TeleportLoc.subtract(0, 1, 0);
         // set the block above them
         this.pl.sendBlockChange(TeleportLoc.add(0, 3, 0), BlockType);
+        // and below them!
+        //this.pl.sendBlockChange(TeleportLoc.add(0, 4, 0), BlockType);
+        // This doesn't work and idk why, will fix later!
 
         // Reset our TeleportLoc.
         TeleportLoc.subtract(0, 2, 0);

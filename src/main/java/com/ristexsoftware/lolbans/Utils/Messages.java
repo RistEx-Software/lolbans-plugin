@@ -23,6 +23,7 @@ public class Messages
     public static String Website;
     public static String ServerError;
     public static String InvalidSyntax;
+    public static boolean Discord;
 
     // Initialized by our GetMessages() function.
     protected Messages()
@@ -66,6 +67,7 @@ public class Messages
             Messages.Website = Messages._Translate(this.CustomConfig.getString("Website", "YourWebsiteHere.com"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
             Messages.ServerError = Messages._Translate(this.CustomConfig.getString("ServerError", "The server encountered an error!"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
             Messages.InvalidSyntax = Messages._Translate(this.CustomConfig.getString("InvalidSyntax", "&cInvalid Syntax!"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            Messages.Discord = self.getConfig().getBoolean("Discord.Enabled", false);
         } 
         catch (IOException | InvalidConfigurationException e) 
         {

@@ -23,6 +23,11 @@ package com.ristexsoftware.lolbans;
     \   ",",_/,-'        |\_)
 -- -'-;.__:-'  Watch out before she steals your side-hoe!
 */
+// Don't let her steal your side-hoe!
+// WTF??? xD
+// This was my friends doing, and it's just fantastic!
+// nice lmao
+// well uh, enjoy this codebase, it drives me crazy just from the formatting tbh
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Bukkit;

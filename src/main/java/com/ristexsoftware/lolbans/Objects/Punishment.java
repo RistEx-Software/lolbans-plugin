@@ -34,6 +34,7 @@ public class Punishment
     private String IPAddress = null;
     private String Reason = null;
     private PunishmentType Type = null;
+    private boolean silent = false;
     private Timestamp TimePunished = null;
     private Timestamp Expiry = null;
     // If Executioner is null but IsConsole is true, it's a console punishment.

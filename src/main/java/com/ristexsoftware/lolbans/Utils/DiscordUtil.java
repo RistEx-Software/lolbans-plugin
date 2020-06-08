@@ -15,6 +15,7 @@ import com.mrpowergamerbr.temmiewebhook.DiscordMessage.DiscordMessageBuilder;
 import com.mrpowergamerbr.temmiewebhook.embed.FieldEmbed;
 import com.mrpowergamerbr.temmiewebhook.embed.FooterEmbed;
 import com.mrpowergamerbr.temmiewebhook.embed.ThumbnailEmbed;
+import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.Punishment;
 
 import org.bukkit.OfflinePlayer;
@@ -123,15 +124,10 @@ public class DiscordUtil
 			if (Variables.containsKey("PunishID"))
 				build.color(Integer.parseInt(Variables.get("PunishID").replaceAll("[^0-9]", "")));
 
-			// Set the title
 			build.title(Messages.Translate(MessageNode, Variables));
-			// Set the description
 			build.description(Variables.get("Reason"));
-			// Set the fields from above
 			build.fields(Fields);
-			// Set the thumbnail picture
 			build.thumbnail(ThumbnailEmbed.builder().url(Messages.TranslateNC("Discord.ThumbnailPictures", Variables)).build());
-			// Build the footer with the avatar
 			build.footer(FooterEmbed.builder().text(Variables.get("FooterText")).icon_url(Messages.TranslateNC("Discord.AvatarPictures", Variables)).build());
 
 			// Get the Avatar URL from the config. We provide the PlayerUUID and the ArbiterUUID
@@ -188,8 +184,9 @@ public class DiscordUtil
 						if (p.GetExpiry() != null)
 							put("Expiry", p.GetExpiry().toString());
 						put("PunishID", p.GetPunishmentID());
-						put("Applealed", Boolean.toString(p.GetAppealed()));
+						put("appealed", Boolean.toString(p.GetAppealed()));
 					}};
+
 
 				try
 				{

@@ -90,7 +90,8 @@ public class BanWaveCommand extends RistExCommand
 
             sender.sendMessage(Messages.Translate("BanWave.AddedToWave", Variables));
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("BanWave.AddedToWaveAnnouncement", Variables));
-            DiscordUtil.GetDiscord().SendBanWaveAdd(sender, target, reason, banid, Expiry);
+            if (Messages.Discord)
+                DiscordUtil.GetDiscord().SendBanWaveAdd(sender, target, reason, banid, Expiry);
 
             return true;
         }

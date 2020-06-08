@@ -201,7 +201,8 @@ public class RegexBanCommand extends RistExCommandAsync
                     put("expiry", bantime.toString());
                 }}
             ));
-            DiscordUtil.GetDiscord().SendBanObject(sender, regex.toString(), reason, banid, bantime);
+            if (Messages.Discord)
+                DiscordUtil.GetDiscord().SendBanObject(sender, regex.toString(), reason, banid, bantime);
 
             // Kick players who match the ban
             for (Player player : Bukkit.getOnlinePlayers())

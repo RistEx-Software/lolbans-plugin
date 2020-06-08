@@ -28,6 +28,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.PlayerInventory;
 
 import com.ristexsoftware.lolbans.Main;
@@ -181,7 +182,8 @@ public class PlayerEventListener implements Listener
         // Ignore players not warned
         if (u == null || !u.IsWarn())
             return;
-        event.setCancelled(true);
+        if (event.getCause() != TeleportCause.PLUGIN)
+            event.setCancelled(true);
     }
 
     @EventHandler

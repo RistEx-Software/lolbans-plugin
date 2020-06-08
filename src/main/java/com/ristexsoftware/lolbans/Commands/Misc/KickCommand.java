@@ -91,7 +91,8 @@ public class KickCommand extends RistExCommandAsync
             }};
                 
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Kick.KickAnnouncement", Variables));
-            DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+            if (Messages.Discord)
+                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (SQLException | InvalidConfigurationException e)
         {

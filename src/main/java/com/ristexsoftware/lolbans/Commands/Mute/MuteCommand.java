@@ -89,13 +89,15 @@ public class MuteCommand extends RistExCommand
                     put("punishid", punish.GetPunishmentID());
                     put("expiry", punish.GetExpiryString());
                     put("silent", Boolean.toString(silent));
+                    put("appealed", Boolean.toString(punish.GetAppealed()));
                 }};
 
             if (target.isOnline())
                 ((Player)target).sendMessage(Messages.Translate("Mute.YouWereMuted", Variables));
 
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Mute.MuteAnnouncement", Variables));
-            DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+            if (Messages.Discord)
+                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (Exception e)
         {

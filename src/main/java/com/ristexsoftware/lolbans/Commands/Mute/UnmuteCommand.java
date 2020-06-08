@@ -91,13 +91,15 @@ public class UnmuteCommand extends RistExCommand
                 put("arbiter", sender.getName());
                 put("punishid", punish.GetPunishmentID());
                 put("silent", Boolean.toString(silent));
+                put("appealed", Boolean.toString(punish.GetAppealed()));
             }};
 
             if (target.isOnline())
                 ((Player)target).sendMessage(Messages.Translate("Mute.YouWereUnMuted", Variables));
 
-            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Mute.UnmuteAnnouncment", Variables));
-            DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Mute.MuteAnnouncement", Variables));
+            if (Messages.Discord)
+                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (InvalidConfigurationException e)
         {
