@@ -55,10 +55,10 @@ public class TranslationUtil
     {{
         put("pluralize", (String lvalue, String arg) -> { return Pluralize(lvalue, arg); });
         put("datetime", (String lvalue, String args) -> { return lvalue.isEmpty() ? "" : (new SimpleDateFormat(args)).format(Timestamp.valueOf(lvalue)); });
-        put("duration", (String lvalue, String unused) -> { return TimeUtil.Expires(Timestamp.valueOf(lvalue)); });
-        put("expiry", (String lvalue, String unused) -> { return TimeUtil.Expires(Timestamp.valueOf(lvalue)); });
+        put("duration", (String lvalue, String unused) -> { System.out.println(lvalue + " " + unused); return lvalue == null ? "Never" : TimeUtil.Expires(Timestamp.valueOf(lvalue)); });
+        put("expiry", (String lvalue, String unused) -> { return lvalue == null ? "Never" : TimeUtil.Expires(Timestamp.valueOf(lvalue)); });
         put("cut", (String lvalue, String arg) -> { return lvalue.replace(arg, ""); });
-        put("empty_if_false", (String lvalue, String arg) -> {System.out.println(Boolean.valueOf(lvalue));  return Boolean.valueOf(lvalue) ? arg : ""; });
+        put("empty_if_false", (String lvalue, String arg) -> { return Boolean.valueOf(lvalue) ? arg : ""; });
         put("empty_if_none", (String lvalue, String arg) -> { return lvalue == null ? "" : arg; });
         put("default_if_none", (String lvalue, String arg) -> { return lvalue == null ? arg : lvalue; });
         put("lower", (String lvalue, String unused) -> { return lvalue.toLowerCase(); });

@@ -42,7 +42,7 @@ public class IPBanUtil
 						// They're a banned cidr, query for the reason and kick them.
 						if (cb.contains(hn.asAddressString()))
 						{
-							PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM IPBans WHERE IPAddress = ?");
+							PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM IPBans WHERE IPAddress = ? AND Appealed = false");
 							pst.setString(1, cb.toString());
 			
 							ResultSet res = pst.executeQuery();

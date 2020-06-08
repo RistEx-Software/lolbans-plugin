@@ -553,6 +553,7 @@ public class User
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("player", name);
+                    put("ipaddress", name);
                     // TODO: More appropriate name?
                     put("sender", sender.getName());
                 }}

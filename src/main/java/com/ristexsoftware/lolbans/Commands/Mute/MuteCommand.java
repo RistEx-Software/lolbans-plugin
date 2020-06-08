@@ -57,7 +57,7 @@ public class MuteCommand extends RistExCommand
             ArgumentUtil a = new ArgumentUtil(args);
             a.OptionalFlag("Silent", "-s");
             a.RequiredString("PlayerName", 0);
-            a.RequiredString("Time", 1);
+            a.RequiredString("TimePeriod", 1);
             a.RequiredSentence("Reason", 2);
 
             if (!a.IsValid())
@@ -67,7 +67,7 @@ public class MuteCommand extends RistExCommand
             String PlayerName = a.get("PlayerName");
             String reason = a.get("Reason");
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
-            Timestamp mutetime = TimeUtil.ParseToTimestamp(a.get("Time"));
+            Timestamp mutetime = TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
@@ -92,6 +92,7 @@ public class MuteCommand extends RistExCommand
                     put("appealed", Boolean.toString(punish.GetAppealed()));
                 }};
 
+            System.out.println("Exp: " + Variables.get("expiry"));
             if (target.isOnline())
                 ((Player)target).sendMessage(Messages.Translate("Mute.YouWereMuted", Variables));
 

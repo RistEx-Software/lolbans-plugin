@@ -2,6 +2,7 @@ package com.ristexsoftware.lolbans.Commands.Ban;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -28,6 +29,7 @@ import inet.ipaddr.HostName;
 public class RegexBanCommand extends RistExCommandAsync
 {
     private Main self = (Main) this.getPlugin();
+    private boolean IsConsoleExectioner = false;
     
     public RegexBanCommand(Plugin owner)
     {
@@ -166,11 +168,15 @@ public class RegexBanCommand extends RistExCommandAsync
 
             String banid = PunishID.GenerateID(DatabaseUtil.GenID("RegexBans"));
 
+            if (sender instanceof ConsoleCommandSender)
+                IsConsoleExectioner = true;
+
             int i = 1;
-            PreparedStatement pst = self.connection.prepareStatement("INSERT INTO RegexBans (Regex, Reason, Executioner, PunishID, Expiry) VALUES (?, ?, ?, ?, ?)");
+            PreparedStatement pst = self.connection.prepareStatement("INSERT INTO RegexBans (Regex, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?)");
             pst.setString(i++, regex.pattern());
             pst.setString(i++, reason);
             pst.setString(i++, sender.getName());
+            pst.setString(i++, IsConsoleExectioner ? "CONSOLE" : ((Player) sender).getUniqueId().toString());
             pst.setString(i++, banid);
             pst.setTimestamp(i++, bantime);
             pst.executeUpdate();

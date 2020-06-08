@@ -65,8 +65,7 @@ public class AsyncChatListener implements Listener
                             put("reason", result.getString("Reason"));
                             put("arbiter", result.getString("ArbiterName"));
                             put("punishid", result.getString("PunishID"));
-                            if (MuteTime != null)
-                                put("expiry", MuteTime.toString());
+                            put("expiry", MuteTime == null ? "" : MuteTime.toString());
                         }}
                     ));
                 }

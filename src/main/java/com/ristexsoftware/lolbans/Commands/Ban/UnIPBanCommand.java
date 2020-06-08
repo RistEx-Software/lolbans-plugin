@@ -81,7 +81,7 @@ public class UnIPBanCommand extends RistExCommandAsync
 
 			if (PunishID.ValidateID(CIDR.replaceAll("#", "")))
 			{
-				ps = self.connection.prepareStatement("SELECT * FROM IPBans WHERE PunishID = ?");
+				ps = self.connection.prepareStatement("SELECT * FROM IPBans WHERE PunishID = ? AND Appealed = false");
 				ps.setString(1, CIDR);
 				Optional<ResultSet> ores = DatabaseUtil.ExecuteLater(ps).get();
 				if (!ores.isPresent())

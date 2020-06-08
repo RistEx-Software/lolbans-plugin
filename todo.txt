@@ -19,6 +19,7 @@ Minimum Viable Product (MVP) / Feature Freeze:
  - [Feature] Permissions (make sure they're granular enough?) / dynamic permissions - Zachery
  - [Bug] Discord Messages need to be announced for all actions
  - [Bug] make it so /reports can use pages if no player is specified
+ - [Bug] All of the regex command...
  - TESTING TESTING TESTING TESTING TESTING!!! - everyone!
 
 ##########################################

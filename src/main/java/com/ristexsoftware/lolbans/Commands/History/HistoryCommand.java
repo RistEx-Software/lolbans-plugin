@@ -6,7 +6,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.Plugin;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.TimeUtil;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
@@ -19,7 +18,8 @@ import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.List;
 import java.sql.*;
-
+// welcome to the history command!
+// the way we do commands in lolbans is uh, i'm not even sure. I just copy/paste and hope it works
 public class HistoryCommand extends RistExCommand
 {
     private Main self = (Main)this.getPlugin();
