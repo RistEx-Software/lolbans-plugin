@@ -20,6 +20,7 @@ Minimum Viable Product (MVP) / Feature Freeze:
  - [Bug] Discord Messages need to be announced for all actions
  - [Bug] make it so /reports can use pages if no player is specified
  - [Bug] All of the regex command...
+ - [Bug] Mute target initial duration message does not display correctly (https://i.imgur.com/QgmgDMr.png)
  - TESTING TESTING TESTING TESTING TESTING!!! - everyone!
 
 ##########################################
