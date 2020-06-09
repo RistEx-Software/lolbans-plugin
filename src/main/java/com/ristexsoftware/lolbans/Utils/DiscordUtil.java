@@ -160,46 +160,47 @@ public class DiscordUtil
 		 */
 		public void SendDiscord(Punishment p, boolean silent) throws InvalidConfigurationException
 		{
-				String ExecutionerName = p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getName();
-				String ExecutionerUUID = p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getUniqueId().toString();
-				String action = null;
+			if (!Messages.Discord) return;
+			String ExecutionerName = p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getName();
+			String ExecutionerUUID = p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getUniqueId().toString();
+			String action = null;
 
-				switch(p.GetPunishmentType())
-				{
-				   case PUNISH_BAN: action = this.UseSimplifiedMessage ? "Discord.Simple.MessageBan" : "Discord.Embedded.BanTitle"; break;
-				   case PUNISH_KICK: action = this.UseSimplifiedMessage ? "Discord.Simple.MessageKick" : "Discord.Embedded.KickTitle"; break;
-				   case PUNISH_MUTE: action = this.UseSimplifiedMessage ? "Discord.Simple.MessageMute" : "Discord.Embedded.MuteTitle"; break;
-				   case PUNISH_WARN: action = this.UseSimplifiedMessage ? "Discord.Simple.MessageWarn" : "Discord.Embedded.WarnTitle"; break;
-				   default: action = "Discord.Embedded.UnknownTitle"; break;
-				}
+			switch(p.GetPunishmentType())
+			{
+				case PUNISH_BAN: action = this.UseSimplifiedMessage ? "Discord.Simple.MessageBan" : "Discord.Embedded.BanTitle"; break;
+				case PUNISH_KICK: action = this.UseSimplifiedMessage ? "Discord.Simple.MessageKick" : "Discord.Embedded.KickTitle"; break;
+				case PUNISH_MUTE: action = this.UseSimplifiedMessage ? "Discord.Simple.MessageMute" : "Discord.Embedded.MuteTitle"; break;
+				case PUNISH_WARN: action = this.UseSimplifiedMessage ? "Discord.Simple.MessageWarn" : "Discord.Embedded.WarnTitle"; break;
+				default: action = "Discord.Embedded.UnknownTitle"; break;
+			}
 
-				TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-					{{
-						put("PlayerName", p.GetPlayerName());
-						put("PlayerUUID", p.GetUUID().toString());
-						put("ArbiterName", ExecutionerName);
-						put("ArbiterUUID", ExecutionerUUID);
-						put("Reason", p.GetReason());
-						put("FooterText", p.GetPlayerName());
-						if (p.GetExpiry() != null)
-							put("Expiry", p.GetExpiry().toString());
-						put("PunishID", p.GetPunishmentID());
-						put("appealed", Boolean.toString(p.GetAppealed()));
-					}};
+			TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+				{{
+					put("PlayerName", p.GetPlayerName());
+					put("PlayerUUID", p.GetUUID().toString());
+					put("ArbiterName", ExecutionerName);
+					put("ArbiterUUID", ExecutionerUUID);
+					put("Reason", p.GetReason());
+					put("FooterText", p.GetPlayerName());
+					if (p.GetExpiry() != null)
+						put("Expiry", p.GetExpiry().toString());
+					put("PunishID", p.GetPunishmentID());
+					put("appealed", Boolean.toString(p.GetAppealed()));
+				}};
 
 
-				try
-				{
-					// Send the message to discord.
-					if (this.UseSimplifiedMessage)
-						this.SendFormatted(Messages.Translate(action, Variables));
-					else 
-						this.ModeratorWebhook.sendMessage(this.SendEmbed(action, Variables));
-				}
-				catch (InvalidKeyException ex)
-				{
-					ex.printStackTrace();
-				}		
+			try
+			{
+				// Send the message to discord.
+				if (this.UseSimplifiedMessage)
+					this.SendFormatted(Messages.Translate(action, Variables));
+				else 
+					this.ModeratorWebhook.sendMessage(this.SendEmbed(action, Variables));
+			}
+			catch (InvalidKeyException ex)
+			{
+				ex.printStackTrace();
+			}		
 		}
 
 		/**
@@ -212,6 +213,7 @@ public class DiscordUtil
 		 */
 		public void SendBanObject(CommandSender sender, String Object, String Reason, String PunishID, Timestamp Expiry)
 		{
+			if (!Messages.Discord) return;
 			TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
 			{{
 				put("Object", Object);
@@ -280,6 +282,7 @@ public class DiscordUtil
 		 */
 		public void SendBanWave(String ArbiterName, String UserList) throws InvalidConfigurationException
 		{
+			if (!Messages.Discord) return;
 			TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
 			{{
 				put("ARBITERNAME", ArbiterName);
@@ -323,6 +326,7 @@ public class DiscordUtil
 		 */
 		public void SendBanWaveAdd(CommandSender sender, OfflinePlayer target, String reason, String PunishID, Timestamp Expiry)
 		{
+			if (!Messages.Discord) return;
 			TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
 			{{
 				put("PlayerName", target.getName());
@@ -359,6 +363,7 @@ public class DiscordUtil
 		 */
 		public void SendReport(CommandSender sender, OfflinePlayer target, String Reason, String PunishID, String Type)
 		{
+			if (!Messages.Discord) return;
 			TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
 			{{
 				put("PlayerName", target.getName());
@@ -399,6 +404,7 @@ public class DiscordUtil
 		 */
 		public void SendFormatted(String message)
 		{
+			if (!Messages.Discord) return;
 			DiscordMessage dm = DiscordMessage.builder()
 				.username("LolBans") // We are creating a message with the username "Temmie"...
 				.content(message) // with this content...

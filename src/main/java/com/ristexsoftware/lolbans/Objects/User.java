@@ -153,7 +153,7 @@ public class User
     public void SpawnBox(boolean teleport, BlockData BlockType)
     {
         if (BlockType == null)
-            BlockType = Material.IRON_BARS.createBlockData();
+            BlockType = Material.BARRIER.createBlockData();
         Location loc = this.GetWarnLocation();
         // Create a barrier block.
         //BlockData BlockType = Material.GLASS.createBlockData();

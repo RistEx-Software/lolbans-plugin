@@ -136,8 +136,7 @@ public class UnIPBanCommand extends RistExCommandAsync
 			}};
 			
 			sender.sendMessage(Messages.Translate("IPBan.UnbanSuccess", Variables));
-            if (Messages.Discord)
-                BroadcastUtil.BroadcastEvent(silent, Messages.Translate("IPBan.UnbanSuccess", Variables));
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("IPBan.UnbanSuccess", Variables));
             // TODO: DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (InvalidConfigurationException | SQLException | InterruptedException | ExecutionException e)

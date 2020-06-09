@@ -218,7 +218,6 @@ public class ConnectionListeners implements Listener
                 if (result.next())
                 {
                     Timestamp BanTime = result.getTimestamp("Expiry");
-                    System.out.println("REASON: " + result.getString("Reason"));
                     Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
                         put("player", event.getName());

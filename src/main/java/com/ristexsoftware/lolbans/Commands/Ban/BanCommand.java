@@ -75,6 +75,7 @@ public class BanCommand extends RistExCommandAsync
 
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
             Timestamp bantime = TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
+            //Timestamp bantime = TimeUtil.ParseToTimestamp(a.get("TimePeriod")).getTime() >= new java.sql.Timestamp(253402261199L).getTime() ? new java.sql.Timestamp(253402261199L) : TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
@@ -99,14 +100,13 @@ public class BanCommand extends RistExCommandAsync
                     put("reason", punish.GetReason());
                     put("arbiter", punish.GetExecutionerName());
                     put("punishid", punish.GetPunishmentID());
-                    put("expiry", punish.GetExpiryString());
+                    put("expiry", bantime == null ? "" : punish.GetExpiryString());
                     put("silent", Boolean.toString(silent));
                     put("appealed", Boolean.toString(punish.GetAppealed()));
                 }};
 
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Ban.BanAnnouncement", Variables));
-            if (Messages.Discord)
-                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+            DiscordUtil.GetDiscord().SendDiscord(punish, silent);
             t.Finish(sender);
         }
         catch (Exception e)

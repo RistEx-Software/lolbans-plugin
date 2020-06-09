@@ -212,8 +212,7 @@ public class IPBanCommand extends RistExCommandAsync
 			}
 			
 			// SendIP
-			if (Messages.Discord)
-				DiscordUtil.GetDiscord().SendBanObject(sender, thingy.toString(), reason, banid, bantime);
+			DiscordUtil.GetDiscord().SendBanObject(sender, thingy.toString(), reason, banid, bantime);
 
 			return true;
 		}

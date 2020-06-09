@@ -77,6 +77,7 @@ public class BanWaveRunnable extends BukkitRunnable
             ResultSet PlayersToBan = PlayersToBanQuery.executeQuery();
             while (PlayersToBan.next())
             {
+                System.out.println(PlayersToBan.getString("PlayerName"));
                 int i = 1;
                 OfflinePlayer op = Bukkit.getOfflinePlayer(UUID.fromString(PlayersToBan.getString("UUID")));
                 BannedUser bp = new BannedUser(op, PlayersToBan.getString("ArbiterName"), PlayersToBan.getString("ArbiterUUID"), PlayersToBan.getString("PunishID"), PlayersToBan.getString("Reason"), PlayersToBan.getTimestamp("Expiry"));

@@ -98,8 +98,7 @@ public class UnmuteCommand extends RistExCommand
                 ((Player)target).sendMessage(Messages.Translate("Mute.YouWereUnMuted", Variables));
 
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Mute.MuteAnnouncement", Variables));
-            if (Messages.Discord)
-                DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+            DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (InvalidConfigurationException e)
         {

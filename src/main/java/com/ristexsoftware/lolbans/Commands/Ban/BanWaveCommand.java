@@ -84,7 +84,7 @@ public class BanWaveCommand extends RistExCommand
                 put("reason", reason);
                 put("arbiter", sender.getName());
                 put("punishid", banid);
-                put("expiry", Expiry.toString());
+                put("expiry", Expiry == null ? "" : Expiry.toString());
                 put("silent", Boolean.toString(silent));
             }};
 
