@@ -159,18 +159,25 @@ public class ConnectionListeners implements Listener
 
                 // If any of them match, we must query the database for the record
                 // then disconnect them for matching something.
-                if (NameMatch.matches() || IPMatch.matches() || HostMatch.matches())
+                if (NameMatch.find() || IPMatch.find() || HostMatch.find())
                 {
                     // FIXME: AND (Expiry IS NULL OR Expiry >= NOW()) -- how do we handle expired regex bans?
-                    PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM RegexBans WHERE id = ?");
+                    PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM RegexBans WHERE id = ?"); // AND Appealed = FALSE OR (Expiry IS NOT NULL >= NOW())
                     ps.setInt(1, (Integer)pair.getKey());
                     ResultSet result = ps.executeQuery();
 
+                    System.out.println((Integer)pair.getKey());
                     // Something's fucked? lets make note.
-                    if (!result.next())
-                        throw new SQLException("No such regex " + regex.pattern());
+                    if (!result.next()) {
+                        // throw new SQLException("No such regex " + regex.pattern());
+                        self.getLogger().info("No such regex: " + regex.pattern()); // Log the issue
+                        Main.REGEX.remove(pair.getKey()); // The ban doesn't exist in the database, don't keep it around
+                        continue; // Skip this iteration, go to the next
+                    }
+                        
 
                     Timestamp Expiry = result.getTimestamp("Expiry");
+                    Boolean Appealed = result.getBoolean("Appealed");
                     Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
                         put("IPADDRESS", event.getAddress().toString());
@@ -179,12 +186,13 @@ public class ConnectionListeners implements Listener
                         put("regex", regex.pattern());
                         put("reason", result.getString("Reason"));
                         put("arbiter", result.getString("ArbiterName"));
-                        put("expiry", Expiry != null ? Expiry.toString() : "Never");
+                        put("expiry", Expiry != null ? Expiry.toString() : "");
                         put("punishid", result.getString("PunishID"));
                     }};
 
                     // We'll commondeer the IPBanMessage variable for regex bans too.
-                    IPBanMessage = Messages.Translate(Expiry != null ? "RegexBan.TempBanMessage" : "RegexBan.PermBanMessage", Variables);
+                    if (!Appealed) // re: how to handle expired regex bans: Just leave this null if it's expired/appealed, that way they don't get kicked.
+                        IPBanMessage = Messages.Translate(Expiry != null ? "RegexBan.TempBanMessage" : "RegexBan.PermBanMessage", Variables);
                 }
             }
 

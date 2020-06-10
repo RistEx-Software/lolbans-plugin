@@ -139,9 +139,28 @@ public class RegexBanCommand extends RistExCommandAsync
         // /regexban [-s] <regex> <time> <Reason here unlimited length>
         try
         {
+            //Instead of relying on argument positions, filter out the required arguments
+            // Rather, we should, ya know, allow for "this thing" xD
+            // String rawArgs = String.join(" ", args);
+            // Pattern argsPattern = Pattern.compile("\"([^\"\\\\]++|\\\\.)*\"");
+            // Matcher argsMatcher = argsPattern.matcher(rawArgs);
+            // String filteredRegex = null;
+            // if(argsMatcher.find()) {
+            //     filteredRegex = argsMatcher.group();
+            // }
+
+            // rawArgs = rawArgs.replace(filteredRegex, "").trim();
+            // String[] newArgs = rawArgs.split(" ");
+
+            // sender.sendMessage("this " + filteredRegex);
+            // if(newArgs.length > 1) {
+            //     sender.sendMessage("that " + newArgs[0]);
+            // } 
+
+            
             ArgumentUtil a = new ArgumentUtil(args);
             a.OptionalFlag("Silent", "-s");
-            a.RequiredString("Regex", 0);
+            a.RequiredString("Regex", 0); 
             a.RequiredString("Time", 1);
             a.RequiredSentence("Reason", 2);
 
@@ -155,6 +174,7 @@ public class RegexBanCommand extends RistExCommandAsync
             try 
             {
                 regex = Pattern.compile(a.get("Regex"));
+                //regex = Pattern.compile(filteredRegex);
             }
             catch (PatternSyntaxException ex)
             {
@@ -197,14 +217,15 @@ public class RegexBanCommand extends RistExCommandAsync
 
             String ThanksJava = regex.pattern();
             // Send messages to all players (if not silent) or only to admins (if silent)
-            BroadcastUtil.BroadcastEvent(silent, Messages.Translate(bantime != null ? "RegexBan.TempBanMessage" : "RegexBan.PermBanMessage",
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("RegexBan.BanAnnouncement",
                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("regex", ThanksJava);
                     put("reason", reason);
                     put("arbiter", sender.getName());
                     put("punishid", banid);
-                    put("expiry", bantime.toString());
+                    put("expiry",  bantime == null ? "" : bantime.toString());
+                    put("silent", String.valueOf(silent));
                 }}
             ));
             if (Messages.Discord)
@@ -221,7 +242,7 @@ public class RegexBanCommand extends RistExCommandAsync
 
                 // If any of them match, we must query the database for the record
                 // then disconnect them for matching something.
-                if (NameMatch.matches() || IPMatch.matches() || HostMatch.matches())
+                if (NameMatch.find() || IPMatch.find() || HostMatch.find())
                 {
                     // "KickPlayer" sends the inputed strings into the function in the User class
                     // there are multiple "KickPlayer" funcs but this one is for IPBans (hence why the IP is on the end)
@@ -230,7 +251,7 @@ public class RegexBanCommand extends RistExCommandAsync
                     Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayerBan(sender.getName(), player, banid, reason, TimeUtil.TimestampNow(), bantime), 1L);
                 }
             }
-            
+                
             return true;
         }
         catch (Exception e)
@@ -239,5 +260,6 @@ public class RegexBanCommand extends RistExCommandAsync
             sender.sendMessage(Messages.ServerError);
             return true;
         }
+        
     }
 }

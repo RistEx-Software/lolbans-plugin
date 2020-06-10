@@ -148,6 +148,7 @@ public final class Main extends JavaPlugin
             {
                 try
                 {
+                    getLogger().info(String.format("Registered Regular Expression: \"%s\" (%x)", res.getString("Regex"), res.getInt("id")));
                     Main.REGEX.put(res.getInt("id"), Pattern.compile(res.getString("Regex")));
                 }
                 catch (PatternSyntaxException ex)

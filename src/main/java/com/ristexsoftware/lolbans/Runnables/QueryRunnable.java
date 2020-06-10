@@ -19,7 +19,9 @@ public class QueryRunnable extends BukkitRunnable
             // self.connection.prepareStatement("DELETE FROM LinkConfirmations WHERE Expiry <= NOW()").executeUpdate();
             // TODO: Report expirations should be configurable
             PreparedStatement punps = self.connection.prepareStatement("UPDATE Punishments SET Appealed = True, AppealReason = 'Expired', AppelleeName = 'CONSOLE', AppelleeUUID = 'CONSOLE', AppealTime = NOW() WHERE Expiry <= NOW()");
+            PreparedStatement regps = self.connection.prepareStatement("UPDATE RegexBans SET Appealed = True, AppealReason = 'Expired', AppelleeName = 'CONSOLE', AppelleeUUID = 'CONSOLE', AppealTime = NOW() WHERE Expiry <= NOW()");
             DatabaseUtil.ExecuteUpdate(punps);
+            DatabaseUtil.ExecuteUpdate(regps);
             PreparedStatement ps = self.connection.prepareStatement("UPDATE Reports SET Closed = True, CloseReason = 'Expired' WHERE TimeAdded <= ?");
             ps.setTimestamp(1, new Timestamp((TimeUtil.GetUnixTime() * 1000L) + TimeUtil.Duration(self.getConfig().getString("General.ReportExpiry", "3d")).get()));
             DatabaseUtil.ExecuteUpdate(ps);
