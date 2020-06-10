@@ -56,7 +56,7 @@ Discord:
     BanwaveAdd: ":wave: **{ARBITERNAME}** added **{PLAYERNAME}** to the next ban wave."
     BanwaveStart: ":hammer: **{ARBITERNAME}** started a ban wave which bans the following users:\n```\n{USERLIST}\n```"
     Report: ":orange_book: **{ARBITERNAME}** reported **{PLAYERNAME}**: `{REASON}` [{REPORTTYPE} - #{PUNISHID}]"
-    BanObject: ":hammer: **{ARBITERNAME}** banned `{OBJECT}`{EXPIRES|empty_if_none:\" which expires on \"}{EXPIRES|datetime:\"**EEE, MMM d yyyy HH:mm:ss**\"}"
+    BanObject: ":hammer: **{ARBITERNAME}** banned `{OBJECT}`{EXPIRY|empty_if_none:\" which expires on \"}{EXPIRY|datetime:\"**EEE, MMM d yyyy HH:mm:ss**\"}"
   # Embedded discord messages.
   Embedded:
     BanTitle: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}banned {PLAYERNAME}"
@@ -108,6 +108,8 @@ RegexBan:
   PermBanMessage: "&bThe account &f{PLAYER} &bmatches pattern &f{REGEX}&b and has been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
   BanAnnouncement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}banned expression &b{REGEX}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
   Insanity: "{PREFIX}&bBanning {regex} would ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
+  RegexIsNotBanned: "{PREFIX}&cExpression/PunishID {REGEX} is not banned!"
+  UnbanSuccess: "{PREFIX}&f{REGEX} &bhas been successfully unbanned."
 
 BanWave:
   AddedToWave: "{PREFIX}&f{PLAYER} &bhas been added to the next ban wave."
@@ -170,6 +172,7 @@ Syntax:
   IPBan: "Usage: /ipban [-s] <ip address>[/<cidr>] <Time|*> <Reason>"
   IPUnban: "Usage: /unipban [-s] <ip address>[/<cidr>] <Reason>"
   RegexBan: "Usage: /regexban [-s] <Regex> <Time|*> <Reason>"
+  RegexUnban: "Usage: /regexunban [-s] <Regular Expression|PunishID> <Reason>"
   History: "Usage: /history <PlayerName> [<Page>]\nUsage: /clearhistory <PlayerName> [<DateRange>]"
   PruneHistory: "Usage: /prunehistory <Player|PunishID|CIDR|Regex> <Time|*>"
   StaffHistory: "Usage: /staffhistory <staffmember>"

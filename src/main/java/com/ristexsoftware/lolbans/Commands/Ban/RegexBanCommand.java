@@ -138,26 +138,7 @@ public class RegexBanCommand extends RistExCommandAsync
 
         // /regexban [-s] <regex> <time> <Reason here unlimited length>
         try
-        {
-            //Instead of relying on argument positions, filter out the required arguments
-            // Rather, we should, ya know, allow for "this thing" xD
-            // String rawArgs = String.join(" ", args);
-            // Pattern argsPattern = Pattern.compile("\"([^\"\\\\]++|\\\\.)*\"");
-            // Matcher argsMatcher = argsPattern.matcher(rawArgs);
-            // String filteredRegex = null;
-            // if(argsMatcher.find()) {
-            //     filteredRegex = argsMatcher.group();
-            // }
-
-            // rawArgs = rawArgs.replace(filteredRegex, "").trim();
-            // String[] newArgs = rawArgs.split(" ");
-
-            // sender.sendMessage("this " + filteredRegex);
-            // if(newArgs.length > 1) {
-            //     sender.sendMessage("that " + newArgs[0]);
-            // } 
-
-            
+        {   
             ArgumentUtil a = new ArgumentUtil(args);
             a.OptionalFlag("Silent", "-s");
             a.RequiredString("Regex", 0); 
@@ -174,7 +155,6 @@ public class RegexBanCommand extends RistExCommandAsync
             try 
             {
                 regex = Pattern.compile(a.get("Regex"));
-                //regex = Pattern.compile(filteredRegex);
             }
             catch (PatternSyntaxException ex)
             {

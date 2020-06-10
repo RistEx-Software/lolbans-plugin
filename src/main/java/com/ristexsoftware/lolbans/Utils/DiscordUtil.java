@@ -182,8 +182,7 @@ public class DiscordUtil
 					put("ArbiterUUID", ExecutionerUUID);
 					put("Reason", p.GetReason());
 					put("FooterText", p.GetPlayerName());
-					if (p.GetExpiry() != null)
-						put("Expiry", p.GetExpiry().toString());
+					put("Expiry", p.GetExpiry() == null ? "" : p.GetExpiry().toString()); 
 					put("PunishID", p.GetPunishmentID());
 					put("appealed", Boolean.toString(p.GetAppealed()));
 				}};

@@ -77,18 +77,13 @@ public class RegexUnbanCommand extends RistExCommandAsync
             try 
             {
                 rx = Pattern.compile(Regex);
-                ps = self.connection.prepareStatement("SELECT * FROM RegexBans WHERE Regex = ? LIMIT 1");
+                ps = self.connection.prepareStatement("SELECT * FROM RegexBans WHERE Regex = ? OR PunishID = ? AND Appealed = false LIMIT 1");
                 ps.setString(1, rx.pattern());
+                ps.setString(2, rx.pattern());
             }
             catch (PatternSyntaxException ex)
             {
-                if (PunishID.ValidateID(Regex.replaceAll("#", "")))
-                {
-                    ps = self.connection.prepareStatement("SELECT * FROM RegexBans WHERE PunishID = ?");
-                    ps.setString(1, Regex);
-                }
-                else
-                    return false; // Syntax error
+                return false; // Syntax error
             }
 
             Optional<ResultSet> ores = DatabaseUtil.ExecuteLater(ps).get();
@@ -97,7 +92,9 @@ public class RegexUnbanCommand extends RistExCommandAsync
                 return User.PlayerOnlyVariableMessage("RegexBan.RegexIsNotBanned", sender, Regex, true);
 
             ResultSet res = ores.get();
-            res.next();
+            if (!res.next()) {
+                return User.PlayerOnlyVariableMessage("RegexBan.RegexIsNotBanned", sender, Regex, true);
+            }
 
             int i = 1;
             ps = self.connection.prepareStatement("UPDATE RegexBans SET AppealReason = ?, AppelleeName = ?, AppelleeUUID = ?, AppealTime = CURRENT_TIMESTAMP, Appealed = TRUE WHERE id = ?");
@@ -117,12 +114,12 @@ public class RegexUnbanCommand extends RistExCommandAsync
                 put("arbiter", sender.getName());
 				put("Reason", reason);
                 put("punishid", PunishID);
+                put("appealed", String.valueOf(true));
                 put("silent", Boolean.toString(silent));
             }};
             
             sender.sendMessage(Messages.Translate("RegexBan.UnbanSuccess", Variables));
-            if (Messages.Discord)
-                BroadcastUtil.BroadcastEvent(silent, Messages.Translate("RegexBan.UnbanAnnouncment", Variables));
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("RegexBan.BanAnnouncement", Variables));
             // TODO: DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }
         catch (InvalidConfigurationException | SQLException | InterruptedException | ExecutionException e)
