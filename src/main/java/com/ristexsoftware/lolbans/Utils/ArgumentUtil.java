@@ -1,5 +1,6 @@
 package com.ristexsoftware.lolbans.Utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ import java.util.List;
 public class ArgumentUtil 
 {
 	private Map<String, String> ParsedArgs = new HashMap<String, String>();
-	private List<String> UnparsedArgs;
+	private ArrayList<String> UnparsedArgs;
 	private boolean IsValidArgs = true;
 
 	/**
@@ -29,7 +30,7 @@ public class ArgumentUtil
 	 */
 	public ArgumentUtil(String args[])
 	{
-		UnparsedArgs = Arrays.asList(args);
+		UnparsedArgs = new ArrayList<String>(Arrays.asList(args));
 	}
 
 	/**

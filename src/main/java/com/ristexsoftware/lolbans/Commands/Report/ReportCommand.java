@@ -58,14 +58,14 @@ public class ReportCommand extends RistExCommand
         try 
         {
             ArgumentUtil a = new ArgumentUtil(args);
-            a.RequiredString("Type", 0);
-            a.RequiredString("PlayerName", 1);
-            a.RequiredString("Reason", 2);
+            // a.RequiredString("Type", 0);
+            a.RequiredString("PlayerName", 0);
+            a.RequiredString("Reason", 1);
 
             if (!a.IsValid())
                 return false;
 
-            String type = a.get("Type");
+            String type = "General";
             String username = a.get("PlayerName");
             String reason = a.get("Reason");
             OfflinePlayer u = User.FindPlayerByAny(username);
@@ -76,9 +76,9 @@ public class ReportCommand extends RistExCommand
             if (u == null)
                 return User.NoSuchPlayer(sender, username, true);
 
-            if (!Messages.CompareMany(type, (String[])self.getConfig().getStringList("ReportSettings.Types").toArray()))
+/*             if (!Messages.CompareMany(type, self.getConfig().getStringList("ReportSettings.Types").toArray()))
                 return false; // Show syntax. 
-
+ */
             // They must have *something* in their report message.
             if (reason.isEmpty())
                 return User.PlayerOnlyVariableMessage("Report.ReasonRequired", sender, username, false);
@@ -105,14 +105,14 @@ public class ReportCommand extends RistExCommand
             ps.setString(i++, u.getName());
             ps.setString(i++, reason);
             ps.setString(i++, ReportID);
-            ps.setString(i++, type);
+            ps.setString(i++, "General");
 
             DatabaseUtil.ExecuteUpdate(ps);
             
             TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
             {{
                 put("player", u.getName());
-                put("reporter", sender.getName());
+                put("arbiter", sender.getName());
                 put("reason", reason);
                 put("punishid", ReportID);
                 put("type", type);

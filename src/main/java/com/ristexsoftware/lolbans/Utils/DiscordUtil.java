@@ -1,4 +1,4 @@
-package com.ristexsoftware.lolbans.Utils; // Zachery's package owo :spray:
+package com.ristexsoftware.lolbans.Utils;
 
 import java.security.InvalidKeyException;
 import java.sql.Timestamp;
@@ -22,14 +22,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
-
-/*
-			   _   ___      ___   _ 
-			  | | | \ \ /\ / / | | |
-			  | |_| |\ V  V /| |_| |
-			   \__,_| \_/\_/  \__,_|
-							   ᵈᵃᵈᵈʸ
-*/
 
 /**
  * Okay. Look. This file contains a lot of black magic.

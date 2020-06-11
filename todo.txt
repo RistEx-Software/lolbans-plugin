@@ -13,11 +13,10 @@ It should at the very least have more capabilities than all plugins on the marke
 ##########################################
 BUGS!
 ##########################################
+ - [Bug] Clean the report history command
  - [Bug] Mute target initial duration message does not display correctly (https://i.imgur.com/QgmgDMr.png)
  - [Bug] Discord Messages need to be announced for all actions
- - [Bug] make it so /reports can use pages if no player is specified
- - [Bug] IP ban's don't instantly take affect
- - [Bug] '/accept' message doesn't appear after warning
+ - [Bug] IP ban's don't instantly take affect (? it's kinda a gamble)
  - [Bug] idiot proof
 
 ##########################################

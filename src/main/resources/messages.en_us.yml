@@ -138,7 +138,7 @@ Kick:
 
 Warn:
   WarnAnnouncment: "&b{ARBITER} &fhas {APPEALED|empty_if_false:\"un-\"}warned &b{PLAYER} &f: &b{REASON} &f[#{PUNISHID}] {SILENT|empty_if_false:\" &8[SILENT]\"}"
-  WarnedMessage: "&b{ARBITER} &fwarned you: &b{REASON} &f[#{PUNISHID}]"
+  WarnedMessage: "&b{ARBITER} &fwarned you: &b{REASON} &f[#{PUNISHID}]\n&f» &bPlease acknowledge that you've been warned by typing &a/accept."
   RemovedSuccess: "{PREFIX}&fRemoved &b{PLAYER}&f's warning successfully!"
   WarnedOnAction: "{PREFIX}&bYou have been warned and cannot perform that action!\n{PREFIX}&bPlease acknowledge that you've been warned by typing &a/accept."
   WarnKickMessage: "&bYou have been warned!\n\n&bReason: {REASON}\n\n&fBy rejoining you acknowledge that you've been warned!"
@@ -151,7 +151,7 @@ History:
   ClearedHistory: "{PREFIX}&fCleared history for &b{PLAYER}&f."
   HistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f - &f&lExpires: &f{EXPIRYDATE}\n"
   HistoryMessagePerm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f\n"
-  HistoryMessageReport: "&3:=:=:= &b[{PLAYERNAME}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lReporter: &f{ARBITER}&f\n"
+  HistoryMessageReport: "\n&3:=:=:= &b[{PLAYERNAME}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lReporter: &f{ARBITER}&f\n"
   StaffHistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f - &f&lExpires: &f{EXPIRYDATE}\n"
   StaffHistoryMessagePerm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f\n"
   # The number of times `HistoryMessageTemp` or `HistoryMessagePerm` is treated as a page. (Default is 2)
@@ -174,6 +174,7 @@ Syntax:
   RegexBan: "Usage: /regexban [-s] <Regex> <Time|*> <Reason>"
   RegexUnban: "Usage: /regexunban [-s] <Regular Expression|PunishID> <Reason>"
   History: "Usage: /history <PlayerName> [<Page>]\nUsage: /clearhistory <PlayerName> [<DateRange>]"
+  ReportHistory: "Usage: /reports [PlayerName] [<page>]"
   PruneHistory: "Usage: /prunehistory <Player|PunishID|CIDR|Regex> <Time|*>"
   StaffHistory: "Usage: /staffhistory <staffmember>"
   Broadcast: "Usage: /broadcast <message>"

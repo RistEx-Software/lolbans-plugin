@@ -308,6 +308,8 @@ public class User {
 
         // Now we move to more expensive operations.
         try {
+
+            // Punishments table
             PreparedStatement bplay = self.connection.prepareStatement(
                     "SELECT UUID FROM Punishments WHERE PunishID = ? OR PlayerName = ? OR UUID = ? LIMIT 1");
             bplay.setString(1, PunishID);
@@ -318,6 +320,22 @@ public class User {
 
             if (bpres.isPresent()) {
                 ResultSet res = bpres.get();
+                if (res.next()) {
+                    UUID uuid = UUID.fromString(res.getString("UUID"));
+                    return Bukkit.getOfflinePlayer(uuid);
+                }
+            }
+
+            // Users table
+            PreparedStatement ps = self.connection.prepareStatement(
+                    "SELECT UUID FROM Users WHERE PlayerName = ? OR UUID = ? LIMIT 1");
+            ps.setString(1, PunishID);
+            ps.setString(2, PunishID);
+
+            Optional<ResultSet> ores = DatabaseUtil.ExecuteLater(ps).get();
+
+            if (ores.isPresent()) {
+                ResultSet res = ores.get();
                 if (res.next()) {
                     UUID uuid = UUID.fromString(res.getString("UUID"));
                     return Bukkit.getOfflinePlayer(uuid);
@@ -358,7 +376,6 @@ public class User {
         }
         catch (SQLException | InterruptedException | ExecutionException ex) {
             ex.printStackTrace();
-            return null;
         }
 
         return null;

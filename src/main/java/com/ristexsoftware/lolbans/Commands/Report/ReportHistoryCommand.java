@@ -8,7 +8,9 @@ import org.bukkit.plugin.Plugin;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
+import com.ristexsoftware.lolbans.Utils.NumberUtil;
 import com.ristexsoftware.lolbans.Utils.Paginator;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 
@@ -44,7 +46,8 @@ public class ReportHistoryCommand extends RistExCommand
             sender.sendMessage(Messages.ServerError);
         }
     }
-
+    
+    // reports [PlayerName] [<page>]
     @Override
     public boolean Execute(CommandSender sender, String label, String[] args)
     {
@@ -53,24 +56,33 @@ public class ReportHistoryCommand extends RistExCommand
 
         try
         {
+            ArgumentUtil a = new ArgumentUtil(args);
+            a.OptionalString("PlayerOrPage", 0);
+            a.OptionalString("Page", 1);
+            
             // There are two ways this command can work, it can either specify a player, or show all reports.
             PreparedStatement pst = null;
-            if (args.length < 1)
+            if (args.length < 1 || args.length > 0 && NumberUtil.isInteger(a.get("PlayerOrPage")))
                 pst = self.connection.prepareStatement("SELECT * FROM Reports ORDER BY Closed, TimeAdded");
-            else 
+            if (args.length > 0 && a.get("PlayerOrPage").length() > 2 && !NumberUtil.isInteger(a.get("PlayerOrPage")))
             {
-                OfflinePlayer target = User.FindPlayerByAny(args[0]);
+                OfflinePlayer target = User.FindPlayerByAny(a.get("PlayerOrPage"));
                 pst = self.connection.prepareStatement("SELECT * FROM Reports WHERE DefendantUUID = ?");
                 pst.setString(1, target.getUniqueId().toString());
             }
 
             ResultSet result = pst.executeQuery();
             if (!result.next() || result.wasNull())
-                return User.PlayerOnlyVariableMessage("History.NoHistory2", sender, args[0], true);
-
+                return User.PlayerOnlyVariableMessage("History.NoHistory2", sender, sender.getName(), true);
 
             // The page to use.
-            int pageno = args.length > 1 ? Integer.valueOf(args[1]) : 1;
+            // I spent a while figuring out the logic to this, and now it Just Works:tm:
+            // This is dumb and I don't know if i want to keep this around.
+            int pageno = args.length > 0 ? (args.length > 1 ? (NumberUtil.isInteger(a.get("Page")) ? Integer.valueOf(a.get("Page")) : 0) : NumberUtil.isInteger(a.get("PlayerOrPage")) ? Integer.valueOf(a.get("PlayerOrPage")) : 1 ) : 1;
+            if (pageno == 0)
+                return false;
+
+            // Integer.valueOf(a.get("Page")) : 1
             
             // We use a do-while loop because we already checked if there was a result above.
             List<String> pageditems = new ArrayList<String>();
