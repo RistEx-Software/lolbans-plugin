@@ -14,10 +14,8 @@ It should at the very least have more capabilities than all plugins on the marke
 BUGS!
 ##########################################
  - [Bug] Mute target initial duration message does not display correctly (https://i.imgur.com/QgmgDMr.png)
- - [Bug] No time limit check for punishments (Causes integer overflow and/or invalid timestamp)
  - [Bug] Discord Messages need to be announced for all actions
  - [Bug] make it so /reports can use pages if no player is specified
- - [Bug] All of the regex command...
  - [Bug] IP ban's don't instantly take affect
  - [Bug] '/accept' message doesn't appear after warning
  - [Bug] idiot proof

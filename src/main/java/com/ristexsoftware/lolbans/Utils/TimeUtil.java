@@ -235,6 +235,9 @@ public class TimeUtil
         System.out.println(TimePeriod);
         // Parse ban time.
         // If it's numeric, lets do some extra checks!
+        if (Messages.CompareMany(TimePeriod, new String[]{"*", "0"}))
+            return null;
+            
         if (NumberUtil.isNumeric(TimePeriod)) {
             // Return null if it's greater 12 characters long
             if (TimePeriod.length() > 12) return null;

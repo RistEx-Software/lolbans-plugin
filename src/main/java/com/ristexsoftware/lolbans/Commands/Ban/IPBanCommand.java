@@ -150,7 +150,9 @@ public class IPBanCommand extends RistExCommandAsync
 				return User.PermissionDenied(sender, "lolbans.ipban.perm"); 
 			
 			// Is a future, needed != null for some reason.
-			IPAddress thingy = new IPAddressString(a.get("CIDR")).toAddress();
+			// IPAddress thingy = new IPAddressString(a.get("CIDR")).toAddress();
+			IPAddress thingy = User.FindAddressByAny(a.get("CIDR"));
+			if (thingy == null) return false;
 			// TODO: handle this better? Send the banned subnet string instead of the address they tried to ban?
 			Optional<ResultSet> res = IPBanUtil.IsBanned(thingy.toInetAddress()).get();
 			if (res.isPresent() && res.get().next())
