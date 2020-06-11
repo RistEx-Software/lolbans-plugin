@@ -2,6 +2,9 @@ package com.ristexsoftware.lolbans.Utils;
 
 
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+
 /*
 
         _____
@@ -30,8 +33,6 @@ package com.ristexsoftware.lolbans.Utils;
 */
 
 import java.util.Optional;
-import java.text.SimpleDateFormat;
-import java.sql.Timestamp;
 
 public class TimeUtil
 {
@@ -227,18 +228,30 @@ public class TimeUtil
      * @param TimePeriod A duration string (eg, "2y1w10d40m6s")
      * @return {@link java.sql.Timestamp}
      */
+    // I spent 2 hours ensuring this method worked...
+    // Turns out, I need to read documentation more, java.sql.Timestamp uses milliseconds and not seconds, I somehow forgot that.
     public static Timestamp ParseToTimestamp(String TimePeriod)
     {
+        System.out.println(TimePeriod);
         // Parse ban time.
+        // If it's numeric, lets do some extra checks!
+        if (NumberUtil.isNumeric(TimePeriod)) {
+            // Return null if it's greater 12 characters long
+            if (TimePeriod.length() > 12) return null;
+            Optional<Long> dur = TimeUtil.Duration(TimePeriod);
+            if (dur.isPresent())
+                return new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L).getTime() >= new java.sql.Timestamp(253402261199L * 1000L).getTime() ? null : new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
+                // 253402261199 is the year 9999 in epoch, this ensures we don't have invalid timestamp exceptions.
+        } 
         if (!Messages.CompareMany(TimePeriod, new String[]{"*", "0"}))
         {
             Optional<Long> dur = TimeUtil.Duration(TimePeriod);
             if (dur.isPresent())
-                return new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
+                return new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L).getTime() >= new java.sql.Timestamp(253402261199L * 1000L).getTime() ? null : new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
         }
             
         return null;
-    }
+    } 
 
     /**
      * Get the current system time as a Unix timestamp
@@ -258,3 +271,29 @@ public class TimeUtil
         return new Timestamp(TimeUtil.GetUnixTime() * 1000L);
     }
 }
+/* 
+
+    public static Timestamp ParseToTimestamp(String TimePeriod)
+    {
+        System.out.println(TimePeriod);
+        System.out.println("Fuck1");
+        // Parse ban time.
+        if (NumberUtil.isNumeric(TimePeriod)) {
+            System.out.println("Fuck2");
+            if (TimePeriod.length() > 12) return null;
+            Optional<Long> dur = TimeUtil.Duration(TimePeriod);
+            System.out.println("Fuck3");
+            if (dur.isPresent())
+                return new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L).getTime() >= new java.sql.Timestamp(253402261199L).getTime() ? null : new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
+        } 
+        if (!Messages.CompareMany(TimePeriod, new String[]{"*", "0"}))
+        {
+            System.out.println("Fuck4");
+            Optional<Long> dur = TimeUtil.Duration(TimePeriod);
+            if (dur.isPresent())
+                return new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L).getTime() >= new java.sql.Timestamp(253402261199L).getTime() ? null : new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
+        }
+        System.out.println("Fuck5");
+            
+        return null;
+    } */

@@ -208,8 +208,8 @@ public class RegexBanCommand extends RistExCommandAsync
                     put("silent", String.valueOf(silent));
                 }}
             ));
-            if (Messages.Discord)
-                DiscordUtil.GetDiscord().SendBanObject(sender, regex.toString(), reason, banid, bantime);
+            // TODO: Make regex ban object for discord.
+            //DiscordUtil.GetDiscord().SendBanObject(sender, regex.toString(), reason, banid, bantime);
 
             // Kick players who match the ban
             for (Player player : Bukkit.getOnlinePlayers())

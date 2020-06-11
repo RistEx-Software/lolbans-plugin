@@ -75,7 +75,6 @@ public class BanCommand extends RistExCommandAsync
 
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
             Timestamp bantime = TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
-            //Timestamp bantime = TimeUtil.ParseToTimestamp(a.get("TimePeriod")).getTime() >= new java.sql.Timestamp(253402261199L).getTime() ? new java.sql.Timestamp(253402261199L) : TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
