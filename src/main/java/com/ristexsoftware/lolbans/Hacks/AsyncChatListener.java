@@ -10,11 +10,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
@@ -36,6 +38,7 @@ public class AsyncChatListener implements Listener
                 if (event.getPlayer().hasPermission("lolbans.mute.bypass"))
                     return;
                 event.setCancelled(true);
+                User.PlaySound((Player)event.getPlayer(), self.getConfig().getString("MuteSettings.Sound"));
                 event.getPlayer().sendMessage(Messages.Translate("Mute.GlobalMuted", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
                 return;
             }
@@ -56,6 +59,7 @@ public class AsyncChatListener implements Listener
                 if (result.next()) 
                 {
                     event.setCancelled(true);
+                    User.PlaySound((Player)event.getPlayer(), self.getConfig().getString("MuteSettings.Sound"));
                     Timestamp MuteTime = result.getTimestamp("Expiry");
 
                     event.getPlayer().sendMessage(Messages.Translate("Mute.YouAreMuted",

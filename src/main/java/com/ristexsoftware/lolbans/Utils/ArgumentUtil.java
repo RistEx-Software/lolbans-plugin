@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
 
 /**
  * The purpose of this class is to parse the arguments of a command.

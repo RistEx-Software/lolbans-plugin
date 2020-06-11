@@ -10,6 +10,7 @@ import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
+import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
@@ -92,8 +93,10 @@ public class MuteCommand extends RistExCommand
                     put("appealed", Boolean.toString(punish.GetAppealed()));
                 }};
 
-            if (target.isOnline())
+            if (target.isOnline()) {
                 ((Player)target).sendMessage(Messages.Translate("Mute.YouWereMuted", Variables));
+                User.PlaySound((Player)target, Main.getPlugin(Main.class).getConfig().getString("MuteSettings.Sound"));
+            }
 
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Mute.MuteAnnouncement", Variables));
             DiscordUtil.GetDiscord().SendDiscord(punish, silent);

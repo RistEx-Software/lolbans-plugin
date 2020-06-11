@@ -22,7 +22,6 @@ BUGS!
 ##########################################
 FEATURE REQUESTS
 ##########################################
-- [Feature] Play sound upon warning/mute (configurable)
 - [Feature] /history command for listing all punishments 
 - [Feature] Clickable chat commands/Hover text (JSON)
 - [Feature] Regex based muting and chat filters

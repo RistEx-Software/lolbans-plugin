@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import inet.ipaddr.AddressStringException;
@@ -489,6 +490,17 @@ public class User {
         catch (InvalidConfigurationException e)
         {
             e.printStackTrace();
+        }
+    }
+
+    public static void PlaySound(Player target, String sound) {
+        try {
+            if (self.getConfig().getBoolean("General.PlaySound"))
+                target.playSound(target.getLocation(), Sound.valueOf(sound), 1F, 1F);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return;
         }
     }
 

@@ -8,13 +8,15 @@ General:
   ReportExpiry: 3d
   # The translation file you wish to use. (Default: messages.en_us.yml)
   TranslationFile: "messages.en_us.yml"
+  # If set to true, upon receiving a warning or mute, or trying to speak while muted, a sound will play to their client
+  PlaySound: false
 
 database:
   host: localhost
   port: 3306
-  name: mcdb
-  username: mc
-  password: dbpw
+  name: root
+  username: username
+  password: passwd
   # Maximum number of times mysql will try to reconnect before giving up.
   MaxReconnects: 5
   # Number of times to check for expired temp bans
@@ -25,8 +27,8 @@ database:
 
 Discord:
   Enabled: false
-  Webhook: https://discordapp.com/api/webhooks/xxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-  ReportWebhook: https://discordapp.com/api/webhooks/xxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  Webhook: https://discordapp.com/api/webhooks/xxx/xxxxxx
+  ReportWebhook: https://discordapp.com/api/webhooks/xxx/xxxxxx
   # Example: Justasic banned NotZachery for abusing villagers [SILENT] [#BF7BD5C85]
   UseSimplifiedMessage: false
   WebhookProfilePicture: "https://notzachery.github.io/images/joy.png"
@@ -54,6 +56,12 @@ WarningSettings:
   FreezePlayer: true
   # This will just send a chat message saying they've been warned.
   SimpleWarning: false
+  # The sound you want (https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html [1.15+]) 
+  Sound: BLOCK_ANVIL_LAND
+
+MuteSettings:
+  # The sound you want
+  Sound: BLOCK_ANVIL_LAND
 
 FreezeSettings:
   # Spawns a box around the player
@@ -65,19 +73,19 @@ IPBanSettings:
   # Optionally specify how wide reaching the ban will go
   InsanePercentage: 90
 
-ReportSettings:
-  # List of report types that are valid for the report command.
-  Types:
-    - Cheating
-    - Game
-    - Griefing
-    - Hacking
-    - Spamming
-    - Profanity
-    - Racism
-    - Scamming
-    - Advertisement
-    - Other
+# ReportSettings:
+#   # List of report types that are valid for the report command.
+#   Types:
+#     - Cheating
+#     - Game
+#     - Griefing
+#     - Hacking
+#     - Spamming
+#     - Profanity
+#     - Racism
+#     - Scamming
+#     - Advertisement
+#     - Other
 
 # Draw a box around the ban message!
 # WARNING! If their window is smaller than the box length, it will text-wrap
