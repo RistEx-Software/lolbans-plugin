@@ -8,7 +8,9 @@ import org.bukkit.plugin.Plugin;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
+import com.ristexsoftware.lolbans.Utils.NumberUtil;
 import com.ristexsoftware.lolbans.Utils.Paginator;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
@@ -67,19 +69,27 @@ public class HistoryCommand extends RistExCommand
         if (!PermissionUtil.Check(sender, "lolbans.history"))
             return User.PermissionDenied(sender, "lolbans.history");
 
-        if (args.length < 1)
-            return false; // Show syntax.
-
         try
         {
-            OfflinePlayer target = User.FindPlayerByAny(args[0]);
+            ArgumentUtil a = new ArgumentUtil(args);
+            a.OptionalString("PlayerOrPage", 0);
+            a.OptionalString("Page", 0); // I have no clue how or why, but this Just Works:tm: The history classes are the only ones that require this weirdness
+            OfflinePlayer target = null;
 
-            if (target == null)
-                return User.NoSuchPlayer(sender, args[0], true);
+            // There are two ways this command can work, it can either specify a player, or show all punishments.
+            PreparedStatement pst = null;
+            if (args.length < 1 || args.length > 0 && NumberUtil.isInteger(a.get("PlayerOrPage")))
+                pst = self.connection.prepareStatement("SELECT * FROM Punishments ORDER BY TimePunished DESC");
+            if (args.length > 0 && a.get("PlayerOrPage").length() > 2 && !NumberUtil.isInteger(a.get("PlayerOrPage")))
+            {
+                target = User.FindPlayerByAny(a.get("PlayerOrPage"));
+                pst = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ?");
+                pst.setString(1, target.getUniqueId().toString());
+            }
 
             // Preapre a statement
-            PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ?");
-            pst.setString(1, target.getUniqueId().toString());
+            // PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ?");
+            // pst.setString(1, target.getUniqueId().toString());
 
             ResultSet result = pst.executeQuery();
             if (!result.next() || result.wasNull())
@@ -87,8 +97,11 @@ public class HistoryCommand extends RistExCommand
 
 
             // The page to use.
-            // TODO: WHat if args[1] is a string not an int?
-            int pageno = args.length > 1 ? Integer.valueOf(args[1]) : 1;
+            // I spent a while figuring out the logic to this, and now it Just Works:tm:
+            // This is dumb and I don't know if i want to keep this around.
+            int pageno = args.length > 0 ? (args.length > 1 ? (NumberUtil.isInteger(a.get("Page")) ? Integer.valueOf(a.get("Page")) : 0) : NumberUtil.isInteger(a.get("PlayerOrPage")) ? Integer.valueOf(a.get("PlayerOrPage")) : 1 ) : 1;
+            if (pageno == 0)
+                return false;
             
             // We use a do-while loop because we already checked if there was a result above.
             List<String> pageditems = new ArrayList<String>();
@@ -107,8 +120,7 @@ public class HistoryCommand extends RistExCommand
                         put("arbiter", result.getString("ArbiterName"));
                         put("type", GodForbidJava8HasUsableLambdaExpressionsSoICanAvoidDefiningSuperflouosFunctionsLikeThisOne(Type, ts));
                         put("date", result.getTimestamp("TimePunished").toString());
-                        if (ts != null)
-                            put("expiry", ts.toString());
+                        put("expiry", ts == null ? "" : ts.toString());
                         // TODO: Add more variables for people who want more info?
                     }}
                 ));
