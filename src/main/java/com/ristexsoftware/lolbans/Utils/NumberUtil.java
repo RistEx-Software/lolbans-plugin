@@ -37,7 +37,7 @@ public class NumberUtil {
     }
 
     /**
-     * Check whether or not a string is a valid number
+     * Check whether or not a string is a valid integer
      * @param string The string to check
      * @return true if valid integer, otherwise false
      */

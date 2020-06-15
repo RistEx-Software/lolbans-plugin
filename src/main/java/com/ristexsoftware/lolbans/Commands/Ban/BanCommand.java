@@ -59,9 +59,10 @@ public class BanCommand extends RistExCommandAsync
         {
             Timing t = new Timing();
 
-            // /ban [-s] <PlayerName> <Time|*> <Reason>
+            // /ban [-s, -o] <PlayerName> <Time|*> <Reason>
             ArgumentUtil a = new ArgumentUtil(args);
             a.OptionalFlag("Silent", "-s");
+            a.OptionalFlag("Overwrite", "-o");
             a.RequiredString("PlayerName", 0);
             a.RequiredString("TimePeriod", 1);
             a.RequiredSentence("Reason", 2);
@@ -70,22 +71,29 @@ public class BanCommand extends RistExCommandAsync
                 return false;
 
             boolean silent = a.get("Silent") != null;
+            boolean ow = a.get("Overwrite") != null;
             String PlayerName = a.get("PlayerName");
             String reason = a.get("Reason");
 
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
             Timestamp bantime = TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
+            Punishment punish = new Punishment(PunishmentType.PUNISH_BAN, sender, target, reason, bantime);
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
 
-            if (User.IsPlayerBanned(target))
+            if (ow && !sender.hasPermission("lolbans.ban.overwrite"))
+                return User.PermissionDenied(sender, "lolbans.ban.overwrite");
+            else if (ow) {
+                User.removePunishment(PunishmentType.PUNISH_BAN, sender, target, "Overwritten by #" + punish.GetPunishmentID(), silent);
+            }
+
+            if (User.IsPlayerBanned(target) && !ow)
                 return User.PlayerOnlyVariableMessage("Ban.PlayerIsBanned", sender, target.getName(), true);
 
             if (bantime == null && !PermissionUtil.Check(sender, "lolbans.ban.perm"))
                 return User.PermissionDenied(sender, "lolbans.ban.perm"); 
             
-            Punishment punish = new Punishment(PunishmentType.PUNISH_BAN, sender, target, reason, bantime);
             punish.Commit(sender);
 
             // Kick the player first, they're officially banned.

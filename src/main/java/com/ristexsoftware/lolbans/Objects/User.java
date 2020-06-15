@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -30,8 +31,10 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import com.google.common.net.InetAddresses;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
+import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
+import com.ristexsoftware.lolbans.Utils.TimeUtil;
 
 public class User {
     static Main self = Main.getPlugin(Main.class);
@@ -328,8 +331,8 @@ public class User {
             }
 
             // Users table
-            PreparedStatement ps = self.connection.prepareStatement(
-                    "SELECT UUID FROM Users WHERE PlayerName = ? OR UUID = ? LIMIT 1");
+            PreparedStatement ps = self.connection
+                    .prepareStatement("SELECT UUID FROM Users WHERE PlayerName = ? OR UUID = ? LIMIT 1");
             ps.setString(1, PunishID);
             ps.setString(2, PunishID);
 
@@ -374,8 +377,7 @@ public class User {
                 if (res.next())
                     return new IPAddressString(res.getString("IPAddress")).getAddress();
             }
-        }
-        catch (SQLException | InterruptedException | ExecutionException ex) {
+        } catch (SQLException | InterruptedException | ExecutionException ex) {
             ex.printStackTrace();
         }
 
@@ -384,146 +386,178 @@ public class User {
 
     /**
      * Kick the player from the server based on a punishment.
+     * 
      * @param p The punishment containing the player and reasons for punishment.
      */
-    public static void KickPlayer(Punishment p)
-    {
+    public static void KickPlayer(Punishment p) {
         if (p.GetPunishmentType() != PunishmentType.PUNISH_KICK)
-            User.KickPlayerBan(p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getName(), (Player)p.GetPlayer(), p.GetPunishmentID(), p.GetReason(), p.GetTimePunished(), p.GetExpiry());
+            User.KickPlayerBan(p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getName(),
+                    (Player) p.GetPlayer(), p.GetPunishmentID(), p.GetReason(), p.GetTimePunished(), p.GetExpiry());
         else
-            User.KickPlayer(p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getName(), (Player)p.GetPlayer(), p.GetPunishmentID(), p.GetReason());
+            User.KickPlayer(p.IsConsoleExectioner() ? "CONSOLE" : p.GetExecutioner().getName(), (Player) p.GetPlayer(),
+                    p.GetPunishmentID(), p.GetReason());
     }
 
     /**
      * Kick the player from the server
-     * @param sender The person kicking the player
-     * @param target The person being kicked from the server
-     * @param PunishID The punishment ID of the kick
-     * @param reason The reason for the kick
+     * 
+     * @param sender       The person kicking the player
+     * @param target       The person being kicked from the server
+     * @param PunishID     The punishment ID of the kick
+     * @param reason       The reason for the kick
      * @param TimePunished When the punishment happened
-     * @param Expiry If the punishment has an expiration
+     * @param Expiry       If the punishment has an expiration
      */
-    public static void KickPlayerBan(String sender, Player target, String PunishID, String reason, Timestamp TimePunished, Timestamp Expiry)
-    {
-        try
-        {
+    public static void KickPlayerBan(String sender, Player target, String PunishID, String reason,
+            Timestamp TimePunished, Timestamp Expiry) {
+        try {
             // (String message, String ColorChars, Map<String, String> Variables)
             String KickMessage = Messages.Translate(Expiry != null ? "Ban.TempBanMessage" : "Ban.PermBanMessage",
-                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                {{
-                    put("player", target.getName());
-                    put("reason", reason);
-                    put("ARBITER", sender);
-                    put("TimePunished", TimePunished.toString());
-                    if (Expiry != null)
-                        put("expiry", Expiry.toString());
-                    put("PunishID", PunishID);
-                }}
-            );
+                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                        {
+                            put("player", target.getName());
+                            put("reason", reason);
+                            put("ARBITER", sender);
+                            put("TimePunished", TimePunished.toString());
+                            if (Expiry != null)
+                                put("expiry", Expiry.toString());
+                            put("PunishID", PunishID);
+                        }
+                    });
             target.kickPlayer(KickMessage);
-        }
-        catch (InvalidConfigurationException e)
-        {
+        } catch (InvalidConfigurationException e) {
             e.printStackTrace();
         }
     }
 
     /**
      * Kick a player due to their IP address matching an IP or regex ban
-     * @param sender The person who ran the command
-     * @param target The person who is banned/kicked
-     * @param PunishID The punishment ID
-     * @param reason The reason for the kicking
+     * 
+     * @param sender       The person who ran the command
+     * @param target       The person who is banned/kicked
+     * @param PunishID     The punishment ID
+     * @param reason       The reason for the kicking
      * @param TimePunished The time the punishment was issued
-     * @param Expiry The time the punishment expires, if it expires
-     * @param IP The IP or regex of the punishment
+     * @param Expiry       The time the punishment expires, if it expires
+     * @param IP           The IP or regex of the punishment
      */
-    public static void KickPlayerIP(String sender, Player target, String PunishID, String reason, Timestamp TimePunished, Timestamp Expiry, String IP)
-    {
-        try
-        {
+    public static void KickPlayerIP(String sender, Player target, String PunishID, String reason,
+            Timestamp TimePunished, Timestamp Expiry, String IP) {
+        try {
             // (String message, String ColorChars, Map<String, String> Variables)
-            String KickMessage = Messages.Translate(Expiry != null ? "IPBan.TempIPBanMessage" : "IPBan.PermIPBanMessage",
-                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                {{
-                    put("player", target.getName());
-                    put("reason", reason);
-                    put("ARBITER", sender);
-                    put("TimePunished", TimePunished.toString());
-                    if (Expiry != null)
-                        put("Expiry", Expiry.toString());
-                    put("PunishID", PunishID);
-                    put("IPAddress", IP);
-                }}
-            );
+            String KickMessage = Messages.Translate(
+                    Expiry != null ? "IPBan.TempIPBanMessage" : "IPBan.PermIPBanMessage",
+                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                        {
+                            put("player", target.getName());
+                            put("reason", reason);
+                            put("ARBITER", sender);
+                            put("TimePunished", TimePunished.toString());
+                            if (Expiry != null)
+                                put("Expiry", Expiry.toString());
+                            put("PunishID", PunishID);
+                            put("IPAddress", IP);
+                        }
+                    });
             target.kickPlayer(KickMessage);
-        }
-        catch (InvalidConfigurationException e)
-        {
+        } catch (InvalidConfigurationException e) {
             e.printStackTrace();
         }
     }
 
     /**
      * Kick a player for a reason with an ID
+     * 
      * @param sender The person who is kicking the player
      * @param target The person being kicked from the server
      * @param KickID The ID of the kick
      * @param reason The reason for the kick
      */
-    public static void KickPlayer(String sender, Player target, String KickID, String reason)
-    {
-        try
-        {
+    public static void KickPlayer(String sender, Player target, String KickID, String reason) {
+        try {
             // (String message, String ColorChars, Map<String, String> Variables)
             String KickMessage = Messages.Translate("Kick.KickMessage",
-                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                {{
-                    put("player", target.getName());
-                    put("reason", reason);
-                    put("ARBITER", sender);
-                    put("punishid", KickID);
-                }}
-            );
+                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                        {
+                            put("player", target.getName());
+                            put("reason", reason);
+                            put("ARBITER", sender);
+                            put("punishid", KickID);
+                        }
+                    });
             target.kickPlayer(KickMessage);
-        }
-        catch (InvalidConfigurationException e)
-        {
+        } catch (InvalidConfigurationException e) {
             e.printStackTrace();
         }
     }
+    /**
+     * Remove a punishment from a player
+     * 
+     * @param type The punishment type to remove
+     * @param sender The command sender
+     * @param target The player to remove punishment from
+     * @param reason The reason for removal
+     * @param silent Is the punishment removal silent
+     */
+    public static Punishment removePunishment(PunishmentType type, CommandSender sender, OfflinePlayer target, String reason, boolean silent) {
+        Optional<Punishment> op = Punishment.FindPunishment(type, target, false);
+        if (!op.isPresent())
+        {
+            sender.sendMessage("Congratulations!! You've found a bug!! Please report it to the lolbans developers to get it fixed! :D");
+            return null;
+        }
 
-    public static void PlaySound(Player target, String sound) {
+        Punishment punish = op.get();
+        punish.SetAppealReason(reason);
+        punish.SetAppealed(true);
+        punish.SetAppealTime(TimeUtil.TimestampNow());
+        punish.SetAppealStaff(sender);
+        punish.Commit(sender);
+        try {
+            DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+        return punish;
+    }
+
+    // This honestly just does some extra logic I don't want to put in every class...
+    /**
+     * Play a sound to a player
+     * 
+     * @param target The player to send the sound to
+     * @param sound The sound to play
+     */
+    public static void playSound(Player target, String sound) {
         try {
             if (self.getConfig().getBoolean("General.PlaySound"))
                 target.playSound(target.getLocation(), Sound.valueOf(sound), 1F, 1F);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return;
         }
     }
 
+    /*
+     * MESSAGES
+     */
     /**
      * Send the player a permission denied message
-     * @param sender the person who is executing the command
+     * 
+     * @param sender         the person who is executing the command
      * @param PermissionNode The permission node they're being denied for
      * @return always true, for use in the command classes.
      */
-    public static boolean PermissionDenied(CommandSender sender, String PermissionNode)
-    {
-        try
-        {
-            sender.sendMessage(Messages.Translate("NoPermission", 
-                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                {{
-                    put("arbiter", sender.getName());
-                    put("permission", PermissionNode);
-                }}
-            ));
-        }
-        catch (InvalidConfigurationException ex)
-        {
+    public static boolean PermissionDenied(CommandSender sender, String PermissionNode) {
+        try {
+            sender.sendMessage(
+                    Messages.Translate("NoPermission", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                        {
+                            put("arbiter", sender.getName());
+                            put("permission", PermissionNode);
+                        }
+                    }));
+        } catch (InvalidConfigurationException ex) {
             ex.printStackTrace();
             sender.sendMessage("Permission Denied!");
         }
@@ -532,92 +566,88 @@ public class User {
 
     /**
      * Send the player the "No Such Player" message
-     * @param sender The person who executes the command
+     * 
+     * @param sender     The person who executes the command
      * @param PlayerName The name of the player that doesn't exist
-     * @param ret The value to return from this function
+     * @param ret        The value to return from this function
      * @return the value provided as `ret`
      */
-    public static boolean NoSuchPlayer(CommandSender sender, String PlayerName, boolean ret)
-    {
+    public static boolean NoSuchPlayer(CommandSender sender, String PlayerName, boolean ret) {
         return User.PlayerOnlyVariableMessage("PlayerDoesntExist", sender, PlayerName, ret);
     }
 
     /**
      * Send the player the "IP Is already banned" message
-     * @param sender The person who executed the command
+     * 
+     * @param sender         The person who executed the command
      * @param iPAddresString The ip address that is already banned
-     * @param ret The value to return from this function
+     * @param ret            The value to return from this function
      * @return The value provided as `ret`
      */
-    public static boolean IPIsBanned(CommandSender sender, String iPAddresString, boolean ret)
-    {
+    public static boolean IPIsBanned(CommandSender sender, String iPAddresString, boolean ret) {
         return User.PlayerOnlyVariableMessage("IPIsBanned", sender, iPAddresString, ret);
     }
 
     /**
      * Send the player the "Player is offline" message
-     * @param sender The person who executed the command
+     * 
+     * @param sender     The person who executed the command
      * @param PlayerName The name of the offline player
-     * @param ret The value to return from this function
+     * @param ret        The value to return from this function
      * @return The value provided as `ret`
      */
-    public static boolean PlayerIsOffline(CommandSender sender, String PlayerName, boolean ret)
-    {
+    public static boolean PlayerIsOffline(CommandSender sender, String PlayerName, boolean ret) {
         return User.PlayerOnlyVariableMessage("PlayerIsOffline", sender, PlayerName, ret);
     }
 
     /**
-     * Send a message to the player from messages.yml 
+     * Send a message to the player from messages.yml
+     * 
      * @param MessageName The message node from messages.yml
-     * @param sender The person executing the command
-     * @param thingy An IP address passed as the "Player" variable
-     * @param ret The value to return from this function
+     * @param sender      The person executing the command
+     * @param thingy      An IP address passed as the "Player" variable
+     * @param ret         The value to return from this function
      * @return The value provided as `ret`
      */
-    public static boolean PlayerOnlyVariableMessage(String MessageName, CommandSender sender, IPAddress thingy, boolean ret)
-    {
-        try 
-        {
-            sender.sendMessage(Messages.Translate(MessageName,
-                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                {{
-                    put("player", thingy.toString());
-                    put("prefix", Messages.Prefix);
-                }}
-            ));
-        }
-        catch (InvalidConfigurationException e)
-        {
+    public static boolean PlayerOnlyVariableMessage(String MessageName, CommandSender sender, IPAddress thingy,
+            boolean ret) {
+        try {
+            sender.sendMessage(
+                    Messages.Translate(MessageName, new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                        {
+                            put("player", thingy.toString());
+                            put("prefix", Messages.Prefix);
+                        }
+                    }));
+        } catch (InvalidConfigurationException e) {
             e.printStackTrace();
         }
         return ret;
     }
 
-	/**
-	 * Send a message to a player from messages.yml whose only argument is the player name
-	 * @param MessageName The message node from messages.yml
-	 * @param sender The person executing the command
-	 * @param name The name of the player to use as a placeholder
-	 * @param ret The value to return from this function
-	 * @return The value provided as `ret`
-	 */
-  public
-	static boolean PlayerOnlyVariableMessage(String MessageName, CommandSender sender, String name, boolean ret)
-    {
-        try 
-        {
-            sender.sendMessage(Messages.Translate(MessageName,
-                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                {{
-                    put("player", name);
-                    put("ipaddress", name);
-                    // TODO: More appropriate name?
-                    put("sender", sender.getName());
-                }}
-            ));
-        }
-        catch (InvalidConfigurationException e)
-        {
+    /**
+     * Send a message to a player from messages.yml whose only argument is the
+     * player name
+     * 
+     * @param MessageName The message node from messages.yml
+     * @param sender      The person executing the command
+     * @param name        The name of the player to use as a placeholder
+     * @param ret         The value to return from this function
+     * @return The value provided as `ret`
+     */
+    public static boolean PlayerOnlyVariableMessage(String MessageName, CommandSender sender, String name,
+            boolean ret) {
+        try {
+            sender.sendMessage(
+                    Messages.Translate(MessageName, new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                        {
+                            put("player", name);
+                            put("ipaddress", name);
+                            // TODO: More appropriate name?
+                            put("sender", sender.getName());
+                        }
+                    }));
+        } catch (InvalidConfigurationException e) {
             e.printStackTrace();
         }
         return ret;

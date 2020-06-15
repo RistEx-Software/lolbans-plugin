@@ -22,7 +22,7 @@ BUGS!
 ##########################################
 FEATURE REQUESTS
 ##########################################
-- [Feature] /history command for listing all punishments 
+- [Feature] /history command for listing all punishments (kinda done?)
 - [Feature] Clickable chat commands/Hover text (JSON)
 - [Feature] Regex based muting and chat filters
 

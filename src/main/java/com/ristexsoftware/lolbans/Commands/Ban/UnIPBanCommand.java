@@ -19,6 +19,7 @@ import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishID;
+import com.ristexsoftware.lolbans.Utils.Timing;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -64,6 +65,8 @@ public class UnIPBanCommand extends RistExCommandAsync
         // Syntax: /unipban [-s] <CIDR|PunishID> <Reason>
         try 
 		{
+            Timing t = new Timing();
+            
 			ArgumentUtil a = new ArgumentUtil(args);
 			a.OptionalFlag("Silent", "-s");
 			a.RequiredString("CIDR", 0);
@@ -138,6 +141,7 @@ public class UnIPBanCommand extends RistExCommandAsync
 			sender.sendMessage(Messages.Translate("IPBan.UnbanSuccess", Variables));
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("IPBan.UnbanSuccess", Variables));
             // TODO: DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+            t.Finish(sender);
         }
         catch (InvalidConfigurationException | SQLException | InterruptedException | ExecutionException e)
         {

@@ -13,6 +13,7 @@ import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
+import com.ristexsoftware.lolbans.Utils.Timing;
 import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
@@ -133,6 +134,8 @@ public class IPBanCommand extends RistExCommandAsync
 		// /ipban [-s] <ip address>[/<cidr>] <time> <Reason here unlimited length>
 		try
 		{
+			Timing t = new Timing();
+			
 			ArgumentUtil a = new ArgumentUtil(args);
 			a.OptionalFlag("Silent", "-s");
 			a.RequiredString("CIDR", 0);
@@ -215,6 +218,7 @@ public class IPBanCommand extends RistExCommandAsync
 			
 			// SendIP
 			DiscordUtil.GetDiscord().SendBanObject(sender, thingy.toString(), reason, banid, bantime);
+			t.Finish(sender);
 
 			return true;
 		}

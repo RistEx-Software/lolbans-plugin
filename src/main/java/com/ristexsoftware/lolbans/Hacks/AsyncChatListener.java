@@ -38,7 +38,7 @@ public class AsyncChatListener implements Listener
                 if (event.getPlayer().hasPermission("lolbans.mute.bypass"))
                     return;
                 event.setCancelled(true);
-                User.PlaySound((Player)event.getPlayer(), self.getConfig().getString("MuteSettings.Sound"));
+                User.playSound((Player)event.getPlayer(), self.getConfig().getString("MuteSettings.Sound"));
                 event.getPlayer().sendMessage(Messages.Translate("Mute.GlobalMuted", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
                 return;
             }
@@ -59,7 +59,7 @@ public class AsyncChatListener implements Listener
                 if (result.next()) 
                 {
                     event.setCancelled(true);
-                    User.PlaySound((Player)event.getPlayer(), self.getConfig().getString("MuteSettings.Sound"));
+                    User.playSound((Player)event.getPlayer(), self.getConfig().getString("MuteSettings.Sound"));
                     Timestamp MuteTime = result.getTimestamp("Expiry");
 
                     event.getPlayer().sendMessage(Messages.Translate("Mute.YouAreMuted",

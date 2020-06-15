@@ -10,16 +10,18 @@ import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
+import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
+import com.ristexsoftware.lolbans.Utils.Timing;
 
 import java.util.Optional;
 import java.util.TreeMap;
 
-public class UnbanCommand extends RistExCommand
+public class UnbanCommand extends RistExCommandAsync
 {
     public UnbanCommand(Plugin owner)
     {
@@ -52,6 +54,8 @@ public class UnbanCommand extends RistExCommand
         // Syntax: /unban [-s] <PlayerName|PunishID> <Reason>
         try 
         {
+            Timing t = new Timing();
+            
             ArgumentUtil a = new ArgumentUtil(args);
             a.OptionalFlag("Silent", "-s");
             a.RequiredString("PlayerName", 0);
@@ -71,21 +75,23 @@ public class UnbanCommand extends RistExCommand
             if (!User.IsPlayerBanned(target))
                 return User.PlayerOnlyVariableMessage("Ban.PlayerIsNotBanned", sender, target.getName(), true);
 
-            // Preapre a statement
-            // We need to get the latest banid first.
-            Optional<Punishment> op = Punishment.FindPunishment(PunishmentType.PUNISH_BAN, target, false);
-            if (!op.isPresent())
-            {
-                sender.sendMessage("Congratulations!! You've found a bug!! Please report it to the lolbans developers to get it fixed! :D");
-                return true;
-            }
+            // // Preapre a statement
+            // // We need to get the latest banid first.
+            // Optional<Punishment> op = Punishment.FindPunishment(PunishmentType.PUNISH_BAN, target, false);
+            // if (!op.isPresent())
+            // {
+            //     sender.sendMessage("Congratulations!! You've found a bug!! Please report it to the lolbans developers to get it fixed! :D");
+            //     return true;
+            // }
 
-            Punishment punish = op.get();
-            punish.SetAppealReason(reason);
-            punish.SetAppealed(true);
-            punish.SetAppealTime(TimeUtil.TimestampNow());
-            punish.SetAppealStaff(sender);
-            punish.Commit(sender);
+            // Punishment punish = op.get();
+            // punish.SetAppealReason(reason);
+            // punish.SetAppealed(true);
+            // punish.SetAppealTime(TimeUtil.TimestampNow());
+            // punish.SetAppealStaff(sender);
+            // punish.Commit(sender);
+            Punishment punish = User.removePunishment(PunishmentType.PUNISH_BAN, sender, target, reason, silent);
+            if (punish == null) return true;
 
             // Prepare our announce message
             TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
@@ -100,6 +106,7 @@ public class UnbanCommand extends RistExCommand
             
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Ban.BanAnnouncement", Variables));
             DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+            t.Finish(sender);
         }
         catch (InvalidConfigurationException e)
         {

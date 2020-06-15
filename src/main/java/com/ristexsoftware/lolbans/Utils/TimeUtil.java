@@ -234,17 +234,17 @@ public class TimeUtil
     {
         System.out.println(TimePeriod);
         // Parse ban time.
-        // If it's numeric, lets do some extra checks!
         if (Messages.CompareMany(TimePeriod, new String[]{"*", "0"}))
-            return null;
-            
+        return null;
+        
+        // If it's numeric, lets do some extra checks!
         if (NumberUtil.isNumeric(TimePeriod)) {
             // Return null if it's greater 12 characters long
             if (TimePeriod.length() > 12) return null;
             Optional<Long> dur = TimeUtil.Duration(TimePeriod);
             if (dur.isPresent())
                 return new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L).getTime() >= new java.sql.Timestamp(253402261199L * 1000L).getTime() ? null : new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
-                // 253402261199 is the year 9999 in epoch, this ensures we don't have invalid timestamp exceptions.
+                // 253402261199 x 1000L is the year 9999 in epoch, this ensures we don't have invalid timestamp exceptions.
         } 
         if (!Messages.CompareMany(TimePeriod, new String[]{"*", "0"}))
         {

@@ -89,7 +89,7 @@ public class WarnCommand extends RistExCommand
             if (target.isOnline())
             {
                 String WarnedMessage = Messages.Translate("Warn.WarnedMessage", Variables);
-                User.PlaySound((Player)target, Main.getPlugin(Main.class).getConfig().getString("WarningSettings.Sound"));
+                User.playSound((Player)target, Main.getPlugin(Main.class).getConfig().getString("WarningSettings.Sound"));
                 if (Main.getPlugin(Main.class).getConfig().getBoolean("WarningSettings.SimpleWarning"))
                     return true;
                 User u = Main.USERS.get(target.getUniqueId());
