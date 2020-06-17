@@ -76,7 +76,10 @@ public class MuteCommand extends RistExCommand
                 return User.NoSuchPlayer(sender, PlayerName, true);
 
             if (mutetime == null && !PermissionUtil.Check(sender, "lolbans.mute.perm"))
-            return User.PermissionDenied(sender, "lolbans.mute.perm");
+                return User.PermissionDenied(sender, "lolbans.mute.perm");
+
+            if (TimeUtil.ParseToTimestamp(a.get("TimePeriod")).getTime() > User.getTimeGroup(sender).getTime())
+                return User.PermissionDenied(sender, "lolbans.maxtime."+a.get("TimePeriod"));
             
             Punishment punish = new Punishment(PunishmentType.PUNISH_MUTE, sender, target, reason, mutetime);
             if(ow && !sender.hasPermission("lolbans.mute.overwrite")) {

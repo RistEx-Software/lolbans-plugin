@@ -73,6 +73,10 @@ IPBanSettings:
   # Optionally specify how wide reaching the ban will go
   InsanePercentage: 90
 
+max-time:
+  default: 1d
+  moderator: 14d
+
 # ReportSettings:
 #   # List of report types that are valid for the report command.
 #   Types:

@@ -1,27 +1,27 @@
 package com.ristexsoftware.lolbans.Commands.Ban;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.OfflinePlayer;
+import java.sql.Timestamp;
+import java.util.Map;
+import java.util.TreeMap;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.Punishment;
-import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
+import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
-import com.ristexsoftware.lolbans.Utils.TimeUtil;
-import com.ristexsoftware.lolbans.Utils.Timing;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
+import com.ristexsoftware.lolbans.Utils.TimeUtil;
+import com.ristexsoftware.lolbans.Utils.Timing;
 
-import java.sql.*;
-import java.util.TreeMap;
-import java.util.Map;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.plugin.Plugin;
 
 public class BanCommand extends RistExCommandAsync
 {
@@ -94,6 +94,9 @@ public class BanCommand extends RistExCommandAsync
             if (bantime == null && !PermissionUtil.Check(sender, "lolbans.ban.perm"))
                 return User.PermissionDenied(sender, "lolbans.ban.perm"); 
             
+            if (TimeUtil.ParseToTimestamp(a.get("TimePeriod")).getTime() > User.getTimeGroup(sender).getTime())
+                return User.PermissionDenied(sender, "lolbans.maxtime."+a.get("TimePeriod"));
+
             punish.Commit(sender);
 
             // Kick the player first, they're officially banned.

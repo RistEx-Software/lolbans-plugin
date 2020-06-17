@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -26,6 +29,7 @@ import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 
 import com.google.common.net.InetAddresses;
@@ -490,6 +494,7 @@ public class User {
             e.printStackTrace();
         }
     }
+
     /**
      * Remove a punishment from a player
      * 
@@ -519,6 +524,23 @@ public class User {
             e.printStackTrace();
         }
         return punish;
+    }
+
+    public static Timestamp getTimeGroup(CommandSender player) {
+        
+        Timestamp defaultTime = TimeUtil.ParseToTimestamp(self.getConfig().getString("max-time.default"));
+        ConfigurationSection configTimeGroups = self.getConfig().getConfigurationSection("max-time");
+        ArrayList<String> timeGroups = new ArrayList<String>();
+        timeGroups.addAll(configTimeGroups.getKeys(false));
+        Collections.reverse(timeGroups);
+
+        for(String key : timeGroups) {
+            if(player.hasPermission("lolbans.maxtime." + key)) {
+                return TimeUtil.ParseToTimestamp(self.getConfig().getString("max-time." + key));
+            }
+        }
+
+        return defaultTime == null ? TimeUtil.ParseToTimestamp("7d") : defaultTime;
     }
 
     // This honestly just does some extra logic I don't want to put in every class...

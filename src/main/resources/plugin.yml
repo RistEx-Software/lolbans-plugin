@@ -10,6 +10,8 @@ permissions:
     description: Able to use ban command
   lolbans.ban.perm:
     description: Allow permanent bans
+  lolbans.maxtime:
+    description: The max time a player can punish someone
   lolbans.alerts:
     description: Receive notification on silent bans
   lolbans.banwave.add:
