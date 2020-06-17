@@ -59,7 +59,7 @@ public class TranslationUtil
         put("expiry", (String lvalue, String unused) -> { return lvalue == null || lvalue == "" ? "Never" : TimeUtil.Expires(Timestamp.valueOf(lvalue)); });
         put("cut", (String lvalue, String arg) -> { return lvalue.replace(arg, ""); });
         put("empty_if_false", (String lvalue, String arg) -> { return Boolean.valueOf(lvalue) ? arg : ""; });
-        put("empty_if_none", (String lvalue, String arg) -> { return lvalue == null ? "" : arg; });
+        put("empty_if_true", (String lvalue, String arg) -> { return Boolean.valueOf(lvalue)  ? "" : arg; });
         put("default_if_none", (String lvalue, String arg) -> { return lvalue == null ? arg : lvalue; });
         put("lower", (String lvalue, String unused) -> { return lvalue.toLowerCase(); });
         put("upper", (String lvalue, String unused) -> { return lvalue.toUpperCase(); });

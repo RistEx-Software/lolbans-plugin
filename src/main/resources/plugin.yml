@@ -1,13 +1,14 @@
 name: LolBans
 version: ${project.version}
 main: com.ristexsoftware.lolbans.Main
-api-version: 1.14
 authors: [Zachery Coleman, Justasic]
 description: An advanced punishment management system made for Minecraft
 website: https://github.com/notzachery
 permissions:
   lolbans.ban:
     description: Able to use ban command
+  lolbans.ban.overwite:
+    description: Able to overwrite bans
   lolbans.ban.perm:
     description: Allow permanent bans
   lolbans.maxtime:
@@ -60,6 +61,8 @@ permissions:
     description: Able to mute/unmute global chat
   lolbans.mute:
     description: Able to mute other players
+  lolbans.mute.overwite:
+      description: Able to overwrite bans
   lolbans.mute.perm:
     description: Able to permanently mute other players
   lolbans.unmute:
@@ -72,3 +75,5 @@ permissions:
     description: Able to remove a warning previously issued
   lolbans.mute.bypass:
     description: Able to bypass mutes
+  lolbans.reload:
+    description: Reload plugin.yml and messages.yml

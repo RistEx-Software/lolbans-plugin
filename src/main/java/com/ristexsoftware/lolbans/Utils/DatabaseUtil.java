@@ -25,7 +25,7 @@ public class DatabaseUtil
         }
         catch (SQLException e)
         {
-            //e.printStackTrace();
+            e.printStackTrace();
             self.getLogger().severe("Cannot connect to database, ensure your database is setup correctly and restart the server.");
             // Just exit and let the user figure it out.
             return false;

@@ -94,7 +94,7 @@ public class BanCommand extends RistExCommandAsync
             if (bantime == null && !PermissionUtil.Check(sender, "lolbans.ban.perm"))
                 return User.PermissionDenied(sender, "lolbans.ban.perm"); 
             
-            if (TimeUtil.ParseToTimestamp(a.get("TimePeriod")).getTime() > User.getTimeGroup(sender).getTime())
+            if (bantime != null && TimeUtil.ParseToTimestamp(a.get("TimePeriod")).getTime() > User.getTimeGroup(sender).getTime())
                 return User.PermissionDenied(sender, "lolbans.maxtime."+a.get("TimePeriod"));
 
             punish.Commit(sender);

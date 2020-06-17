@@ -12,9 +12,9 @@ import com.ristexsoftware.lolbans.Main;
 
 public class Messages
 {
-    private Main self = Main.getPlugin(Main.class);
-    private File CustomConfigFile;
-    private FileConfiguration CustomConfig;
+    private static Main self = Main.getPlugin(Main.class);
+    private static File CustomConfigFile;
+    private static FileConfiguration CustomConfig;
     private static Messages localself = null;
 
     // Everything else
@@ -26,12 +26,10 @@ public class Messages
     public static boolean Discord;
 
     // Initialized by our GetMessages() function.
-    protected Messages()
-    {
+    protected Messages() {
         String TranslationFile = self.getConfig().getString("General.TranslationFile", "messages.en_us.yml");
         CustomConfigFile = new File(self.getDataFolder(), TranslationFile);
-        if (!CustomConfigFile.exists()) 
-        {
+        if (!CustomConfigFile.exists()) {
             CustomConfigFile.getParentFile().mkdirs();
             self.saveResource(TranslationFile, false);
         }
@@ -41,10 +39,10 @@ public class Messages
 
     /**
      * Get the messages object associated with messages.yml
+     * 
      * @return A Messages object referencing the messages.yml file.
      */
-    public static Messages GetMessages()
-    {
+    public static Messages GetMessages() {
         if (Messages.localself == null)
             Messages.localself = new Messages();
         return Messages.localself;
@@ -53,20 +51,18 @@ public class Messages
     /**
      * Reload the messages.yml file and update the internal configuration values.
      */
-    public void Reload()
-    {
+    public static void Reload() {
         FileConfiguration fc = new YamlConfiguration();
-        try 
-        {
+        try {
             fc.load(CustomConfigFile);
-            this.CustomConfig = fc;
+            CustomConfig = fc;
 
             // Messages
-            Messages.Prefix = this.CustomConfig.getString("Prefix", "[lolbans] ").replace("&", "\u00A7");
-            Messages.NetworkName = Messages._Translate(this.CustomConfig.getString("NetworkName", "My Network"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
-            Messages.Website = Messages._Translate(this.CustomConfig.getString("Website", "YourWebsiteHere.com"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
-            Messages.ServerError = Messages._Translate(this.CustomConfig.getString("ServerError", "The server encountered an error!"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
-            Messages.InvalidSyntax = Messages._Translate(this.CustomConfig.getString("InvalidSyntax", "&cInvalid Syntax!"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            Messages.Prefix = CustomConfig.getString("Prefix", "[lolbans] ").replace("&", "\u00A7");
+            Messages.NetworkName = Messages._Translate(CustomConfig.getString("NetworkName", "My Network"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            Messages.Website = Messages._Translate(CustomConfig.getString("Website", "YourWebsiteHere.com"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            Messages.ServerError = Messages._Translate(CustomConfig.getString("ServerError", "The server encountered an error!"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            Messages.InvalidSyntax = Messages._Translate(CustomConfig.getString("InvalidSyntax", "&cInvalid Syntax!"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
             Messages.Discord = self.getConfig().getBoolean("Discord.Enabled", false);
         } 
         catch (IOException | InvalidConfigurationException e) 
@@ -81,7 +77,7 @@ public class Messages
      */
     public FileConfiguration GetConfig()
     {
-        return this.CustomConfig;
+        return CustomConfig;
     }
 
     private static String _Translate(String ConfigMessage, Map<String, String> Variables)

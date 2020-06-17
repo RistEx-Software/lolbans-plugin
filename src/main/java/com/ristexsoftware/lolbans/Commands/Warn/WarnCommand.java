@@ -83,6 +83,7 @@ public class WarnCommand extends RistExCommand
                 put("arbiter", sender.getName());
                 put("silent", Boolean.toString(silent));
                 put("appealed", Boolean.toString(punish.GetAppealed()));
+                put("simple", Boolean.toString(Main.getPlugin(Main.class).getConfig().getBoolean("WarningSettings.SimpleWarning")));
             }};
                 
             // If they're online, require acknowledgement immediately by freezing them and sending a message.
@@ -90,8 +91,10 @@ public class WarnCommand extends RistExCommand
             {
                 String WarnedMessage = Messages.Translate("Warn.WarnedMessage", Variables);
                 User.playSound((Player)target, Main.getPlugin(Main.class).getConfig().getString("WarningSettings.Sound"));
-                if (Main.getPlugin(Main.class).getConfig().getBoolean("WarningSettings.SimpleWarning"))
+                if (Main.getPlugin(Main.class).getConfig().getBoolean("WarningSettings.SimpleWarning")) {
+                    ((Player) target).sendMessage(WarnedMessage);
                     return true;
+                }
                 User u = Main.USERS.get(target.getUniqueId());
                 u.SetWarned(true, ((Player) target).getLocation(), WarnedMessage);
                 u.SendMessage(WarnedMessage);

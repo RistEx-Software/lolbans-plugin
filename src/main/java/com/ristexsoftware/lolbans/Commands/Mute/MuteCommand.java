@@ -71,34 +71,36 @@ public class MuteCommand extends RistExCommand
             String reason = a.get("Reason");
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
             Timestamp mutetime = TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
+            Punishment punish = new Punishment(PunishmentType.PUNISH_MUTE, sender, target, reason, mutetime);
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
-
-            if (mutetime == null && !PermissionUtil.Check(sender, "lolbans.mute.perm"))
-                return User.PermissionDenied(sender, "lolbans.mute.perm");
-
-            if (TimeUtil.ParseToTimestamp(a.get("TimePeriod")).getTime() > User.getTimeGroup(sender).getTime())
-                return User.PermissionDenied(sender, "lolbans.maxtime."+a.get("TimePeriod"));
-            
-            Punishment punish = new Punishment(PunishmentType.PUNISH_MUTE, sender, target, reason, mutetime);
+                
             if(ow && !sender.hasPermission("lolbans.mute.overwrite")) {
                 return User.PermissionDenied(sender, "lolbans.mute.overwrite");
             } else if(ow) {
                 User.removePunishment(PunishmentType.PUNISH_MUTE, sender, target, "Overwritten by #" + punish.GetPunishmentID(), silent);
             }
-
-            punish.Commit(sender);
             
             if (User.IsPlayerMuted(target) && !ow)
                 return User.PlayerOnlyVariableMessage("Mute.PlayerIsMuted", sender, target.getName(), true);
+            
+            if (mutetime == null && !PermissionUtil.Check(sender, "lolbans.mute.perm"))
+                return User.PermissionDenied(sender, "lolbans.mute.perm");
+
+            // If mutetime is null and they got past the check above, we don't need to check this
+            if (mutetime != null && mutetime.getTime() > User.getTimeGroup(sender).getTime())
+                return User.PermissionDenied(sender, "lolbans.maxtime."+a.get("TimePeriod"));
+
+            punish.Commit(sender);
+            
             Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("player", target.getName());
                     put("reason", reason);
                     put("arbiter", sender.getName());
                     put("punishid", punish.GetPunishmentID());
-                    put("expiry", mutetime == null ? null : punish.GetExpiryString());
+                    put("expiry", mutetime == null ? "" : punish.GetExpiryString());
                     put("silent", Boolean.toString(silent));
                     put("appealed", Boolean.toString(punish.GetAppealed()));
                 }};

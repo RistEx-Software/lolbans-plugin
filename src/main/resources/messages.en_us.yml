@@ -21,6 +21,7 @@
 # - expiry - similar to duration but adds "ago", "from now", or "never expires" (if expiry is none or 0)
 # - cut - remove a character from the string. Identical to Django's cut filter.
 # - empty_if_false - if variable is true, it will return the string given as an argument (used )
+# - empty_if_true - Opposite of empty_if_false
 # - default_if_none - uses the argument as the string if the variable is null (identical django syntax)
 # - lower - variable is converted to lower case
 # - upper - variable is converted to upper case
@@ -131,6 +132,7 @@ Mute:
   MuteAnnouncement: "{PREFIX}&b{ARBITER} &fhas {APPEALED|empty_if_false:\"un-\"}muted &b{PLAYER}&f: &b{REASON} &f[#{PUNISHID}]"
   GlobalMuted: "&bThe chat is currently muted and you may not send messages."
   GlobalUnmuted: "&aThe chat is now unmuted, you may now converse."
+  ChatAttempt: "&7{PLAYER} tried to speak, but is muted: \"{MESSAGE}\""
 
 Kick:
   KickMessage: "&bYou were kicked from {NETWORKNAME}\n\n&bYou were kicked by: &f{ARBITER}\n&bReason: &f{REASON}"
@@ -138,7 +140,7 @@ Kick:
 
 Warn:
   WarnAnnouncment: "&b{ARBITER} &fhas {APPEALED|empty_if_false:\"un-\"}warned &b{PLAYER} &f: &b{REASON} &f[#{PUNISHID}] {SILENT|empty_if_false:\" &8[SILENT]\"}"
-  WarnedMessage: "&b{ARBITER} &fwarned you: &b{REASON} &f[#{PUNISHID}]\n&f» &bPlease acknowledge that you've been warned by typing &a/accept."
+  WarnedMessage: "&b{ARBITER} &fwarned you: &b{REASON} &f[#{PUNISHID}]\n{SIMPLE|empty_if_true:\"&f» &bPlease acknowledge that you've been warned by typing &a/accept.\"}"
   RemovedSuccess: "{PREFIX}&fRemoved &b{PLAYER}&f's warning successfully!"
   WarnedOnAction: "{PREFIX}&bYou have been warned and cannot perform that action!\n{PREFIX}&bPlease acknowledge that you've been warned by typing &a/accept."
   WarnKickMessage: "&bYou have been warned!\n\n&bReason: {REASON}\n\n&fBy rejoining you acknowledge that you've been warned!"

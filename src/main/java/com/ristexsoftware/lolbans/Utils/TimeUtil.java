@@ -232,10 +232,9 @@ public class TimeUtil
     // Turns out, I need to read documentation more, java.sql.Timestamp uses milliseconds and not seconds, I somehow forgot that.
     public static Timestamp ParseToTimestamp(String TimePeriod)
     {
-        System.out.println(TimePeriod);
         // Parse ban time.
         if (Messages.CompareMany(TimePeriod, new String[]{"*", "0"}))
-        return null;
+            return null;
         
         // If it's numeric, lets do some extra checks!
         if (NumberUtil.isNumeric(TimePeriod)) {

@@ -49,6 +49,7 @@ import com.ristexsoftware.lolbans.Commands.History.HistoryCommand;
 import com.ristexsoftware.lolbans.Commands.History.StaffHistoryCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.BroadcastCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.KickCommand;
+import com.ristexsoftware.lolbans.Commands.Misc.LolBansCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.StaffRollbackCommand;
 import com.ristexsoftware.lolbans.Commands.Mute.UnmuteCommand;
 import com.ristexsoftware.lolbans.Commands.Mute.MuteChatCommand;
@@ -195,12 +196,13 @@ public final class Main extends JavaPlugin
         CommandList.add(new MuteCommand(this));
         CommandList.add(new UnmuteCommand(this));
         CommandList.add(new KickCommand(this));
-        CommandList.add(new BroadcastCommand(this));
+        //CommandList.add(new BroadcastCommand(this)); 
         CommandList.add(new ReportCommand(this));
         CommandList.add(new RegexBanCommand(this));
         CommandList.add(new StaffRollbackCommand(this));
         CommandList.add(new StaffHistoryCommand(this));
         CommandList.add(new ReportHistoryCommand(this));
+        CommandList.add(new LolBansCommand(this));
 
         // MD_5 and his knobbery continues. the CraftServer.java class has a `getCommandMap()`
         // method and CommandMap is documented but there's no reasonable way to get the command
@@ -208,6 +210,7 @@ public final class Main extends JavaPlugin
         // we now have to use reflection to get a more reasonable way to register commands.
         CommandMap cmap = ReflectionUtil.getProtectedValue(Bukkit.getServer(), "commandMap");
         cmap.registerAll(this.getName().toLowerCase(), CommandList);
+        getLogger().info("LolBans enabled successfully...");
     }
 
     @Override
