@@ -38,8 +38,6 @@ public class MojangUtil {
                 JsonElement jsonResponse = new JsonParser().parse(new InputStreamReader(url.openStream()));
                 String uuid =  jsonResponse.getAsJsonObject().get("uuid").toString().replace("\"", "");
                 String username = jsonResponse.getAsJsonObject().get("username").toString().replace("\"", "");
-                System.out.println(uuid);
-                System.out.println(username);
 
                 if (uuid == null)
                     return null;

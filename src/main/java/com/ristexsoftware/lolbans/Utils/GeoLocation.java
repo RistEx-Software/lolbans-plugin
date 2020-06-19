@@ -50,6 +50,9 @@ public class GeoLocation
             String result = jobject.get("country_code").getAsString();
             String result2 = jobject.get("country_name").getAsString();
             String[] results = {result, result2};
+            String[] error = {"--", "--"};
+            if (result.equalsIgnoreCase("Not Found") || result2.equalsIgnoreCase("Not Found"))
+                return error;
             return results;
         }
         catch (Exception e)

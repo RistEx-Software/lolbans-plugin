@@ -183,6 +183,14 @@
             <artifactId>ipaddress</artifactId>
             <version>5.1.0</version>
         </dependency>
+
+        <!-- YAML parsing lib -->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.21</version>            
+        </dependency>
+
         <!-- Paper lib -->
         <dependency>
             <groupId>io.papermc</groupId>

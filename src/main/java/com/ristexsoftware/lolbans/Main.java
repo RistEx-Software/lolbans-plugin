@@ -58,6 +58,7 @@ import com.ristexsoftware.lolbans.Commands.Report.ReportCommand;
 import com.ristexsoftware.lolbans.Commands.Report.ReportHistoryCommand;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
+import com.ristexsoftware.lolbans.Utils.ImportUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.MojangUtil;
 import com.ristexsoftware.lolbans.Utils.ReflectionUtil;
@@ -221,6 +222,8 @@ public final class Main extends JavaPlugin
         // Unregister our hacks.
         // NOPE! We can't hack spigot anymore...
         //Hacks.GetCaught();
+        // Cancel import tasks
+        ImportUtil.Cancel();
         // Save our config values
         reloadConfig();
         // Close out or database.
