@@ -103,7 +103,7 @@ public class Punishment
     {
         try 
         {
-            PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM Punishments WHERE PunishID = ?");
+            PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM lolbans_punishments WHERE PunishID = ?");
             ps.setString(1, PunishmentID);
 
             Optional<ResultSet> ores = DatabaseUtil.ExecuteLater(ps).get();
@@ -170,7 +170,7 @@ public class Punishment
     {
         try
         {
-            PreparedStatement pst3 = self.connection.prepareStatement("SELECT PunishID FROM Punishments WHERE UUID = ? AND Type = ? AND Appealed = ?");
+            PreparedStatement pst3 = self.connection.prepareStatement("SELECT PunishID FROM lolbans_punishments WHERE UUID = ? AND Type = ? AND Appealed = ?");
             pst3.setString(1, Player.getUniqueId().toString());
             pst3.setInt(2, Type.ordinal());
             pst3.setBoolean(3, Appealed);
@@ -214,7 +214,7 @@ public class Punishment
                         if (me.Appealed && me.AppealedTime == null)
                             me.AppealedTime = TimeUtil.TimestampNow();
 
-                        InsertBan = self.connection.prepareStatement("UPDATE Punishments SET UUID = ?,"
+                        InsertBan = self.connection.prepareStatement("UPDATE lolbans_punishments SET UUID = ?,"
                                                                     +"PlayerName = ?,"
                                                                     +"IPAddress = ?,"
                                                                     +"Reason = ?,"
@@ -252,7 +252,7 @@ public class Punishment
                     else
                     {
                         // Preapre a statement
-                        InsertBan = self.connection.prepareStatement(String.format("INSERT INTO Punishments (UUID, PlayerName, IPAddress, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry, Type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"));
+                        InsertBan = self.connection.prepareStatement(String.format("INSERT INTO lolbans_punishments (UUID, PlayerName, IPAddress, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry, Type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"));
                         InsertBan.setString(i++, me.uuid.toString());
                         InsertBan.setString(i++, me.PlayerName);
                         InsertBan.setString(i++, me.IPAddress);
@@ -293,7 +293,7 @@ public class Punishment
                 try 
                 {
                     // Preapre a statement
-                    PreparedStatement pst2 = self.connection.prepareStatement("DELETE FROM Punishments WHERE id = ?");
+                    PreparedStatement pst2 = self.connection.prepareStatement("DELETE FROM lolbans_punishments WHERE id = ?");
                     pst2.setString(1, me.DatabaseID);
                     pst2.executeUpdate();
 

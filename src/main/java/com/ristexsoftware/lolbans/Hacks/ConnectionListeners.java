@@ -14,7 +14,6 @@ import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.IPBanUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
-import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
@@ -68,15 +67,8 @@ public class ConnectionListeners implements Listener
             Timestamp lastjoin = TimeUtil.TimestampNow();
             DatabaseUtil.UpdateUser(puuid, player.getName(), ipaddr, lastjoin);
         }
-        // Link accounts via the website
-        // String JoinMessage = LinkMessages.get(player.getUniqueId());
-        // if (JoinMessage != null)
-        //     player.sendMessage(JoinMessage);
     }
 
-    // We need to make this async so the database stuff doesn't run on the main
-    // thread.
-    // This event is already async, no need.
     @EventHandler
     public static void OnPlayerConnectAsync(AsyncPlayerPreLoginEvent event) 
     {
@@ -94,12 +86,12 @@ public class ConnectionListeners implements Listener
             // 4. If they don't match any queries, we let them join.
 
             // Ask the database for any ban records
-            PreparedStatement BanStatement = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ? AND Type = ? AND Appealed = FALSE OR (Expiry IS NOT NULL >= NOW())");
+            PreparedStatement BanStatement = self.connection.prepareStatement("SELECT * FROM lolbans_punishments WHERE UUID = ? AND Type = ? AND Appealed = FALSE OR (Expiry IS NOT NULL >= NOW())");
             BanStatement.setString(1, event.getUniqueId().toString());
             BanStatement.setInt(2, PunishmentType.PUNISH_BAN.ordinal());
 
             // Also ask for any warning records
-            PreparedStatement WarnStatement = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ? AND Type = ? AND WarningAck = ?");
+            PreparedStatement WarnStatement = self.connection.prepareStatement("SELECT * FROM lolbans_punishments WHERE UUID = ? AND Type = ? AND WarningAck = ?");
             WarnStatement.setString(1, event.getUniqueId().toString());
             WarnStatement.setInt(2, PunishmentType.PUNISH_WARN.ordinal());
             WarnStatement.setBoolean(3, false);
@@ -162,7 +154,7 @@ public class ConnectionListeners implements Listener
                 if (NameMatch.find() || IPMatch.find() || HostMatch.find())
                 {
                     // FIXME: AND (Expiry IS NULL OR Expiry >= NOW()) -- how do we handle expired regex bans?
-                    PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM RegexBans WHERE id = ?"); // AND Appealed = FALSE OR (Expiry IS NOT NULL >= NOW())
+                    PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM lolbans_regexbans WHERE id = ?"); // AND Appealed = FALSE OR (Expiry IS NOT NULL >= NOW())
                     ps.setInt(1, (Integer)pair.getKey());
                     ResultSet result = ps.executeQuery();
 
@@ -274,7 +266,7 @@ public class ConnectionListeners implements Listener
                     event.disallow(Result.KICK_OTHER, WarnKickMessage);
 
                     // Now accept the warning
-                    PreparedStatement pst3 = self.connection.prepareStatement("UPDATE Punishments SET WarningAck = true WHERE UUID = ?");
+                    PreparedStatement pst3 = self.connection.prepareStatement("UPDATE lolbans_punishments SET WarningAck = true WHERE UUID = ?");
                     pst3.setString(1, event.getUniqueId().toString());
                     pst3.executeUpdate();
                 }
@@ -316,19 +308,6 @@ public class ConnectionListeners implements Listener
                 }
 
                 // TODO: Send to discord?
-                if (DiscordUtil.GetDiscord().UseSimplifiedMessage)
-                {
-                    DiscordUtil.GetDiscord().SendFormatted(Messages.Translate("Discord.KickedAltAccount", 
-                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                        {{
-                            put("", "");
-                        }}
-                    ));
-                }
-                else
-                {
-
-                }
             }
 
             // if (LinkMessages == null)

@@ -8,13 +8,11 @@ import org.bukkit.plugin.Plugin;
 import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
-import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
-import com.ristexsoftware.lolbans.Utils.PunishID;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -77,7 +75,7 @@ public class RegexUnbanCommand extends RistExCommandAsync
             try 
             {
                 rx = Pattern.compile(Regex);
-                ps = self.connection.prepareStatement("SELECT * FROM RegexBans WHERE Regex = ? OR PunishID = ? AND Appealed = false LIMIT 1");
+                ps = self.connection.prepareStatement("SELECT * FROM lolbans_regexbans WHERE Regex = ? OR PunishID = ? AND Appealed = FALSE LIMIT 1");
                 ps.setString(1, rx.pattern());
                 ps.setString(2, rx.pattern());
             }
@@ -97,7 +95,7 @@ public class RegexUnbanCommand extends RistExCommandAsync
             }
 
             int i = 1;
-            ps = self.connection.prepareStatement("UPDATE RegexBans SET AppealReason = ?, AppelleeName = ?, AppelleeUUID = ?, AppealTime = CURRENT_TIMESTAMP, Appealed = TRUE WHERE id = ?");
+            ps = self.connection.prepareStatement("UPDATE lolbans_regexbans SET AppealReason = ?, AppelleeName = ?, AppelleeUUID = ?, AppealTime = CURRENT_TIMESTAMP, Appealed = TRUE WHERE id = ?");
             ps.setString(i++, reason);
             ps.setString(i++, sender.getName());
             ps.setString(i++, sender instanceof Player ? ((Player)sender).getUniqueId().toString() : "CONSOLE");

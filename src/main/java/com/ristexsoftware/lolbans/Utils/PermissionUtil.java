@@ -1,4 +1,4 @@
-package com.ristexsoftware.lolbans.Utils; // Zachery's package owo
+package com.ristexsoftware.lolbans.Utils;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;

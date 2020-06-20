@@ -1,36 +1,15 @@
 package com.ristexsoftware.lolbans.Objects;
 
-import java.net.InetAddress;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
-import org.bukkit.entity.Player;
-
-import inet.ipaddr.AddressStringException;
-import inet.ipaddr.IPAddress;
-import inet.ipaddr.IPAddressString;
-import inet.ipaddr.IncompatibleAddressException;
-
-import org.bukkit.Material;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.InvalidConfigurationException;
 
 import com.google.common.net.InetAddresses;
 import com.ristexsoftware.lolbans.Main;
@@ -39,6 +18,21 @@ import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Player;
+
+import inet.ipaddr.IPAddress;
+import inet.ipaddr.IPAddressString;
 
 public class User {
     static Main self = Main.getPlugin(Main.class);
@@ -226,7 +220,7 @@ public class User {
      */
     public static boolean IsPlayerInWave(OfflinePlayer user) {
         try {
-            PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM BanWave WHERE UUID = ? LIMIT 1");
+            PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM lolbans_banwave WHERE UUID = ? LIMIT 1");
             ps.setString(1, user.getUniqueId().toString());
 
             return ps.executeQuery().next();
@@ -245,7 +239,7 @@ public class User {
     public static boolean IsPlayerBanned(OfflinePlayer user) {
         try {
             PreparedStatement ps = self.connection.prepareStatement(
-                    "SELECT 1 FROM Punishments WHERE UUID = ? AND Type = 0 AND Appealed = FALSE LIMIT 1");
+                    "SELECT 1 FROM lolbans_punishments WHERE UUID = ? AND Type = 0 AND Appealed = FALSE LIMIT 1");
             ps.setString(1, user.getUniqueId().toString());
 
             return ps.executeQuery().next();
@@ -263,9 +257,8 @@ public class User {
      */
     public static boolean StaffHasHistory(CommandSender user) {
         try {
-            // TODO: Update this.
             PreparedStatement ps = self.connection
-                    .prepareStatement("SELECT * FROM Punishments WHERE ExecutionerUUID = ? LIMIT 1");
+                    .prepareStatement("SELECT * FROM lolbans_punishments WHERE ArbiterUUID = ? LIMIT 1");
 
             if (user instanceof Player) {
                 OfflinePlayer user2 = (OfflinePlayer) user;
@@ -290,7 +283,7 @@ public class User {
     public static boolean IsPlayerMuted(OfflinePlayer user) {
         try {
             PreparedStatement ps = self.connection.prepareStatement(
-                    "SELECT 1 FROM Punishments WHERE UUID = ? AND Type = 1 AND Appealed = false LIMIT 1");
+                    "SELECT 1 FROM lolbans_punishments WHERE UUID = ? AND Type = 1 AND Appealed = false LIMIT 1");
             ps.setString(1, user.getUniqueId().toString());
 
             return ps.executeQuery().next();
@@ -317,9 +310,9 @@ public class User {
         // Now we move to more expensive operations.
         try {
 
-            // Punishments table
+            // lolbans_punishments table
             PreparedStatement bplay = self.connection.prepareStatement(
-                    "SELECT UUID FROM Punishments WHERE PunishID = ? OR PlayerName = ? OR UUID = ? LIMIT 1");
+                    "SELECT UUID FROM lolbans_punishments WHERE PunishID = ? OR PlayerName = ? OR UUID = ? LIMIT 1");
             bplay.setString(1, PunishID);
             bplay.setString(2, PunishID);
             bplay.setString(3, PunishID);
@@ -334,9 +327,9 @@ public class User {
                 }
             }
 
-            // Users table
+            // lolbans_users table
             PreparedStatement ps = self.connection
-                    .prepareStatement("SELECT UUID FROM Users WHERE PlayerName = ? OR UUID = ? LIMIT 1");
+                    .prepareStatement("SELECT UUID FROM lolbans_users WHERE PlayerName = ? OR UUID = ? LIMIT 1");
             ps.setString(1, PunishID);
             ps.setString(2, PunishID);
 
@@ -371,7 +364,7 @@ public class User {
             return new IPAddressString(any).getAddress();
 
         try {
-            PreparedStatement ps = self.connection.prepareStatement("SELECT IPAddress FROM Users WHERE PlayerName = ?");
+            PreparedStatement ps = self.connection.prepareStatement("SELECT IPAddress FROM lolbans_users WHERE PlayerName = ?");
             ps.setString(1, any);
 
             Optional<ResultSet> ores = DatabaseUtil.ExecuteLater(ps).get();

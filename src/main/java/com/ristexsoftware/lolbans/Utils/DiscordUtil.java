@@ -8,14 +8,13 @@ import java.util.List;
 import java.util.TreeMap;
 
 import com.mrpowergamerbr.temmiewebhook.DiscordEmbed;
-import com.mrpowergamerbr.temmiewebhook.DiscordMessage;
-import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
 import com.mrpowergamerbr.temmiewebhook.DiscordEmbed.DiscordEmbedBuilder;
+import com.mrpowergamerbr.temmiewebhook.DiscordMessage;
 import com.mrpowergamerbr.temmiewebhook.DiscordMessage.DiscordMessageBuilder;
+import com.mrpowergamerbr.temmiewebhook.TemmieWebhook;
 import com.mrpowergamerbr.temmiewebhook.embed.FieldEmbed;
 import com.mrpowergamerbr.temmiewebhook.embed.FooterEmbed;
 import com.mrpowergamerbr.temmiewebhook.embed.ThumbnailEmbed;
-import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.Punishment;
 
 import org.bukkit.OfflinePlayer;
@@ -106,7 +105,7 @@ public class DiscordUtil
 			if (Variables.containsKey("PunishID"))
 				Fields.add(FieldEmbed.builder().name("PunishID").value("#" + Variables.get("PunishID")).build());
 			if (Variables.containsKey("Expiry"))
-				Fields.add(FieldEmbed.builder().name("Expires").value(Variables.get("Expiry")).build());
+				Fields.add(FieldEmbed.builder().name("Expires").value(TimeUtil.Expires(Timestamp.valueOf(Variables.get("Expiry")))).build());
 			if (Variables.containsKey("ReportType"))
 				Fields.add(FieldEmbed.builder().name("Type").value(Variables.get("ReportType")).build());
 

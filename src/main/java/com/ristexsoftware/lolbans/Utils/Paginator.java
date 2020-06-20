@@ -1,5 +1,4 @@
-package com.ristexsoftware.lolbans.Utils; // Zachery's package owo
-
+package com.ristexsoftware.lolbans.Utils; 
 import java.lang.Math;
 import java.util.List;
 import java.util.ArrayList;

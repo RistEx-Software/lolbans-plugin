@@ -1,32 +1,33 @@
 package com.ristexsoftware.lolbans.Commands.Ban;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.TreeMap;
+
+import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
+import com.ristexsoftware.lolbans.Objects.User;
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
+import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
+import com.ristexsoftware.lolbans.Utils.DiscordUtil;
+import com.ristexsoftware.lolbans.Utils.IPBanUtil;
+import com.ristexsoftware.lolbans.Utils.Messages;
+import com.ristexsoftware.lolbans.Utils.PermissionUtil;
+import com.ristexsoftware.lolbans.Utils.PunishID;
+import com.ristexsoftware.lolbans.Utils.TimeUtil;
+import com.ristexsoftware.lolbans.Utils.Timing;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.IPBanUtil;
-import com.ristexsoftware.lolbans.Utils.PunishID;
-import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
-import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
-import com.ristexsoftware.lolbans.Utils.DiscordUtil;
-import com.ristexsoftware.lolbans.Utils.TimeUtil;
-import com.ristexsoftware.lolbans.Utils.Timing;
-import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
-import com.ristexsoftware.lolbans.Objects.User;
-import com.ristexsoftware.lolbans.Utils.Messages;
-import com.ristexsoftware.lolbans.Utils.PermissionUtil;
-
-import java.sql.*;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.TreeMap;
-
 import inet.ipaddr.HostName;
 import inet.ipaddr.IPAddress;
-import inet.ipaddr.IPAddressString;
 
 // FIXME: Hostname-based bans?
 
@@ -167,7 +168,7 @@ public class IPBanCommand extends RistExCommandAsync
 			String banid = PunishID.GenerateID(DatabaseUtil.GenID("IPBans"));
 
 			int i = 1;
-			PreparedStatement pst = self.connection.prepareStatement("INSERT INTO IPBans (IPAddress, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?)");
+			PreparedStatement pst = self.connection.prepareStatement("INSERT INTO lolbans_ipbans (IPAddress, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?)");
 			pst.setString(i++, thingy.toString());
 			pst.setString(i++, reason);
 			pst.setString(i++, sender.getName());
@@ -177,7 +178,6 @@ public class IPBanCommand extends RistExCommandAsync
 			DatabaseUtil.ExecuteUpdate(pst);
 
 			// Format our messages.
-			// FIXME: Is this even the right message?
 			String IPBanAnnouncement = Messages.Translate("IPBan.BanAnnouncement",
 				new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
 				{{
@@ -202,7 +202,7 @@ public class IPBanCommand extends RistExCommandAsync
 				
 				// FIXME: Do we use a custom message? what's this func even doing?
 				// "KickPlayer" sends the inputed strings into the function in the User class
-				// there are multiple "KickPlayer" funcs but this one is for IPBans (hence why the IP is on the end)
+				// there are multiple "KickPlayer" funcs but this one is for lolbans_ipbans (hence why the IP is on the end)
 				// Once the func gets the inputs, it'll kick the player with a message specified in the config
 				if (thingy.contains(hn.asAddress()))
 				{

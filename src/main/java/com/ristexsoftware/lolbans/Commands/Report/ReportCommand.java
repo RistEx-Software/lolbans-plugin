@@ -84,7 +84,7 @@ public class ReportCommand extends RistExCommand
                 return User.PlayerOnlyVariableMessage("Report.ReasonRequired", sender, username, false);
 
             // Make sure they're not already reported by this user.
-            PreparedStatement ps = self.connection.prepareStatement("SELECT 1 FROM Reports WHERE DefendantUUID = ? AND PlaintiffUUID = ? AND NOT Closed = True");
+            PreparedStatement ps = self.connection.prepareStatement("SELECT 1 FROM lolbans_reports WHERE DefendantUUID = ? AND PlaintiffUUID = ? AND NOT Closed = True");
             ps.setString(1, u.getUniqueId().toString());
             ps.setString(2, ((Player)sender).getUniqueId().toString());
 
@@ -98,7 +98,7 @@ public class ReportCommand extends RistExCommand
             String ReportID = PunishID.GenerateID(DatabaseUtil.GenID("Reports"));
 
             int i = 1;
-            ps = self.connection.prepareStatement("INSERT INTO Reports (PlaintiffUUID, PlaintiffName, DefendantUUID, DefendantName, Reason, PunishID, Type) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            ps = self.connection.prepareStatement("INSERT INTO lolbans_reports (PlaintiffUUID, PlaintiffName, DefendantUUID, DefendantName, Reason, PunishID, Type) VALUES (?, ?, ?, ?, ?, ?, ?)");
             ps.setString(i++, ((Player)sender).getUniqueId().toString());
             ps.setString(i++, ((Player)sender).getName());
             ps.setString(i++, u.getUniqueId().toString());

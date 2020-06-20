@@ -30,6 +30,9 @@ import org.bukkit.permissions.Permission;
  * too fucking easy for me. Thanks md_5.
  */
 
+ /**
+ * @deprecated This class can no longer be used due to later Java versions and is due for removal
+ */
 class LolbansPluginManager implements PluginManager
 {
 	public Hacks lolhacks;

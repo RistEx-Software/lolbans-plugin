@@ -63,11 +63,11 @@ public class ReportHistoryCommand extends RistExCommand
             // There are two ways this command can work, it can either specify a player, or show all reports.
             PreparedStatement pst = null;
             if (args.length < 1 || args.length > 0 && NumberUtil.isInteger(a.get("PlayerOrPage")))
-                pst = self.connection.prepareStatement("SELECT * FROM Reports ORDER BY Closed, TimeAdded");
+                pst = self.connection.prepareStatement("SELECT * FROM lolbans_reports ORDER BY Closed, TimeAdded");
             if (args.length > 0 && a.get("PlayerOrPage").length() > 2 && !NumberUtil.isInteger(a.get("PlayerOrPage")))
             {
                 OfflinePlayer target = User.FindPlayerByAny(a.get("PlayerOrPage"));
-                pst = self.connection.prepareStatement("SELECT * FROM Reports WHERE DefendantUUID = ?");
+                pst = self.connection.prepareStatement("SELECT * FROM lolbans_reports WHERE DefendantUUID = ?");
                 pst.setString(1, target.getUniqueId().toString());
             }
 

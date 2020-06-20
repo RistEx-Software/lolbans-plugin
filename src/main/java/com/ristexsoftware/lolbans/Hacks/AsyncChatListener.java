@@ -42,7 +42,7 @@ public class AsyncChatListener implements Listener {
 
             // Otherwise check if they're individually muted.
             PreparedStatement MuteStatement = self.connection.prepareStatement(
-                    "SELECT * FROM Punishments WHERE UUID = ? AND Type = ? AND (Expiry IS NULL OR Expiry >= NOW()) AND Appealed = False");
+                    "SELECT * FROM lolbans_punishments WHERE UUID = ? AND Type = ? AND (Expiry IS NULL OR Expiry >= NOW()) AND Appealed = False");
             MuteStatement.setString(1, event.getPlayer().getUniqueId().toString());
             MuteStatement.setInt(2, PunishmentType.PUNISH_MUTE.ordinal());
 

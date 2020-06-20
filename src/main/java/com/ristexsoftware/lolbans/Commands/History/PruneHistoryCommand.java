@@ -41,9 +41,9 @@ public class PruneHistoryCommand extends RistExCommandAsync
 
     private boolean HandlePunishmentID(CommandSender sender, String searchable, String[] args) throws SQLException, InterruptedException, ExecutionException
     {
-        PreparedStatement RegexStatement = self.connection.prepareStatement("SELECT * FROM RegexBans WHERE PunishID = ?");
-        PreparedStatement IPBanStatement = self.connection.prepareStatement("SELECT * FROM IPBans WHERE PunishID = ?");
-        PreparedStatement Reports = self.connection.prepareStatement("SELECT * FROM Reports WHERE PunishID = ?");
+        PreparedStatement RegexStatement = self.connection.prepareStatement("SELECT * FROM lolbans_regexbans WHERE PunishID = ?");
+        PreparedStatement IPBanStatement = self.connection.prepareStatement("SELECT * FROM lolbans_ipbans WHERE PunishID = ?");
+        PreparedStatement Reports = self.connection.prepareStatement("SELECT * FROM lolbans_reports WHERE PunishID = ?");
         
         Future<Optional<ResultSet>> regexres = DatabaseUtil.ExecuteLater(RegexStatement);
         Future<Optional<ResultSet>> ipbansres = DatabaseUtil.ExecuteLater(IPBanStatement);
@@ -66,7 +66,7 @@ public class PruneHistoryCommand extends RistExCommandAsync
             if (ores.isPresent())
             {
                 ResultSet res = ores.get();
-                PreparedStatement RegexDelete = self.connection.prepareStatement("DELETE FROM RegexBans WHERE id = ?");
+                PreparedStatement RegexDelete = self.connection.prepareStatement("DELETE FROM lolbans_regexbans WHERE id = ?");
 
                 while (res.next())
                 {
@@ -85,7 +85,7 @@ public class PruneHistoryCommand extends RistExCommandAsync
 			if (ores.isPresent())
             {
                 ResultSet res = ores.get();
-                PreparedStatement IPBanDelete = self.connection.prepareStatement("DELETE FROM IPBans WHERE id = ?");
+                PreparedStatement IPBanDelete = self.connection.prepareStatement("DELETE FROM lolbans_ipbans WHERE id = ?");
 
                 while (res.next())
                 {
@@ -104,7 +104,7 @@ public class PruneHistoryCommand extends RistExCommandAsync
 			if (ores.isPresent())
             {
                 ResultSet res = ores.get();
-                PreparedStatement ReportDelete = self.connection.prepareStatement("DELETE FROM Reports WHERE id = ?");
+                PreparedStatement ReportDelete = self.connection.prepareStatement("DELETE FROM lolbans_reports WHERE id = ?");
 
                 while (res.next())
                 {
@@ -126,7 +126,7 @@ public class PruneHistoryCommand extends RistExCommandAsync
         {
             if (cb.contains(thingy)) 
             {
-                PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM IPBans WHERE IPAddress = ? AND TimeAdded >= ?");
+                PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM lolbans_ipbans WHERE IPAddress = ? AND TimeAdded >= ?");
                 pst.setString(1, cb.toString());
                 pst.setTimestamp(2, bantime);
 
@@ -138,7 +138,7 @@ public class PruneHistoryCommand extends RistExCommandAsync
                     return true;
                 }
 
-                PreparedStatement ps = self.connection.prepareStatement("DELETE FROM IPBans WHERE IPAddress = ? AND TimeAdded >= ?");
+                PreparedStatement ps = self.connection.prepareStatement("DELETE FROM lolbans_ipbans WHERE IPAddress = ? AND TimeAdded >= ?");
                 ps.setString(1, cb.toString());
                 ps.setTimestamp(2, bantime);
                 
@@ -152,7 +152,7 @@ public class PruneHistoryCommand extends RistExCommandAsync
 
     private boolean HandlePlayer(CommandSender sender, OfflinePlayer player, Timestamp bantime, String[] args) throws SQLException, ExecutionException, InterruptedException
     {
-		PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ? AND TimePunished >= ?");
+		PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM lolbans_punishments WHERE UUID = ? AND TimePunished >= ?");
         ps.setString(1, player.getUniqueId().toString());
         ps.setTimestamp(2, bantime);
 
@@ -162,7 +162,7 @@ public class PruneHistoryCommand extends RistExCommandAsync
 			ResultSet res = ores.get();
 			if (res.next())
 			{
-				ps = self.connection.prepareStatement("DELETE FROM Punishments WHERE UUID = ? AND TimePunished >= ?");
+				ps = self.connection.prepareStatement("DELETE FROM lolbans_punishments WHERE UUID = ? AND TimePunished >= ?");
                 ps.setString(1, player.getUniqueId().toString());
 				ps.setTimestamp(2, bantime);
 				DatabaseUtil.ExecuteUpdate(ps);
@@ -233,7 +233,7 @@ public class PruneHistoryCommand extends RistExCommandAsync
             else
             {
                 Pattern regex = Pattern.compile(searchable);
-                PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM RegexBans WHERE Regex = ? AND TimeAdded >= ?");
+                PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM lolbans_regexbans WHERE Regex = ? AND TimeAdded >= ?");
                 pst.setString(1, regex.toString());
                 pst.setTimestamp(2, bantime);
 
@@ -243,7 +243,7 @@ public class PruneHistoryCommand extends RistExCommandAsync
                     ResultSet res = ores.get();
                     if (res.next())
                     {
-                        pst = self.connection.prepareStatement("DELETE FROM RegexBans WHERE id = ?");
+                        pst = self.connection.prepareStatement("DELETE FROM lolbans_regexbans WHERE id = ?");
                         DatabaseUtil.ExecuteUpdate(pst);
                         sender.sendMessage("History Cleared.");
                     }

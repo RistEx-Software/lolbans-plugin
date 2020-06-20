@@ -42,7 +42,7 @@ public class IPBanUtil
 						// They're a banned cidr, query for the reason and kick them.
 						if (cb.contains(hn.asAddressString()))
 						{
-							PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM IPBans WHERE IPAddress = ? AND Appealed = false");
+							PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM lolbans_ipbans WHERE IPAddress = ? AND Appealed = false");
 							pst.setString(1, cb.toString());
 			
 							ResultSet res = pst.executeQuery();
@@ -88,7 +88,7 @@ public class IPBanUtil
 				try
 				{
 					// Now query the database for ALL ip addresses and we have to check each one.
-					ResultSet results = self.connection.prepareStatement("SELECT UUID,IPAddress FROM Punishments WHERE Type = 0 AND Appealed = False").executeQuery();
+					ResultSet results = self.connection.prepareStatement("SELECT UUID,IPAddress FROM lolbans_punishments WHERE Type = 0 AND Appealed = False").executeQuery();
 
 					// Iterate the results and check to see if anyone matches.
 					while (results.next())

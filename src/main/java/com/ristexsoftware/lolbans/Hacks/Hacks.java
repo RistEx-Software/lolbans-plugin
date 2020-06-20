@@ -5,14 +5,11 @@ import java.util.Arrays;
 import com.ristexsoftware.lolbans.Utils.ReflectionUtil;
 
 import org.bukkit.Bukkit;
-import io.papermc.lib.PaperLib;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -23,7 +20,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;
-
+import io.papermc.lib.PaperLib;
+/**
+ * @deprecated This class can no longer be used due to later Java versions and is due for removal
+ */
 public class Hacks implements Listener
 {
     private static boolean ReflectedInjected = true;

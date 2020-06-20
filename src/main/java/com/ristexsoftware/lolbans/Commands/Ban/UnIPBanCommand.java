@@ -1,26 +1,5 @@
 package com.ristexsoftware.lolbans.Commands.Ban;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
-import inet.ipaddr.HostName;
-import inet.ipaddr.IPAddressString;
-
-import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
-import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
-import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
-import com.ristexsoftware.lolbans.Utils.DiscordUtil;
-import com.ristexsoftware.lolbans.Utils.IPBanUtil;
-import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
-import com.ristexsoftware.lolbans.Objects.User;
-import com.ristexsoftware.lolbans.Utils.Messages;
-import com.ristexsoftware.lolbans.Utils.PermissionUtil;
-import com.ristexsoftware.lolbans.Utils.PunishID;
-import com.ristexsoftware.lolbans.Utils.Timing;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,6 +7,26 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
+
+import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
+import com.ristexsoftware.lolbans.Objects.User;
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
+import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
+import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
+import com.ristexsoftware.lolbans.Utils.IPBanUtil;
+import com.ristexsoftware.lolbans.Utils.Messages;
+import com.ristexsoftware.lolbans.Utils.PermissionUtil;
+import com.ristexsoftware.lolbans.Utils.PunishID;
+import com.ristexsoftware.lolbans.Utils.Timing;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
+import inet.ipaddr.HostName;
+import inet.ipaddr.IPAddressString;
 
 public class UnIPBanCommand extends RistExCommandAsync
 {
@@ -84,7 +83,7 @@ public class UnIPBanCommand extends RistExCommandAsync
 
 			if (PunishID.ValidateID(CIDR.replaceAll("#", "")))
 			{
-				ps = self.connection.prepareStatement("SELECT * FROM IPBans WHERE PunishID = ? AND Appealed = false");
+				ps = self.connection.prepareStatement("SELECT * FROM lolbans_ipbans WHERE PunishID = ? AND Appealed = false");
 				ps.setString(1, CIDR);
 				Optional<ResultSet> ores = DatabaseUtil.ExecuteLater(ps).get();
 				if (!ores.isPresent())
@@ -105,7 +104,7 @@ public class UnIPBanCommand extends RistExCommandAsync
             res.next();
 
             int i = 1;
-            ps = self.connection.prepareStatement("UPDATE IPBans SET AppealReason = ?, AppelleeName = ?, AppelleeUUID = ?, AppealTime = CURRENT_TIMESTAMP, Appealed = TRUE WHERE id = ?");
+            ps = self.connection.prepareStatement("UPDATE lolbans_ipbans SET AppealReason = ?, AppelleeName = ?, AppelleeUUID = ?, AppealTime = CURRENT_TIMESTAMP, Appealed = TRUE WHERE id = ?");
             ps.setString(i++, reason);
             ps.setString(i++, sender.getName());
             ps.setString(i++, sender instanceof Player ? ((Player)sender).getUniqueId().toString() : "CONSOLE");

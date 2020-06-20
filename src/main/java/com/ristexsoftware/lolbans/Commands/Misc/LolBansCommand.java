@@ -8,6 +8,7 @@ import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.ImportUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
+import com.ristexsoftware.lolbans.Utils.Statistics;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -54,15 +55,16 @@ public class LolBansCommand extends RistExCommandAsync {
         } else if (args[0].equalsIgnoreCase("import")) {
             if (args.length > 1) {
                 if (args[1].equalsIgnoreCase("essentials")) {
-                    ImportUtil.Essentials(sender);
-                } else if(args[1].equalsIgnoreCase("cancel")) {
-                    if(ImportUtil.ActiveTask()) {
+                    ImportUtil.importEssentials(sender);
+                } else if (args[1].equalsIgnoreCase("litebans")) {
+                    ImportUtil.importLitebans(sender);
+                } else if (args[1].equalsIgnoreCase("cancel")) {
+                    if (ImportUtil.ActiveTask()) {
                         ImportUtil.Cancel();
                         sender.sendMessage(Messages.Prefix + ChatColor.GREEN + "Cancelled active import task!");
                     }
                 }
             }
-
         }
         return true;
     }

@@ -76,4 +76,4 @@ permissions:
   lolbans.mute.bypass:
     description: Able to bypass mutes
   lolbans.reload:
-    description: Reload plugin.yml and messages.yml
+    description: Reload plugin.yml and messages.yml or import data

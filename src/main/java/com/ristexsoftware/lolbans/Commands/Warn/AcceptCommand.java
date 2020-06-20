@@ -70,7 +70,7 @@ public class AcceptCommand extends RistExCommand
                 u.SetWarned(false, null, null);
                 // Preapre a statement
                 PreparedStatement pst3 = self.connection
-                        .prepareStatement("UPDATE Punishments SET WarningAck = true WHERE UUID = ? AND Type = ?");
+                        .prepareStatement("UPDATE lolbans_punishments SET WarningAck = true WHERE UUID = ? AND Type = ?");
                 pst3.setString(1, u.getPlayer().getUniqueId().toString());
                 pst3.setInt(2, PunishmentType.PUNISH_WARN.ordinal());
                 DatabaseUtil.ExecuteUpdate(pst3);

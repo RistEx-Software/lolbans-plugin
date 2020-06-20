@@ -84,7 +84,7 @@ public class StaffRollbackCommand extends RistExCommand
             // We now delete these punishments. Yes, delete.
             // If they are maliciously banning people then those bans are not valid.
             // This may become a config option though.
-            PreparedStatement ps = self.connection.prepareStatement("DELETE FROM Punishments WHERE ArbiterUUID = ? AND TimePunished >= ?");
+            PreparedStatement ps = self.connection.prepareStatement("DELETE FROM lolbans_punishments WHERE ArbiterUUID = ? AND TimePunished >= ?");
             ps.setString(1, u.getUniqueId().toString());
             ps.setTimestamp(2, starttime);
             Future<Integer> fores = DatabaseUtil.ExecuteUpdate(ps);

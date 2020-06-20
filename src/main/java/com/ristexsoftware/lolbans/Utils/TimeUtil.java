@@ -5,33 +5,6 @@ package com.ristexsoftware.lolbans.Utils;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
-/*
-
-        _____
-       |    ||
-       |\___/|
-       |     |
-       |     |
-       |     |
-       |     |
-       |     |
-       |     |
-   ____||____|____
-  /    |     |     \
- /     |     |    | \
-|      |     |    |  |
-|      |     |    |  |
-|                 |  |
-|                 |  |
-|                    /
-|                   /
- \                 /
-  \               /
-   |             |
-   |             |
-
-*/
-
 import java.util.Optional;
 
 public class TimeUtil

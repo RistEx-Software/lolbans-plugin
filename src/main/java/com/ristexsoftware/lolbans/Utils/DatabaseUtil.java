@@ -35,7 +35,7 @@ public class DatabaseUtil
         try
         {
             // TODO: Support table prefixes?
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Punishments"
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS lolbans_punishments"
                                             +"(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                                             // Player info stuffs
                                             +"UUID VARCHAR(36) NOT NULL,"
@@ -59,11 +59,12 @@ public class DatabaseUtil
                                             +"AppealTime TIMESTAMP NULL,"
                                             // this will just make checking if they're banned or not easier...
                                             +"Appealed BOOLEAN DEFAULT FALSE,"
+                                            +"Silent BOOLEAN DEFAULT FALSE,"
                                             // Used only when type == 3 for warnings.
                                             +"WarningAck BOOLEAN DEFAULT FALSE"
                                             +")").execute();
                                             
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Users "
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS lolbans_users "
                                             +"(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                                             +"UUID VARCHAR(36) NOT NULL,"
                                             +"PlayerName VARCHAR(17),"
@@ -109,7 +110,7 @@ public class DatabaseUtil
                                             +"Expiry TIMESTAMP NULL"
                                             +")").execute();
             //self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS LinkConfirmations (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, Executioner varchar(17) NOT NULL, LinkID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NOT NULL)").execute();
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS Reports (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, PlaintiffUUID varchar(36) NOT NULL, PlaintiffName varchar(17) NOT NULL, DefendantUUID varchar(36) NOT NULL, DefendantName varchar(17) NOT NULL, Reason TEXT NOT NULL, JudgeUUID varchar(36) NULL, JudgeName varchar(17) NULL, Type varchar(32) NOT NULL, CloseReason TEXT NULL, Closed boolean DEFAULT FALSE NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PunishID varchar(20) NOT NULL)").execute();
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS lolbans_reports (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, PlaintiffUUID varchar(36) NOT NULL, PlaintiffName varchar(17) NOT NULL, DefendantUUID varchar(36) NOT NULL, DefendantName varchar(17) NOT NULL, Reason TEXT NOT NULL, JudgeUUID varchar(36) NULL, JudgeName varchar(17) NULL, Type varchar(32) NOT NULL, CloseReason TEXT NULL, Closed boolean DEFAULT FALSE NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PunishID varchar(20) NOT NULL)").execute();
             // NOTE: This table compares both minecraft names AND client hostnames against this, not sure yet if this is a good idea or not...
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS RegexBans"
                                             +"(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
@@ -295,7 +296,7 @@ public class DatabaseUtil
                     // lets not do that....
                     int j = 1;
                     PreparedStatement CheckUser = self.connection.
-                    prepareStatement("SELECT id FROM Users WHERE UUID = ?");
+                    prepareStatement("SELECT id FROM lolbans_users WHERE UUID = ?");
                     CheckUser.setString(j++, UUID);
                     ResultSet results = CheckUser.executeQuery();
                     if (results.next() && !results.wasNull())
@@ -307,7 +308,7 @@ public class DatabaseUtil
                     // Preapre a statement
                     int i = 1;
                     PreparedStatement InsertUser = self.connection
-                    .prepareStatement(String.format("INSERT INTO Users (UUID, PlayerName, IPAddress, FirstLogin, LastLogin, TimesConnected, Country, CountryCode) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"));
+                    .prepareStatement(String.format("INSERT INTO lolbans_users (UUID, PlayerName, IPAddress, FirstLogin, LastLogin, TimesConnected, Country, CountryCode) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"));
                     InsertUser.setString(i++, UUID);
                     InsertUser.setString(i++, PlayerName);
                     InsertUser.setString(i++, IPAddress);
@@ -334,9 +335,9 @@ public class DatabaseUtil
 
     /**
      * Update a user record
-     * @param UUID Users current UUID
-     * @param PlayerName Users current player name
-     * @param IPAddress Users current IP address
+     * @param UUID lolbans_users current UUID
+     * @param PlayerName lolbans_users current player name
+     * @param IPAddress lolbans_users current IP address
      * @param LastLogin The timestamp of the last time a user logged in
      * @return True if the update was successful.
      */
@@ -357,7 +358,7 @@ public class DatabaseUtil
                     // This is a fail-safe just incase the table was dropped or the player joined the server BEFORE the plugin was added...
                     // This will ensure they get added to the database no matter what.
                     PreparedStatement CheckUser = self.connection.
-                    prepareStatement(String.format("SELECT id FROM Users WHERE UUID = ?"));
+                    prepareStatement(String.format("SELECT id FROM lolbans_users WHERE UUID = ?"));
                     CheckUser.setString(j++, UUID);
                     ResultSet results = CheckUser.executeQuery();
                     if (!results.next())
@@ -367,7 +368,7 @@ public class DatabaseUtil
                         return true;
                     }
 
-                    PreparedStatement gtc = self.connection.prepareStatement(String.format("SELECT TimesConnected FROM Users WHERE UUID = ?"));
+                    PreparedStatement gtc = self.connection.prepareStatement(String.format("SELECT TimesConnected FROM lolbans_users WHERE UUID = ?"));
                     gtc.setString(1, UUID);
 
                     ResultSet gtc2 = gtc.executeQuery();
@@ -386,7 +387,7 @@ public class DatabaseUtil
                     // Preapre a statement
                     int i = 1;
                     PreparedStatement UpdateUser = self.connection
-                    .prepareStatement(String.format("UPDATE Users SET LastLogin = ?, PlayerName = ?, IPAddress = ?, TimesConnected = ?, Country = ?, CountryCode = ? WHERE UUID = ?"));
+                    .prepareStatement(String.format("UPDATE lolbans_users SET LastLogin = ?, PlayerName = ?, IPAddress = ?, TimesConnected = ?, Country = ?, CountryCode = ? WHERE UUID = ?"));
                     UpdateUser.setTimestamp(i++, LastLogin);
                     UpdateUser.setString(i++, PlayerName);
                     UpdateUser.setString(i++, IPAddress);
@@ -408,5 +409,78 @@ public class DatabaseUtil
         Main.pool.execute(t);
 
         return (Future<Boolean>)t;
+    }
+
+    public static Future<Integer> getPunishmentCount(PunishmentType type)
+    {
+        FutureTask<Integer> t = new FutureTask<>(new Callable<Integer>()
+        {
+            @Override
+            public Integer call()
+            {
+                //This is where you should do your database interaction
+                try 
+                {   if (!(type == PunishmentType.PUNISH_REGEX || type == PunishmentType.PUNISH_IP)) {
+                        PreparedStatement bans = self.connection.prepareStatement("SELECT COUNT(*) FROM lolbans_punishments WHERE Type = ?");
+                        bans.setInt(1, type.ordinal());
+                        ResultSet results = bans.executeQuery();
+                        if (results.next() &&  !results.wasNull()) {
+                            return results.getInt("COUNT(*)");
+                        }
+                    } else if (type == PunishmentType.PUNISH_REGEX) {
+                        PreparedStatement bans = self.connection.prepareStatement("SELECT COUNT(*) FROM RegexBans");
+                        ResultSet results = bans.executeQuery();
+                        if (results.next() &&  !results.wasNull()) {
+                            return results.getInt("COUNT(*)");
+                        }
+                    } else if (type == PunishmentType.PUNISH_IP) {
+                        PreparedStatement bans = self.connection.prepareStatement("SELECT COUNT(*) FROM IPBans");
+                        ResultSet results = bans.executeQuery();
+                        if (results.next() &&  !results.wasNull()) {
+                            return results.getInt("COUNT(*)");
+                        }
+                    }
+                } 
+                catch (Throwable e) 
+                {
+                    e.printStackTrace();
+                    return 0;
+                }
+                return 0;
+            }
+        });
+
+        Main.pool.execute(t);
+
+        return (Future<Integer>)t;
+    }
+
+    public static Future<Integer> getUsersCount()
+    {
+        FutureTask<Integer> t = new FutureTask<>(new Callable<Integer>()
+        {
+            @Override
+            public Integer call()
+            {
+                //This is where you should do your database interaction
+                try {
+                    PreparedStatement users = self.connection.prepareStatement("SELECT COUNT(*) FROM Users");
+                    ResultSet results = users.executeQuery();
+                    if (results.next() &&  !results.wasNull()) {
+                        return results.getInt("COUNT(*)");
+                    }
+                } 
+                catch (Throwable e) 
+                {
+                    e.printStackTrace();
+                    return 0;
+                }
+                return 0;
+            }
+        });
+
+        Main.pool.execute(t);
+
+        return (Future<Integer>)t;
     }
 }

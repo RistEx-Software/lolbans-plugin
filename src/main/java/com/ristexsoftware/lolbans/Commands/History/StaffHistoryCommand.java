@@ -9,6 +9,7 @@ import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
+import com.ristexsoftware.lolbans.Utils.NumberUtil;
 import com.ristexsoftware.lolbans.Utils.Paginator;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
@@ -81,7 +82,7 @@ public class StaffHistoryCommand extends RistExCommand
 
             // Preapre a statement
             // TODO: What about IP bans?
-            PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM Punishments WHERE ExecutionerUUID = ?");
+            PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM lolbans_punishments WHERE ExecutionerUUID = ?");
             pst.setString(1, target.getUniqueId().toString());
 
             ResultSet result = pst.executeQuery();
@@ -90,8 +91,9 @@ public class StaffHistoryCommand extends RistExCommand
 
 
             // The page to use.
-            // TODO: WHat if args[1] is a string not an int?
-            int pageno = args.length > 1 ? Integer.valueOf(args[1]) : 1;
+            int pageno = args.length > 0 ? (args.length > 1 ? (NumberUtil.isInteger(args[1]) ? Integer.valueOf(args[1]) : 0) : NumberUtil.isInteger(args[0]) ? Integer.valueOf(args[0]) : 1 ) : 1;
+            if (pageno == 0)
+                return false;
 
             // We use a do-while loop because we already checked if there was a result above.
             // NYE!... nye..... bye....go to bed bum or what I'll disconnect your inet bye

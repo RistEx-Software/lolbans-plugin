@@ -6,7 +6,7 @@
 
     <groupId>com.ristexsoftware</groupId>
     <artifactId>LolBans</artifactId>
-    <version>0.2-PRE-ALPHA</version>
+    <version>1.0-PRE-ALPHA</version>
     <packaging>jar</packaging>
 
     <name>LolBans</name>
@@ -182,13 +182,6 @@
             <groupId>com.github.seancfoley</groupId>
             <artifactId>ipaddress</artifactId>
             <version>5.1.0</version>
-        </dependency>
-
-        <!-- YAML parsing lib -->
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.21</version>            
         </dependency>
 
         <!-- Paper lib -->

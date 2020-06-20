@@ -51,10 +51,4 @@ public class MojangUtil {
         return null; // "Dead Code" but doesn't compile because you're required to return MojangUser, dumb...
     }
 
-
-    private static String hyphenateUUID(String uuid) {
-        return uuid.replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
-                "$1-$2-$3-$4-$5");
-    }
-
 }

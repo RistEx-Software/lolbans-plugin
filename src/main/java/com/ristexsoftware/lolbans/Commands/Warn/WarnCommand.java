@@ -1,26 +1,25 @@
 package com.ristexsoftware.lolbans.Commands.Warn;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.TreeMap;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
-import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
-import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
+import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
+import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
+import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
-import java.sql.*;
-import java.util.TreeMap;
-import java.util.Map;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 
 public class WarnCommand extends RistExCommand
@@ -90,21 +89,19 @@ public class WarnCommand extends RistExCommand
             if (target.isOnline())
             {
                 String WarnedMessage = Messages.Translate("Warn.WarnedMessage", Variables);
+                User u = Main.USERS.get(target.getUniqueId());
                 User.playSound((Player)target, Main.getPlugin(Main.class).getConfig().getString("WarningSettings.Sound"));
                 if (Main.getPlugin(Main.class).getConfig().getBoolean("WarningSettings.SimpleWarning")) {
                     ((Player) target).sendMessage(WarnedMessage);
-                    return true;
+                } else {
+                    u.SetWarned(true, ((Player) target).getLocation(), WarnedMessage);
+                    u.SendMessage(WarnedMessage);
+                    // Send them a box as well. This will disallow them from sending move events.
+                    // However, client-side enforcement is not guaranteed so we also enforce the
+                    // same thing using the MovementListener, this just helps stop rubberbanding.
+                    u.SpawnBox(true, null);
                 }
-                User u = Main.USERS.get(target.getUniqueId());
-                u.SetWarned(true, ((Player) target).getLocation(), WarnedMessage);
-                u.SendMessage(WarnedMessage);
-
-                // Send them a box as well. This will disallow them from sending move events.
-                // However, client-side enforcement is not guaranteed so we also enforce the
-                // same thing using the MovementListener, this just helps stop rubberbanding.
-                u.SpawnBox(true, null);
             }
-            
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Warn.WarnAnnouncment", Variables));
             DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         }

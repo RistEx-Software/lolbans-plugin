@@ -13,7 +13,6 @@ import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
-import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
 import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
 import com.ristexsoftware.lolbans.Objects.User;
@@ -172,7 +171,7 @@ public class RegexBanCommand extends RistExCommandAsync
                 IsConsoleExectioner = true;
 
             int i = 1;
-            PreparedStatement pst = self.connection.prepareStatement("INSERT INTO RegexBans (Regex, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?)");
+            PreparedStatement pst = self.connection.prepareStatement("INSERT INTO lolbans_regexbans (Regex, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?)");
             pst.setString(i++, regex.pattern());
             pst.setString(i++, reason);
             pst.setString(i++, sender.getName());
@@ -182,7 +181,7 @@ public class RegexBanCommand extends RistExCommandAsync
             pst.executeUpdate();
 
             // Add it to our pattern cache
-            pst = self.connection.prepareStatement("SELECT id FROM RegexBans WHERE PunishID = ?");
+            pst = self.connection.prepareStatement("SELECT id FROM lolbans_regexbans WHERE PunishID = ?");
             pst.setString(1, banid);
             ResultSet rst = pst.executeQuery();
             
@@ -224,10 +223,6 @@ public class RegexBanCommand extends RistExCommandAsync
                 // then disconnect them for matching something.
                 if (NameMatch.find() || IPMatch.find() || HostMatch.find())
                 {
-                    // "KickPlayer" sends the inputed strings into the function in the User class
-                    // there are multiple "KickPlayer" funcs but this one is for IPBans (hence why the IP is on the end)
-                    // Once the func gets the inputs, it'll kick the player with a message specified in the config
-                    // FIXME: Is this message personalized for each banned player to describe what is matched?
                     Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayerBan(sender.getName(), player, banid, reason, TimeUtil.TimestampNow(), bantime), 1L);
                 }
             }

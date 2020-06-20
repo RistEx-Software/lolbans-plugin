@@ -20,8 +20,7 @@ import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.List;
 import java.sql.*;
-// welcome to the history command!
-// the way we do commands in lolbans is uh, i'm not even sure. I just copy/paste and hope it works
+
 public class HistoryCommand extends RistExCommand
 {
     private Main self = (Main)this.getPlugin();
@@ -79,16 +78,16 @@ public class HistoryCommand extends RistExCommand
             // There are two ways this command can work, it can either specify a player, or show all punishments.
             PreparedStatement pst = null;
             if (args.length < 1 || args.length > 0 && NumberUtil.isInteger(a.get("PlayerOrPage")))
-                pst = self.connection.prepareStatement("SELECT * FROM Punishments ORDER BY TimePunished DESC");
+                pst = self.connection.prepareStatement("SELECT * FROM lolbans_punishments ORDER BY TimePunished DESC");
             if (args.length > 0 && a.get("PlayerOrPage").length() > 2 && !NumberUtil.isInteger(a.get("PlayerOrPage")))
             {
                 target = User.FindPlayerByAny(a.get("PlayerOrPage"));
-                pst = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ?");
+                pst = self.connection.prepareStatement("SELECT * FROM lolbans_punishments WHERE UUID = ?");
                 pst.setString(1, target.getUniqueId().toString());
             }
 
             // Preapre a statement
-            // PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM Punishments WHERE UUID = ?");
+            // PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM lolbans_punishments WHERE UUID = ?");
             // pst.setString(1, target.getUniqueId().toString());
 
             ResultSet result = pst.executeQuery();

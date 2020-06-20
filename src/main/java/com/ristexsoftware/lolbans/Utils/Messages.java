@@ -1,4 +1,4 @@
-package com.ristexsoftware.lolbans.Utils; // Zachery's package owo
+package com.ristexsoftware.lolbans.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class Messages
             self.saveResource(TranslationFile, false);
         }
 
-        this.Reload();
+        Reload();
     }
 
     /**

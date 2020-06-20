@@ -1,9 +1,13 @@
 package com.ristexsoftware.lolbans.Hacks;
 
 import java.util.TreeMap;
-import java.util.concurrent.ExecutionException;
+
+import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Objects.User;
+import com.ristexsoftware.lolbans.Utils.Messages;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -11,29 +15,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityEvent;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerCommandSendEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEditBookEvent;
-import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import org.bukkit.inventory.PlayerInventory;
-
-import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Objects.User;
-import com.ristexsoftware.lolbans.Utils.Messages;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
 
 public class PlayerEventListener implements Listener
 {
@@ -82,37 +74,7 @@ public class PlayerEventListener implements Listener
         }
     }
 
-/*     @EventHandler
-    public static void OnPlayerEvent(PlayerEvent event) throws InterruptedException, ExecutionException, InvalidConfigurationException
-    {
-        User u = Main.USERS.get(event.getPlayer().getUniqueId());
-        
-        // Ignore players not warned
-        if (u == null || !u.IsWarn())
-            return;
-            
-        // If they're trying to do literally anything, cancel it.
-        if (event instanceof Cancellable)
-        {
-            // Ignore these events, they're critical to this event working.
-            if (event instanceof PlayerKickEvent || event instanceof PlayerCommandPreprocessEvent || event instanceof PlayerCommandSendEvent)
-                return;
-
-            // Remind the player they're in a warned state.
-            if (event instanceof AsyncPlayerChatEvent || event instanceof PlayerInventory)
-                u.SendMessage(u.GetWarnMessage());
-
-            // Cancel everything else.
-            ((Cancellable)event).setCancelled(true);
-        }
-    } */
-
-    // To ANYONE who has the pleasure of reading the source code of this plugin, i'm sorry.
-    // I'm sorry that you have to read what's below, because it's honestly fucking dumb
-    // and thanks to how the bukkit event API works I can't just register PlayerEvent because
-    // who would do that anyway.........
-    // And thanks to java 11 the hacks that allowed this no longer work! 
-    // Fuck MD_5 and fuck Java
+    // Don't mind this dumb stuff, can't register PlayerEvent or EntityEvent so this is the next best thing!
     @EventHandler
     public static void OnPlayerEvent2(AsyncPlayerChatEvent event) {
         User u = Main.USERS.get(event.getPlayer().getUniqueId());

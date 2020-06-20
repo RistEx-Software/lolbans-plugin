@@ -23,40 +23,33 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.Plugin;
 
-public class BanCommand extends RistExCommandAsync
-{
+public class BanCommand extends RistExCommandAsync {
     private static Main self = Main.getPlugin(Main.class);
 
-    public BanCommand(Plugin owner)
-    {
+    public BanCommand(Plugin owner) {
         super("ban", owner);
         this.setDescription("Ban a player");
         this.setPermission("lolbans.ban");
     }
 
     @Override
-    public void onSyntaxError(CommandSender sender, String label, String[] args) 
-    {
-        try 
-        {
+    public void onSyntaxError(CommandSender sender, String label, String[] args) {
+        try {
             sender.sendMessage(Messages.InvalidSyntax);
-            sender.sendMessage(Messages.Translate("Syntax.Ban", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-        }
-        catch (InvalidConfigurationException e)
-        {
+            sender.sendMessage(
+                    Messages.Translate("Syntax.Ban", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+        } catch (InvalidConfigurationException e) {
             e.printStackTrace();
             sender.sendMessage(Messages.ServerError);
         }
     }
 
     @Override
-    public boolean Execute(CommandSender sender, String label, String[] args)
-    {
+    public boolean Execute(CommandSender sender, String label, String[] args) {
         if (!PermissionUtil.Check(sender, "lolbans.ban"))
             return User.PermissionDenied(sender, "lolbans.ban");
-        
-        try 
-        {
+
+        try {
             Timing t = new Timing();
 
             // /ban [-s, -o] <PlayerName> <Time|*> <Reason>
@@ -85,27 +78,29 @@ public class BanCommand extends RistExCommandAsync
             if (ow && !sender.hasPermission("lolbans.ban.overwrite"))
                 return User.PermissionDenied(sender, "lolbans.ban.overwrite");
             else if (ow) {
-                User.removePunishment(PunishmentType.PUNISH_BAN, sender, target, "Overwritten by #" + punish.GetPunishmentID(), silent);
+                User.removePunishment(PunishmentType.PUNISH_BAN, sender, target,
+                        "Overwritten by #" + punish.GetPunishmentID(), silent);
             }
 
             if (User.IsPlayerBanned(target) && !ow)
                 return User.PlayerOnlyVariableMessage("Ban.PlayerIsBanned", sender, target.getName(), true);
 
             if (bantime == null && !PermissionUtil.Check(sender, "lolbans.ban.perm"))
-                return User.PermissionDenied(sender, "lolbans.ban.perm"); 
-            
-            if (bantime != null && TimeUtil.ParseToTimestamp(a.get("TimePeriod")).getTime() > User.getTimeGroup(sender).getTime())
-                return User.PermissionDenied(sender, "lolbans.maxtime."+a.get("TimePeriod"));
+                return User.PermissionDenied(sender, "lolbans.ban.perm");
+
+            if (bantime != null
+                    && TimeUtil.ParseToTimestamp(a.get("TimePeriod")).getTime() > User.getTimeGroup(sender).getTime())
+                return User.PermissionDenied(sender, "lolbans.maxtime." + a.get("TimePeriod"));
 
             punish.Commit(sender);
 
             // Kick the player first, they're officially banned.
             if (target.isOnline())
-                Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayer(punish) , 1L);
-            
+                Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayer(punish), 1L);
+
             // Format our messages.
-            Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                {{
+            Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                {
                     put("player", punish.GetPlayerName());
                     put("reason", punish.GetReason());
                     put("arbiter", punish.GetExecutionerName());
@@ -113,14 +108,13 @@ public class BanCommand extends RistExCommandAsync
                     put("expiry", bantime == null ? "" : punish.GetExpiryString());
                     put("silent", Boolean.toString(silent));
                     put("appealed", Boolean.toString(punish.GetAppealed()));
-                }};
+                }
+            };
 
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Ban.BanAnnouncement", Variables));
             DiscordUtil.GetDiscord().SendDiscord(punish, silent);
             t.Finish(sender);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             sender.sendMessage(Messages.ServerError);
         }

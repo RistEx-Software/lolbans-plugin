@@ -65,7 +65,7 @@ public class BanWaveCommand extends RistExCommand
             String banid = PunishID.GenerateID(DatabaseUtil.GenID("BanWave"));
                 
             int i = 1;
-            PreparedStatement pst = self.connection.prepareStatement("INSERT INTO BanWave (UUID, PlayerName, IPAddress, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement pst = self.connection.prepareStatement("INSERT INTO lolbans_banwave (UUID, PlayerName, IPAddress, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
             pst.setString(i++, target.getUniqueId().toString());
             pst.setString(i++, target.getName());
             pst.setString(i++, target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN");
@@ -126,7 +126,7 @@ public class BanWaveCommand extends RistExCommand
         try
         {
             // God forbid any fucking thing does `return this;` so we can chain calls together like a builder. 
-            PreparedStatement fuckingdumb = self.connection.prepareStatement("DELETE FROM BanWave WHERE UUID = ?");
+            PreparedStatement fuckingdumb = self.connection.prepareStatement("DELETE FROM lolbans_banwave WHERE UUID = ?");
             fuckingdumb.setString(1, target.getUniqueId().toString());
             DatabaseUtil.ExecuteUpdate(fuckingdumb);
 
