@@ -61,7 +61,7 @@ public class Punishment
      * @param Expiry When the punishment expires (if applicable, null if permanent)
      * @throws SQLException If it cannot communicate with the SQL database
      */
-    public Punishment(PunishmentType Type, CommandSender sender, OfflinePlayer target, String Reason, Timestamp Expiry) throws SQLException
+    public Punishment(PunishmentType Type, CommandSender sender, OfflinePlayer target, String Reason, Timestamp Expiry, Boolean silent) throws SQLException
     {
         // Not supported yet, will be in the future.
 		if (Type == PunishmentType.PUNISH_REGEX || Type == PunishmentType.PUNISH_IP)
@@ -75,6 +75,7 @@ public class Punishment
         this.IPAddress = target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN";
         this.Reason = Reason;
         this.Expiry = Expiry;
+        this.silent = silent;
         
         if (sender instanceof Player)
             this.Executioner = (OfflinePlayer)sender;
@@ -93,12 +94,7 @@ public class Punishment
                 throw new UnknownError("Unknown Punishment Type \"" + Type.DisplayName() + "\" for " + target.getName() + " " + Reason);
         }
     }
-    
-    public Punishment(PunishmentType Type, CommandSender sender, OfflinePlayer target, String Reason, Timestamp Expiry, Boolean appealed) throws SQLException {
-        Punishment pun = new Punishment(Type, sender, target, Reason, Expiry);
-        this.Appealed = appealed;
-        pun.Commit(sender);
-    }
+
 
     /**
      * Find a punishment based on it's ID
@@ -132,6 +128,7 @@ public class Punishment
                     p.AppealReason = res.getString("AppealReason");
                     p.Appealed = res.getBoolean("Appealed");
                     p.WarningAcknowledged = res.getBoolean("WarningAck");
+                    p.silent = res.getBoolean("Silent");
 
                     // Find players now.
                     p.player = Bukkit.getOfflinePlayer(p.uuid);
@@ -235,7 +232,9 @@ public class Punishment
                                                                     +"AppelleeUUID = ?,"
                                                                     +"AppealTime = ?,"
                                                                     +"Appealed = ?,"
-                                                                    +"WarningAck = ? WHERE id = ?");
+                                                                    +"Silent = ?,"
+                                                                    +"WarningAck = ? "
+                                                                    +"WHERE id = ?");
                         InsertBan.setString(i++, me.uuid.toString()); // UUID
                         InsertBan.setString(i++, me.PlayerName); // PlayerName
                         InsertBan.setString(i++, me.IPAddress); // IP Address
@@ -245,20 +244,20 @@ public class Punishment
                         InsertBan.setString(i++, me.PID); // PunishID
                         InsertBan.setTimestamp(i++, Expiry); // Expiry
                         InsertBan.setInt(i++, Type.ordinal());
-                        // TimePunished = ?, AppealReason = ?, AppealStaff = ?, AppealUUID = ?, AppealTime = ?, Appealed = ?, WarningAck = ? WHERE id = ?
                         InsertBan.setTimestamp(i++, me.TimePunished); // TimePunished
                         InsertBan.setString(i++, me.AppealReason); // AppealReason 
                         InsertBan.setString(i++, me.IsConsoleAppealer ? "CONSOLE" : me.AppealStaff.getName()); // AppelleeName
                         InsertBan.setString(i++, me.IsConsoleAppealer ? "CONSOLE" : me.AppealStaff.getUniqueId().toString()); // AppelleeUUID
                         InsertBan.setTimestamp(i++, me.AppealedTime); //AppealTime
                         InsertBan.setBoolean(i++, me.Appealed); //Appealed
+                        InsertBan.setBoolean(i++, me.silent); //Silent
                         InsertBan.setBoolean(i++, me.WarningAcknowledged); //WarningAck
                         InsertBan.setString(i++, me.DatabaseID); //id
                     }
                     else
                     {
                         // Preapre a statement
-                        InsertBan = self.connection.prepareStatement(String.format("INSERT INTO lolbans_punishments (UUID, PlayerName, IPAddress, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry, Type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"));
+                        InsertBan = self.connection.prepareStatement(String.format("INSERT INTO lolbans_punishments (UUID, PlayerName, IPAddress, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry, Type, Silent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"));
                         InsertBan.setString(i++, me.uuid.toString());
                         InsertBan.setString(i++, me.PlayerName);
                         InsertBan.setString(i++, me.IPAddress);
@@ -268,6 +267,7 @@ public class Punishment
                         InsertBan.setString(i++, me.PID);
                         InsertBan.setTimestamp(i++, Expiry);
                         InsertBan.setInt(i++, Type.ordinal());
+                        InsertBan.setBoolean(i++, silent);
                     }
                     InsertBan.executeUpdate();
                 } 
@@ -324,6 +324,7 @@ public class Punishment
                     me.AppealStaff = null;
                     me.IsConsoleAppealer = false;
                     me.Appealed = false;
+                    me.silent = false;
                     me.WarningAcknowledged = false;
                 } 
                 catch (SQLException e) 
@@ -360,6 +361,7 @@ public class Punishment
     public OfflinePlayer GetAppealStaff() { return this.AppealStaff; }
     public boolean IsConsoleAppealer() { return this.IsConsoleAppealer; }
     public boolean GetAppealed() { return this.Appealed; }
+    public boolean GetSilent() { return this.silent; }
     public boolean AcknowledgedWarning() { return this.WarningAcknowledged; }
 
     public String GetExpiryString() { return this.Expiry != null ? this.Expiry.toString() : ""; }
@@ -368,6 +370,7 @@ public class Punishment
     public void SetAppealReason(String Reason) { this.AppealReason = Reason; }
     public void SetAppealTime(Timestamp time) { this.AppealedTime = time; }
     public void SetAppealed(Boolean value) { this.Appealed = value; }
+    public void SetSilent(Boolean value) { this.silent = value; }
     public void SetWarningAcknowledged(Boolean value) { this.WarningAcknowledged = value; }
     public void SetAppealStaff(CommandSender sender) { this.SetAppealStaff(sender instanceof OfflinePlayer ? (OfflinePlayer)sender : null); }
     public void SetAppealStaff(OfflinePlayer player)

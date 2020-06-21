@@ -90,7 +90,7 @@ public class ImportUtil {
                             continue;
                         }
                         Punishment punishment = new Punishment(PunishmentType.PUNISH_BAN, sender, op,
-                                obj.get("reason").toString().replace("\"", ""), timeStamp);
+                                obj.get("reason").toString().replace("\"", ""), timeStamp, false);
                         punishment.Commit(sender);
                         Thread.sleep(250); // Lets wait a bit here too...
                     }
@@ -180,7 +180,7 @@ public class ImportUtil {
                 }
                 System.out.println(op.getName());
                 System.out.println(op.getUniqueId());
-                Punishment ban = new Punishment(PunishmentType.PUNISH_BAN, sender, op, banrs.getString("reason"), banrs.getLong("until") <= 0 ? null : new Timestamp(banrs.getLong("until")));
+                Punishment ban = new Punishment(PunishmentType.PUNISH_BAN, sender, op, banrs.getString("reason"), banrs.getLong("until") <= 0 ? null : new Timestamp(banrs.getLong("until")), banrs.getBoolean("silent"));
                 ban.Commit(sender);
                 Thread.sleep(500);
             }

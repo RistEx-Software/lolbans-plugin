@@ -70,7 +70,7 @@ public class BanCommand extends RistExCommandAsync {
 
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
             Timestamp bantime = TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
-            Punishment punish = new Punishment(PunishmentType.PUNISH_BAN, sender, target, reason, bantime);
+            Punishment punish = new Punishment(PunishmentType.PUNISH_BAN, sender, target, reason, bantime, silent);
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);

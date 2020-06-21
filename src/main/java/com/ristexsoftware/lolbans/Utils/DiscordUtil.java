@@ -100,12 +100,13 @@ public class DiscordUtil
 
 			// Dynamically add the various fields we may need
 			List<FieldEmbed> Fields = new ArrayList<FieldEmbed>();
+			System.out.println(Variables.get("Expiry"));
 
 			// TODO: Find a reasonable way to messages.yml-ify this?
 			if (Variables.containsKey("PunishID"))
 				Fields.add(FieldEmbed.builder().name("PunishID").value("#" + Variables.get("PunishID")).build());
 			if (Variables.containsKey("Expiry"))
-				Fields.add(FieldEmbed.builder().name("Expires").value(TimeUtil.Expires(Timestamp.valueOf(Variables.get("Expiry")))).build());
+				Fields.add(FieldEmbed.builder().name("Expires").value(Variables.get("Expiry") == "" ? "Never" : TimeUtil.Expires(Timestamp.valueOf(Variables.get("Expiry")))).build());
 			if (Variables.containsKey("ReportType"))
 				Fields.add(FieldEmbed.builder().name("Type").value(Variables.get("ReportType")).build());
 

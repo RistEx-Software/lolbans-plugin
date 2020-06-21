@@ -8,6 +8,8 @@ import java.util.concurrent.FutureTask;
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Runnables.QueryRunnable;
 
+// This class is honestly a mess... It scares me, but it works...
+// TODO: Clean this class
 public class DatabaseUtil
 {
     private static Main self = Main.getPlugin(Main.class);

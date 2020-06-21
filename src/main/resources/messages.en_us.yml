@@ -140,9 +140,9 @@ Kick:
 
 Warn:
   WarnAnnouncment: "&b{ARBITER} &fhas {APPEALED|empty_if_false:\"un-\"}warned &b{PLAYER} &f: &b{REASON} &f[#{PUNISHID}] {SILENT|empty_if_false:\" &8[SILENT]\"}"
-  WarnedMessage: "&b{ARBITER} &fwarned you: &b{REASON} &f[#{PUNISHID}]\n{SIMPLE|empty_if_true:\"&f» &bPlease acknowledge that you've been warned by typing &a/accept.\"}"
+  WarnedMessage: "&b{ARBITER} &fwarned you: &b{REASON} &f[#{PUNISHID}]\n{SIMPLE|empty_if_true:\"&f» &bPlease acknowledge that you've been warned by typing &a/acknowledge.\"}"
   RemovedSuccess: "{PREFIX}&fRemoved &b{PLAYER}&f's warning successfully!"
-  WarnedOnAction: "{PREFIX}&bYou have been warned and cannot perform that action!\n{PREFIX}&bPlease acknowledge that you've been warned by typing &a/accept."
+  WarnedOnAction: "{PREFIX}&bYou have been warned and cannot perform that action!\n{PREFIX}&bPlease acknowledge that you've been warned by typing &a/acknowledge."
   WarnKickMessage: "&bYou have been warned!\n\n&bReason: {REASON}\n\n&fBy rejoining you acknowledge that you've been warned!"
   AcceptMessage: "&aThank you for accepting, you may resume your gameplay!"
   NotWarned: "{PREFIX}&bYou have not been warned so there's nothing to accept!"
@@ -188,6 +188,6 @@ Syntax:
   ChatMute: "Usage: /chatmute"
   Mute: "Usage: /mute [-s] [-o] <Player> <Time|*> <Reason>"
   Unmute: "Usage: /unmute [-s] <Player> <Reason>"
-  WarnAccept: "Usage: /warnaccept"
+  WarnAccept: "Usage: /acknowledge"
   Warn: "Usage: /warn [-s] <Player> <Reason>"
   UnWarn: "Usage: /unwarn [-s] <PlayerName|PunishID>"

@@ -71,7 +71,7 @@ public class WarnCommand extends RistExCommand
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
 
-            Punishment punish = new Punishment(PunishmentType.PUNISH_WARN, sender, target, reason, null);
+            Punishment punish = new Punishment(PunishmentType.PUNISH_WARN, sender, target, reason, null, silent);
             punish.Commit(sender);
 
             Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)

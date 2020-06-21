@@ -75,7 +75,7 @@ public class KickCommand extends RistExCommandAsync
             if (!target.isOnline())
                 return User.PlayerIsOffline(sender, PlayerName, true);
 
-            Punishment punish = new Punishment(PunishmentType.PUNISH_KICK, sender, target, reason, null);
+            Punishment punish = new Punishment(PunishmentType.PUNISH_KICK, sender, target, reason, null, silent);
             punish.Commit(sender);
 
             // Kick the player

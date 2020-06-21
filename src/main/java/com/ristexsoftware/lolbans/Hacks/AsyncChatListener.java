@@ -40,7 +40,6 @@ public class AsyncChatListener implements Listener {
                 try {
                     List<String> cmds = self.getConfig().getStringList("MuteSettings.blacklisted-commands");
                     for (String cmd : cmds) {
-                        self.getLogger().info(cmd);
                         if (event.getMessage().startsWith("/" + cmd)) {
                             try {
                                 PreparedStatement MuteStatement = self.connection.prepareStatement(
@@ -92,13 +91,14 @@ public class AsyncChatListener implements Listener {
                                 event.getPlayer().sendMessage(Messages.ServerError);
                             }
                         }
+                        else return false;
                     }
                 } catch (Throwable e) {
                     e.printStackTrace();
                     event.setCancelled(true);
                     event.getPlayer().sendMessage(Messages.ServerError);
                 }
-                return true;
+                return false;
             }
         });
         Main.pool.execute(t);

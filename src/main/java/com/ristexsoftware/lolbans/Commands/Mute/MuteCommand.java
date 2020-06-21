@@ -71,7 +71,7 @@ public class MuteCommand extends RistExCommand
             String reason = a.get("Reason");
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
             Timestamp mutetime = TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
-            Punishment punish = new Punishment(PunishmentType.PUNISH_MUTE, sender, target, reason, mutetime);
+            Punishment punish = new Punishment(PunishmentType.PUNISH_MUTE, sender, target, reason, mutetime, silent);
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
@@ -109,6 +109,7 @@ public class MuteCommand extends RistExCommand
                 ((Player)target).sendMessage(Messages.Translate("Mute.YouWereMuted", Variables));
                 User.playSound((Player)target, Main.getPlugin(Main.class).getConfig().getString("MuteSettings.Sound"));
             }
+            System.out.println(punish.GetPunishmentType());
 
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Mute.MuteAnnouncement", Variables));
             DiscordUtil.GetDiscord().SendDiscord(punish, silent);

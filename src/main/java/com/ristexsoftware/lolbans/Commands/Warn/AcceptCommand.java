@@ -23,7 +23,7 @@ public class AcceptCommand extends RistExCommand
 
     public AcceptCommand(Plugin owner)
     {
-        super("accept", owner);
+        super("acknowledge", owner);
         this.setDescription("Accept a warning");
         this.setPermission("lolbans.warnaccept");
     }    
