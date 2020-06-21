@@ -62,6 +62,29 @@ WarningSettings:
 MuteSettings:
   # The sound you want
   Sound: BLOCK_ANVIL_LAND
+  # Commands to block if a user is muted
+  blacklisted-commands:
+    - msg
+    - w
+    - r
+    - mail
+    - m
+    - t
+    - whisper
+    - emsg
+    - tell
+    - er
+    - reply
+    - ereply
+    - email
+    - action
+    - describe
+    - eme
+    - eaction
+    - edescribe
+    - etell
+    - ewhisper
+    - pm
 
 FreezeSettings:
   # Spawns a box around the player

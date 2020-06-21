@@ -6,10 +6,14 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 import com.google.common.net.InetAddresses;
 import com.ristexsoftware.lolbans.Main;
@@ -30,6 +34,8 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
@@ -220,7 +226,8 @@ public class User {
      */
     public static boolean IsPlayerInWave(OfflinePlayer user) {
         try {
-            PreparedStatement ps = self.connection.prepareStatement("SELECT * FROM lolbans_banwave WHERE UUID = ? LIMIT 1");
+            PreparedStatement ps = self.connection
+                    .prepareStatement("SELECT * FROM lolbans_banwave WHERE UUID = ? LIMIT 1");
             ps.setString(1, user.getUniqueId().toString());
 
             return ps.executeQuery().next();
@@ -274,23 +281,45 @@ public class User {
         return false;
     }
 
+    // public static boolean IsPlayerMuted(OfflinePlayer user) {
+    // try {
+    // PreparedStatement ps = self.connection.prepareStatement(
+    // "SELECT 1 FROM lolbans_punishments WHERE UUID = ? AND Type = 1 AND Appealed =
+    // false LIMIT 1");
+    // ps.setString(1, user.getUniqueId().toString());
+
+    // return ps.executeQuery().next();
+    // } catch (SQLException ex) {
+    // ex.printStackTrace();
+    // }
+    // return false;
+    // }
+
     /**
      * Check if the player is actively muted
      * 
      * @param user Player to check
      * @return True if the player has been muted.
      */
-    public static boolean IsPlayerMuted(OfflinePlayer user) {
-        try {
-            PreparedStatement ps = self.connection.prepareStatement(
-                    "SELECT 1 FROM lolbans_punishments WHERE UUID = ? AND Type = 1 AND Appealed = false LIMIT 1");
-            ps.setString(1, user.getUniqueId().toString());
+    public static Future<Boolean> isPlayerMuted(OfflinePlayer user) {
+        FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>() {
+            @Override
+            public Boolean call() {
+                // This is where you should do your database interaction
+                try {
+                    PreparedStatement ps = self.connection.prepareStatement(
+                            "SELECT 1 FROM lolbans_punishments WHERE UUID = ? AND Type = 1 AND Appealed = false LIMIT 1");
+                    ps.setString(1, user.getUniqueId().toString());
 
-            return ps.executeQuery().next();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return false;
+                    return ps.executeQuery().next();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+        });
+        Main.pool.execute(t);
+        return (Future<Boolean>) t;
     }
 
     /**
@@ -364,7 +393,8 @@ public class User {
             return new IPAddressString(any).getAddress();
 
         try {
-            PreparedStatement ps = self.connection.prepareStatement("SELECT IPAddress FROM lolbans_users WHERE PlayerName = ?");
+            PreparedStatement ps = self.connection
+                    .prepareStatement("SELECT IPAddress FROM lolbans_users WHERE PlayerName = ?");
             ps.setString(1, any);
 
             Optional<ResultSet> ores = DatabaseUtil.ExecuteLater(ps).get();
@@ -491,17 +521,18 @@ public class User {
     /**
      * Remove a punishment from a player
      * 
-     * @param type The punishment type to remove
+     * @param type   The punishment type to remove
      * @param sender The command sender
      * @param target The player to remove punishment from
      * @param reason The reason for removal
      * @param silent Is the punishment removal silent
      */
-    public static Punishment removePunishment(PunishmentType type, CommandSender sender, OfflinePlayer target, String reason, boolean silent) {
+    public static Punishment removePunishment(PunishmentType type, CommandSender sender, OfflinePlayer target,
+            String reason, boolean silent) {
         Optional<Punishment> op = Punishment.FindPunishment(type, target, false);
-        if (!op.isPresent())
-        {
-            sender.sendMessage("Congratulations!! You've found a bug!! Please report it to the lolbans developers to get it fixed! :D");
+        if (!op.isPresent()) {
+            sender.sendMessage(
+                    "Congratulations!! You've found a bug!! Please report it to the lolbans developers to get it fixed! :D");
             return null;
         }
 
@@ -520,15 +551,15 @@ public class User {
     }
 
     public static Timestamp getTimeGroup(CommandSender player) {
-        
+
         Timestamp defaultTime = TimeUtil.ParseToTimestamp(self.getConfig().getString("max-time.default"));
         ConfigurationSection configTimeGroups = self.getConfig().getConfigurationSection("max-time");
         ArrayList<String> timeGroups = new ArrayList<String>();
         timeGroups.addAll(configTimeGroups.getKeys(false));
         Collections.reverse(timeGroups);
 
-        for(String key : timeGroups) {
-            if(player.hasPermission("lolbans.maxtime." + key)) {
+        for (String key : timeGroups) {
+            if (player.hasPermission("lolbans.maxtime." + key)) {
                 return TimeUtil.ParseToTimestamp(self.getConfig().getString("max-time." + key));
             }
         }
@@ -536,12 +567,13 @@ public class User {
         return defaultTime == null ? TimeUtil.ParseToTimestamp("7d") : defaultTime;
     }
 
-    // This honestly just does some extra logic I don't want to put in every class...
+    // This honestly just does some extra logic I don't want to put in every
+    // class...
     /**
      * Play a sound to a player
      * 
      * @param target The player to send the sound to
-     * @param sound The sound to play
+     * @param sound  The sound to play
      */
     public static void playSound(Player target, String sound) {
         try {

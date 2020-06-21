@@ -18,40 +18,34 @@ import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 
-public class UnmuteCommand extends RistExCommand
-{
-    public UnmuteCommand(Plugin owner)
-    {
+public class UnmuteCommand extends RistExCommand {
+    public UnmuteCommand(Plugin owner) {
         super("unmute", owner);
         this.setDescription("Allow the player to send chat messages");
         this.setPermission("lolbans.unmute");
     }
 
     @Override
-    public void onSyntaxError(CommandSender sender, String label, String[] args)
-    {
-        try 
-        {
+    public void onSyntaxError(CommandSender sender, String label, String[] args) {
+        try {
             sender.sendMessage(Messages.InvalidSyntax);
-            sender.sendMessage(Messages.Translate("Syntax.Unmute", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-        }
-        catch (InvalidConfigurationException e)
-        {
+            sender.sendMessage(
+                    Messages.Translate("Syntax.Unmute", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+        } catch (InvalidConfigurationException e) {
             e.printStackTrace();
             sender.sendMessage(Messages.ServerError);
         }
     }
 
     @Override
-    public boolean Execute(CommandSender sender, String label, String[] args)
-    {
+    public boolean Execute(CommandSender sender, String label, String[] args) {
         if (!PermissionUtil.Check(sender, "lolbans.unmute"))
             return User.PermissionDenied(sender, "lolbans.unmute");
 
         // /unmute [-s] <PlayerName> <Reason>
-        try 
-        {
+        try {
             ArgumentUtil a = new ArgumentUtil(args);
             a.OptionalFlag("Silent", "-s");
             a.RequiredString("PlayerName", 0);
@@ -67,14 +61,14 @@ public class UnmuteCommand extends RistExCommand
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
-            
-            if (!User.IsPlayerMuted(target))
+
+            if (!User.isPlayerMuted(target).get())
                 return User.PlayerOnlyVariableMessage("Mute.PlayerIsNotMuted", sender, target.getName(), true);
 
             Optional<Punishment> op = Punishment.FindPunishment(PunishmentType.PUNISH_MUTE, target, false);
-            if (!op.isPresent())
-            {
-                sender.sendMessage("Congratulations!! You've found a bug!! Please report it to the lolbans developers to get it fixed! :D");
+            if (!op.isPresent()) {
+                sender.sendMessage(
+                        "Congratulations!! You've found a bug!! Please report it to the lolbans developers to get it fixed! :D");
                 return true;
             }
 
@@ -84,24 +78,23 @@ public class UnmuteCommand extends RistExCommand
             punish.SetAppealStaff(sender);
             punish.Commit(sender);
 
-            TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-            {{
-                put("player", target.getName());
-                put("reason", reason);
-                put("arbiter", sender.getName());
-                put("punishid", punish.GetPunishmentID());
-                put("silent", Boolean.toString(silent));
-                put("appealed", Boolean.toString(punish.GetAppealed()));
-            }};
+            TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                {
+                    put("player", target.getName());
+                    put("reason", reason);
+                    put("arbiter", sender.getName());
+                    put("punishid", punish.GetPunishmentID());
+                    put("silent", Boolean.toString(silent));
+                    put("appealed", Boolean.toString(punish.GetAppealed()));
+                }
+            };
 
             if (target.isOnline())
-                ((Player)target).sendMessage(Messages.Translate("Mute.YouWereUnMuted", Variables));
+                ((Player) target).sendMessage(Messages.Translate("Mute.YouWereUnMuted", Variables));
 
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Mute.MuteAnnouncement", Variables));
             DiscordUtil.GetDiscord().SendDiscord(punish, silent);
-        }
-        catch (InvalidConfigurationException e)
-        {
+        } catch (InvalidConfigurationException | InterruptedException | ExecutionException e) {
             e.printStackTrace();
             sender.sendMessage(Messages.ServerError);
         }

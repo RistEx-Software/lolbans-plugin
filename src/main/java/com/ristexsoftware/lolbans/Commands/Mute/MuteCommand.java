@@ -82,7 +82,7 @@ public class MuteCommand extends RistExCommand
                 User.removePunishment(PunishmentType.PUNISH_MUTE, sender, target, "Overwritten by #" + punish.GetPunishmentID(), silent);
             }
             
-            if (User.IsPlayerMuted(target) && !ow)
+            if (User.isPlayerMuted(target).get() && !ow)
                 return User.PlayerOnlyVariableMessage("Mute.PlayerIsMuted", sender, target.getName(), true);
             
             if (mutetime == null && !PermissionUtil.Check(sender, "lolbans.mute.perm"))
