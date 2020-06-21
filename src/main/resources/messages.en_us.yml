@@ -129,7 +129,7 @@ Mute:
   YouAreMuted: "{PREFIX}&bYou are muted and may not speak.\n&fYour mute expires on: &b{EXPIRY|duration}&f! &f[#{PUNISHID}]"
   PlayerIsMuted: "{PREFIX}&bError! &f{PLAYER} is already muted!"
   PlayerIsNotMuted: "{PREFIX}&bError! &f{PLAYER} is not muted!"
-  MuteAnnouncement: "{PREFIX}&b{ARBITER} &fhas {APPEALED|empty_if_false:\"un-\"}muted &b{PLAYER}&f: &b{REASON} &f[#{PUNISHID}]"
+  MuteAnnouncement: "{PREFIX}&b{ARBITER} &fhas {APPEALED|empty_if_false:\"un-\"}muted &b{PLAYER}&f: &b{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
   GlobalMuted: "&bThe chat is currently muted and you may not send messages."
   GlobalUnmuted: "&aThe chat is now unmuted, you may now converse."
   ChatAttempt: "&7{PLAYER} tried to speak, but is muted: \"{MESSAGE}\""
@@ -151,10 +151,10 @@ History:
   NoHistory: "{PREFIX}&bPlayer &f{PLAYER}&b has no punishment history."
   NoHistory2: "{PREFIX}&bThere are currently no reports"
   ClearedHistory: "{PREFIX}&fCleared history for &b{PLAYER}&f."
-  HistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f - &f&lExpires: &f{EXPIRYDATE}\n"
+  HistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f - &f&lExpires: &f{EXPIRY}\n"
   HistoryMessagePerm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f\n"
   HistoryMessageReport: "\n&3:=:=:= &b[{PLAYERNAME}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lReporter: &f{ARBITER}&f\n"
-  StaffHistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f - &f&lExpires: &f{EXPIRYDATE}\n"
+  StaffHistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f - &f&lExpires: &f{EXPIRY}\n"
   StaffHistoryMessagePerm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f\n"
   # The number of times `HistoryMessageTemp` or `HistoryMessagePerm` is treated as a page. (Default is 2)
   PageSize: 2
@@ -162,10 +162,10 @@ History:
   Paginator: "&3:=:=:= &b[Page {CURRENT}/{TOTAL}]&3 =:=:=:"
 
 StaffRollback:
+  Announcement: "{PREFIX}&f{PLAYER} &brolled back &f{AFFECTED} &bpunishments!"
   RollbackComplete: "{PREFIX}&fRolled back &b{AFFECTED} punishments&f."
   NoRollback: "{PREFIX}&fThere are no users to rollback."
-  NoHistory: "{PREFIX}&{PLAYER} has performed no punishments."
-
+  NoHistory: "{PREFIX}&f{PLAYER} &bhas performed no punishments."
 # This section is not parsed by the above variable parser.
 Syntax:
   Ban: "Usage: /ban [-s] [-o] <PlayerName> <Time|*> <Reason>"

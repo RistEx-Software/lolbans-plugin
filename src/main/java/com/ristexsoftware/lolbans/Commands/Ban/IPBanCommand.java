@@ -165,7 +165,7 @@ public class IPBanCommand extends RistExCommandAsync
 			if (SanityCheck(thingy, sender))
 				return true;
 
-			String banid = PunishID.GenerateID(DatabaseUtil.GenID("IPBans"));
+			String banid = PunishID.GenerateID(DatabaseUtil.GenID("lolbans_ipbans"));
 
 			int i = 1;
 			PreparedStatement pst = self.connection.prepareStatement("INSERT INTO lolbans_ipbans (IPAddress, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry) VALUES (?, ?, ?, ?, ?, ?)");

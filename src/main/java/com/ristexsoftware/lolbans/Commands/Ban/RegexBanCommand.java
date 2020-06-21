@@ -165,7 +165,7 @@ public class RegexBanCommand extends RistExCommandAsync
             if (SanityCheck(regex, sender))
                 return true;
 
-            String banid = PunishID.GenerateID(DatabaseUtil.GenID("RegexBans"));
+            String banid = PunishID.GenerateID(DatabaseUtil.GenID("lolbans_regexbans"));
 
             if (sender instanceof ConsoleCommandSender)
                 IsConsoleExectioner = true;

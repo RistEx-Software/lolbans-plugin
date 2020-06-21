@@ -113,7 +113,7 @@ public final class Main extends JavaPlugin {
 
         // Initialize and compile the regex cache
         try {
-            ResultSet res = this.connection.prepareStatement("SELECT * FROM RegexBans").executeQuery();
+            ResultSet res = this.connection.prepareStatement("SELECT * FROM lolbans_regexbans").executeQuery();
             while (res.next()) {
                 try {
                     getLogger().info(String.format("Registered Regular Expression: \"%s\" (%x)", res.getString("Regex"),

@@ -53,10 +53,10 @@ public class BanWaveRunnable extends BukkitRunnable
         try
         {
             Timing t = new Timing();
-            // First we query for all the people in the lolbans_banwave database.
-            PreparedStatement PlayersToBanQuery = self.connection.prepareStatement("SELECT * FROM BanWave");
+            // First we query for all the people in the BanWave database.
+            PreparedStatement PlayersToBanQuery = self.connection.prepareStatement("SELECT * FROM lolbans_banwave");
             // Array of users to be banned so we can send it to Discord.
-            PreparedStatement PlayersToBanQueryArr = self.connection.prepareStatement("SELECT GROUP_CONCAT(PlayerName) AS PlayerNames FROM BanWave");
+            PreparedStatement PlayersToBanQueryArr = self.connection.prepareStatement("SELECT GROUP_CONCAT(PlayerName) AS PlayerNames FROM lolbans_banwave");
             PreparedStatement BanBatchQuery = self.connection.prepareStatement("INSERT INTO lolbans_punishments (UUID, PlayerName, IPAddress, Reason, PunishID, Type, ArbiterName, ArbiterUUID, Expiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
             
             List<BannedUser> BannedPlayers = new ArrayList<BannedUser>();

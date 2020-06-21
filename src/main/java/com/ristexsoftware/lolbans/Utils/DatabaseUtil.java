@@ -78,7 +78,7 @@ public class DatabaseUtil
                                             +"TimesConnected INT NULL"
                                             +")").execute();
 
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS BanWave"
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS lolbans_banwave"
                                             +"(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                                             +"UUID varchar(36) NOT NULL,"
                                             +"PlayerName varchar(17) NOT NULL,"
@@ -91,7 +91,7 @@ public class DatabaseUtil
                                             +"Expiry TIMESTAMP NULL"
                                             +")").execute();
 
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS IPBans"
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS lolbans_ipbans"
                                             +"(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                                             +"IPAddress varchar(49) NOT NULL,"
                                             +"Reason TEXT NULL,"
@@ -112,7 +112,7 @@ public class DatabaseUtil
             //self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS LinkConfirmations (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID varchar(36) NOT NULL, Executioner varchar(17) NOT NULL, LinkID varchar(20) NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NOT NULL)").execute();
             self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS lolbans_reports (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, PlaintiffUUID varchar(36) NOT NULL, PlaintiffName varchar(17) NOT NULL, DefendantUUID varchar(36) NOT NULL, DefendantName varchar(17) NOT NULL, Reason TEXT NOT NULL, JudgeUUID varchar(36) NULL, JudgeName varchar(17) NULL, Type varchar(32) NOT NULL, CloseReason TEXT NULL, Closed boolean DEFAULT FALSE NOT NULL, TimeAdded TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PunishID varchar(20) NOT NULL)").execute();
             // NOTE: This table compares both minecraft names AND client hostnames against this, not sure yet if this is a good idea or not...
-            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS RegexBans"
+            self.connection.prepareStatement("CREATE TABLE IF NOT EXISTS lolbans_regexbans"
                                             +"(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                                             +"Regex VARCHAR(255) NOT NULL,"
                                             +"Reason TEXT NOT NULL,"
@@ -428,13 +428,13 @@ public class DatabaseUtil
                             return results.getInt("COUNT(*)");
                         }
                     } else if (type == PunishmentType.PUNISH_REGEX) {
-                        PreparedStatement bans = self.connection.prepareStatement("SELECT COUNT(*) FROM RegexBans");
+                        PreparedStatement bans = self.connection.prepareStatement("SELECT COUNT(*) FROM lolbans_regexbans");
                         ResultSet results = bans.executeQuery();
                         if (results.next() &&  !results.wasNull()) {
                             return results.getInt("COUNT(*)");
                         }
                     } else if (type == PunishmentType.PUNISH_IP) {
-                        PreparedStatement bans = self.connection.prepareStatement("SELECT COUNT(*) FROM IPBans");
+                        PreparedStatement bans = self.connection.prepareStatement("SELECT COUNT(*) FROM lolbans_ipbans");
                         ResultSet results = bans.executeQuery();
                         if (results.next() &&  !results.wasNull()) {
                             return results.getInt("COUNT(*)");

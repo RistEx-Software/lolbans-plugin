@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.Future;
 
 import com.google.gson.JsonArray;
@@ -150,39 +151,39 @@ public class ImportUtil {
      */
     public static void importLitebans(CommandSender sender) {
         try {
-            sender.sendMessage(Messages.Prefix + ChatColor.RED + "LiteBans importing is not supported yet!");
-            return;
-            // if (isRunning) {
-            //     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Messages.Prefix
-            //             + "&cAn import task is already running! Type \"/lolbans import cancel\" to cancel it"));
-            //     return;
-            // }
-            // PreparedStatement bans = self.connection.prepareStatement("SELECT * FROM litebans_bans");
-            // PreparedStatement mutes = self.connection.prepareStatement("SELECT * FROM mutes");
-            // PreparedStatement kicks = self.connection.prepareStatement("SELECT * FROM litebans_kicks");
-            // PreparedStatement warns = self.connection.prepareStatement("SELECT * FROM warnings");
-            // PreparedStatement users = self.connection.prepareStatement("SELECT * FROM litebans_history");
-            // ResultSet banrs = bans.executeQuery();
-            // ResultSet muters = mutes.executeQuery();
-            // ResultSet kickrs = kicks.executeQuery();
-            // ResultSet warnrs = warns.executeQuery();
-            // ResultSet userrs = users.executeQuery();
-            // while (banrs.next()) {
-            //     MojangUtil mojangAPI = new MojangUtil();
-            //     MojangUser mojangUser = mojangAPI.resolveUser(banrs.getString("uuid"));
-            //     if (mojangUser == null) {
-            //         self.getLogger().warning(banrs.getString("uuid") + " does not exist! Skipping...");
-            //         continue; // Skip this, this user doesn't even exist.
-            //     }
-            //     OfflinePlayer op = Bukkit.getOfflinePlayer(mojangUser.getName());
-            //     if (User.IsPlayerBanned(op)) {
-            //         self.getLogger().warning(mojangUser.getName() + " is already banned, skipping...");
-            //         continue;
-            //     }
-            //     Punishment ban = new Punishment(PunishmentType.PUNISH_BAN, sender, op, banrs.getString("reason"), new Timestamp(banrs.getInt("time")));
-            //     ban.Commit(sender);
-            //     Thread.sleep(250);
-            // }
+            // sender.sendMessage(Messages.Prefix + ChatColor.RED + "LiteBans importing is not supported yet!");
+            // return;
+            if (isRunning) {
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Messages.Prefix
+                        + "&cAn import task is already running! Type \"/lolbans import cancel\" to cancel it"));
+                return;
+            }
+            PreparedStatement bans = self.connection.prepareStatement("SELECT * FROM litebans_bans");
+            PreparedStatement mutes = self.connection.prepareStatement("SELECT * FROM litebans_mutes");
+            PreparedStatement kicks = self.connection.prepareStatement("SELECT * FROM litebans_kicks");
+            PreparedStatement warns = self.connection.prepareStatement("SELECT * FROM litebans_warnings");
+            ResultSet banrs = bans.executeQuery();
+            ResultSet muters = mutes.executeQuery();
+            ResultSet kickrs = kicks.executeQuery();
+            ResultSet warnrs = warns.executeQuery();
+            while (banrs.next()) {
+                MojangUtil mojangAPI = new MojangUtil();
+                MojangUser mojangUser = mojangAPI.resolveUser(banrs.getString("uuid"));
+                if (mojangUser == null) {
+                    self.getLogger().warning(banrs.getString("uuid") + " does not exist! Skipping...");
+                    continue; // Skip this, this user doesn't even exist.
+                }
+                OfflinePlayer op = Bukkit.getOfflinePlayer(mojangUser.getName());
+                if (User.IsPlayerBanned(op)) {
+                    self.getLogger().warning(mojangUser.getName() + " is already banned, skipping...");
+                    continue;
+                }
+                System.out.println(op.getName());
+                System.out.println(op.getUniqueId());
+                Punishment ban = new Punishment(PunishmentType.PUNISH_BAN, sender, op, banrs.getString("reason"), banrs.getLong("until") <= 0 ? null : new Timestamp(banrs.getLong("until")));
+                ban.Commit(sender);
+                Thread.sleep(500);
+            }
             // while (muters.next()) {
             //     MojangUtil mojangAPI = new MojangUtil();
             //     MojangUser mojangUser = mojangAPI.resolveUser(muters.getString("uuid"));
@@ -190,12 +191,12 @@ public class ImportUtil {
             //         self.getLogger().warning(muters.getString("uuid") + " does not exist! Skipping...");
             //         continue; // Skip this, this user doesn't even exist.
             //     }
-            //     OfflinePlayer op = Bukkit.getOfflinePlayer(mojangUser.getName());
+            //     OfflinePlayer op = Bukkit.getOfflinePlayer(mojangUser.getUUID());
             //     if (User.IsPlayerMuted(op)) {
             //         self.getLogger().warning(mojangUser.getName() + " is already muted, skipping...");
             //         continue;
             //     }
-            //     Punishment ban = new Punishment(PunishmentType.PUNISH_MUTE, sender, op, muters.getString("reason"), new Timestamp(muters.getInt("time")));
+            //     Punishment ban = new Punishment(PunishmentType.PUNISH_MUTE, sender, op, banrs.getString("reason"), banrs.getLong("until") <= 0 ? null : new Timestamp(banrs.getLong("until")));
             //     ban.Commit(sender);
             //     Thread.sleep(250);
             // }
@@ -206,8 +207,8 @@ public class ImportUtil {
             //         self.getLogger().warning(kickrs.getString("uuid") + " does not exist! Skipping...");
             //         continue; // Skip this, this user doesn't even exist.
             //     }
-            //     OfflinePlayer op = Bukkit.getOfflinePlayer(mojangUser.getName());
-            //     Punishment ban = new Punishment(PunishmentType.PUNISH_KICK, sender, op, kickrs.getString("reason"), new Timestamp(kickrs.getInt("time")));
+            //     OfflinePlayer op = Bukkit.getOfflinePlayer(mojangUser.getUUID());
+            //     Punishment ban = new Punishment(PunishmentType.PUNISH_KICK, sender, op, banrs.getString("reason"), banrs.getLong("until") <= 0 ? null : new Timestamp(banrs.getLong("until")));
             //     ban.Commit(sender);
             //     Thread.sleep(250);
             // }
@@ -218,20 +219,9 @@ public class ImportUtil {
             //         self.getLogger().warning(warnrs.getString("uuid") + " does not exist! Skipping...");
             //         continue; // Skip this, this user doesn't even exist.
             //     }
-            //     OfflinePlayer op = Bukkit.getOfflinePlayer(mojangUser.getName());
-            //     Punishment ban = new Punishment(PunishmentType.PUNISH_WARN, sender, op, warnrs.getString("reason"), new Timestamp(warnrs.getInt("time")));
+            //     OfflinePlayer op = Bukkit.getOfflinePlayer(mojangUser.getUUID());
+            //     Punishment ban = new Punishment(PunishmentType.PUNISH_WARN, sender, op, banrs.getString("reason"), banrs.getLong("until") <= 0 ? null : new Timestamp(banrs.getLong("until")));
             //     ban.Commit(sender);
-            //     Thread.sleep(250);
-            // }
-            // while (userrs.next()) {
-            //     MojangUtil mojangAPI = new MojangUtil();
-            //     MojangUser mojangUser = mojangAPI.resolveUser(userrs.getString("uuid"));
-            //     if (mojangUser == null) {
-            //         self.getLogger().warning(userrs.getString("uuid") + " does not exist! Skipping...");
-            //         continue; // Skip this, this user doesn't even exist.
-            //     }
-            //     OfflinePlayer op = Bukkit.getOfflinePlayer(mojangUser.getName());
-            //     //DatabaseUtil.InsertUser(userrs.getString("uuid"), PlayerName, userrs.getString("ip"), FirstLogin, LastLogin)
             //     Thread.sleep(250);
             // }
 

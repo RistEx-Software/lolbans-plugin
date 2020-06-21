@@ -86,13 +86,19 @@ public class Punishment
             case PUNISH_BAN:
             case PUNISH_KICK:
             case PUNISH_MUTE:
-            case PUNISH_WARN: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("Punishments")); break;
-            case PUNISH_REGEX: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("RegexBan")); break;
-            case PUNISH_IP: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("IPBans")); break;
+            case PUNISH_WARN: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("lolbans_punishments")); break;
+            case PUNISH_REGEX: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("lolbans_regexbans")); break;
+            case PUNISH_IP: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("lolbans_ipbans")); break;
             default:
                 throw new UnknownError("Unknown Punishment Type \"" + Type.DisplayName() + "\" for " + target.getName() + " " + Reason);
         }
-	}
+    }
+    
+    public Punishment(PunishmentType Type, CommandSender sender, OfflinePlayer target, String Reason, Timestamp Expiry, Boolean appealed) throws SQLException {
+        Punishment pun = new Punishment(Type, sender, target, Reason, Expiry);
+        this.Appealed = appealed;
+        pun.Commit(sender);
+    }
 
     /**
      * Find a punishment based on it's ID

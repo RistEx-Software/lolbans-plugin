@@ -31,7 +31,7 @@ public class QueryRunnable extends BukkitRunnable
              */
 
             // Grab all the latest IP bans from the databse and ensure everything is up to date.
-            ResultSet rs = self.connection.prepareStatement("SELECT * FROM IPBans").executeQuery();
+            ResultSet rs = self.connection.prepareStatement("SELECT * FROM lolbans_ipbans").executeQuery();
             while (rs.next())
             {
                 IPAddressString addr = new IPAddressString(rs.getString("IPAddress"));
