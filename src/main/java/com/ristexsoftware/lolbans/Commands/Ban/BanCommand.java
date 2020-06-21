@@ -57,8 +57,8 @@ public class BanCommand extends RistExCommandAsync {
             a.OptionalFlag("Silent", "-s");
             a.OptionalFlag("Overwrite", "-o");
             a.RequiredString("PlayerName", 0);
-            a.RequiredString("TimePeriod", 1);
-            a.RequiredSentence("Reason", 2);
+            a.OptionalString("TimePeriod", 1);
+            a.RequiredSentence("Reason", a.get("TimePeriod")==null?0:1);
 
             if (!a.IsValid())
                 return false;
@@ -66,11 +66,11 @@ public class BanCommand extends RistExCommandAsync {
             boolean silent = a.get("Silent") != null;
             boolean ow = a.get("Overwrite") != null;
             String PlayerName = a.get("PlayerName");
-            String reason = a.get("Reason");
+            Timestamp punishtime = TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
+            String reason = punishtime == null ? a.get("TimePeriod")+" "+ a.get("Reason") : a.get("Reason");
 
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
-            Timestamp bantime = TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
-            Punishment punish = new Punishment(PunishmentType.PUNISH_BAN, sender, target, reason, bantime, silent);
+            Punishment punish = new Punishment(PunishmentType.PUNISH_BAN, sender, target, reason, punishtime, silent);
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
@@ -85,10 +85,10 @@ public class BanCommand extends RistExCommandAsync {
             if (User.IsPlayerBanned(target) && !ow)
                 return User.PlayerOnlyVariableMessage("Ban.PlayerIsBanned", sender, target.getName(), true);
 
-            if (bantime == null && !PermissionUtil.Check(sender, "lolbans.ban.perm"))
+            if (punishtime == null && !PermissionUtil.Check(sender, "lolbans.ban.perm"))
                 return User.PermissionDenied(sender, "lolbans.ban.perm");
 
-            if (bantime != null
+            if (punishtime != null
                     && TimeUtil.ParseToTimestamp(a.get("TimePeriod")).getTime() > User.getTimeGroup(sender).getTime())
                 return User.PermissionDenied(sender, "lolbans.maxtime." + a.get("TimePeriod"));
 
@@ -105,7 +105,7 @@ public class BanCommand extends RistExCommandAsync {
                     put("reason", punish.GetReason());
                     put("arbiter", punish.GetExecutionerName());
                     put("punishid", punish.GetPunishmentID());
-                    put("expiry", bantime == null ? "" : punish.GetExpiryString());
+                    put("expiry", punishtime == null ? "" : punish.GetExpiryString());
                     put("silent", Boolean.toString(silent));
                     put("appealed", Boolean.toString(punish.GetAppealed()));
                 }

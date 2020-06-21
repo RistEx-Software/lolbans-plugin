@@ -59,8 +59,8 @@ public class MuteCommand extends RistExCommand
             a.OptionalFlag("Silent", "-s");
             a.OptionalFlag("Overwrite", "-o");
             a.RequiredString("PlayerName", 0);
-            a.RequiredString("TimePeriod", 1);
-            a.RequiredSentence("Reason", 2);
+            a.OptionalString("TimePeriod", 1);
+            a.RequiredSentence("Reason", a.get("TimePeriod")==null?0:1);
 
             if (!a.IsValid())
                 return false;
@@ -68,10 +68,10 @@ public class MuteCommand extends RistExCommand
             boolean silent = a.get("Silent") != null;
             boolean ow = a.get("Overwrite") != null;
             String PlayerName = a.get("PlayerName");
-            String reason = a.get("Reason");
+            Timestamp punishtime = TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
+            String reason = punishtime == null ? a.get("TimePeriod")+" "+ a.get("Reason") : a.get("Reason");
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
-            Timestamp mutetime = TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
-            Punishment punish = new Punishment(PunishmentType.PUNISH_MUTE, sender, target, reason, mutetime, silent);
+            Punishment punish = new Punishment(PunishmentType.PUNISH_MUTE, sender, target, reason, punishtime, silent);
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
@@ -85,11 +85,11 @@ public class MuteCommand extends RistExCommand
             if (User.isPlayerMuted(target).get() && !ow)
                 return User.PlayerOnlyVariableMessage("Mute.PlayerIsMuted", sender, target.getName(), true);
             
-            if (mutetime == null && !PermissionUtil.Check(sender, "lolbans.mute.perm"))
+            if (punishtime == null && !PermissionUtil.Check(sender, "lolbans.mute.perm"))
                 return User.PermissionDenied(sender, "lolbans.mute.perm");
 
-            // If mutetime is null and they got past the check above, we don't need to check this
-            if (mutetime != null && mutetime.getTime() > User.getTimeGroup(sender).getTime())
+            // If punishtime is null and they got past the check above, we don't need to check this
+            if (punishtime != null && punishtime.getTime() > User.getTimeGroup(sender).getTime())
                 return User.PermissionDenied(sender, "lolbans.maxtime."+a.get("TimePeriod"));
 
             punish.Commit(sender);
@@ -100,7 +100,7 @@ public class MuteCommand extends RistExCommand
                     put("reason", reason);
                     put("arbiter", sender.getName());
                     put("punishid", punish.GetPunishmentID());
-                    put("expiry", mutetime == null ? "" : punish.GetExpiryString());
+                    put("expiry", punishtime == null ? "" : punish.GetExpiryString());
                     put("silent", Boolean.toString(silent));
                     put("appealed", Boolean.toString(punish.GetAppealed()));
                 }};
