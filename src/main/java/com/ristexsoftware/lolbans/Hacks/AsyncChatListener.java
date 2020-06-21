@@ -81,9 +81,10 @@ public class AsyncChatListener implements Listener {
                                                         }));
                                             }
                                         }
+                                        return true;
                                     }
                                 }
-                                return true;
+                                return false;
                             } catch (SQLException | InvalidConfigurationException | InterruptedException
                                     | ExecutionException e) {
                                 e.printStackTrace();
