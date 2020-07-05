@@ -5,6 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.Plugin;
 
+import java.util.Arrays;
 import java.util.TreeMap;
 
 import com.ristexsoftware.lolbans.Main;
@@ -22,6 +23,7 @@ public class MuteChatCommand extends RistExCommand
         super("mutechat", owner);
         this.setDescription("Mute the chat for all players (toggleable)");
         this.setPermission("lolbans.mutechat");
+        this.setAliases(Arrays.asList(new String[] { "mute-chat" }));
     }
 
     @Override
@@ -47,7 +49,6 @@ public class MuteChatCommand extends RistExCommand
         
         // Nice toggle feature
         self.ChatMuted = !self.ChatMuted;
-
         try 
         {
             if (self.ChatMuted)

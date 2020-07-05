@@ -46,10 +46,9 @@ public class LolBansCommand extends RistExCommandAsync {
 
     @Override
     public boolean Execute(CommandSender sender, String label, String[] args) {
-        if (args.length < 1) {
+        if (args.length < 1 || args.length > 0 && args[0].equalsIgnoreCase("reload")) {
             if (!PermissionUtil.Check(sender, "lolbans.reload"))
                 return User.PermissionDenied(sender, "lolbans.reload");
-
             try {
                 // self.saveConfig();
                 Messages.Reload();
@@ -77,7 +76,7 @@ public class LolBansCommand extends RistExCommandAsync {
         } else if (args[0].equalsIgnoreCase("stats")) {
             if (!PermissionUtil.Check(sender, "lolbans.stats"))
                 return User.PermissionDenied(sender, "lolbans.stats");
-                
+
             Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                 {
                     put("player", sender.getName());

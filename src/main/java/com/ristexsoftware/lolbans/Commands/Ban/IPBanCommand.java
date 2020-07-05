@@ -177,6 +177,8 @@ public class IPBanCommand extends RistExCommandAsync
 			pst.setTimestamp(i++, bantime);
 			DatabaseUtil.ExecuteUpdate(pst);
 
+			IPBanUtil.addIPAddr(thingy.toString());
+
 			// Format our messages.
 			String IPBanAnnouncement = Messages.Translate("IPBan.BanAnnouncement",
 				new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)

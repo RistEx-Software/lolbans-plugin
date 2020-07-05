@@ -42,7 +42,8 @@ public class IPBanUtil
 						// They're a banned cidr, query for the reason and kick them.
 						if (cb.contains(hn.asAddressString()))
 						{
-							PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM lolbans_ipbans WHERE IPAddress = ? AND Appealed = false");
+							PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM lolbans_ipbans WHERE IPAddress = ? AND Appealed = false"); 
+
 							pst.setString(1, cb.toString());
 			
 							ResultSet res = pst.executeQuery();
@@ -133,5 +134,24 @@ public class IPBanUtil
 			ex.printStackTrace();
 		}
 		return null;
+	}
+
+	public static void addIPAddr(String address) {
+		IPAddressString addr = new IPAddressString(address);
+
+		// Try and find our address.
+		boolean found = false;
+		for (IPAddressString cb : Main.BannedAddresses)
+		{
+			if (cb.compareTo(addr) == 0)
+			{ 
+				found = true;
+				break;
+			}
+		}
+
+		// Add our banned cidr range if not found.
+		if (!found)
+			Main.BannedAddresses.add(addr);
 	}
 }

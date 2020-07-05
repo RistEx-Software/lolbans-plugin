@@ -71,7 +71,13 @@ public class UnWarnCommand extends RistExCommand
 			Optional<Punishment> opunish = Punishment.FindPunishment(PunishmentType.PUNISH_WARN, target, false);
 			if (!opunish.isPresent())
 			{
-				sender.sendMessage("Congratulations!! You've found a bug!! Please report it to the lolbans developers to get it fixed! :D");
+                    Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                {{
+                    put("arbiter",sender.getName());
+                    put("player", target.getName());
+                }};
+                // sender.sendMessage("Congratulations!! You've found a bug!! Please report it to the lolbans developers to get it fixed! :D");
+                sender.sendMessage(Messages.Translate("Warn.PlayerNotWarned", Variables));
                 return true;
 			}
 			Punishment punish = opunish.get();
@@ -92,9 +98,11 @@ public class UnWarnCommand extends RistExCommand
             if (target.isOnline())
             {
                 User u = Main.USERS.get(target.getUniqueId());
-                Player player = (Player) target;
-                u.SetWarned(false, player.getLocation(), "unwarned");
-                u.SendMessage(Messages.Translate("Warn.AcceptMessage", Variables));
+                if (u.IsWarn) {
+                    Player player = (Player) target;
+                    u.SetWarned(false, player.getLocation(), "unwarned");
+                    u.SendMessage(Messages.Translate("Warn.AcceptMessage", Variables));
+                }
             }
 			
 			sender.sendMessage(Messages.Translate("Warn.RemovedSuccess", Variables));

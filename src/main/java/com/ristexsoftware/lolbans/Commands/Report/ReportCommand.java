@@ -95,7 +95,7 @@ public class ReportCommand extends RistExCommand
                     return User.PlayerOnlyVariableMessage("Report.TooManyTries", sender, u.getName(), true);
             }
 
-            String ReportID = PunishID.GenerateID(DatabaseUtil.GenID("Reports"));
+            String ReportID = PunishID.GenerateID(DatabaseUtil.GenID("lolbans_reports"));
 
             int i = 1;
             ps = self.connection.prepareStatement("INSERT INTO lolbans_reports (PlaintiffUUID, PlaintiffName, DefendantUUID, DefendantName, Reason, PunishID, Type) VALUES (?, ?, ?, ?, ?, ?, ?)");

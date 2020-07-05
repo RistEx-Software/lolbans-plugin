@@ -3,6 +3,7 @@ package com.ristexsoftware.lolbans.Hacks;
 import java.util.TreeMap;
 
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 
@@ -64,6 +65,7 @@ public class PlayerEventListener implements Listener
                 p.sendMessage(Messages.Translate("Warn.WarnedOnAction", 
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
+
                     }}
                 ));
             }

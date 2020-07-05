@@ -82,7 +82,7 @@ public class StaffHistoryCommand extends RistExCommand
 
             // Preapre a statement
             // TODO: What about IP bans?
-            PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM lolbans_punishments WHERE ExecutionerUUID = ?");
+            PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM lolbans_punishments WHERE ArbiterUUID = ?");
             pst.setString(1, target.getUniqueId().toString());
 
             ResultSet result = pst.executeQuery();

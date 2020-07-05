@@ -90,14 +90,14 @@ Ban:
   PlayerIsNotBanned: "{PREFIX}&cError! &f{PLAYER} is not banned!"
 
 IPBan:
-  PermIPBanMessage: "&bThe IP &f{IPADDRESS} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
-  TempIPBanMessage: "&bThe IP &f{IPADDRESS} &bhas been TEMPORARILY suspended from {NETWORKNAME} &buntil &f {EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
-  BanAnnouncement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}banned &b{IPADDRESS}&f: &f{REASON} &f[#{PUNISHID}] {SILENT|empty_if_false:\" &8[SILENT]\"}"
-  UnbanSuccess: "{PREFIX}&f{IPADDRESS} &bhas been successfully unbanned."
-  IPIsBanned: "{PREFIX}&cError! &f{IPADDRESS} is already banned!"
-  IPIsNotBanned: "{PREFIX}&cError! &f{IPADDRESS} is not banned!"
-  Insanity: "{PREFIX}&cBanning {IPADDRESS} would ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
-  IPAltNotification: "{PREFIX}&f{PLAYER} &cjoined, is alt account of &f{BANNEDPLAYER} &8[{IPADDRESS}]"
+  PermIPBanMessage: "&bThe IP of &f{PLAYER} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
+  TempIPBanMessage: "&bThe IP of &f{PLAYER} &bhas been TEMPORARILY suspended from {NETWORKNAME} &buntil &f {EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
+  BanAnnouncement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}banned &b{PLAYER}&f: &f{REASON} &f[#{PUNISHID}] {SILENT|empty_if_false:\" &8[SILENT]\"}"
+  UnbanSuccess: "{PREFIX}&bThe IP of &f{PLAYER} &bhas been successfully unbanned."
+  IPIsBanned: "{PREFIX}&cError! &bThe IP of &f{PLAYER} &bis already banned!"
+  IPIsNotBanned: "{PREFIX}&cError! &bThe IP of &f{PLAYER} &bis not banned!"
+  Insanity: "{PREFIX}&cBanning &bThe IP of &f{PLAYER} &bwould ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
+  IPAltNotification: "{PREFIX}&f{PLAYER} &cjoined, is alt account of &f{BANNEDPLAYER} &8Check IP with an Admin!"
   IPAltBanMessage: "&bThe Player &f{PLAYERNAME} &bis an alternate account of {ALTACCOUNT} which has been suspended on {NETWORKNAME} and is disallowed from connection.\n\n&bBanned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
   
 RegexBan:
@@ -143,6 +143,7 @@ Warn:
   WarnKickMessage: "&bYou have been warned!\n\n&bReason: {REASON}\n\n&fBy rejoining you acknowledge that you've been warned!"
   AcceptMessage: "&aThank you for accepting, you may resume your gameplay!"
   NotWarned: "{PREFIX}&bYou have not been warned so there's nothing to accept!"
+  PlayerNotWarned: "{PREFIX}&cError! &f{PLAYER} &cis not warned!"
   
 History:
   NoHistory: "{PREFIX}&bPlayer &f{PLAYER}&b has no punishment history."
