@@ -40,7 +40,7 @@ public class AsyncChatListener implements Listener {
                 try {
                     List<String> cmds = self.getConfig().getStringList("MuteSettings.blacklisted-commands");
                     for (String cmd : cmds) {
-                        if (event.getMessage().startsWith("/" + cmd)) {
+                        if (event.getMessage().toLowerCase().startsWith("/" + cmd.toLowerCase())) {
                             try {
                                 PreparedStatement MuteStatement = self.connection.prepareStatement(
                                         "SELECT * FROM lolbans_punishments WHERE UUID = ? AND Type = ? AND (Expiry IS NULL OR Expiry >= NOW()) AND Appealed = False");

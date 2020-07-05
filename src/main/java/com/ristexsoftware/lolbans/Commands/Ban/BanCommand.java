@@ -1,6 +1,7 @@
 package com.ristexsoftware.lolbans.Commands.Ban;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -30,6 +31,7 @@ public class BanCommand extends RistExCommandAsync {
         super("ban", owner);
         this.setDescription("Ban a player");
         this.setPermission("lolbans.ban");
+        this.setAliases(Arrays.asList(new String[] { "eban","tempban" }));
     }
 
     @Override
@@ -108,6 +110,7 @@ public class BanCommand extends RistExCommandAsync {
                     put("expiry", punishtime == null ? "" : punish.GetExpiryString());
                     put("silent", Boolean.toString(silent));
                     put("appealed", Boolean.toString(punish.GetAppealed()));
+                    put("expires", Boolean.toString(punishtime != null && !punish.GetAppealed()));
                 }
             };
 

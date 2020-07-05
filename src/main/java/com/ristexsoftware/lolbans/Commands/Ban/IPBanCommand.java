@@ -41,7 +41,7 @@ public class IPBanCommand extends RistExCommandAsync
 		this.setDescription("Ban an ip address or CIDR range");
 		this.setPermission("lolbans.ipban");
 		// Stupid ass minecraft has to have it's special way.
-		this.setAliases(Arrays.asList(new String[] { "ban-ip" }));
+		this.setAliases(Arrays.asList(new String[] { "ban-ip", "banip" }));
 	}
 
 	/**
@@ -200,10 +200,6 @@ public class IPBanCommand extends RistExCommandAsync
 			{
 				HostName hn = new HostName(p.getAddress());
 				
-				// FIXME: Do we use a custom message? what's this func even doing?
-				// "KickPlayer" sends the inputed strings into the function in the User class
-				// there are multiple "KickPlayer" funcs but this one is for lolbans_ipbans (hence why the IP is on the end)
-				// Once the func gets the inputs, it'll kick the player with a message specified in the config
 				if (thingy.contains(hn.asAddress()))
 				{
 					Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayerIP(sender.getName(), p, banid, reason, TimeUtil.TimestampNow(), bantime, thingy.toString()), 1L);

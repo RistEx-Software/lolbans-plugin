@@ -1,6 +1,6 @@
 # LolBans 😂
 
-LolBans is an "advanced" punishment managment system for Minecraft, it can ever do CIDR and Regex bans! Wow!
+LolBans is an "advanced" punishment managment system for Minecraft, it can even do CIDR and Regex bans! Wow!
 This started as a joke, but is slowly became a some-what powerful plugin, I mostly use this as a way to
 learn Java and the Spigot API.
 

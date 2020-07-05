@@ -36,10 +36,9 @@ public class ImportUtil {
     // We send the sender a message if anything happens..
     /**
      * Import function for importing Essentials user data and punishments NOTE: This
-     * should only be called from an asynchronous command (RistexCommandAsync)
+     * should only be called asynchronously (i.e. RistexCommandAsync)
      * 
-     * @param sender The command sender, this is used to send messages when
-     *               something happens
+     * @param sender The command sender
      */
     public static void importEssentials(CommandSender sender) {
         if (isRunning) {
@@ -47,6 +46,7 @@ public class ImportUtil {
                     + "&cAn import task is already running! Type \"/lolbans import cancel\" to cancel it"));
             return;
         }
+        
 
         File banJson = new File(Bukkit.getWorldContainer().getAbsolutePath() + "/banned-players.json");
         File userYaml = new File(Bukkit.getWorldContainer().getAbsolutePath() + "/plugins/Essentials/userdata/");
@@ -158,7 +158,8 @@ public class ImportUtil {
                         + "&cAn import task is already running! Type \"/lolbans import cancel\" to cancel it"));
                 return;
             }
-            PreparedStatement bans = self.connection.prepareStatement("SELECT * FROM litebans_bans");
+            PreparedStatement bans = self.connection.prepareStatement("SELECT * FROM litebans_bans WHERE ipban = FALSE");
+            PreparedStatement ipbans = self.connection.prepareStatement("SELECT * FROM litebans_bans WHERE ipban = TRUE");
             PreparedStatement mutes = self.connection.prepareStatement("SELECT * FROM litebans_mutes");
             PreparedStatement kicks = self.connection.prepareStatement("SELECT * FROM litebans_kicks");
             PreparedStatement warns = self.connection.prepareStatement("SELECT * FROM litebans_warnings");
@@ -169,6 +170,7 @@ public class ImportUtil {
             while (banrs.next()) {
                 MojangUtil mojangAPI = new MojangUtil();
                 MojangUser mojangUser = mojangAPI.resolveUser(banrs.getString("uuid"));
+                MojangUser arbiter = mojangAPI.resolveUser(banrs.getString("banned_by_uuid"));
                 if (mojangUser == null) {
                     self.getLogger().warning(banrs.getString("uuid") + " does not exist! Skipping...");
                     continue; // Skip this, this user doesn't even exist.
@@ -180,51 +182,57 @@ public class ImportUtil {
                 }
                 System.out.println(op.getName());
                 System.out.println(op.getUniqueId());
-                Punishment ban = new Punishment(PunishmentType.PUNISH_BAN, sender, op, banrs.getString("reason"), banrs.getLong("until") <= 0 ? null : new Timestamp(banrs.getLong("until")), banrs.getBoolean("silent"));
+                Punishment ban = new Punishment(PunishmentType.PUNISH_BAN, arbiter.getName(), op, banrs.getString("reason"), banrs.getLong("until") <= 0 ? null : new Timestamp(banrs.getLong("until")), banrs.getBoolean("silent"));
                 ban.Commit(sender);
-                Thread.sleep(500);
+                Thread.sleep(250); // Make sure we're not going too fast
             }
-            // while (muters.next()) {
-            //     MojangUtil mojangAPI = new MojangUtil();
-            //     MojangUser mojangUser = mojangAPI.resolveUser(muters.getString("uuid"));
-            //     if (mojangUser == null) {
-            //         self.getLogger().warning(muters.getString("uuid") + " does not exist! Skipping...");
-            //         continue; // Skip this, this user doesn't even exist.
-            //     }
-            //     OfflinePlayer op = Bukkit.getOfflinePlayer(mojangUser.getUUID());
-            //     if (User.IsPlayerMuted(op)) {
-            //         self.getLogger().warning(mojangUser.getName() + " is already muted, skipping...");
-            //         continue;
-            //     }
-            //     Punishment ban = new Punishment(PunishmentType.PUNISH_MUTE, sender, op, banrs.getString("reason"), banrs.getLong("until") <= 0 ? null : new Timestamp(banrs.getLong("until")));
-            //     ban.Commit(sender);
-            //     Thread.sleep(250);
-            // }
-            // while (kickrs.next()) {
-            //     MojangUtil mojangAPI = new MojangUtil();
-            //     MojangUser mojangUser = mojangAPI.resolveUser(kickrs.getString("uuid"));
-            //     if (mojangUser == null) {
-            //         self.getLogger().warning(kickrs.getString("uuid") + " does not exist! Skipping...");
-            //         continue; // Skip this, this user doesn't even exist.
-            //     }
-            //     OfflinePlayer op = Bukkit.getOfflinePlayer(mojangUser.getUUID());
-            //     Punishment ban = new Punishment(PunishmentType.PUNISH_KICK, sender, op, banrs.getString("reason"), banrs.getLong("until") <= 0 ? null : new Timestamp(banrs.getLong("until")));
-            //     ban.Commit(sender);
-            //     Thread.sleep(250);
-            // }
-            // while (warnrs.next()) {
-            //     MojangUtil mojangAPI = new MojangUtil();
-            //     MojangUser mojangUser = mojangAPI.resolveUser(warnrs.getString("uuid"));
-            //     if (mojangUser == null) {
-            //         self.getLogger().warning(warnrs.getString("uuid") + " does not exist! Skipping...");
-            //         continue; // Skip this, this user doesn't even exist.
-            //     }
-            //     OfflinePlayer op = Bukkit.getOfflinePlayer(mojangUser.getUUID());
-            //     Punishment ban = new Punishment(PunishmentType.PUNISH_WARN, sender, op, banrs.getString("reason"), banrs.getLong("until") <= 0 ? null : new Timestamp(banrs.getLong("until")));
-            //     ban.Commit(sender);
-            //     Thread.sleep(250);
-            // }
 
+            // So we need to do seperate while loops, because litebans is literally dumb and uses seperate tables...
+            while (muters.next()) {
+                MojangUtil mojangAPI = new MojangUtil();
+                MojangUser mojangUser = mojangAPI.resolveUser(muters.getString("uuid"));
+                MojangUser arbiter = mojangAPI.resolveUser(muters.getString("banned_by_uuid"));
+                if (mojangUser == null) {
+                    self.getLogger().warning(muters.getString("uuid") + " does not exist! Skipping...");
+                    continue; // Skip this, this user doesn't even exist.
+                }
+                OfflinePlayer op = Bukkit.getOfflinePlayer(mojangUser.getName());
+                if (User.isPlayerMuted(op).get()) {
+                    self.getLogger().warning(mojangUser.getName() + " is already muted, skipping...");
+                    continue;
+                }
+                Punishment ban = new Punishment(PunishmentType.PUNISH_MUTE, arbiter.getName(), op, muters.getString("reason"), muters.getLong("until") <= 0 ? null : new Timestamp(muters.getLong("until")), muters.getBoolean("silent"));
+                ban.Commit(sender);
+                Thread.sleep(250); // Make sure we're not going too fast
+            }
+
+            while (kickrs.next()) {
+                MojangUtil mojangAPI = new MojangUtil();
+                MojangUser mojangUser = mojangAPI.resolveUser(kickrs.getString("uuid"));
+                MojangUser arbiter = mojangAPI.resolveUser(kickrs.getString("banned_by_uuid"));
+                if (mojangUser == null) {
+                    self.getLogger().warning(kickrs.getString("uuid") + " does not exist! Skipping...");
+                    continue; // Skip this, this user doesn't even exist.
+                }
+                OfflinePlayer op = Bukkit.getOfflinePlayer(mojangUser.getName());
+                Punishment ban = new Punishment(PunishmentType.PUNISH_KICK, arbiter.getName(), op, kickrs.getString("reason"), kickrs.getLong("until") <= 0 ? null : new Timestamp(kickrs.getLong("until")), kickrs.getBoolean("silent"));
+                ban.Commit(sender);
+                Thread.sleep(250); // Make sure we're not going too fast
+            }
+
+            while (warnrs.next()) {
+                MojangUtil mojangAPI = new MojangUtil();
+                MojangUser mojangUser = mojangAPI.resolveUser(warnrs.getString("uuid"));
+                MojangUser arbiter = mojangAPI.resolveUser(warnrs.getString("banned_by_uuid"));
+                if (mojangUser == null) {
+                    self.getLogger().warning(warnrs.getString("uuid") + " does not exist! Skipping...");
+                    continue; // Skip this, this user doesn't even exist.
+                }
+                OfflinePlayer op = Bukkit.getOfflinePlayer(mojangUser.getName());
+                Punishment ban = new Punishment(PunishmentType.PUNISH_WARN, arbiter.getName(), op, warnrs.getString("reason"), warnrs.getLong("until") <= 0 ? null : new Timestamp(warnrs.getLong("until")), warnrs.getBoolean("silent"));
+                ban.Commit(sender);
+                Thread.sleep(250); // Make sure we're not going too fast
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

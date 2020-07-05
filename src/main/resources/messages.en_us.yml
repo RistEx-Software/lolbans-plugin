@@ -32,7 +32,7 @@ Prefix: "&bLolBans &f» "
 NetworkName: "&fMy Network"
 Website: "YourWebsiteHere.com"
 
-# Common error messages used throughout the plugin
+# Common messages used throughout the plugin
 InvalidSyntax: "{PREFIX}&cInvalid Syntax!"
 ServerError: "{PREFIX}&cThe server encountered an error, please try again later."
 PlayerDoesntExist: "{PREFIX}&cError! &f{PLAYER} &bdoesn't exist!"
@@ -70,9 +70,6 @@ Discord:
     BanwaveStartText: "The following users have been banned:\n{USERLIST}"
     ReportTitle: "{ARBITERNAME} reported {PLAYERNAME}"
     BanObjectTitle: "{ARBITERNAME} created a new ban"
-    
-Link:
-  LinkedAccountMessage: "&bYour Account Link Confirmation Code is &f{LINKID}"
 
 Report:
   ReasonRequired: "{PREFIX}&cError! You must provide a reason for reporting &f{PLAYER}"
@@ -166,12 +163,14 @@ StaffRollback:
   RollbackComplete: "{PREFIX}&fRolled back &b{AFFECTED} punishments&f."
   NoRollback: "{PREFIX}&fThere are no users to rollback."
   NoHistory: "{PREFIX}&f{PLAYER} &bhas performed no punishments."
+
+Statistics: "&3:=:=:= &bLolBans Statistics &3:=:=:=\n&bTotal Punishments:&f {PUNISHCOUNT}\n  &7>> &bBans:&f {BANS} ({REGEX} RegEx, {IPBANS} IP) ({BANPERCENT}%)\n  &7>> &bMutes:&f {MUTES} ({MUTEPERCENT}%)\n  &7>> &bWarnings:&f {WARNS} ({WARNPERCENT}%)\n  &7>> &bKicks:&f {KICKS} ({KICKPERCENT}%)\n\n&bTotal Users:&f {USERSCOUNT}\n  &7>> &bUsers Punished:&f {USERSPUNISHED} ({PERCENTPUNISHED}%)\n&r"
 # This section is not parsed by the above variable parser.
 Syntax:
-  Ban: "Usage: /ban [-s] [-o] <PlayerName> <Time|*> <Reason>"
+  Ban: "Usage: /ban [-s] [-o] <PlayerName> [Time|*] <Reason>"
   Unban: "Usage: /unban [-s] <PlayerName|PunishID> <Reason>"
   BanWave: "Usage: /banwave [-s] add <Player> <Time|*> <Reason>\nUsage: /banwave [-s] rm|remove|delete|del <Player>\nUsage: /banwave [-s] enforce|run|start|exec|execute"
-  IPBan: "Usage: /ipban [-s] <ip address>[/<cidr>] <Time|*> <Reason>"
+  IPBan: "Usage: /ipban [-s] <ip address>[/<cidr>] <Time|*> <Reason>" 
   IPUnban: "Usage: /unipban [-s] <ip address>[/<cidr>] <Reason>"
   RegexBan: "Usage: /regexban [-s] <Regex> <Time|*> <Reason>"
   RegexUnban: "Usage: /regexunban [-s] <Regular Expression|PunishID> <Reason>"
@@ -179,14 +178,12 @@ Syntax:
   ReportHistory: "Usage: /reports [PlayerName] [<page>]"
   PruneHistory: "Usage: /prunehistory <Player|PunishID|CIDR|Regex> <Time|*>"
   StaffHistory: "Usage: /staffhistory <staffmember>"
-  Broadcast: "Usage: /broadcast <message>"
-  Freeze: "Usage: /freeze [-s] <PlayerName>"
   Kick: "Usage: /kick [-s] <PlayerName> <Reason>"
   Report: "Usage: /report <type> <player> <reason>"
   Reports: "Usage: /reports [PlayerName] [<page>]"
   StaffRollback: "Usage: /staffrollback [-s] <Staffmember> <Time|*>"
   ChatMute: "Usage: /chatmute"
-  Mute: "Usage: /mute [-s] [-o] <Player> <Time|*> <Reason>"
+  Mute: "Usage: /mute [-s] [-o] <Player> [Time|*] <Reason>"
   Unmute: "Usage: /unmute [-s] <Player> <Reason>"
   WarnAccept: "Usage: /acknowledge"
   Warn: "Usage: /warn [-s] <Player> <Reason>"

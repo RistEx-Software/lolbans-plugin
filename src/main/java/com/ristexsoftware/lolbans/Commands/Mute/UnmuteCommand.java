@@ -86,6 +86,7 @@ public class UnmuteCommand extends RistExCommand {
                     put("punishid", punish.GetPunishmentID());
                     put("silent", Boolean.toString(silent));
                     put("appealed", Boolean.toString(punish.GetAppealed()));
+                    put("expires", Boolean.toString(punish.GetExpiry() != null && !punish.GetAppealed()));
                 }
             };
 

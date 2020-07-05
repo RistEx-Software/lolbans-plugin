@@ -466,7 +466,7 @@ public class DatabaseUtil
             {
                 //This is where you should do your database interaction
                 try {
-                    PreparedStatement users = self.connection.prepareStatement("SELECT COUNT(*) FROM Users");
+                    PreparedStatement users = self.connection.prepareStatement("SELECT COUNT(*) FROM lolbans_users");
                     ResultSet results = users.executeQuery();
                     if (results.next() &&  !results.wasNull()) {
                         return results.getInt("COUNT(*)");

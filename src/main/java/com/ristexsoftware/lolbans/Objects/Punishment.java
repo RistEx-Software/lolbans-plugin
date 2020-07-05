@@ -20,6 +20,7 @@ import com.ristexsoftware.lolbans.Utils.PunishID;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 public class Punishment
@@ -59,15 +60,15 @@ public class Punishment
      * @param target Who (or what) is being punished
      * @param Reason The reason for the punishment
      * @param Expiry When the punishment expires (if applicable, null if permanent)
+     * @param silent If the punishment is silent
      * @throws SQLException If it cannot communicate with the SQL database
      */
     public Punishment(PunishmentType Type, CommandSender sender, OfflinePlayer target, String Reason, Timestamp Expiry, Boolean silent) throws SQLException
     {
-        // Not supported yet, will be in the future.
-		if (Type == PunishmentType.PUNISH_REGEX || Type == PunishmentType.PUNISH_IP)
-			throw new UnknownError("Unsupported Punishment type");
+        if (Type == PunishmentType.PUNISH_REGEX || Type == PunishmentType.PUNISH_IP)
+            throw new UnknownError("Unsupported Punishment type");
 
-		this.Type = Type;
+        this.Type = Type;
         this.player = target;
         this.uuid = target.getUniqueId();
         this.PlayerName = target.getName();
@@ -76,7 +77,7 @@ public class Punishment
         this.Reason = Reason;
         this.Expiry = Expiry;
         this.silent = silent;
-        
+
         if (sender instanceof Player)
             this.Executioner = (OfflinePlayer)sender;
         else
@@ -95,6 +96,50 @@ public class Punishment
         }
     }
 
+    // So, this is dumb, BUT, this was the easiest way to preserve the command sender from imported bans (like LiteBans)
+    /**
+     * Create a new punishment to commit to the database<p>NOTE: This should only be used if you're unable to return a CommandSender
+     * @param Type The type of punishment to create
+     * @param sender Who is creating the punishment
+     * @param target Who (or what) is being punished
+     * @param Reason The reason for the punishment
+     * @param Expiry When the punishment expires (if applicable, null if permanent)
+     * @param silent If the punishment is silent
+     * @throws SQLException If it cannot communicate with the SQL database
+     */
+    public Punishment(PunishmentType Type, String sender, OfflinePlayer target, String Reason, Timestamp Expiry, Boolean silent) throws SQLException {
+        // Not supported yet, will be in the future.
+        if (Type == PunishmentType.PUNISH_REGEX || Type == PunishmentType.PUNISH_IP)
+        throw new UnknownError("Unsupported Punishment type");
+
+        this.Type = Type;
+        this.player = target;
+        this.uuid = target.getUniqueId();
+        this.PlayerName = target.getName();
+        this.TimePunished = TimeUtil.TimestampNow();
+        this.IPAddress = target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : "UNKNOWN";
+        this.Reason = Reason;
+        this.Expiry = Expiry;
+        this.silent = silent;
+
+        // The odds of someone's name matching this is literally 0, unless for some reason mojang allows bcrypt hashes as names.
+        if (sender.equals("CONSOLE"))
+            this.IsConsoleExectioner = true;
+        else
+            this.Executioner = Bukkit.getOfflinePlayer(sender);
+
+        switch (Type)
+        {
+            case PUNISH_BAN:
+            case PUNISH_KICK:
+            case PUNISH_MUTE:
+            case PUNISH_WARN: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("lolbans_punishments")); break;
+            case PUNISH_REGEX: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("lolbans_regexbans")); break;
+            case PUNISH_IP: this.PID = PunishID.GenerateID(DatabaseUtil.GenID("lolbans_ipbans")); break;
+            default:
+                throw new UnknownError("Unknown Punishment Type \"" + Type.DisplayName() + "\" for " + target.getName() + " " + Reason);
+        }
+    }
 
     /**
      * Find a punishment based on it's ID

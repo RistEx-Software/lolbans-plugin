@@ -1,5 +1,8 @@
 package com.ristexsoftware.lolbans.Utils;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 public class NumberUtil {
 
     /**
@@ -55,6 +58,13 @@ public class NumberUtil {
             if(Character.digit(s.charAt(i),radix) < 0) return false;
         }
         return true;
+    }
+
+    public static Float getPercentage(int x, int y, Double decimalPlace) {
+        Float z = Float.valueOf(String.valueOf(y) + ".0f");
+        final DecimalFormat df = new DecimalFormat(String.valueOf(decimalPlace));
+        df.setRoundingMode(RoundingMode.HALF_EVEN);
+        return Float.valueOf(df.format((x/z)*100));
     }
 
 }

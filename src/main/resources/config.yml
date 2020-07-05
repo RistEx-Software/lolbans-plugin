@@ -96,25 +96,7 @@ IPBanSettings:
   # Optionally specify how wide reaching the ban will go
   InsanePercentage: 90
 
+# The max time a user can ban/mute someone. (lolbans.maxtime.group)
 max-time:
   default: 1d
   moderator: 14d
-
-# ReportSettings:
-#   # List of report types that are valid for the report command.
-#   Types:
-#     - Cheating
-#     - Game
-#     - Griefing
-#     - Hacking
-#     - Spamming
-#     - Profanity
-#     - Racism
-#     - Scamming
-#     - Advertisement
-#     - Other
-
-# Draw a box around the ban message!
-# WARNING! If their window is smaller than the box length, it will text-wrap
-# Removed due to how minecraft handles whitespace.................
-# BanMessageBox: false

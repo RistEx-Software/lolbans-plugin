@@ -78,11 +78,17 @@ public final class Main extends JavaPlugin {
     // Our database connection, here for legacy reasons (it should be in
     // DatabaseUtil)
     public Connection connection;
+    List<Command> CommandList = new ArrayList<Command>();
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         new Configuration(this.getConfig());
+
+        // This is dumb, plugman somehow breaks lolbans
+        // but whatever, you shouldn't be using plugman anyway...
+        if (getServer().getPluginManager().getPlugin("PlugMan")!=null) 
+            getLogger().warning("PlugMan detected! This WILL cause issues with LolBans, please consider restarting the server to update plugins!");
 
         // Creating config folder, and adding config to it.
         if (!this.getDataFolder().exists()) {
@@ -142,7 +148,7 @@ public final class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
         getServer().getPluginManager().registerEvents(new ConnectionListeners(), this);
 
-        List<Command> CommandList = new ArrayList<Command>();
+        
         CommandList.add(new BanCommand(this));
         CommandList.add(new IPBanCommand(this));
         CommandList.add(new UnbanCommand(this));
@@ -157,7 +163,6 @@ public final class Main extends JavaPlugin {
         CommandList.add(new MuteCommand(this));
         CommandList.add(new UnmuteCommand(this));
         CommandList.add(new KickCommand(this));
-        // CommandList.add(new BroadcastCommand(this));
         CommandList.add(new ReportCommand(this));
         CommandList.add(new RegexBanCommand(this));
         CommandList.add(new StaffRollbackCommand(this));

@@ -79,7 +79,7 @@ public class Statistics {
 
     public static Integer getUniquePunishments() {
         try {
-            PreparedStatement ps = Main.getPlugin(Main.class).connection.prepareStatement("SELECT DISTINCT UUID FROM Punishments");
+            PreparedStatement ps = Main.getPlugin(Main.class).connection.prepareStatement("SELECT DISTINCT UUID FROM lolbans_punishments");
             Future<Optional<ResultSet>> result = DatabaseUtil.ExecuteLater(ps);
             if (result.isDone()) {
                 Optional<ResultSet> ores = result.get();
@@ -88,6 +88,19 @@ public class Statistics {
                     results.last();
                     return results.getRow();
                 }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public static Integer getUniquePunishmentsCount() {
+        try {
+            PreparedStatement ps = Main.getPlugin(Main.class).connection.prepareStatement("SELECT Count(Distinct UUID) AS UUID FROM lolbans_punishments");
+            ResultSet results = ps.executeQuery();
+            if (results.next() &&  !results.wasNull()) {
+                return results.getInt("UUID");
             }
         } catch (Exception e) {
             e.printStackTrace();

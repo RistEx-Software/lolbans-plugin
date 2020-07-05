@@ -20,6 +20,7 @@ import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
 import java.sql.*;
 import java.util.TreeMap;
+import java.util.Arrays;
 import java.util.Map;
 
 public class MuteCommand extends RistExCommand
@@ -29,6 +30,7 @@ public class MuteCommand extends RistExCommand
         super("mute", owner);
         this.setDescription("Prevent a player from sending messages in chat");
         this.setPermission("lolbans.mute");
+        this.setAliases(Arrays.asList(new String[] { "emute","tempmute" }));
     }
 
     @Override
@@ -103,6 +105,7 @@ public class MuteCommand extends RistExCommand
                     put("expiry", punishtime == null ? "" : punish.GetExpiryString());
                     put("silent", Boolean.toString(silent));
                     put("appealed", Boolean.toString(punish.GetAppealed()));
+                    put("expires", Boolean.toString(punishtime != null && !punish.GetAppealed()));
                 }};
 
             if (target.isOnline()) {
