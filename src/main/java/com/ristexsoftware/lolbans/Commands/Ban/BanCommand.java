@@ -22,6 +22,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public class BanCommand extends RistExCommandAsync {
@@ -72,7 +73,7 @@ public class BanCommand extends RistExCommandAsync {
             String reason = punishtime == null ? a.get("TimePeriod")+" "+ a.get("Reason") : a.get("Reason");
 
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
-            Punishment punish = new Punishment(PunishmentType.PUNISH_BAN, sender, target, reason, punishtime, silent);
+            Punishment punish = new Punishment(PunishmentType.PUNISH_WARN, sender instanceof Player ? ((Player)sender).getUniqueId().toString() : null, target, reason, null, silent);
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);

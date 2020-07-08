@@ -15,6 +15,7 @@ import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
+import com.ristexsoftware.lolbans.Utils.MojangUtil;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
@@ -73,7 +74,7 @@ public class MuteCommand extends RistExCommand
             Timestamp punishtime = TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
             String reason = punishtime == null ? a.get("TimePeriod")+" "+ a.get("Reason") : a.get("Reason");
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
-            Punishment punish = new Punishment(PunishmentType.PUNISH_MUTE, sender, target, reason, punishtime, silent);
+            Punishment punish = new Punishment(PunishmentType.PUNISH_WARN, sender instanceof Player ? ((Player)sender).getUniqueId().toString() : null, target, reason, null, silent);
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);

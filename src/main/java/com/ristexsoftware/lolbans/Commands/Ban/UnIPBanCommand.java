@@ -16,10 +16,13 @@ import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.IPBanUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
+import com.ristexsoftware.lolbans.Utils.MojangUtil;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.Timing;
+import com.ristexsoftware.lolbans.Utils.MojangUtil.MojangUser;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
@@ -93,15 +96,29 @@ public class UnIPBanCommand extends RistExCommandAsync
 			}
 			else
 			{
-				HostName hs = new HostName(CIDR);
-				Optional<ResultSet> ores =  IPBanUtil.IsBanned(hs.asInetAddress()).get();
-				if (!ores.isPresent())
-					return User.PlayerOnlyVariableMessage("IPBan.IPIsNotBanned", sender, CIDR, true);
+                HostName hs = new HostName(CIDR);
+                if (!(hs.asInetAddress() == null)) {
+                    Optional<ResultSet> ores =  IPBanUtil.IsBanned(hs.asInetAddress()).get();
+                    if (!ores.isPresent() || ores == null)
+                        return User.PlayerOnlyVariableMessage("IPBan.IPIsNotBanned", sender, CIDR, true);
+    
+                    res = ores.get();
+                }
+                else {
+                    MojangUser mUser = new MojangUtil().resolveUser(CIDR);
+                    if (mUser == null) return User.PlayerOnlyVariableMessage("IPBan.IPIsNotBanned", sender, CIDR, true);
+                    String userIP = User.getLastIP(mUser.getUniqueId()).get();
+                    ps = self.connection.prepareStatement("SELECT * FROM lolbans_ipbans WHERE IPAddress = ? AND Appealed = false");
+                    ps.setString(1, userIP);
+                    Optional<ResultSet> ores = DatabaseUtil.ExecuteLater(ps).get();
+                    if (!ores.isPresent())
+                        return User.PlayerOnlyVariableMessage("IPBan.IPIsNotBanned", sender, CIDR, true);
 
-				res = ores.get();
+                    res = ores.get();
+                }
 			}
 
-            res.next();
+            if (!res.next()) return User.PlayerOnlyVariableMessage("IPBan.IPIsNotBanned", sender, CIDR, true);
 
             int i = 1;
             ps = self.connection.prepareStatement("UPDATE lolbans_ipbans SET AppealReason = ?, AppelleeName = ?, AppelleeUUID = ?, AppealTime = CURRENT_TIMESTAMP, Appealed = TRUE WHERE id = ?");
@@ -126,10 +143,13 @@ public class UnIPBanCommand extends RistExCommandAsync
 
 			// Prepare our announce message
 			final String IPAddress = res.getString("IPAddress");
-			final String PunishID = res.getString("PunishID");
+            final String PunishID = res.getString("PunishID");
+            String ipRegex = "((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+			String censorip = IPAddress.replaceAll(ipRegex, "***.***.***.***");
             TreeMap<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
             {{
                 put("ipaddress", IPAddress);
+                put("censoredipaddress", censorip);
 				put("arbiter", sender.getName());
 				put("Reason", reason);
                 put("punishid", PunishID);
@@ -138,7 +158,7 @@ public class UnIPBanCommand extends RistExCommandAsync
 			}};
 			
 			sender.sendMessage(Messages.Translate("IPBan.UnbanSuccess", Variables));
-            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("IPBan.UnbanSuccess", Variables));
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("IPBan.BanAnnouncement", Variables));
             // TODO: DiscordUtil.GetDiscord().SendDiscord(punish, silent);
             t.Finish(sender);
         }

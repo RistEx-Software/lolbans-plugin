@@ -3,6 +3,7 @@ package com.ristexsoftware.lolbans.Commands.Warn;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.Punishment;
@@ -12,6 +13,7 @@ import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
+import com.ristexsoftware.lolbans.Utils.MojangUtil;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
@@ -21,40 +23,32 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-
-public class WarnCommand extends RistExCommand
-{
-    public WarnCommand(Plugin owner)
-    {
+public class WarnCommand extends RistExCommand {
+    public WarnCommand(Plugin owner) {
         super("warn", owner);
         this.setDescription("Issue a warning against a player");
         this.setPermission("lolbans.warn");
     }
 
     @Override
-    public void onSyntaxError(CommandSender sender, String label, String[] args)
-    {
-        try 
-        {
+    public void onSyntaxError(CommandSender sender, String label, String[] args) {
+        try {
             sender.sendMessage(Messages.InvalidSyntax);
-            sender.sendMessage(Messages.Translate("Syntax.Warn", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-        }
-        catch (InvalidConfigurationException e)
-        {
+            sender.sendMessage(
+                    Messages.Translate("Syntax.Warn", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+        } catch (InvalidConfigurationException e) {
             e.printStackTrace();
             sender.sendMessage(Messages.ServerError);
         }
     }
 
     @Override
-    public boolean Execute(CommandSender sender, String label, String[] args)
-    {
+    public boolean Execute(CommandSender sender, String label, String[] args) {
         if (!PermissionUtil.Check(sender, "lolbans.warn"))
             return User.PermissionDenied(sender, "lolbans.warn");
 
         // /warn [-s] <PlayerName> <Reason>
-        try 
-        {
+        try {
             ArgumentUtil a = new ArgumentUtil(args);
             a.OptionalFlag("Silent", "-s");
             a.RequiredString("PlayerName", 0);
@@ -71,26 +65,29 @@ public class WarnCommand extends RistExCommand
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
 
-            Punishment punish = new Punishment(PunishmentType.PUNISH_WARN, sender, target, reason, null, silent);
+            Punishment punish = new Punishment(PunishmentType.PUNISH_WARN, sender instanceof Player ? ((Player)sender).getUniqueId().toString() : null, target, reason, null, silent);
             punish.Commit(sender);
 
-            Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-            {{
-                put("player", target.getName());
-                put("reason", reason);
-                put("punishid", punish.GetPunishmentID());
-                put("arbiter", sender.getName());
-                put("silent", Boolean.toString(silent));
-                put("appealed", Boolean.toString(punish.GetAppealed()));
-                put("simple", Boolean.toString(Main.getPlugin(Main.class).getConfig().getBoolean("WarningSettings.SimpleWarning")));
-            }};
-                
-            // If they're online, require acknowledgement immediately by freezing them and sending a message.
-            if (target.isOnline())
-            {
+            Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                {
+                    put("player", target.getName());
+                    put("reason", reason);
+                    put("punishid", punish.GetPunishmentID());
+                    put("arbiter", sender.getName());
+                    put("silent", Boolean.toString(silent));
+                    put("appealed", Boolean.toString(punish.GetAppealed()));
+                    put("simple", Boolean.toString(
+                            Main.getPlugin(Main.class).getConfig().getBoolean("WarningSettings.SimpleWarning")));
+                }
+            };
+
+            // If they're online, require acknowledgement immediately by freezing them and
+            // sending a message.
+            if (target.isOnline()) {
                 String WarnedMessage = Messages.Translate("Warn.WarnedMessage", Variables);
                 User u = Main.USERS.get(target.getUniqueId());
-                User.playSound((Player)target, Main.getPlugin(Main.class).getConfig().getString("WarningSettings.Sound"));
+                User.playSound((Player) target,
+                        Main.getPlugin(Main.class).getConfig().getString("WarningSettings.Sound"));
                 if (Main.getPlugin(Main.class).getConfig().getBoolean("WarningSettings.SimpleWarning")) {
                     ((Player) target).sendMessage(WarnedMessage);
                 } else {
@@ -104,8 +101,7 @@ public class WarnCommand extends RistExCommand
             }
             BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Warn.WarnAnnouncment", Variables));
             DiscordUtil.GetDiscord().SendDiscord(punish, silent);
-        }
-        catch (SQLException | InvalidConfigurationException e)
+        } catch (SQLException | InvalidConfigurationException | InterruptedException | ExecutionException e)
         {
             e.printStackTrace();
             sender.sendMessage(Messages.ServerError);

@@ -50,12 +50,13 @@ public class PruneHistoryCommand extends RistExCommandAsync
         Future<Optional<ResultSet>> reportsres = DatabaseUtil.ExecuteLater(Reports);
         Optional<Punishment> punish = Punishment.FindPunishment(searchable);
 
+        Integer recordnum = 0;
         // Delete a punishment
         if (punish.isPresent())
         {
             Punishment p = punish.get();
             p.Delete();
-            sender.sendMessage("History Cleared.");
+            recordnum = recordnum + 1;
             return true;
         }
 

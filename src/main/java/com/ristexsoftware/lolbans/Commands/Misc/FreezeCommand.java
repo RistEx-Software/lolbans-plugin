@@ -74,20 +74,18 @@ public class FreezeCommand extends RistExCommand
                 put("player", target.getName());
                 put("arbiter", sender.getName());
                 put("silent", Boolean.toString(silent));
+                put("appealed", Boolean.toString(!u.IsFrozen()));
             }};
             
             u.SetFrozen(!u.IsFrozen());
 
-            u.SendMessage(Messages.Translate(u.IsFrozen() ? "Freeze.FrozenMessage" : "Freeze.UnFrozenMessage", Variables));
+            u.SendMessage(Messages.Translate("Freeze.FrozenMessage", Variables));
 
             // Send them a box as well. This will disallow them from sending move events.
             // However, client-side enforcement is not guaranteed so we also enforce the
             // same thing using the MovementListener, this just helps stop rubberbanding.
             u.SpawnBox(true, null);
-
-            if (Messages.Discord)
-                BroadcastUtil.BroadcastEvent(silent, Messages.Translate(u.IsFrozen() ? "Freeze.FreezeAnnouncement" : "Freeze.UnfreezeAnnouncement", Variables));
-            // TODO: Discord
+            BroadcastUtil.BroadcastEvent(silent, Messages.Translate("Freeze.FreezeAnnouncement", Variables));
         }
         catch (InvalidConfigurationException e)
         {

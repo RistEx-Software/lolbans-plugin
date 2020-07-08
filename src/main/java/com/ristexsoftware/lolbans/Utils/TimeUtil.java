@@ -52,7 +52,7 @@ public class TimeUtil
      * @return human readable duration
      */
     public static String DurationString(long t)
-    {
+    { 
         long years = t / 31449600;
         long weeks = (t / 604800) % 52;
         long days = (t / 86400) % 7;

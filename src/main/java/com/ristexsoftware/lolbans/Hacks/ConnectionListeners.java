@@ -1,32 +1,31 @@
 package com.ristexsoftware.lolbans.Hacks;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.Iterator;
 import java.util.UUID;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.IPBanUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
+import com.ristexsoftware.lolbans.Utils.IPBanUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
-import com.ristexsoftware.lolbans.Objects.User;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -44,36 +43,15 @@ public class ConnectionListeners implements Listener
      * Our event listeners.
      */
 
-    // Adding players to a hashmap and account linking
-    @EventHandler
-    public static void OnPlayerConnect(PlayerJoinEvent event) 
-    {
-        // if (LinkMessages == null)
-        //     LinkMessages = new HashMap<UUID, String>();
-
-        Player player = event.getPlayer();
-        String puuid = player.getUniqueId().toString();
-        String ipaddr = player.getAddress().getAddress().getHostAddress();
-
-        Main.USERS.put(player.getUniqueId(), new User(player));
-
-        if (!player.hasPlayedBefore())
-        {
-            Timestamp firstjoin = TimeUtil.TimestampNow();
-            DatabaseUtil.InsertUser(puuid, player.getName(), ipaddr, firstjoin, firstjoin);
-        }
-        else
-        {
-            Timestamp lastjoin = TimeUtil.TimestampNow();
-            DatabaseUtil.UpdateUser(puuid, player.getName(), ipaddr, lastjoin);
-        }
-    }
-
     @EventHandler
     public static void OnPlayerConnectAsync(AsyncPlayerPreLoginEvent event) 
     {
         try 
         {
+            // First things first, lets log this.
+            Timestamp login = TimeUtil.TimestampNow();
+            // InsertUser has a check to see if they've joined before, so it's safe to use as the update event aswell.
+            DatabaseUtil.InsertUser(event.getUniqueId().toString(), event.getName(), event.getAddress().getHostAddress().toString(), login, login);
             // To save time, we do a few things here:
             // 1. We execute 3 queries:
             //      1st query: Get whether the player is banned.

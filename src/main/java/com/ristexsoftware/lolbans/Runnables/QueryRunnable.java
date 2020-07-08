@@ -20,8 +20,10 @@ public class QueryRunnable extends BukkitRunnable
             // TODO: Report expirations should be configurable
             PreparedStatement punps = self.connection.prepareStatement("UPDATE lolbans_punishments SET Appealed = True, AppealReason = 'Expired', AppelleeName = 'CONSOLE', AppelleeUUID = 'CONSOLE', AppealTime = NOW() WHERE Expiry <= NOW()");
             PreparedStatement regps = self.connection.prepareStatement("UPDATE lolbans_regexbans SET Appealed = True, AppealReason = 'Expired', AppelleeName = 'CONSOLE', AppelleeUUID = 'CONSOLE', AppealTime = NOW() WHERE Expiry <= NOW()");
+            PreparedStatement ipps = self.connection.prepareStatement("UPDATE lolbans_ipbans SET Appealed = True, AppealReason = 'Expired', AppelleeName = 'CONSOLE', AppelleeUUID = 'CONSOLE', AppealTime = NOW() WHERE Expiry <= NOW()");
             DatabaseUtil.ExecuteUpdate(punps);
             DatabaseUtil.ExecuteUpdate(regps);
+            DatabaseUtil.ExecuteUpdate(ipps);
             PreparedStatement ps = self.connection.prepareStatement("UPDATE lolbans_reports SET Closed = True, CloseReason = 'Expired' WHERE TimeAdded <= ?");
             ps.setTimestamp(1, new Timestamp((TimeUtil.GetUnixTime() * 1000L) + TimeUtil.Duration(self.getConfig().getString("General.ReportExpiry", "3d")).get()));
             DatabaseUtil.ExecuteUpdate(ps);

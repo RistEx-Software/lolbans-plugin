@@ -140,8 +140,8 @@ public class IPBanCommand extends RistExCommandAsync
 			ArgumentUtil a = new ArgumentUtil(args);
 			a.OptionalFlag("Silent", "-s");
 			a.RequiredString("CIDR", 0);
-			a.RequiredString("Time", 1);
-			a.RequiredSentence("Reason", 2);
+            a.OptionalString("Time", 1);
+            a.RequiredSentence("Reason", a.get("Time")==null?0:1);
 
 			if (!a.IsValid())
 				return false;
@@ -178,12 +178,15 @@ public class IPBanCommand extends RistExCommandAsync
 			DatabaseUtil.ExecuteUpdate(pst);
 
 			IPBanUtil.addIPAddr(thingy.toString());
+			String ipRegex = "((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+			String censorip = thingy.toString().replaceAll(ipRegex, "***.***.***.***");
 
 			// Format our messages.
 			String IPBanAnnouncement = Messages.Translate("IPBan.BanAnnouncement",
 				new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
 				{{
 					put("ipaddress", thingy.toString());
+					put("censoredipaddress", censorip);
 					put("reason", reason);
 					put("arbiter", sender.getName());
 					put("punishid", banid);

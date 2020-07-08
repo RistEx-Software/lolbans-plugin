@@ -92,8 +92,8 @@ Ban:
 IPBan:
   PermIPBanMessage: "&bThe IP of &f{PLAYER} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
   TempIPBanMessage: "&bThe IP of &f{PLAYER} &bhas been TEMPORARILY suspended from {NETWORKNAME} &buntil &f {EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
-  BanAnnouncement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}banned &b{PLAYER}&f: &f{REASON} &f[#{PUNISHID}] {SILENT|empty_if_false:\" &8[SILENT]\"}"
-  UnbanSuccess: "{PREFIX}&bThe IP of &f{PLAYER} &bhas been successfully unbanned."
+  BanAnnouncement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}ip banned &b{CENSOREDIPADDRESS}&f: &f{REASON} &f[#{PUNISHID}] {SILENT|empty_if_false:\" &8[SILENT]\"}"
+  UnbanSuccess: "{PREFIX}&bThe IP of &f{CENSOREDIPADDRESS} &bhas been successfully unbanned."
   IPIsBanned: "{PREFIX}&cError! &bThe IP of &f{PLAYER} &bis already banned!"
   IPIsNotBanned: "{PREFIX}&cError! &bThe IP of &f{PLAYER} &bis not banned!"
   Insanity: "{PREFIX}&cBanning &bThe IP of &f{PLAYER} &bwould ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
@@ -164,6 +164,11 @@ StaffRollback:
   RollbackComplete: "{PREFIX}&fRolled back &b{AFFECTED} punishments&f."
   NoRollback: "{PREFIX}&fThere are no users to rollback."
   NoHistory: "{PREFIX}&f{PLAYER} &bhas performed no punishments."
+
+Freeze:
+  FrozenMessage: "{PREFIX}&bYou have been frozen by &f{ARBITER} &band may not move!"
+  FreezeAnnouncement: "{PREFIX}&f{ARBITER}&b {APPEALED|empty_if_false:\"un-\"}froze &f{PLAYER} {SILENT|empty_if_false:\" &8[SILENT]\"}"
+
 
 Statistics: "&3:=:=:= &bLolBans Statistics &3:=:=:=\n&bTotal Punishments:&f {PUNISHCOUNT}\n  &7>> &bBans:&f {BANS} ({REGEX} RegEx, {IPBANS} IP) ({BANPERCENT}%)\n  &7>> &bMutes:&f {MUTES} ({MUTEPERCENT}%)\n  &7>> &bWarnings:&f {WARNS} ({WARNPERCENT}%)\n  &7>> &bKicks:&f {KICKS} ({KICKPERCENT}%)\n\n&bTotal Users:&f {USERSCOUNT}\n  &7>> &bUsers Punished:&f {USERSPUNISHED} ({PERCENTPUNISHED}%)\n&r"
 # This section is not parsed by the above variable parser.

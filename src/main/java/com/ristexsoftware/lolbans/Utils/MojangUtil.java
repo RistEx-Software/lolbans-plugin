@@ -24,7 +24,7 @@ public class MojangUtil {
             return this.username;
         }
 
-        public UUID getUUID() {
+        public UUID getUniqueId() {
             return this.uuid;
         }
     }
@@ -44,7 +44,7 @@ public class MojangUtil {
                 return new MojangUser(username, UUID.fromString(uuid));
 
             } catch (IOException e) {
-                e.printStackTrace();
+                // e.printStackTrace();
                 return null;
             }
         }

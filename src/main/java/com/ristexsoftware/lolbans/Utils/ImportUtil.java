@@ -27,6 +27,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 public class ImportUtil {
 
@@ -89,8 +90,8 @@ public class ImportUtil {
                             self.getLogger().warning(mojangUser.getName() + " is already banned, skipping...");
                             continue;
                         }
-                        Punishment punishment = new Punishment(PunishmentType.PUNISH_BAN, sender, op,
-                                obj.get("reason").toString().replace("\"", ""), timeStamp, false);
+                        String uuid = sender instanceof Player ? mojangAPI.resolveUser(sender.getName()).getUniqueId().toString() : null;
+                        Punishment punishment = new Punishment(PunishmentType.PUNISH_BAN, uuid, op, obj.get("reason").toString().replace("\"", ""), timeStamp, false);
                         punishment.Commit(sender);
                         Thread.sleep(250); // Lets wait a bit here too...
                     }

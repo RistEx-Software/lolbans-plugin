@@ -1,22 +1,17 @@
 package com.ristexsoftware.lolbans.Commands.Misc;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.TreeMap;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.RistExCommandAsync;
 import com.ristexsoftware.lolbans.Objects.User;
-import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.ImportUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.NumberUtil;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.Statistics;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -46,9 +41,13 @@ public class LolBansCommand extends RistExCommandAsync {
 
     @Override
     public boolean Execute(CommandSender sender, String label, String[] args) {
-        if (args.length < 1 || args.length > 0 && args[0].equalsIgnoreCase("reload")) {
+        if (args.length < 1) {
+            
+        }
+        if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
             if (!PermissionUtil.Check(sender, "lolbans.reload"))
                 return User.PermissionDenied(sender, "lolbans.reload");
+
             try {
                 // self.saveConfig();
                 Messages.Reload();

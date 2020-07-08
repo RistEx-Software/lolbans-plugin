@@ -585,6 +585,36 @@ public class User {
         }
     }
 
+    /**
+     * Get the last ip of a user
+     * 
+     * @param uuid UUID of player to check
+     * @return True if the player has been muted.
+     */
+    public static Future<String> getLastIP(UUID uuid) {
+        FutureTask<String> t = new FutureTask<>(new Callable<String>() {
+            @Override
+            public String call() {
+                // This is where you should do your database interaction
+                try {
+                    PreparedStatement ps = self.connection.prepareStatement(
+                        "SELECT ipaddress FROM lolbans_users WHERE UUID = ? LIMIT 1");
+                    ps.setString(1, uuid.toString());
+                    ResultSet results = ps.executeQuery();
+                    if (results.next())
+                        return results.getString("ipaddress");
+                    return null;
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        });
+        Main.pool.execute(t);
+        return (Future<String>) t;
+    }
+
+
     /*
      * MESSAGES
      */
