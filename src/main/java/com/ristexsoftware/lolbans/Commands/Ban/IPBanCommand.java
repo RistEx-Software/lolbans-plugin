@@ -13,7 +13,7 @@ import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
-import com.ristexsoftware.lolbans.Utils.IPBanUtil;
+import com.ristexsoftware.lolbans.Utils.IPUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishID;
@@ -158,7 +158,7 @@ public class IPBanCommand extends RistExCommandAsync
 			IPAddress thingy = User.FindAddressByAny(a.get("CIDR"));
 			if (thingy == null) return false;
 			// TODO: handle this better? Send the banned subnet string instead of the address they tried to ban?
-			Optional<ResultSet> res = IPBanUtil.IsBanned(thingy.toInetAddress()).get();
+			Optional<ResultSet> res = IPUtil.IsBanned(thingy.toInetAddress()).get();
 			if (res.isPresent() && res.get().next())
 				return User.PlayerOnlyVariableMessage("IPBan.IPIsBanned", sender, thingy.toString(), true);
 
@@ -177,7 +177,7 @@ public class IPBanCommand extends RistExCommandAsync
 			pst.setTimestamp(i++, bantime);
 			DatabaseUtil.ExecuteUpdate(pst);
 
-			IPBanUtil.addIPAddr(thingy.toString());
+			IPUtil.addIPAddr(thingy.toString());
 			String ipRegex = "((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
 			String censorip = thingy.toString().replaceAll(ipRegex, "***.***.***.***");
 

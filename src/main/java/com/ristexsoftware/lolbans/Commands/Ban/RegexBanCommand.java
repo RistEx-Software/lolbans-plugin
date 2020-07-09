@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Utils.IPBanUtil;
+import com.ristexsoftware.lolbans.Utils.IPUtil;
 import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
@@ -59,7 +59,7 @@ public class RegexBanCommand extends RistExCommandAsync
         {
             HostName hn = new HostName(player.getAddress());
             self.getLogger().info(hn.getHost());
-            String rDNS = IPBanUtil.rDNSQUery(hn.getHost());
+            String rDNS = IPUtil.rDNSQUery(hn.getHost());
             
             // Check their IP address
             if (bnyeh.matcher(hn.getHost()).matches())
@@ -213,7 +213,7 @@ public class RegexBanCommand extends RistExCommandAsync
             // Kick players who match the ban
             for (Player player : Bukkit.getOnlinePlayers())
             {
-                String rDNS = IPBanUtil.rDNSQUery(player.getAddress().getAddress().getHostAddress());
+                String rDNS = IPUtil.rDNSQUery(player.getAddress().getAddress().getHostAddress());
                 // Matchers to make things more efficient.
                 Matcher NameMatch = regex.matcher(player.getName());
                 Matcher IPMatch = regex.matcher(player.getAddress().getAddress().getHostAddress());

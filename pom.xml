@@ -6,7 +6,7 @@
 
     <groupId>com.ristexsoftware</groupId>
     <artifactId>LolBans</artifactId>
-    <version>1.1.1-PRE-ALPHA</version>
+    <version>1.2-PRE-ALPHA</version>
     <packaging>jar</packaging>
 
     <name>LolBans</name>

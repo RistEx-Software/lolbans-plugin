@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -13,9 +14,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
-import com.ristexsoftware.lolbans.Utils.IPBanUtil;
+import com.ristexsoftware.lolbans.Utils.IPUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
@@ -48,9 +50,52 @@ public class ConnectionListeners implements Listener
     {
         try 
         {
-            // First things first, lets log this.
             Timestamp login = TimeUtil.TimestampNow();
-            // InsertUser has a check to see if they've joined before, so it's safe to use as the update event aswell.
+            if (User.getLastIP(event.getUniqueId().toString()).get() == null) {
+                DatabaseUtil.InsertUser(event.getUniqueId().toString(), event.getName(), event.getAddress().getHostAddress().toString(), login, login);
+                Thread.sleep(100);
+            }
+            // Before we do anything, make sure they're abiding the ratelimit and are not coming from a new IP range
+            if (self.getConfig().getBoolean("Connection.RateLimiting.Enabled")) {
+                Integer limit = self.getConfig().getInt("Connection.RateLimiting.Limit");
+                if (limit <= 0)
+                    limit = 6;
+                Timestamp lastLogin = User.getLastLogin(event.getUniqueId().toString()).get();
+                Timestamp limitStamp = new Timestamp(TimeUtil.GetUnixTime() * 1000L + limit);
+                if (lastLogin.getTime() + (limit * 1000) >= limitStamp.getTime()) {
+                    final Integer ihatejava = limit;
+                    Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                    {{
+                        put("ipaddress", event.getAddress().toString());
+                        put("player", event.getName());
+                        put("rate", String.valueOf(ihatejava-((limitStamp.getTime() - lastLogin.getTime())/1000)));
+                    }};
+                    event.disallow(Result.KICK_OTHER, Messages.Translate("RateLimit.LimitReached", Variables));
+                    return; // Lets return so we don't update the login time!
+                }
+            }
+            if (self.getConfig().getBoolean("Connection.IPCheck.Enabled")) {
+                Integer prefix = self.getConfig().getInt("Connection.IPCheck.Prefix");
+                // Make sure it's a valid CIDR prefix
+                List<String> bypassed = self.getConfig().getStringList("Connection.IPCheck.Bypassed");
+                if (!bypassed.contains(event.getUniqueId().toString())) {
+                    if (prefix < 1 || prefix > 30)
+                        prefix = 23;
+                    if (!IPUtil.checkRange(User.getLastIP(event.getUniqueId().toString()).get(), event.getAddress().getHostAddress().toString(), String.valueOf(prefix))) {
+                        Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                        {{
+                            put("ipaddress", event.getAddress().toString());
+                            put("player", event.getName());
+                        }};
+                        event.disallow(Result.KICK_OTHER, Messages.Translate("IPCheck.InvalidCIDR", Variables));
+                        return;
+                    }
+                }
+                
+            }
+
+            // lets do this too
+            //InsertUser has a check to see if they've joined before, so it's safe to use as the update event aswell.
             DatabaseUtil.InsertUser(event.getUniqueId().toString(), event.getName(), event.getAddress().getHostAddress().toString(), login, login);
             // To save time, we do a few things here:
             // 1. We execute 3 queries:
@@ -82,11 +127,11 @@ public class ConnectionListeners implements Listener
             Future<Optional<ResultSet>> BanRecord = DatabaseUtil.ExecuteLater(BanStatement);
             Future<Optional<ResultSet>> WarnRecord = DatabaseUtil.ExecuteLater(WarnStatement);
             // Future<Optional<ResultSet>> LinkedRecord = DatabaseUtil.ExecuteLater(LinkedStatement);
-            Future<Optional<ResultSet>> IPBanRecord = IPBanUtil.IsBanned(event.getAddress());
-            Future<UUID> AltRecords  = IPBanUtil.CheckAlts(event.getAddress());
+            Future<Optional<ResultSet>> IPBanRecord = IPUtil.IsBanned(event.getAddress());
+            Future<UUID> AltRecords  = IPUtil.CheckAlts(event.getAddress());
 
             // Query for their reverse DNS hostname
-            String rDNS = IPBanUtil.rDNSQUery(event.getAddress().getHostAddress());
+            String rDNS = IPUtil.rDNSQUery(event.getAddress().getHostAddress());
 
             // While we run those queries, lets check to see if they match any CIDRs
             // NOTE: We don't immediately disconnect them from here, instead we make
@@ -307,6 +352,7 @@ public class ConnectionListeners implements Listener
     @EventHandler
     public static void OnPlayerDisconnect(PlayerQuitEvent event) 
     {
+        DatabaseUtil.UpdateUser(event.getPlayer().getUniqueId().toString(), event.getPlayer().getName(), event.getPlayer().getAddress().getAddress().getHostAddress(), TimeUtil.TimestampNow());
         UUID PlayerUUID = event.getPlayer().getUniqueId();
         Main.USERS.remove(PlayerUUID);
     }
@@ -314,6 +360,7 @@ public class ConnectionListeners implements Listener
     @EventHandler
     public static void OnPlayerKick(PlayerKickEvent event) 
     {
+        DatabaseUtil.UpdateUser(event.getPlayer().getUniqueId().toString(), event.getPlayer().getName(), event.getPlayer().getAddress().getAddress().getHostAddress(), TimeUtil.TimestampNow());
         Main.USERS.remove(event.getPlayer().getUniqueId());
     }
 }

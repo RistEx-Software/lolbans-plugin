@@ -1,6 +1,7 @@
 package com.ristexsoftware.lolbans.Utils;
 
 import inet.ipaddr.HostName;
+import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -13,9 +14,25 @@ import java.util.concurrent.FutureTask;
 import com.ristexsoftware.lolbans.Main;
 
 // Javadocs for IPAddress: https://seancfoley.github.io/IPAddress/IPAddress/apidocs/
-public class IPBanUtil 
+public class IPUtil 
 {
 	private static Main self = Main.getPlugin(Main.class);
+
+	/**
+	 * Check if an IP falls within a CIDR range
+	 * @param ipAddress1 IP Address to check
+	 * @param ipAddress The second IP Address to check
+	 * @param prefix The prefix to check against
+	 * @return true if IP is in prefix, otherwise false
+	 */
+	public static Boolean checkRange(String ipAddress1, String ipAddress2, String prefix) {
+		
+		String subnetStr = ipAddress1+"/"+prefix;
+		IPAddress subnetAddress = new IPAddressString(subnetStr).getAddress();
+		IPAddress subnet = subnetAddress.toPrefixBlock();
+		IPAddress testAddress = new IPAddressString(ipAddress2).getAddress();
+		return subnet.contains(testAddress);
+	}
 
 	/**
 	 * Asynchronously check if an IP address is banned

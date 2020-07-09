@@ -20,8 +20,10 @@ import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
+import com.ristexsoftware.lolbans.Utils.MojangUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 import com.ristexsoftware.lolbans.Utils.TimeUtil;
+import com.ristexsoftware.lolbans.Utils.MojangUtil.MojangUser;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -322,6 +324,27 @@ public class User {
         return (Future<Boolean>) t;
     }
 
+    public static Future<Timestamp> getLastLogin(String UUID) {
+        FutureTask<Timestamp> t = new FutureTask<>(new Callable<Timestamp>() {
+            @Override
+            public Timestamp call() {
+                // This is where you should do your database interaction
+                try {
+                    PreparedStatement ps = self.connection.prepareStatement(
+                            "SELECT LastLogin FROM lolbans_users WHERE UUID = ? LIMIT 1");
+                    ps.setString(1, UUID);
+                    ResultSet rs = ps.executeQuery();
+                    return rs.next() ? rs.getTimestamp("LastLogin") : null;
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        });
+        Main.pool.execute(t);
+        return (Future<Timestamp>) t;
+    }
+
     /**
      * Find the player by UUID, Punishment ID, or their name
      * 
@@ -393,19 +416,11 @@ public class User {
             return new IPAddressString(any).getAddress();
 
         try {
-            PreparedStatement ps = self.connection
-                    .prepareStatement("SELECT IPAddress FROM lolbans_users WHERE PlayerName = ?");
-            ps.setString(1, any);
-
-            Optional<ResultSet> ores = DatabaseUtil.ExecuteLater(ps).get();
-
-            if (ores.isPresent()) {
-                ResultSet res = ores.get();
-                if (res.next())
-                    return new IPAddressString(res.getString("IPAddress")).getAddress();
-            }
-        } catch (SQLException | InterruptedException | ExecutionException ex) {
-            ex.printStackTrace();
+            MojangUser mUser = new MojangUtil().resolveUser(any);
+            if (mUser != null)
+                return new IPAddressString(getLastIP(mUser.getUniqueId().toString()).get()).toAddress();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return null;
@@ -589,20 +604,25 @@ public class User {
      * Get the last ip of a user
      * 
      * @param uuid UUID of player to check
-     * @return True if the player has been muted.
+     * @return The last IP of the specified user
      */
-    public static Future<String> getLastIP(UUID uuid) {
+    public static Future<String> getLastIP(String uuid) {
         FutureTask<String> t = new FutureTask<>(new Callable<String>() {
             @Override
             public String call() {
                 // This is where you should do your database interaction
                 try {
-                    PreparedStatement ps = self.connection.prepareStatement(
-                        "SELECT ipaddress FROM lolbans_users WHERE UUID = ? LIMIT 1");
-                    ps.setString(1, uuid.toString());
+                    PreparedStatement ps = self.connection
+                            .prepareStatement("SELECT ipaddress FROM lolbans_users WHERE UUID = ? LIMIT 1");
+                    ps.setString(1, uuid);
                     ResultSet results = ps.executeQuery();
-                    if (results.next())
+                    if (results.next()) {
+                        if (results.getString("ipaddress").contains(",")) {
+                            String[] iplist = results.getString("ipaddress").split(",");
+                            return iplist[iplist.length - 1];
+                        }
                         return results.getString("ipaddress");
+                    }
                     return null;
                 } catch (Throwable e) {
                     e.printStackTrace();
@@ -614,6 +634,35 @@ public class User {
         return (Future<String>) t;
     }
 
+    /**
+     * Get all IPs of a user
+     * 
+     * @param uuid UUID of player to check
+     * @return The IP(s) of the specified user
+     */
+    public static Future<String> getAllIP(String uuid) {
+        FutureTask<String> t = new FutureTask<>(new Callable<String>() {
+            @Override
+            public String call() {
+                // This is where you should do your database interaction
+                try {
+                    PreparedStatement ps = self.connection
+                            .prepareStatement("SELECT ipaddress FROM lolbans_users WHERE UUID = ? LIMIT 1");
+                    ps.setString(1, uuid);
+                    ResultSet results = ps.executeQuery();
+                    if (results.next()) {
+                        return results.getString("ipaddress");
+                    }
+                    return null;
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        });
+        Main.pool.execute(t);
+        return (Future<String>) t;
+    }
 
     /*
      * MESSAGES

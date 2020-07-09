@@ -99,7 +99,13 @@ IPBan:
   Insanity: "{PREFIX}&cBanning &bThe IP of &f{PLAYER} &bwould ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
   IPAltNotification: "{PREFIX}&f{PLAYER} &cjoined, is alt account of &f{BANNEDPLAYER} &8Check IP with an Admin!"
   IPAltBanMessage: "&bThe Player &f{PLAYERNAME} &bis an alternate account of {ALTACCOUNT} which has been suspended on {NETWORKNAME} and is disallowed from connection.\n\n&bBanned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
-  
+
+IPCheck:
+  InvalidCIDR: "&bThe IP &f{IPADDRESS} &bdoes not match previous login CIDR range.\n\n&7If you believe this is a mistake, please contact the server administrator"
+
+RateLimit:
+  LimitReached: "&bYou are connecting too fast, please try again in &f{RATE} &bseconds!"
+
 RegexBan:
   # TODO: Fix these messages for regex-based bans.
   TempBanMessage: "&bThe account &f{PLAYER} &bmatches pattern &f{REGEX}&b and has been suspended from {NETWORKNAME} &buntil &f{EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
@@ -168,7 +174,6 @@ StaffRollback:
 Freeze:
   FrozenMessage: "{PREFIX}&bYou have been frozen by &f{ARBITER} &band may not move!"
   FreezeAnnouncement: "{PREFIX}&f{ARBITER}&b {APPEALED|empty_if_false:\"un-\"}froze &f{PLAYER} {SILENT|empty_if_false:\" &8[SILENT]\"}"
-
 
 Statistics: "&3:=:=:= &bLolBans Statistics &3:=:=:=\n&bTotal Punishments:&f {PUNISHCOUNT}\n  &7>> &bBans:&f {BANS} ({REGEX} RegEx, {IPBANS} IP) ({BANPERCENT}%)\n  &7>> &bMutes:&f {MUTES} ({MUTEPERCENT}%)\n  &7>> &bWarnings:&f {WARNS} ({WARNPERCENT}%)\n  &7>> &bKicks:&f {KICKS} ({KICKPERCENT}%)\n\n&bTotal Users:&f {USERSCOUNT}\n  &7>> &bUsers Punished:&f {USERSPUNISHED} ({PERCENTPUNISHED}%)\n&r"
 # This section is not parsed by the above variable parser.

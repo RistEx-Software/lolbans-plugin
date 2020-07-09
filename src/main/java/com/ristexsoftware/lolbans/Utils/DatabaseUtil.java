@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Runnables.QueryRunnable;
 
 // This class is honestly a mess... It scares me, but it works...
@@ -392,7 +393,7 @@ public class DatabaseUtil
                     .prepareStatement(String.format("UPDATE lolbans_users SET LastLogin = ?, PlayerName = ?, IPAddress = ?, TimesConnected = ?, Country = ?, CountryCode = ? WHERE UUID = ?"));
                     UpdateUser.setTimestamp(i++, LastLogin);
                     UpdateUser.setString(i++, PlayerName);
-                    UpdateUser.setString(i++, IPAddress);
+                    UpdateUser.setString(i++, IPAddress);//.equals(User.getLastIP(UUID).get()) ? IPAddress : User.getAllIP(UUID).get()+","+IPAddress);
                     UpdateUser.setInt(i++, ++tc);
                     UpdateUser.setString(i++, geodata[1]);
                     UpdateUser.setString(i++, geodata[0]);

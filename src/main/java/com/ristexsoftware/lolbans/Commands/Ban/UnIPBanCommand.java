@@ -14,7 +14,7 @@ import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
-import com.ristexsoftware.lolbans.Utils.IPBanUtil;
+import com.ristexsoftware.lolbans.Utils.IPUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.MojangUtil;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
@@ -98,7 +98,7 @@ public class UnIPBanCommand extends RistExCommandAsync
 			{
                 HostName hs = new HostName(CIDR);
                 if (!(hs.asInetAddress() == null)) {
-                    Optional<ResultSet> ores =  IPBanUtil.IsBanned(hs.asInetAddress()).get();
+                    Optional<ResultSet> ores =  IPUtil.IsBanned(hs.asInetAddress()).get();
                     if (!ores.isPresent() || ores == null)
                         return User.PlayerOnlyVariableMessage("IPBan.IPIsNotBanned", sender, CIDR, true);
     
@@ -107,7 +107,7 @@ public class UnIPBanCommand extends RistExCommandAsync
                 else {
                     MojangUser mUser = new MojangUtil().resolveUser(CIDR);
                     if (mUser == null) return User.PlayerOnlyVariableMessage("IPBan.IPIsNotBanned", sender, CIDR, true);
-                    String userIP = User.getLastIP(mUser.getUniqueId()).get();
+                    String userIP = User.getAllIP(mUser.getUniqueId().toString()).get();
                     ps = self.connection.prepareStatement("SELECT * FROM lolbans_ipbans WHERE IPAddress = ? AND Appealed = false");
                     ps.setString(1, userIP);
                     Optional<ResultSet> ores = DatabaseUtil.ExecuteLater(ps).get();

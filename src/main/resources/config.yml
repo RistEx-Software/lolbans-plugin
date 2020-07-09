@@ -33,6 +33,22 @@ Discord:
   UseSimplifiedMessage: false
   WebhookProfilePicture: "https://notzachery.github.io/images/joy.png"
 
+Connection:
+  # Prevent a user from connecting to many times in a given amount of time
+  RateLimiting:
+    Enabled: true
+    Limit: 6 # Number of seconds before a user can re-connect
+  # Check the users IP against their last known IP, to see if it is coming from a different location
+  IPCheck:
+    Enabled: true
+    # CIDR Prefix to use, must be <31 and >0 (Default: 23)
+    # The higher the number the shorter IP range
+    Prefix: 23
+    # Add user's UUIDs here if you don't want them to be checked.
+    Bypassed:
+      - de8c89e1-2f25-424d-8078-c6ff58db7d6e # Example UUID
+  
+
 BanSettings:
   # Prevents over-reaching bans 
   insane:
