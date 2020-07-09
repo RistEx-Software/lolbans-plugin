@@ -634,36 +634,6 @@ public class User {
         return (Future<String>) t;
     }
 
-    /**
-     * Get all IPs of a user
-     * 
-     * @param uuid UUID of player to check
-     * @return The IP(s) of the specified user
-     */
-    public static Future<String> getAllIP(String uuid) {
-        FutureTask<String> t = new FutureTask<>(new Callable<String>() {
-            @Override
-            public String call() {
-                // This is where you should do your database interaction
-                try {
-                    PreparedStatement ps = self.connection
-                            .prepareStatement("SELECT ipaddress FROM lolbans_users WHERE UUID = ? LIMIT 1");
-                    ps.setString(1, uuid);
-                    ResultSet results = ps.executeQuery();
-                    if (results.next()) {
-                        return results.getString("ipaddress");
-                    }
-                    return null;
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }
-        });
-        Main.pool.execute(t);
-        return (Future<String>) t;
-    }
-
     /*
      * MESSAGES
      */

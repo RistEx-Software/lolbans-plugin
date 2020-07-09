@@ -83,12 +83,13 @@ public class Punishment
         this.Reason = Reason;
         this.Expiry = Expiry;
         this.silent = silent;
-        MojangUser mUser = new MojangUtil().resolveUser(senderUUID);
-
+        
         if (senderUUID == null)
             this.IsConsoleExectioner = true;
-        else
-            this.Executioner = Bukkit.getOfflinePlayer(mUser.getName());
+        else {
+            MojangUser mUser = new MojangUtil().resolveUser(senderUUID);
+            this.Executioner = Bukkit.getOfflinePlayer(mUser.getName());   
+        }
 
         switch (Type)
         {

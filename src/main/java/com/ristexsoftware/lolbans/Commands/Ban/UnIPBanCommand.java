@@ -107,7 +107,7 @@ public class UnIPBanCommand extends RistExCommandAsync
                 else {
                     MojangUser mUser = new MojangUtil().resolveUser(CIDR);
                     if (mUser == null) return User.PlayerOnlyVariableMessage("IPBan.IPIsNotBanned", sender, CIDR, true);
-                    String userIP = User.getAllIP(mUser.getUniqueId().toString()).get();
+                    String userIP = User.getLastIP(mUser.getUniqueId().toString()).get();
                     ps = self.connection.prepareStatement("SELECT * FROM lolbans_ipbans WHERE IPAddress = ? AND Appealed = false");
                     ps.setString(1, userIP);
                     Optional<ResultSet> ores = DatabaseUtil.ExecuteLater(ps).get();

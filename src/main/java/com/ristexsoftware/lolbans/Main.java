@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -109,6 +110,14 @@ public final class Main extends JavaPlugin {
             // They're not gonna have their database setup, just exit. It stops us from
             // having errors.
             return;
+        }
+        else if (this.getConfig().getConfigurationSection("Connection") == null) {
+            this.getConfig().set("Connection.RateLimiting.Enabled", true);
+            this.getConfig().set("Connection.RateLimiting.Limit", 6);
+            this.getConfig().set("Connection.IPCheck.Enabled", false);
+            this.getConfig().set("Connection.IPCheck.Prefix", 23);
+            this.getConfig().set("Connection.IPCheck.Bypassed", Arrays.asList(new String[] { "de8c89e1-2f25-424d-8078-c6ff58db7d6e"}));
+            this.saveConfig();
         }
 
         // Initialize our database connections.

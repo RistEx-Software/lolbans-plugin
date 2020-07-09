@@ -74,6 +74,8 @@ public class ArgumentUtil
 	 */
 	public ArgumentUtil OptionalSentence(String Name, int start, int end)
 	{
+		System.out.println(start);
+		System.out.println(end);
 		if (start > end)
 			throw new IllegalArgumentException("start cannot be greater than end");
 		if (UnparsedArgs.size() > start)

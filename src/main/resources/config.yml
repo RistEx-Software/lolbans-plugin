@@ -1,3 +1,5 @@
+# LOLBANS CONFIGURATION FILE
+# Please see https://github.com/NotZachery/lolbans-plugin/blob/master/src/main/resources/config.yml for information on how to configure LolBans
 General:
   # Kick connecting players if the server encounters an error
   KickConnectionError: true
@@ -40,9 +42,9 @@ Connection:
     Limit: 6 # Number of seconds before a user can re-connect
   # Check the users IP against their last known IP, to see if it is coming from a different location
   IPCheck:
-    Enabled: true
+    Enabled: false
     # CIDR Prefix to use, must be <31 and >0 (Default: 23)
-    # The higher the number the shorter IP range
+    # The higher the number, the stricter.
     Prefix: 23
     # Add user's UUIDs here if you don't want them to be checked.
     Bypassed:

@@ -55,7 +55,7 @@ public class BanCommand extends RistExCommandAsync {
         try {
             Timing t = new Timing();
 
-            // /ban [-s, -o] <PlayerName> <Time|*> <Reason>
+            // /ban [-s, -o] <PlayerName> [Time|*] <Reason>
             ArgumentUtil a = new ArgumentUtil(args);
             a.OptionalFlag("Silent", "-s");
             a.OptionalFlag("Overwrite", "-o");
@@ -73,7 +73,7 @@ public class BanCommand extends RistExCommandAsync {
             String reason = punishtime == null ? a.get("TimePeriod")+" "+ a.get("Reason") : a.get("Reason");
 
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
-            Punishment punish = new Punishment(PunishmentType.PUNISH_WARN, sender instanceof Player ? ((Player)sender).getUniqueId().toString() : null, target, reason, null, silent);
+            Punishment punish = new Punishment(PunishmentType.PUNISH_BAN, sender instanceof Player ? ((Player)sender).getUniqueId().toString() : null, target, reason, punishtime, silent);
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
@@ -91,9 +91,9 @@ public class BanCommand extends RistExCommandAsync {
             if (punishtime == null && !PermissionUtil.Check(sender, "lolbans.ban.perm"))
                 return User.PermissionDenied(sender, "lolbans.ban.perm");
 
-            if (punishtime != null
-                    && TimeUtil.ParseToTimestamp(a.get("TimePeriod")).getTime() > User.getTimeGroup(sender).getTime())
-                return User.PermissionDenied(sender, "lolbans.maxtime." + a.get("TimePeriod"));
+            if (punishtime != null && TimeUtil.ParseToTimestamp(a.get("TimePeriod")).getTime() > User.getTimeGroup(sender).getTime())
+                punishtime = User.getTimeGroup(sender);
+                //return User.PermissionDenied(sender, "lolbans.maxtime." + a.get("TimePeriod"));
 
             punish.Commit(sender);
 
@@ -102,16 +102,17 @@ public class BanCommand extends RistExCommandAsync {
                 Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayer(punish), 1L);
 
             // Format our messages.
+            final Timestamp whyisjavasostupid = punishtime;
             Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                 {
                     put("player", punish.GetPlayerName());
                     put("reason", punish.GetReason());
                     put("arbiter", punish.GetExecutionerName());
                     put("punishid", punish.GetPunishmentID());
-                    put("expiry", punishtime == null ? "" : punish.GetExpiryString());
+                    put("expiry", whyisjavasostupid == null ? "" : punish.GetExpiryString());
                     put("silent", Boolean.toString(silent));
                     put("appealed", Boolean.toString(punish.GetAppealed()));
-                    put("expires", Boolean.toString(punishtime != null && !punish.GetAppealed()));
+                    put("expires", Boolean.toString(whyisjavasostupid != null && !punish.GetAppealed()));
                 }
             };
 

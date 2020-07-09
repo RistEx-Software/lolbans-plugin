@@ -74,7 +74,7 @@ public class MuteCommand extends RistExCommand
             Timestamp punishtime = TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
             String reason = punishtime == null ? a.get("TimePeriod")+" "+ a.get("Reason") : a.get("Reason");
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
-            Punishment punish = new Punishment(PunishmentType.PUNISH_WARN, sender instanceof Player ? ((Player)sender).getUniqueId().toString() : null, target, reason, null, silent);
+            Punishment punish = new Punishment(PunishmentType.PUNISH_WARN, sender instanceof Player ? ((Player)sender).getUniqueId().toString() : null, target, reason, punishtime, silent);
 
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
@@ -93,20 +93,22 @@ public class MuteCommand extends RistExCommand
 
             // If punishtime is null and they got past the check above, we don't need to check this
             if (punishtime != null && punishtime.getTime() > User.getTimeGroup(sender).getTime())
-                return User.PermissionDenied(sender, "lolbans.maxtime."+a.get("TimePeriod"));
+                punishtime = User.getTimeGroup(sender);
+                //return User.PermissionDenied(sender, "lolbans.maxtime."+a.get("TimePeriod"));
 
             punish.Commit(sender);
             
+            final Timestamp thisissodumb = punishtime;
             Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("player", target.getName());
                     put("reason", reason);
                     put("arbiter", sender.getName());
                     put("punishid", punish.GetPunishmentID());
-                    put("expiry", punishtime == null ? "" : punish.GetExpiryString());
+                    put("expiry", thisissodumb == null ? "" : punish.GetExpiryString());
                     put("silent", Boolean.toString(silent));
                     put("appealed", Boolean.toString(punish.GetAppealed()));
-                    put("expires", Boolean.toString(punishtime != null && !punish.GetAppealed()));
+                    put("expires", Boolean.toString(thisissodumb != null && !punish.GetAppealed()));
                 }};
 
             if (target.isOnline()) {
