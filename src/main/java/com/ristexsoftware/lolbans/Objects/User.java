@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -36,8 +35,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;

@@ -24,7 +24,6 @@ import com.ristexsoftware.lolbans.Commands.Ban.UnIPBanCommand;
 import com.ristexsoftware.lolbans.Commands.Ban.UnbanCommand;
 import com.ristexsoftware.lolbans.Commands.History.HistoryCommand;
 import com.ristexsoftware.lolbans.Commands.History.StaffHistoryCommand;
-import com.ristexsoftware.lolbans.Commands.Misc.FreezeCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.KickCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.LolBansCommand;
 import com.ristexsoftware.lolbans.Commands.Misc.StaffRollbackCommand;

@@ -6,7 +6,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Runnables.QueryRunnable;
 
 // This class is honestly a mess... It scares me, but it works...

@@ -22,7 +22,6 @@ import com.ristexsoftware.lolbans.Utils.PunishID;
 import com.ristexsoftware.lolbans.Utils.Timing;
 import com.ristexsoftware.lolbans.Utils.MojangUtil.MojangUser;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;

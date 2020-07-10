@@ -13,7 +13,6 @@ import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
-import com.ristexsoftware.lolbans.Utils.MojangUtil;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
@@ -91,7 +90,7 @@ public class WarnCommand extends RistExCommand {
                 if (Main.getPlugin(Main.class).getConfig().getBoolean("WarningSettings.SimpleWarning")) {
                     ((Player) target).sendMessage(WarnedMessage);
                 } else {
-                    u.SetWarned(true, ((Player) target).getLocation(), WarnedMessage);
+                    u.SetWarned(true, ((Player) target).getLocation(), WarnedMessage); // FIXME: This line produces a NPE, not sure why, Works For Me™
                     u.SendMessage(WarnedMessage);
                     // Send them a box as well. This will disallow them from sending move events.
                     // However, client-side enforcement is not guaranteed so we also enforce the

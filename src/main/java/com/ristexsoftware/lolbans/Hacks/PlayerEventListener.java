@@ -3,7 +3,6 @@ package com.ristexsoftware.lolbans.Hacks;
 import java.util.TreeMap;
 
 import com.ristexsoftware.lolbans.Main;
-import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 

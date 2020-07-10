@@ -22,7 +22,6 @@ import com.ristexsoftware.lolbans.Utils.PunishID;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 public class Punishment

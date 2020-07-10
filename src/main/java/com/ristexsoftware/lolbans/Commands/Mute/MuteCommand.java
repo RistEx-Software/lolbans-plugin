@@ -15,7 +15,6 @@ import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
-import com.ristexsoftware.lolbans.Utils.MojangUtil;
 import com.ristexsoftware.lolbans.Utils.PermissionUtil;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
