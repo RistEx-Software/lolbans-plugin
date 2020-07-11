@@ -71,7 +71,7 @@ public class KickCommand extends RistExCommandAsync {
                 return User.PlayerIsOffline(sender, PlayerName, true);
 
                 String uuid = sender instanceof Player ? new MojangUtil().resolveUser(sender.getName()).getUniqueId().toString() : null;
-                Punishment punish = new Punishment(PunishmentType.PUNISH_WARN, uuid, target, reason, null, silent);
+                Punishment punish = new Punishment(PunishmentType.PUNISH_KICK, uuid, target, reason, null, silent);
             punish.Commit(sender);
 
             // Kick the player

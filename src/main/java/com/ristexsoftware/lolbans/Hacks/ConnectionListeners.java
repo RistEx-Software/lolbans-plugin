@@ -57,7 +57,7 @@ public class ConnectionListeners implements Listener {
                     Timestamp login = TimeUtil.TimestampNow();
                     if (User.getLastIP(player.getUniqueId().toString()).get() == null) {
                         DatabaseUtil.InsertUser(player.getUniqueId().toString(), player.getName(),
-                                player.getAddress().getAddress().getHostAddress().toString(), login, login);
+                                event.getAddress().getHostAddress().toString(), login, login);
                         Thread.sleep(100);
                     }
                     // Before we do anything, make sure they're abiding the ratelimit and are not
@@ -90,7 +90,7 @@ public class ConnectionListeners implements Listener {
                         if (prefix < 1 || prefix > 30)
                             prefix = 23;
                         if (!IPUtil.checkRange(User.getLastIP(player.getUniqueId().toString()).get(),
-                                player.getAddress().getAddress().getHostAddress().toString(), String.valueOf(prefix))) {
+                                event.getAddress().getHostAddress().toString(), String.valueOf(prefix))) {
                             Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                                 {
                                     put("ipaddress", event.getAddress().toString());
