@@ -46,10 +46,6 @@ Connection:
     # CIDR Prefix to use, must be <31 and >0 (Default: 23)
     # The higher the number, the stricter.
     Prefix: 23
-    # Add user's UUIDs here if you don't want them to be checked.
-    Bypassed:
-      - de8c89e1-2f25-424d-8078-c6ff58db7d6e # Example UUID
-  
 
 BanSettings:
   # Prevents over-reaching bans 
@@ -77,33 +73,6 @@ WarningSettings:
   # The sound you want (https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html [1.15+]) 
   Sound: BLOCK_ANVIL_LAND
 
-MuteSettings:
-  # The sound you want
-  Sound: BLOCK_ANVIL_LAND
-  # Commands to block if a user is muted
-  blacklisted-commands:
-    - msg
-    - w
-    - r
-    - mail
-    - m
-    - t
-    - whisper
-    - emsg
-    - tell
-    - er
-    - reply
-    - ereply
-    - email
-    - action
-    - describe
-    - eme
-    - eaction
-    - edescribe
-    - etell
-    - ewhisper
-    - pm
-
 FreezeSettings:
   # Spawns a box around the player
   SpawnBox: true
@@ -118,3 +87,31 @@ IPBanSettings:
 max-time:
   default: 1d
   moderator: 14d
+
+ChatSettings:
+  MuteSettings:
+    # The to play when a muted user tries to speak
+    Sound: BLOCK_ANVIL_LAND
+    # Commands to block if a user is muted
+    blacklisted-commands:
+      - msg
+      - w
+      - r
+      - mail
+      - m
+      - t
+      - whisper
+      - emsg
+      - tell
+      - er
+      - reply
+      - ereply
+      - email
+      - action
+      - describe
+      - eme
+      - eaction
+      - edescribe
+      - etell
+      - ewhisper
+      - pm

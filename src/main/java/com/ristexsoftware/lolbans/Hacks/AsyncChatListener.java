@@ -38,7 +38,7 @@ public class AsyncChatListener implements Listener {
             @Override
             public Boolean call() {
                 try {
-                    List<String> cmds = self.getConfig().getStringList("MuteSettings.blacklisted-commands");
+                    List<String> cmds = self.getConfig().getStringList("ChatSettings.MuteSettings.blacklisted-commands");
                     for (String cmd : cmds) {
                         if (event.getMessage().toLowerCase().startsWith("/" + cmd.toLowerCase())) {
                             try {
@@ -56,7 +56,7 @@ public class AsyncChatListener implements Listener {
                                     if (result.next()) {
                                         event.setCancelled(true);
                                         User.playSound((Player) event.getPlayer(),
-                                                self.getConfig().getString("MuteSettings.Sound"));
+                                                self.getConfig().getString("ChatSettings.MuteSettings.Sound"));
                                         Timestamp MuteTime = result.getTimestamp("Expiry");
 
                                         event.getPlayer().sendMessage(Messages.Translate("Mute.YouAreMuted",
@@ -122,7 +122,7 @@ public class AsyncChatListener implements Listener {
                 if (event.getPlayer().hasPermission("lolbans.mute.bypass"))
                     return;
                 event.setCancelled(true);
-                User.playSound((Player) event.getPlayer(), self.getConfig().getString("MuteSettings.Sound"));
+                User.playSound((Player) event.getPlayer(), self.getConfig().getString("ChatSettings.MuteSettings.Sound"));
                 event.getPlayer().sendMessage(Messages.Translate("Mute.GlobalMuted",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
                 return;
@@ -142,7 +142,7 @@ public class AsyncChatListener implements Listener {
                 // They're muted. don't let them speak...
                 if (result.next()) {
                     event.setCancelled(true);
-                    User.playSound((Player) event.getPlayer(), self.getConfig().getString("MuteSettings.Sound"));
+                    User.playSound((Player) event.getPlayer(), self.getConfig().getString("ChatSettings.MuteSettings.Sound"));
                     Timestamp MuteTime = result.getTimestamp("Expiry");
 
                     event.getPlayer().sendMessage(Messages.Translate("Mute.YouAreMuted",
@@ -169,8 +169,14 @@ public class AsyncChatListener implements Listener {
                     }
                 }
             }
+
+            // Anti-Swear
+            
         } catch (SQLException | InvalidConfigurationException e) {
             e.printStackTrace();
+            // Don't let them send messages, we can't check if they're muted, so we shouldn't allow them to speak.
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(Messages.ServerError);
         }
     }
 }

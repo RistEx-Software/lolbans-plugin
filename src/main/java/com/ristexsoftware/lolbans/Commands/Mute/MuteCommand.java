@@ -112,7 +112,7 @@ public class MuteCommand extends RistExCommand
 
             if (target.isOnline()) {
                 ((Player)target).sendMessage(Messages.Translate("Mute.YouWereMuted", Variables));
-                User.playSound((Player)target, Main.getPlugin(Main.class).getConfig().getString("MuteSettings.Sound"));
+                User.playSound((Player)target, Main.getPlugin(Main.class).getConfig().getString("ChatSettings.MuteSettings.Sound"));
             }
             System.out.println(punish.GetPunishmentType());
 
