@@ -20,48 +20,30 @@
 
 package com.ristexsoftware.lolbans.Utils;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.InvalidConfigurationException;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.TreeMap;
+import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Objects.GUI;
+import com.ristexsoftware.lolbans.Objects.GUIs.HistoryGUI;
 
-/**
- * <h1>Timing Functions</h1>
- * The timing class will measure how long it takes between
- * the class being created to when the Finish() function is
- * called. This allows us to time how long certain operations
- * have taken.
- */
-public class Timing 
-{
-	private Long start = System.currentTimeMillis();
-	private Long later = 0L;
-	public Timing()
-	{
-	}
+import org.bukkit.plugin.Plugin;
 
-	public Long Finish()
-	{
-		if (later == 0L)
-			later = System.currentTimeMillis();
-		return later - start;
-	}
+// There :3
+// import pls
+public class InventoryUtil {
+    
+    private static Map<String, GUI> guiMap = new HashMap<String, GUI>(); 
+    private static Plugin self = Main.getPlugin(Main.class);
 
-	public void Finish(CommandSender sender)
-	{
-		Timing self = this;
-		try
-		{
-			sender.sendMessage(Messages.Translate("CommandComplete",
-				new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-				{{
-					put("Milliseconds", Long.toString(self.Finish()));
-				}}
-			));
-		}
-		catch (InvalidConfigurationException ex)
-		{
-			ex.printStackTrace();
-		}
-	}
+    public static void LoadGUIs() {
+        guiMap.put("history", new HistoryGUI(45, self));
+    }
+
+    public static GUI GetGUI(String name) {
+        if(guiMap.get(name) != null) 
+            return guiMap.get(name);
+
+        return null;
+    }
 }

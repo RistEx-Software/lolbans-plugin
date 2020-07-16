@@ -1,14 +1,38 @@
+/* 
+ *     LolBans - The advanced banning system for Minecraft
+ *     Copyright (C) 2019-2020 Justin Crawford <Justin@Stacksmash.net>
+ *     Copyright (C) 2019-2020 Zachery Coleman <Zachery@Stacksmash.net>
+ *   
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *   
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *   
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *  
+ */
+
 package com.ristexsoftware.lolbans.Commands.History;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.entity.Player;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
+import com.ristexsoftware.lolbans.Objects.GUIs.HistoryGUI;
+import com.ristexsoftware.lolbans.Objects.GUI;
 import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
+import com.ristexsoftware.lolbans.Utils.InventoryUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.NumberUtil;
 import com.ristexsoftware.lolbans.Utils.Paginator;
@@ -90,7 +114,7 @@ public class HistoryCommand extends RistExCommand
             // PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM lolbans_punishments WHERE UUID = ?");
             // pst.setString(1, target.getUniqueId().toString());
 
-            ResultSet result = pst.executeQuery();
+            ResultSet result = pst.executeQuery(); // this line????
             if (!result.next() || result.wasNull())
                 return User.PlayerOnlyVariableMessage("History.NoHistory", sender, args[0], true);
 
@@ -101,6 +125,12 @@ public class HistoryCommand extends RistExCommand
             int pageno = args.length > 0 ? (args.length > 1 ? (NumberUtil.isInteger(a.get("Page")) ? Integer.valueOf(a.get("Page")) : 0) : NumberUtil.isInteger(a.get("PlayerOrPage")) ? Integer.valueOf(a.get("PlayerOrPage")) : 1 ) : 1;
             if (pageno == 0)
                 return false;
+
+            if (self.getConfig().getBoolean("General.HistoryGUI")) {
+                HistoryGUI gui = new HistoryGUI(45, self);
+                gui.BuildGUI((Player) sender, args, a);
+                return true;
+            }
             
             // We use a do-while loop because we already checked if there was a result above.
             List<String> pageditems = new ArrayList<String>();
@@ -139,16 +169,16 @@ public class HistoryCommand extends RistExCommand
                 Message += (String)str;
 
             sender.sendMessage(Message);
-
+            
             // Check if the paginator needs the page text or not.
             if (page.GetTotalPages() > 1)
             {
                 sender.sendMessage(Messages.Translate("History.Paginator",
-                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                    {{
-                        put("current", String.valueOf(page.GetCurrent()));
-                        put("total", String.valueOf(page.GetTotalPages()));
-                    }}
+                new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                {{
+                    put("current", String.valueOf(page.GetCurrent()));
+                    put("total", String.valueOf(page.GetTotalPages()));
+                }}
                 ));
             }
         }

@@ -12,6 +12,8 @@ General:
   TranslationFile: "messages.en_us.yml"
   # If set to true, upon receiving a warning or mute, or trying to speak while muted, a sound will play to their client
   PlaySound: false
+  # Show a GUI instead of chat for the history commands
+  HistoryGUI: false
 
 database:
   host: localhost

@@ -1,3 +1,23 @@
+/* 
+ *     LolBans - The advanced banning system for Minecraft
+ *     Copyright (C) 2019-2020 Justin Crawford <Justin@Stacksmash.net>
+ *     Copyright (C) 2019-2020 Zachery Coleman <Zachery@Stacksmash.net>
+ *   
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *   
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *   
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *  
+ */
+
 package com.ristexsoftware.lolbans;
 
 import java.io.File;
@@ -41,6 +61,7 @@ import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Configuration;
 import com.ristexsoftware.lolbans.Utils.DatabaseUtil;
 import com.ristexsoftware.lolbans.Utils.ImportUtil;
+import com.ristexsoftware.lolbans.Utils.InventoryUtil;
 import com.ristexsoftware.lolbans.Utils.Messages;
 import com.ristexsoftware.lolbans.Utils.Metrics;
 import com.ristexsoftware.lolbans.Utils.ReflectionUtil;
@@ -53,7 +74,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import inet.ipaddr.IPAddressString;
 
-// welcome.
+// welcome. aaa
 /**
  * <h1>LolBans Punishment Plugin</h1> The lolbans plugin. The most advanced
  * punishment management system made for Minecraft
@@ -153,6 +174,8 @@ public final class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
         getServer().getPluginManager().registerEvents(new ConnectionListeners(), this);
 
+        // Register command GUIs
+        InventoryUtil.LoadGUIs();
         
         CommandList.add(new BanCommand(this));
         CommandList.add(new IPBanCommand(this));

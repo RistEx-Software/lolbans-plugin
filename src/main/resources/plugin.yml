@@ -4,6 +4,7 @@ main: com.ristexsoftware.lolbans.Main
 authors: [Zachery Coleman, Justasic]
 description: An advanced punishment management system made for Minecraft
 website: https://github.com/notzachery/lolbans-plugin
+api-version: 1.13
 permissions:
   lolbans.ban:
     description: Able to use ban command
