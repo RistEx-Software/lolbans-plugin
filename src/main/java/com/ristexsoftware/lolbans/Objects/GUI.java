@@ -21,6 +21,9 @@
 
 package com.ristexsoftware.lolbans.Objects;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -36,27 +39,44 @@ public abstract class GUI implements Listener {
     private Inventory inv;
     private int s;
     private Plugin plugin;
+    private Map<Integer, ClickableSlot> clickableMap;
 
     protected GUI(int pSize, Plugin pPlugin) {
         this.s = pSize;
         this.plugin = pPlugin;
 
+        this.clickableMap = new HashMap<Integer, ClickableSlot>();
+
     }
 
-    public void RegisterSlot(ItemStack pItem, int pSlot) {
+    protected void RegisterSlot(ItemStack pItem, int pSlot) {
         if(pItem == null) 
             return;
         inv.setItem(pSlot, pItem);
     }
 
-    public abstract void BuildGUI(Player player, String[] args, ArgumentUtil a);
+    protected void RegisterClickable(ClickableSlot cs) {
+        if(cs.GetItem() == null || inv.getItem(cs.GetSlotId()) != null) return;
+        clickableMap.put(cs.GetSlotId(), cs);
+        inv.setItem(cs.GetSlotId(), cs.GetItem());
+    }
+
+    protected ClickableSlot GetClickable(int slot) {
+        return clickableMap.get(slot);
+    }
+
+    protected abstract void BuildGUI(Player player, String[] args, ArgumentUtil a);
     
-    public boolean IsValidSlot(int pSlot) {
+    protected boolean IsValidSlot(int pSlot) {
         return inv.getItem(pSlot) != null;
     }
 
+    protected boolean IsClickable(int pSlot) {
+        return clickableMap.containsKey(pSlot);
+    }
+
     @EventHandler
-    public abstract void onSlotClick(InventoryClickEvent e);
+    protected abstract void onSlotClick(InventoryClickEvent e);
 
     protected Inventory getInventory() {
         return this.inv;
