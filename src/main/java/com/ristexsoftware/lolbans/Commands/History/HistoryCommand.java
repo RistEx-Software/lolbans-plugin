@@ -126,7 +126,7 @@ public class HistoryCommand extends RistExCommand
             if (pageno == 0)
                 return false;
 
-            if (self.getConfig().getBoolean("General.HistoryGUI")) {
+            if (self.getConfig().getBoolean("HistoryGUI.Enabled")) {
                 HistoryGUI gui = new HistoryGUI(45, self);
                 gui.BuildGUI((Player) sender, args, a);
                 return true;

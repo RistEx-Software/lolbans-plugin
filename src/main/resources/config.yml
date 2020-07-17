@@ -12,8 +12,10 @@ General:
   TranslationFile: "messages.en_us.yml"
   # If set to true, upon receiving a warning or mute, or trying to speak while muted, a sound will play to their client
   PlaySound: false
-  # Show a GUI instead of chat for the history commands
-  HistoryGUI: false
+
+# Show a GUI instead of chat for the history commands
+HistoryGUI:
+  Enabled: false
 
 database:
   host: localhost
@@ -50,6 +52,8 @@ Connection:
     Prefix: 23
 
 BanSettings:
+  # The reason to put when one is not specified
+  DefaultReason: "Your account has been suspended!"
   # Prevents over-reaching bans 
   insane:
     # Allow bans with insane ipmasks (over-reaching IP/CIDR bans)
@@ -92,6 +96,8 @@ max-time:
 
 ChatSettings:
   MuteSettings:
+    # The reason to put when one is not specified
+    DefaultReason: "Your account has been muted!"
     # The to play when a muted user tries to speak
     Sound: BLOCK_ANVIL_LAND
     # Commands to block if a user is muted

@@ -162,22 +162,33 @@ public class IPBanCommand extends RistExCommandAsync
 			a.OptionalFlag("Silent", "-s");
 			a.RequiredString("CIDR", 0);
             a.OptionalString("Time", 1);
-            a.RequiredSentence("Reason", a.get("Time")==null?0:1);
+            a.RequiredSentence("Reason", 1);
 
-			if (!a.IsValid())
+			if (a.get("CIDR") == null) 
 				return false;
 
-			boolean silent = a.get("Silent") != null;
-			String reason = a.get("Reason");
-			Timestamp bantime = TimeUtil.ParseToTimestamp(a.get("Time"));
+			// OptionalSentence is fucked, but reason can be null, we'll define a default reason below.
+			// if (!a.IsValid())
+			// 	return false;
 
-			if (bantime == null && !PermissionUtil.Check(sender, "lolbans.ipban.perm"))
+			boolean silent = a.get("Silent") != null;
+			Timestamp punishtime = TimeUtil.ParseToTimestamp(a.get("Time"));
+			String reason = punishtime == null ? a.get("Time")+" "+ (a.get("Reason") == null ? "" : a.get("Reason")) : a.get("Reason");
+            if (reason == null || reason.trim().equals("null")) {
+                String configReason = Main.getPlugin(Main.class).getConfig().getString("BanSettings.DefaultReason");
+                reason = configReason == null ? "Your account has suspended!" : configReason;
+            };
+
+			if (punishtime == null && !PermissionUtil.Check(sender, "lolbans.ipban.perm"))
 				return User.PermissionDenied(sender, "lolbans.ipban.perm"); 
 			
 			// Is a future, needed != null for some reason.
 			// IPAddress thingy = new IPAddressString(a.get("CIDR")).toAddress();
 			IPAddress thingy = User.FindAddressByAny(a.get("CIDR"));
-			if (thingy == null) return false;
+			if (thingy == null) 
+				return false;
+			System.out.println(thingy.toString());
+				
 			// TODO: handle this better? Send the banned subnet string instead of the address they tried to ban?
 			Optional<ResultSet> res = IPUtil.IsBanned(thingy.toInetAddress()).get();
 			if (res.isPresent() && res.get().next())
@@ -195,7 +206,7 @@ public class IPBanCommand extends RistExCommandAsync
 			pst.setString(i++, sender.getName());
 			pst.setString(i++, sender instanceof Player ? ((Player)sender).getUniqueId().toString() : "CONSOLE");
 			pst.setString(i++, banid);
-			pst.setTimestamp(i++, bantime);
+			pst.setTimestamp(i++, punishtime);
 			DatabaseUtil.ExecuteUpdate(pst);
 
 			IPUtil.addIPAddr(thingy.toString());
@@ -203,18 +214,19 @@ public class IPBanCommand extends RistExCommandAsync
 			String censorip = thingy.toString().replaceAll(ipRegex, TranslationUtil.censorWord(thingy.toString()));
 
 			// Format our messages.
+			final String WHYDOINEEDTODOTHIS = reason;
 			String IPBanAnnouncement = Messages.Translate("IPBan.BanAnnouncement",
 				new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
 				{{
 					put("ipaddress", thingy.toString());
 					put("censoredipaddress", censorip);
-					put("reason", reason);
+					put("reason", WHYDOINEEDTODOTHIS);
 					put("arbiter", sender.getName());
 					put("punishid", banid);
 					put("silent", Boolean.toString(silent));
 					put("appealed", Boolean.toString(false));
-					if (bantime != null)
-						put("expiry", bantime.toString());
+					if (punishtime != null)
+						put("expiry", punishtime.toString());
 				}}
 			);
 
@@ -228,7 +240,7 @@ public class IPBanCommand extends RistExCommandAsync
 				
 				if (thingy.contains(hn.asAddress()))
 				{
-					Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayerIP(sender.getName(), p, banid, reason, TimeUtil.TimestampNow(), bantime, thingy.toString()), 1L);
+					Bukkit.getScheduler().runTaskLater(self, () -> User.KickPlayerIP(sender.getName(), p, banid, WHYDOINEEDTODOTHIS, TimeUtil.TimestampNow(), punishtime, thingy.toString()), 1L);
 					continue;
 				}
 
@@ -239,7 +251,7 @@ public class IPBanCommand extends RistExCommandAsync
 			}
 			
 			// SendIP
-			DiscordUtil.GetDiscord().SendBanObject(sender, thingy.toString(), reason, banid, bantime);
+			DiscordUtil.GetDiscord().SendBanObject(sender, thingy.toString(), reason, banid, punishtime);
 			t.Finish(sender);
 
 			return true;

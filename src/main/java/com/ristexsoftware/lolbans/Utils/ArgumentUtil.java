@@ -118,7 +118,7 @@ public class ArgumentUtil
 	 */
 	public ArgumentUtil OptionalSentence(String Name, int start)
 	{
-		return this.OptionalSentence(Name, start, -1);
+		return this.OptionalSentence(Name, start, UnparsedArgs.size());
 	}
 
 	/**

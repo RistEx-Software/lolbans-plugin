@@ -42,7 +42,7 @@ public class IPUtil
 	/**
 	 * Check if an IP falls within a CIDR range
 	 * @param ipAddress1 IP Address to check
-	 * @param ipAddress The second IP Address to check
+	 * @param ipAddress2 The second IP Address to check
 	 * @param prefix The prefix to check against
 	 * @return true if IP is in prefix, otherwise false
 	 */

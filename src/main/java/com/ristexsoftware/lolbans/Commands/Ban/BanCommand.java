@@ -81,20 +81,28 @@ public class BanCommand extends RistExCommandAsync {
             a.OptionalFlag("Overwrite", "-o");
             a.RequiredString("PlayerName", 0);
             a.OptionalString("TimePeriod", 1);
-            a.RequiredSentence("Reason", a.get("TimePeriod")==null?0:1);
+            a.RequiredSentence("Reason", 1);
 
-            if (!a.IsValid())
+            // For some reason the OptionalSentence method is broken, no clue why... So... we have to do it the shitty way...
+            if (a.get("PlayerName") == null)
                 return false;
+
+            // if (!a.IsValid())
+            //     return false;
 
             boolean silent = a.get("Silent") != null;
             boolean ow = a.get("Overwrite") != null;
             String PlayerName = a.get("PlayerName");
-            Timestamp punishtime = TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
-            String reason = punishtime == null ? a.get("TimePeriod")+" "+ a.get("Reason") : a.get("Reason");
+            Timestamp punishtime = a.get("TimePeriod") == null ? null : TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
+            // mmmmmm more abuse of ternary statements
+            String reason = punishtime == null ? a.get("TimePeriod")+" "+ (a.get("Reason") == null ? "" : a.get("Reason")) : a.get("Reason");
+            if (reason == null || reason.trim().equals("null")) {
+                String configReason = Main.getPlugin(Main.class).getConfig().getString("BanSettings.DefaultReason");
+                reason = configReason == null ? "Your account has suspended!" : configReason;
+            }
 
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
             Punishment punish = new Punishment(PunishmentType.PUNISH_BAN, sender instanceof Player ? ((Player)sender).getUniqueId().toString() : null, target, reason, punishtime, silent);
-
             if (target == null)
                 return User.NoSuchPlayer(sender, PlayerName, true);
 

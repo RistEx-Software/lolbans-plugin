@@ -43,6 +43,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 
@@ -87,20 +88,20 @@ public class HistoryGUI extends GUI {
                 type = PunishmentType.DisplayName(PunishmentType.FromOrdinal(result.getInt("type"))); 
                 switch(result.getInt("type")) {
                     default: 
-                    historyItem = new ItemStack(Material.PAPER);
-                    break;
+                        historyItem = new ItemStack(Material.PAPER);
+                        break;
                     case 0: 
-                    historyItem = new ItemStack(Material.RED_TERRACOTTA, 1);
-                    break;
+                        historyItem = new ItemStack(Material.RED_TERRACOTTA, 1);
+                        break;
                     case 1: 
-                    historyItem = new ItemStack(Material.ORANGE_TERRACOTTA, 1);
-                    break;
+                        historyItem = new ItemStack(Material.ORANGE_TERRACOTTA, 1);
+                        break;
                     case 2: 
-                    historyItem = new ItemStack(Material.YELLOW_TERRACOTTA, 1);
-                    break;
+                        historyItem = new ItemStack(Material.YELLOW_TERRACOTTA, 1);
+                        break;
                     case 3: 
-                    historyItem = new ItemStack(Material.LIME_TERRACOTTA, 1);
-                    break;
+                        historyItem = new ItemStack(Material.LIME_TERRACOTTA, 1);
+                        break;
                 }
                 
                 String title = String.format("§b%s §7#%2s", result.getString("playername"), result.getString("punishid"));
@@ -153,7 +154,7 @@ public class HistoryGUI extends GUI {
         RegisterClickable(arrowNext);
 
         player.openInventory(getInventory());
-        //player.playSound( player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 1.5f);
+        player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 0.8f, 1.5f);
     } 
 
     @Override

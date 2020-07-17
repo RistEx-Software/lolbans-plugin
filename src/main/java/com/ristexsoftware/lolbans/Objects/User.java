@@ -422,6 +422,7 @@ public class User {
         Player p = Bukkit.getPlayer(any);
         if (p != null) {
             try {
+                // new IPAddressString(subnetStr).getAddress()
                 return new IPAddressString(p.getAddress().getAddress().getHostAddress()).toAddress();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -429,18 +430,18 @@ public class User {
             }
         }
 
-        if (InetAddresses.isUriInetAddress(any))
-            return new IPAddressString(any).getAddress();
-
+        
         try {
             MojangUser mUser = new MojangUtil().resolveUser(any);
             if (mUser != null)
-                return new IPAddressString(getLastIP(mUser.getUniqueId().toString()).get()).toAddress();
+            return new IPAddressString(getLastIP(mUser.getUniqueId().toString()).get()).toAddress();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return null;
+        
+        // if (InetAddresses.isUriInetAddress(any))
+        return new IPAddressString(any).getAddress();
+        // return null;
     }
 
     /**

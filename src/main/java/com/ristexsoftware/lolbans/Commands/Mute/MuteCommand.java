@@ -83,7 +83,7 @@ public class MuteCommand extends RistExCommand
             a.OptionalFlag("Overwrite", "-o");
             a.RequiredString("PlayerName", 0);
             a.OptionalString("TimePeriod", 1);
-            a.RequiredSentence("Reason", a.get("TimePeriod")==null?0:1);
+            a.RequiredSentence("Reason", 1);
 
             if (!a.IsValid())
                 return false;
@@ -92,7 +92,12 @@ public class MuteCommand extends RistExCommand
             boolean ow = a.get("Overwrite") != null;
             String PlayerName = a.get("PlayerName");
             Timestamp punishtime = TimeUtil.ParseToTimestamp(a.get("TimePeriod"));
-            String reason = punishtime == null ? a.get("TimePeriod")+" "+ a.get("Reason") : a.get("Reason");
+            // mmmmmm more abuse of ternary statements
+            String reason = punishtime == null ? a.get("TimePeriod")+" "+ (a.get("Reason") == null ? "" : a.get("Reason")) : a.get("Reason");
+            if (reason == null || reason.trim().equals("null")) {
+                String configReason = Main.getPlugin(Main.class).getConfig().getString("ChatSettings.MuteSettings.DefaultReason");
+                reason = configReason == null ? "Your account has been muted!" : configReason;
+            }
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
             Punishment punish = new Punishment(PunishmentType.PUNISH_WARN, sender instanceof Player ? ((Player)sender).getUniqueId().toString() : null, target, reason, punishtime, silent);
 
@@ -122,7 +127,7 @@ public class MuteCommand extends RistExCommand
             Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{
                     put("player", target.getName());
-                    put("reason", reason);
+                    put("reason", punish.GetReason());
                     put("arbiter", sender.getName());
                     put("punishid", punish.GetPunishmentID());
                     put("expiry", thisissodumb == null ? "" : punish.GetExpiryString());
