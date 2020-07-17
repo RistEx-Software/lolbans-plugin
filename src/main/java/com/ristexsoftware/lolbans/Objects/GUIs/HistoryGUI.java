@@ -29,10 +29,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.ristexsoftware.lolbans.Main;
+import com.ristexsoftware.lolbans.Objects.ClickableSlot;
 import com.ristexsoftware.lolbans.Objects.GUI;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
-import com.ristexsoftware.lolbans.Utils.NumberUtil;
 import com.ristexsoftware.lolbans.Utils.Paginator;
 import com.ristexsoftware.lolbans.Utils.PunishmentType;
 
@@ -128,15 +128,10 @@ public class HistoryGUI extends GUI {
 
     @Override
     public void BuildGUI(Player player, String[] args, ArgumentUtil a) {
-        ItemStack arrowNext = new ItemStack(Material.ARROW, 1);
-        ItemStack arrowBack = new ItemStack(Material.ARROW, 1);
-        ItemStack clearHistory = new ItemStack(Material.RED_STAINED_GLASS, 1);
-        ItemStack pageInfo = new ItemStack(Material.BOOK, 1);
-
-        ItemMeta arrowNextMeta = arrowNext.getItemMeta();
-        ItemMeta arrowBackMeta = arrowBack.getItemMeta();
-        ItemMeta clearHistoryMeta = clearHistory.getItemMeta();
-        ItemMeta pageInfoMeta = pageInfo.getItemMeta();
+        ClickableSlot arrowNext = new ClickableSlot(Material.ARROW, "§6Next Page", 1, 44);
+        ClickableSlot arrowBack = new ClickableSlot(Material.ARROW, "§6Previous Page", 1, 36);
+        ClickableSlot clearHistory = new ClickableSlot(Material.BARRIER, "§cClear History", 1, 41);
+        ClickableSlot pageInfo = new ClickableSlot(Material.BOOK, "§6Page ?/?", 1, 40);
 
         GetResults(player, args, a);
         // Maybe tell the user that there are no results
@@ -150,21 +145,12 @@ public class HistoryGUI extends GUI {
         }
 
         String pageInfoName = String.format("§ePage %d/%2d", pages.GetCurrent(), pages.GetTotalPages());
-        arrowNextMeta.setDisplayName("§6Next Page");
-        arrowBackMeta.setDisplayName("§6Previous Page");
-        clearHistoryMeta.setDisplayName("§4Clear History");
-        pageInfoMeta.setDisplayName(pageInfoName);
+        pageInfo.SetName(pageInfoName);
 
-        arrowNext.setItemMeta(arrowNextMeta);
-        arrowBack.setItemMeta(arrowBackMeta);
-        clearHistory.setItemMeta(clearHistoryMeta);
-        pageInfo.setItemMeta(pageInfoMeta);
-
-
-        RegisterSlot(arrowBack, 36);
-        RegisterSlot(pageInfo, 40);
-        RegisterSlot(clearHistory, 41);
-        RegisterSlot(arrowNext, 44);
+        RegisterClickable(arrowBack);
+        RegisterClickable(pageInfo);
+        RegisterClickable(clearHistory);
+        RegisterClickable(arrowNext);
 
         player.openInventory(getInventory());
         //player.playSound( player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 0.5f, 1.5f);
@@ -180,38 +166,40 @@ public class HistoryGUI extends GUI {
 
         if(IsValidSlot(slot)) {
             e.setCancelled(true);
-            ItemStack is = e.getCurrentItem();
-            
-            if(is.getType() == Material.ARROW) {
+            if(IsClickable(slot)) {
                 ItemStack pageInfo = e.getInventory().getItem(40);
                 ItemMeta pageInfoMeta = pageInfo.getItemMeta();
 
-                int i = 0;
-                ItemMeta meta = is.getItemMeta();
-                if(meta.getDisplayName().contains("Next")) {
-                    if(pages.HasNext()) {
-                        int next = pages.GetNext();
-                        for(ItemStack isl : pages.GetPage(next)) {
-                            e.getInventory().setItem(i, isl);
-                            i++;
-                        }
-                    }
-                } else if(meta.getDisplayName().contains("Previous")) {
-                    if(pages.HasPrev()) {
-                        int prev = pages.GetPrev();
-                        for(ItemStack isl : pages.GetPage(prev)) {
-                            e.getInventory().setItem(i, isl);
-                            i++;
-                        }
-                    }
-                }
+                ClickableSlot cs = GetClickable(slot);
+                if(cs == null) return;
 
+                if(cs.GetName().contains("Next")) {
+                    cs.Execute(() -> {
+                        int i = 0;
+                        if(pages.HasNext()) {
+                            int next = pages.GetNext();
+                            for(ItemStack isl : pages.GetPage(next)) {
+                                e.getInventory().setItem(i, isl);
+                                i++;
+                            }
+                        }
+                    });
+                } else if(cs.GetName().contains("Previous")) {
+                    cs.Execute(() -> {
+                        int i = 0;
+                        if(pages.HasPrev()) {
+                            int prev = pages.GetPrev();
+                            for(ItemStack isl : pages.GetPage(prev)) {
+                                e.getInventory().setItem(i, isl);
+                                i++;
+                            }
+                        }
+                    });
+                }
                 String pageInfoName = String.format("§ePage %d/%2d", pages.GetCurrent(), pages.GetTotalPages());
                 pageInfoMeta.setDisplayName(pageInfoName);
                 pageInfo.setItemMeta(pageInfoMeta);
             }
         }
-
     }
-    
 }
