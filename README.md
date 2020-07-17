@@ -11,6 +11,7 @@ OS X & Linux:
 ```sh
 mvn clean build
 ```
+Copy plugin jar into your plugins folder and configure config.yml.
 
 ## Contributing
 
