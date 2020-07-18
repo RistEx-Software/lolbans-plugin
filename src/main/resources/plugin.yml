@@ -1,6 +1,6 @@
 name: LolBans
 version: ${project.version}
-main: com.ristexsoftware.lolbans.Main
+main: com.ristexsoftware.lolbans.spigot.Main
 authors: [Zachery Coleman, Justin Crawford]
 description: An advanced punishment management system made for Minecraft
 website: https://github.com/notzachery/lolbans-plugin

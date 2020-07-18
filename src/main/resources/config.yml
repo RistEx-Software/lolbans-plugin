@@ -51,13 +51,9 @@ Connection:
     # The higher the number, the stricter.
     Prefix: 23
 
-KickSettings:
-  DefaultReason: "You have been kicked by an administrator!"
-
 BanSettings:
   # The reason to put when one is not specified
   DefaultReason: "Your account has been suspended!"
-  DefaultUnban: "You have been unbanned!"
   # Prevents over-reaching bans 
   insane:
     # Allow bans with insane ipmasks (over-reaching IP/CIDR bans)
