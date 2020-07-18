@@ -1,0 +1,80 @@
+name: LolBans
+version: ${project.version}
+main: com.ristexsoftware.lolbans.spigot.Main
+authors: [Zachery Coleman, Justin Crawford]
+description: An advanced punishment management system made for Minecraft
+website: https://github.com/notzachery/lolbans-plugin
+api-version: 1.13
+permissions:
+  lolbans.ban:
+    description: Able to use ban command
+  lolbans.ban.overwite:
+    description: Able to overwrite bans
+  lolbans.ban.perm:
+    description: Allow permanent bans
+  lolbans.maxtime:
+    description: The max time a player can punish someone
+  lolbans.alerts:
+    description: Receive notification on silent bans
+  lolbans.banwave.add:
+    description: Add a player to the next ban wave
+  lolbans.banwave.remove:
+    description: Remove a player from the next ban wave
+  lolbans.banwave.enforce:
+    description: Start a ban wave
+  lolbans.banwave:
+    description: Able to use ban wave command
+  lolbans.insanityoverride:
+    description: Allow over-reaching bans
+  lolbans.ipban:
+    description: Able to use ip ban command
+  lolbans.ipban.perm:
+    description: Able to perform permanent IP Bans
+  lolbans.ipunban:
+    description: Able to unban an IP or CIDR ban.
+  lolbans.regexban:
+    description: Able to perform regular expression bans
+  lolbans.regexunban:
+    description: Able to remove a regular expression ban
+  lolbans.unban:
+    description: Able to unban users
+  lolbans.history:
+    description: Able to use/view history of bans
+  lolbans.history.prune:
+    description: Able to prune history
+  lolbans.staffhistory:
+    description: Able to view history of staff members
+  lolbans.broadcast:
+    description: Able to use broadcast command
+  lolbans.freeze:
+    description: Able to (un)freeze a player in place
+  lolbans.kick:
+    description: Able to kick players from the server
+  lolbans.report:
+    description: Able to report other players to server admins
+  lolbans.report.history:
+    description: Able to history of reports of a specific player or all reports
+  lolbans.ReceiveReports:
+    description: Able to receive reports from other players
+  lolbans.staffrollback:
+    description: Able to roll back actions of other staff members
+  lolbans.chatmute:
+    description: Able to mute/unmute global chat
+  lolbans.mute:
+    description: Able to mute other players
+  lolbans.mute.overwite:
+      description: Able to overwrite bans
+  lolbans.mute.perm:
+    description: Able to permanently mute other players
+  lolbans.unmute:
+    description: Able to unmute players
+  lolbans.warnaccept:
+    description: Able to accept a warning from chat
+  lolbans.warn:
+    description: Able to issue a warning against a player
+  lolbans.unwarn:
+    description: Able to remove a warning previously issued
+  lolbans.mute.bypass:
+    description: Able to bypass mutes
+  lolbans.reload:
+    description: Reload plugin.yml and messages.yml or import data

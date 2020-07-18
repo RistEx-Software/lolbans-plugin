@@ -1,0 +1,125 @@
+# LOLBANS CONFIGURATION FILE
+# Please see https://github.com/NotZachery/lolbans-plugin/blob/master/src/main/resources/config.yml for information on how to configure LolBans
+General:
+  # Kick connecting players if the server encounters an error
+  KickConnectionError: true
+  # Allow anyone who has been /op'ed to bypass all permission checks
+  # (effectively making them have the same control as console)
+  OpsBypassPermissions: false
+  # How much time to wait until reports expire (Default is 3d)
+  ReportExpiry: 3d
+  # The translation file you wish to use. (Default: messages.en_us.yml)
+  TranslationFile: "messages.en_us.yml"
+  # If set to true, upon receiving a warning or mute, or trying to speak while muted, a sound will play to their client
+  PlaySound: false
+
+# Show a GUI instead of chat for the history commands
+HistoryGUI:
+  Enabled: false
+
+database:
+  host: localhost
+  port: 3306
+  name: root
+  username: username
+  password: passwd
+  # Maximum number of times mysql will try to reconnect before giving up.
+  MaxReconnects: 5
+  # Number of times to check for expired temp bans
+  # Currently set to 30 seconds
+  # It's best to leave this alone unless you know what you
+  # are doing with it.
+  QueryUpdate: 30
+
+Discord:
+  Enabled: false
+  Webhook: https://discordapp.com/api/webhooks/xxx/xxxxxx
+  ReportWebhook: https://discordapp.com/api/webhooks/xxx/xxxxxx
+  # Example: Justasic banned NotZachery for abusing villagers [SILENT] [#BF7BD5C85]
+  UseSimplifiedMessage: false
+  WebhookProfilePicture: "https://notzachery.github.io/images/joy.png"
+
+Connection:
+  # Prevent a user from connecting to many times in a given amount of time
+  RateLimiting:
+    Enabled: true
+    Limit: 6 # Number of seconds before a user can re-connect
+  # Check the users IP against their last known IP, to see if it is coming from a different location
+  IPCheck:
+    Enabled: false
+    # CIDR Prefix to use, must be <31 and >0 (Default: 23)
+    # The higher the number, the stricter.
+    Prefix: 23
+
+BanSettings:
+  # The reason to put when one is not specified
+  DefaultReason: "Your account has been suspended!"
+  # Prevents over-reaching bans 
+  insane:
+    # Allow bans with insane ipmasks (over-reaching IP/CIDR bans)
+    ipmasks: false
+
+    # Allow bans with insane regex (over-reaching regular expressions)
+    regex: false
+
+    # What percentage of players on the server to trigger
+    # specifying an insane ban as. The default is 75.5%
+    # which means if you have 100 players on the server
+    # the ban will not be allowed if it will be banning
+    # 75 or more players.
+    trigger: 75.5
+
+WarningSettings:
+  # Spawns a box around the player
+  SpawnBox: true
+  BoxMaterial: Barrier
+  FreezePlayer: true
+  # This will just send a chat message saying they've been warned.
+  SimpleWarning: false
+  # The sound you want (https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html [1.15+]) 
+  Sound: BLOCK_ANVIL_LAND
+
+FreezeSettings:
+  # Spawns a box around the player
+  SpawnBox: true
+  BoxMaterial: Barrier
+  FreezePlayer: true
+
+IPBanSettings:
+  # Optionally specify how wide reaching the ban will go
+  InsanePercentage: 90
+
+# The max time a user can ban/mute someone. (lolbans.maxtime.group)
+max-time:
+  default: 1d
+  moderator: 14d
+
+ChatSettings:
+  MuteSettings:
+    # The reason to put when one is not specified
+    DefaultReason: "Your account has been muted!"
+    # The to play when a muted user tries to speak
+    Sound: BLOCK_ANVIL_LAND
+    # Commands to block if a user is muted
+    blacklisted-commands:
+      - msg
+      - w
+      - r
+      - mail
+      - m
+      - t
+      - whisper
+      - emsg
+      - tell
+      - er
+      - reply
+      - ereply
+      - email
+      - action
+      - describe
+      - eme
+      - eaction
+      - edescribe
+      - etell
+      - ewhisper
+      - pm
