@@ -23,12 +23,15 @@ import java.sql.*;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 import com.ristexsoftware.lolbans.api.punishment.runnables.Query;
+import com.ristexsoftware.lolbans.api.utils.TimeUtil;
+import com.ristexsoftware.lolbans.spigot.Main;
 
 // This class is honestly a mess... It scares me, but it works...
 // TODO: Clean this class
@@ -38,22 +41,29 @@ public class Database
     private static LolBans self;
     private static Query CheckThread;
     public static Connection connection;
+    // Configuration.dbhost, Configuration.dbport, Configuration.dbname, Configuration.maxReconnects), Configuration.dbusername, Configuration.dbpassword
 
     /**
      * Initialize the database tables and connection. This also starts the synchronization thread for the database.
+     * @param host The database host
+     * @param username The database username
+     * @param password The database password
+     * @param database The database name
+     * @param port The port to connect with
+     * @param maxReconnects The amount of retries
      * @param QueryUpdateLong The amount of time between the punishment queries
      * @return True if the tables were created successfully and the connection completed successfully.
      */
-    public static boolean InitializeDatabase(Long QueryUpdateLong)
+    public static boolean InitializeDatabase(String host, String username, String password, String database, Integer port, Integer MaxReconnects, Long QueryUpdateLong)
     {
         try 
         {
-            Database.OpenConnection();
+            Database.OpenConnection(host, username, password, database, port, MaxReconnects);
         }
         catch (SQLException e)
         {
             e.printStackTrace();
-            self.getLogger().severe("Cannot connect to database, ensure your database is setup correctly and restart the server.");
+            LolBans.getLogger().severe("Cannot connect to database, ensure your database is setup correctly and restart the server.");
             // Just exit and let the user figure it out.
             return false;
         }
@@ -96,12 +106,8 @@ public class Database
                                             +"UUID VARCHAR(36) NOT NULL,"
                                             +"PlayerName VARCHAR(17),"
                                             +"IPAddress VARCHAR(48) NOT NULL,"
-                                            +"Country VARCHAR(64) NOT NULL,"
-                                            +"CountryCode VARCHAR(3) NOT NULL,"
-                                            +"FirstLogin TIMESTAMP NOT NULL,"
-                                            +"LastLogin TIMESTAMP NOT NULL,"
-                                            +"Punishments INT NULL,"
-                                            +"LastPunished TIMESTAMP NULL,"
+                                            +"FirstLogin TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+                                            +"LastLogin TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
                                             +"TimesConnected INT NULL"
                                             +")").execute();
 
@@ -161,13 +167,13 @@ public class Database
         catch (SQLException e)
         {
             e.printStackTrace();
-            self.getLogger().severe("Cannot create database tables, please ensure your SQL user has the correct permissions.");
+            LolBans.getLogger().severe("Cannot create database tables, please ensure your SQL user has the correct permissions.");
             return false; 
         }
 
         // Schedule a repeating task to delete expired bans.
-        Database.CheckThread = new Query();
-        Database.CheckThread.runTaskTimerAsynchronously(self, 20L, QueryUpdateLong * 20L);
+        // Database.CheckThread = new Query();
+        // Database.CheckThread.runTaskTimerAsynchronously(self, 20L, QueryUpdateLong * 20L);
         return true;
     }
 
@@ -198,19 +204,19 @@ public class Database
      * Actually open the conenction to the database, this should not be used outside this class.
      * @throws SQLException SQL exception if the connection fails
      */
-    private static void OpenConnection() throws SQLException
+    private static void OpenConnection(String host, String username, String password, String database, Integer port, Integer maxReconnects) throws SQLException
     {
         if (connection != null && !connection.isClosed())
             return;
 
-        synchronized (self)
+        synchronized (Main.getPlugin(Main.class).isEnabled() ? Main.getPlugin(Main.class) : null)
         {
             if (connection != null && !connection.isClosed())
                 return;
 
             connection =
                     DriverManager.getConnection(String.format("jdbc:mysql://%s:%s/%s?autoReconnect=true&failOverReadOnly=false&maxReconnects=%d", 
-                                    Configuration.dbhost, Configuration.dbport, Configuration.dbname, Configuration.MaxReconnects), Configuration.dbusername, Configuration.dbpassword);
+                                   host, port, database, maxReconnects), username, password);
         }
     }
 
@@ -315,8 +321,6 @@ public class Database
                 //This is where you should do your database interaction
                 try 
                 {
-                    String[] geodata = GeoLocation.GetIPLocation(IPAddress);
-
                     // Make sure we're not duping data, if they already exist go ahead and update them
                     // This happens because we insert every time they join for the first time, but if the playerdata is removed on the world
                     // or the spigot plugin is setup in  multiple servers using the same database, it would add them a second time
@@ -331,20 +335,20 @@ public class Database
                         UpdateUser(UUID, PlayerName, IPAddress, LastLogin);
                         return true;
                     }
+                    LolBans.getLogger().warning(CheckUser.toString());
 
                     // Preapre a statement
                     int i = 1;
                     PreparedStatement InsertUser = connection
-                    .prepareStatement(String.format("INSERT INTO lolbans_users (UUID, PlayerName, IPAddress, FirstLogin, LastLogin, TimesConnected, Country, CountryCode) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"));
+                    .prepareStatement(String.format("INSERT INTO lolbans_users (UUID, PlayerName, IPAddress, FirstLogin, LastLogin, TimesConnected) VALUES (?, ?, ?, ?, ?, ?)"));
                     InsertUser.setString(i++, UUID);
                     InsertUser.setString(i++, PlayerName);
                     InsertUser.setString(i++, IPAddress);
                     InsertUser.setTimestamp(i++, FirstLogin);
                     InsertUser.setTimestamp(i++, LastLogin);
                     InsertUser.setInt(i++, 1);
-                    InsertUser.setString(i++, geodata[1]);
-                    InsertUser.setString(i++, geodata[0]);
                     InsertUser.executeUpdate();
+                    LolBans.getLogger().warning(InsertUser.toString());
                 } 
                 catch (Throwable e) 
                 {
@@ -379,7 +383,6 @@ public class Database
                 //This is where you should do your database interaction
                 try
                 {
-                    String[] geodata = GeoLocation.GetIPLocation(IPAddress);
 
                     int j = 1;
                     // This is a fail-safe just incase the table was dropped or the player joined the server BEFORE the plugin was added...
@@ -391,9 +394,9 @@ public class Database
                     if (!results.next())
                     {
                         Timestamp FirstLogin = TimeUtil.TimestampNow();
-                        InsertUser(UUID, PlayerName, IPAddress, FirstLogin, LastLogin);
-                        return true;
+                        return InsertUser(UUID, PlayerName, IPAddress, FirstLogin, LastLogin).get();
                     }
+                    LolBans.getLogger().warning(CheckUser.toString());
 
                     PreparedStatement gtc = connection.prepareStatement(String.format("SELECT TimesConnected FROM lolbans_users WHERE UUID = ?"));
                     gtc.setString(1, UUID);
@@ -414,15 +417,14 @@ public class Database
                     // Preapre a statement
                     int i = 1;
                     PreparedStatement UpdateUser = connection
-                    .prepareStatement(String.format("UPDATE lolbans_users SET LastLogin = ?, PlayerName = ?, IPAddress = ?, TimesConnected = ?, Country = ?, CountryCode = ? WHERE UUID = ?"));
+                    .prepareStatement(String.format("UPDATE lolbans_users SET LastLogin = ?, PlayerName = ?, IPAddress = ?, TimesConnected = ? WHERE UUID = ?"));
                     UpdateUser.setTimestamp(i++, LastLogin);
                     UpdateUser.setString(i++, PlayerName);
-                    UpdateUser.setString(i++, IPAddress);//.equals(User.getLastIP(UUID).get()) ? IPAddress : User.getAllIP(UUID).get()+","+IPAddress);
+                    UpdateUser.setString(i++, IPAddress);
                     UpdateUser.setInt(i++, ++tc);
-                    UpdateUser.setString(i++, geodata[1]);
-                    UpdateUser.setString(i++, geodata[0]);
                     UpdateUser.setString(i++, UUID);
                     UpdateUser.executeUpdate();
+                    LolBans.getLogger().warning(UpdateUser.toString());
                 } 
                 catch (Throwable e) 
                 {
@@ -534,5 +536,54 @@ public class Database
         LolBans.pool.execute(t);
 
         return (Future<Boolean>)t;
+    }
+
+    /**
+     * Get the last ip of a user
+     * 
+     * @param uuid UUID of player to check
+     * @return The last IP of the specified user
+     */
+    private static Future<String> getLastIP(String uuid) {
+        FutureTask<String> t = new FutureTask<>(new Callable<String>() {
+            @Override
+            public String call() {
+                // This is where you should do your database interaction
+                try {
+                    PreparedStatement ps = connection
+                            .prepareStatement("SELECT ipaddress FROM lolbans_users WHERE UUID = ? LIMIT 1");
+                    ps.setString(1, uuid);
+                    ResultSet results = ps.executeQuery();
+                    if (results.next()) {
+                        if (results.getString("ipaddress").contains(",")) {
+                            String[] iplist = results.getString("ipaddress").split(",");
+                            return iplist[iplist.length - 1];
+                        }
+                        return results.getString("ipaddress");
+                    }
+                    return null;
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        });
+        LolBans.pool.execute(t);
+        return (Future<String>) t;
+    }
+
+    /**
+     * Get the last ip of a user
+     * 
+     * @param uuid UUID of player to check
+     * @return The last IP of the specified user
+     */
+    public static String getLastAddress(String uuid) {
+        try {
+            return getLastIP(uuid).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

@@ -30,21 +30,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 import com.ristexsoftware.lolbans.api.LolBans;
+import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.database.Database;
-import com.ristexsoftware.lolbans.api.utils.Mojang;
 import com.ristexsoftware.lolbans.api.utils.TimeUtil;
-import com.ristexsoftware.lolbans.api.utils.Mojang.MojangUser;
-
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class Punishment
 {
     // private static LolBans self = LolBans.getPlugin(LolBans.class);
     // Our class variables
-    private OfflinePlayer player = null;
+    private User player = null;
     private String DatabaseID = null;
     private String PID = null;
     private UUID uuid = null;
@@ -56,13 +50,13 @@ public class Punishment
     private Timestamp TimePunished = null;
     private Timestamp Expiry = null;
     // If Executioner is null but IsConsole is true, it's a console punishment.
-    private OfflinePlayer Executioner = null;
+    private User Executioner = null;
     private boolean IsConsoleExectioner = false;
 
     // Appealed stuff
     private String AppealReason = null;
     private Timestamp AppealedTime = null;
-    private OfflinePlayer AppealStaff = null;
+    private User AppealStaff = null;
     private boolean IsConsoleAppealer = false;
     private boolean Appealed = false;
     private boolean WarningAcknowledged = false;
@@ -80,10 +74,8 @@ public class Punishment
      * @param Expiry When the punishment expires (if applicable, null if permanent)
      * @param silent If the punishment is silent
      * @throws SQLException         If it cannot communicate with the SQL database
-     * @throws ExecutionException
-     * @throws InterruptedException
      */
-    public Punishment(PunishmentType Type, String senderUUID, OfflinePlayer target, String Reason, Timestamp Expiry, Boolean silent) throws SQLException, InterruptedException, ExecutionException {
+    public Punishment(PunishmentType Type, User sender, User target, String Reason, Timestamp Expiry, Boolean silent) throws SQLException {
         // Not supported yet, will be in the future.
         if (Type == PunishmentType.PUNISH_REGEX || Type == PunishmentType.PUNISH_IP)
             throw new UnknownError("Unsupported Punishment type");
@@ -93,18 +85,14 @@ public class Punishment
         this.uuid = target.getUniqueId();
         this.PlayerName = target.getName();
         this.TimePunished = TimeUtil.TimestampNow();
-        this.IPAddress = target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress()
-             : User.getLastIP(target.getUniqueId().toString()).get() == null ? "#" : User.getLastIP(target.getUniqueId().toString()).get(); // Lets see if we can get an IP from the users table
+        this.IPAddress = target.getAddress() == null ? "#" : target.getAddress();
         this.Reason = Reason;
         this.Expiry = Expiry;
         this.silent = silent;
-        
-        if (senderUUID == null)
+        if (sender.getUniqueId() == null || sender.getUniqueId().toString() == "CONSOLE") 
             this.IsConsoleExectioner = true;
-        else {
-            MojangUser mUser = new Mojang().resolveUser(senderUUID);
-            this.Executioner = Bukkit.getOfflinePlayer(mUser.getName());   
-        }
+        else 
+            this.Executioner = LolBans.getOfflineUser(target.getUniqueId());   
 
         switch (Type)
         {
@@ -145,7 +133,7 @@ public class Punishment
                     p.PlayerName = res.getString("PlayerName");
                     p.IPAddress = res.getString("IPAddress");
                     p.Reason = res.getString("Reason");
-                    p.Type = PunishmentType.FromOrdinal(res.getInt("Type"));
+                    p.Type = PunishmentType.fromOrdinal(res.getInt("Type"));
                     p.TimePunished = res.getTimestamp("TimePunished");
                     p.Expiry = res.getTimestamp("Expiry");
                     p.AppealReason = res.getString("AppealReason");
@@ -154,7 +142,7 @@ public class Punishment
                     p.silent = res.getBoolean("Silent");
 
                     // Find players now.
-                    p.player = Bukkit.getOfflinePlayer(p.uuid);
+                    p.player = LolBans.getOfflineUser(p.uuid);
                     String ArbiterUUID = res.getString("ArbiterUUID"),
                            AppelleeUUID = res.getString("AppelleeUUID");
 
@@ -163,7 +151,7 @@ public class Punishment
                         if (ArbiterUUID.equalsIgnoreCase("CONSOLE"))
                             p.IsConsoleExectioner = true;
                         else
-                            p.Executioner = Bukkit.getOfflinePlayer(UUID.fromString(res.getString("ArbiterUUID")));
+                            p.Executioner = LolBans.getOfflineUser(UUID.fromString(res.getString("ArbiterUUID")));
                     }
 
                     if (AppelleeUUID != null)
@@ -171,7 +159,7 @@ public class Punishment
                         if (AppelleeUUID.equalsIgnoreCase("CONSOLE"))
                             p.IsConsoleAppealer = true;
                         else
-                            p.AppealStaff = Bukkit.getOfflinePlayer(UUID.fromString(res.getString("AppelleeUUID")));
+                            p.AppealStaff = LolBans.getOfflineUser(UUID.fromString(res.getString("AppelleeUUID")));
                     }
 
                     return Optional.of(p);
@@ -192,16 +180,16 @@ public class Punishment
      * @param Appealed Whether the punishment was appealed
      * @return The punishment if found.
      */
-    public static Optional<Punishment> FindPunishment(PunishmentType Type, OfflinePlayer Player, boolean Appealed)
+    public static Optional<Punishment> FindPunishment(PunishmentType Type, User Player, boolean Appealed)
     {
         try
         {
-            PreparedStatement pst3 = self.connection.prepareStatement("SELECT PunishID FROM lolbans_punishments WHERE UUID = ? AND Type = ? AND Appealed = ?");
+            PreparedStatement pst3 = Database.connection.prepareStatement("SELECT PunishID FROM lolbans_punishments WHERE UUID = ? AND Type = ? AND Appealed = ?");
             pst3.setString(1, Player.getUniqueId().toString());
             pst3.setInt(2, Type.ordinal());
             pst3.setBoolean(3, Appealed);
 
-            Optional<ResultSet> ores = DatabaseUtil.ExecuteLater(pst3).get();
+            Optional<ResultSet> ores = Database.ExecuteLater(pst3).get();
             if (!ores.isPresent())
                 return Optional.empty();
 
@@ -222,7 +210,7 @@ public class Punishment
      * Commit the punishment to the database.
      * @param sender The command sender to notify if an error occures.
      */
-    public void Commit(CommandSender sender)
+    public void Commit(User sender)
     {
         Punishment me = this;
         FutureTask<Void> t = new FutureTask<>(new Callable<Void>()
@@ -240,7 +228,7 @@ public class Punishment
                         if (me.Appealed && me.AppealedTime == null)
                             me.AppealedTime = TimeUtil.TimestampNow();
 
-                        InsertBan = self.connection.prepareStatement("UPDATE lolbans_punishments SET UUID = ?,"
+                        InsertBan = Database.connection.prepareStatement("UPDATE lolbans_punishments SET UUID = ?,"
                                                                     +"PlayerName = ?,"
                                                                     +"IPAddress = ?,"
                                                                     +"Reason = ?,"
@@ -280,7 +268,7 @@ public class Punishment
                     else
                     {
                         // Preapre a statement
-                        InsertBan = self.connection.prepareStatement(String.format("INSERT INTO lolbans_punishments (UUID, PlayerName, IPAddress, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry, Type, Silent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"));
+                        InsertBan = Database.connection.prepareStatement(String.format("INSERT INTO lolbans_punishments (UUID, PlayerName, IPAddress, Reason, ArbiterName, ArbiterUUID, PunishID, Expiry, Type, Silent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"));
                         InsertBan.setString(i++, me.uuid.toString());
                         InsertBan.setString(i++, me.PlayerName);
                         InsertBan.setString(i++, me.IPAddress);
@@ -297,13 +285,13 @@ public class Punishment
                 catch (Throwable e)
                 {
                     e.printStackTrace();
-                    sender.sendMessage(Messages.ServerError);
+                    // sender.sendMessage("Error");
                 }
                 return null;
             }
         });
 
-        Main.pool.execute(t);
+        LolBans.pool.execute(t);
     }
 
     /**
@@ -322,7 +310,7 @@ public class Punishment
                 try 
                 {
                     // Preapre a statement
-                    PreparedStatement pst2 = self.connection.prepareStatement("DELETE FROM lolbans_punishments WHERE id = ?");
+                    PreparedStatement pst2 = Database.connection.prepareStatement("DELETE FROM lolbans_punishments WHERE id = ?");
                     pst2.setString(1, me.DatabaseID);
                     pst2.executeUpdate();
 
@@ -359,7 +347,7 @@ public class Punishment
             }
         });
 
-        Main.pool.execute(t);
+        LolBans.pool.execute(t);
     }
 
 
@@ -367,7 +355,7 @@ public class Punishment
      * Getters/Setters
      */
     /* clang-format: off */
-    public OfflinePlayer GetPlayer() { return this.player; }
+    public User GetPlayer() { return this.player; }
     public String GetPunishmentID() { return this.PID; }
     public UUID GetUUID() { return this.uuid; }
     public String GetPlayerName() { return this.PlayerName; }
@@ -376,12 +364,12 @@ public class Punishment
     public PunishmentType GetPunishmentType() { return this.Type; }
     public Timestamp GetTimePunished() { return this.TimePunished; }
     public Timestamp GetExpiry() { return this.Expiry; }
-    public OfflinePlayer GetExecutioner() { return this.Executioner; }
+    public User GetExecutioner() { return this.Executioner; }
     public String GetExecutionerName() { return this.IsConsoleExectioner ? "CONSOLE" : this.Executioner.getName(); }
     public boolean IsConsoleExectioner() { return this.IsConsoleExectioner; }
     public String GetAppealReason() { return this.AppealReason; }
     public Timestamp GetAppealTime() { return this.AppealedTime; }
-    public OfflinePlayer GetAppealStaff() { return this.AppealStaff; }
+    public User GetAppealStaff() { return this.AppealStaff; }
     public boolean IsConsoleAppealer() { return this.IsConsoleAppealer; }
     public boolean GetAppealed() { return this.Appealed; }
     public boolean GetSilent() { return this.silent; }
@@ -395,10 +383,10 @@ public class Punishment
     public void SetAppealed(Boolean value) { this.Appealed = value; }
     public void SetSilent(Boolean value) { this.silent = value; }
     public void SetWarningAcknowledged(Boolean value) { this.WarningAcknowledged = value; }
-    public void SetAppealStaff(CommandSender sender) { this.SetAppealStaff(sender instanceof OfflinePlayer ? (OfflinePlayer)sender : null); }
-    public void SetAppealStaff(OfflinePlayer player)
+    // public void SetAppealStaff(User sender) { this.SetAppealStaff(sender instanceof User ? (User)sender : null); }
+    public void SetAppealStaff(User player)
     {
-        if (player == null)
+        if (player.getUniqueId() == null)
         {
             this.AppealStaff = null;
             this.IsConsoleAppealer = true;
