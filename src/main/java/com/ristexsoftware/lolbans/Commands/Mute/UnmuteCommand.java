@@ -30,6 +30,7 @@ import org.bukkit.plugin.Plugin;
 import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
 import com.ristexsoftware.lolbans.Utils.BroadcastUtil;
 import com.ristexsoftware.lolbans.Utils.DiscordUtil;
+import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.Punishment;
 import com.ristexsoftware.lolbans.Objects.RistExCommand;
 import com.ristexsoftware.lolbans.Objects.User;
@@ -72,12 +73,12 @@ public class UnmuteCommand extends RistExCommand {
             a.RequiredString("PlayerName", 0);
             a.RequiredSentence("Reason", 1);
 
-            if (!a.IsValid())
+            if (a.get("PlayerName") == null)
                 return false;
 
             boolean silent = a.get("Silent") != null;
             String PlayerName = a.get("PlayerName");
-            String reason = a.get("Reason");
+            String reason = a.get("Reason") == null ? Main.getPlugin(Main.class).getConfig().getString("MuteSettings.DefaultUnmute") : a.get("Reason");
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
 
             if (target == null)

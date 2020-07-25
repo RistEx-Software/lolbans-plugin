@@ -97,8 +97,7 @@ public class Punishment
         this.uuid = target.getUniqueId();
         this.PlayerName = target.getName();
         this.TimePunished = TimeUtil.TimestampNow();
-        this.IPAddress = target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress()
-             : User.getLastIP(target.getUniqueId().toString()).get() == null ? "#" : User.getLastIP(target.getUniqueId().toString()).get(); // Lets see if we can get an IP from the users table
+        this.IPAddress = target.isOnline() ? ((Player)target).getAddress().getAddress().getHostAddress() : User.getLastIP(target.getUniqueId().toString()).get() == null ? "#" : User.getLastIP(target.getUniqueId().toString()).get(); // Lets see if we can get an IP from the users table
         this.Reason = Reason;
         this.Expiry = Expiry;
         this.silent = silent;

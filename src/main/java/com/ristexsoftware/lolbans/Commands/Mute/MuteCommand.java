@@ -85,7 +85,7 @@ public class MuteCommand extends RistExCommand
             a.OptionalString("TimePeriod", 1);
             a.RequiredSentence("Reason", 1);
 
-            if (!a.IsValid())
+            if (a.get("PlayerName") == null)
                 return false;
 
             boolean silent = a.get("Silent") != null;
@@ -122,7 +122,7 @@ public class MuteCommand extends RistExCommand
                 //return User.PermissionDenied(sender, "lolbans.maxtime."+a.get("TimePeriod"));
 
             punish.Commit(sender);
-            
+             
             final Timestamp thisissodumb = punishtime;
             Map<String, String> Variables = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                 {{

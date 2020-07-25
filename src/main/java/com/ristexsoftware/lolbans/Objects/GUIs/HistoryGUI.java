@@ -30,6 +30,7 @@ import java.util.List;
 
 import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.ClickableSlot;
+import com.ristexsoftware.lolbans.Objects.LoreFormatter;
 import com.ristexsoftware.lolbans.Objects.GUI;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.ArgumentUtil;
@@ -109,10 +110,13 @@ public class HistoryGUI extends GUI {
                 
                 meta.setDisplayName(title);
                 
-                meta.setLore(Arrays.asList(new String[]{
-                    "§7Type:    §r" + type,
+                LoreFormatter lf = new LoreFormatter(Arrays.asList(new String[]{
+                    "§7Type: §r" + type,
                     "§7Arbiter: §r" + result.getString("arbitername"), 
-                    "§7Reason: §r" + result.getString("reason")}));
+                    "§7Reason: §r" + result.getString("reason"),
+                    "§7Date: §r" + result.getTimestamp("TimePunished").toString()}));
+
+                meta.setLore(lf.GetFormatted());
 
                 historyItem.setItemMeta(meta);
                 

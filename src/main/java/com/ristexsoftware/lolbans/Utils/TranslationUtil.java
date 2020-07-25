@@ -38,7 +38,7 @@ import java.text.SimpleDateFormat;
 import java.sql.Timestamp;
 
 public class TranslationUtil {
-    private static Main self = Main.getPlugin(Main.class);
+    // private static Main self = Main.getPlugin(Main.class);
     private static HashMap<String, String> leetReplace = new HashMap<>();
     private static List<String> swearWords = new ArrayList<String>();
 
@@ -52,35 +52,35 @@ public class TranslationUtil {
         leetReplace.put("7", "t");
         leetReplace.put("_", "");
 
-        // Input file which needs to be parsed
-        String fileToParse = self.getDataFolder().toString() + "/banned-words.csv";
-        BufferedReader fileReader = null;
+        // // Input file which needs to be parsed
+        // String fileToParse = self.getDataFolder().toString() + "/banned-words.csv";
+        // BufferedReader fileReader = null;
 
-        // Delimiter used in CSV file
-        final String DELIMITER = ",";
-        try {
-            String line = "";
-            // Create the file reader
-            fileReader = new BufferedReader(new FileReader(fileToParse));
+        // // Delimiter used in CSV file
+        // final String DELIMITER = ",";
+        // try {
+        //     String line = "";
+        //     // Create the file reader
+        //     fileReader = new BufferedReader(new FileReader(fileToParse));
 
-            // Read the file line by line
-            while ((line = fileReader.readLine()) != null) {
-                // Get all tokens available in line
-                String[] tokens = line.split(DELIMITER);
-                for (String token : tokens) {
-                    // Print all tokens
-                    swearWords.add(token);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                fileReader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        //     // Read the file line by line
+        //     while ((line = fileReader.readLine()) != null) {
+        //         // Get all tokens available in line
+        //         String[] tokens = line.split(DELIMITER);
+        //         for (String token : tokens) {
+        //             // Print all tokens
+        //             swearWords.add(token);
+        //         }
+        //     }
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // } finally {
+        //     try {
+        //         fileReader.close();
+        //     } catch (IOException e) {
+        //         e.printStackTrace();
+        //     }
+        // }
     }
 
     // {VARIABLE|pluralize:"y,ies"}
@@ -352,24 +352,24 @@ public class TranslationUtil {
     }
 
     /**
-     * WARNING! This is WIP and will replace "racoons" with "ra****s" and will replace certain numbers with letters (leet speak filter)<p>
+     * WARNING! This is WIP and will replace "hello" with "****o" and will replace certain numbers with letters (leet speak filter)<p>
      * Filter swear words defined in <code>banned-words.csv</code> and replace them with the character <code>*</code>
      * @param message
      * @return The filtered message
      */
-    // FIXME: Don't replace "clean" words (i.e. don't replace racoons with ra****s)
-    public static String filterSwears(String message) {
-        String leetFilter = replaceLeet(message);
-        if (leetFilter.trim().isEmpty())
-            return message;
+    // // FIXME: Don't replace "clean" words (i.e. don't replace hello with ****o)
+    // public static String filterSwears(String message) {
+    //     String leetFilter = replaceLeet(message);
+    //     if (leetFilter.trim().isEmpty())
+    //         return message;
 
-        String replaceLeet = replaceLeet(message);
+    //     String replaceLeet = replaceLeet(message);
 
-        for (String swear : swearWords) {
-            message = replaceLeet.replaceAll("(?i)"+swear, censorWord(swear));
-            replaceLeet = replaceLeet(message);
-        }
+    //     for (String swear : swearWords) {
+    //         message = replaceLeet.replaceAll("(?i)"+swear, censorWord(swear));
+    //         replaceLeet = replaceLeet(message);
+    //     }
 
-        return message;
-    }
+    //     return message;
+    // }
 }

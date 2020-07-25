@@ -401,6 +401,7 @@ public class ConnectionListeners implements Listener {
                 event.disallow(Result.KICK_FULL, Messages.ServerError);
             e.printStackTrace();
         }
+        Main.USERS.put(event.getPlayer().getUniqueId(), new User(event.getPlayer()));
     }
 
     @EventHandler

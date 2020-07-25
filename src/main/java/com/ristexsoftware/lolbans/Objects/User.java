@@ -151,9 +151,10 @@ public class User {
      * @param WarnMessage  The message telling them the warning they received.
      */
     public void SetWarned(boolean IsWarn, Location warnLocation, String WarnMessage) {
+        System.out.println(IsWarn+ " " + WarnLocation + " " + WarnMessage);
         this.IsWarn = IsWarn;
         if (!IsWarn)
-            this.SpawnBox(false, Material.AIR.createBlockData());
+            SpawnBox(false, Material.AIR.createBlockData());
         this.WarnLocation = warnLocation;
         this.WarnMessage = WarnMessage;
     }

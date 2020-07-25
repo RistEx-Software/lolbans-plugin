@@ -77,12 +77,12 @@ public class KickCommand extends RistExCommandAsync {
             a.RequiredString("PlayerName", 0);
             a.RequiredSentence("Reason", 1);
 
-            if (!a.IsValid())
+            if (a.get("PlayerName") == null)
                 return false;
 
             boolean silent = a.get("Silent") != null;
             String PlayerName = a.get("PlayerName");
-            String reason = a.get("Reason");
+            String reason = a.get("Reason") == null ? self.getConfig().getString("KickSettings.DefaultReason") : a.get("Reason");
             OfflinePlayer target = User.FindPlayerByAny(PlayerName);
 
             if (target == null)

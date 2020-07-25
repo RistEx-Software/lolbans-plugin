@@ -71,5 +71,4 @@ public class MojangUtil {
         }
         return null; // "Dead Code" but doesn't compile because you're required to return MojangUser, dumb...
     }
-
 }

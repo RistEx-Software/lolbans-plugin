@@ -109,6 +109,8 @@ public class HistoryCommand extends RistExCommand
                 pst = self.connection.prepareStatement("SELECT * FROM lolbans_punishments WHERE UUID = ?");
                 pst.setString(1, target.getUniqueId().toString());
             }
+            if (pst == null)
+                return User.PlayerOnlyVariableMessage("History.NoHistory", sender, args[0], true);
 
             // Preapre a statement
             // PreparedStatement pst = self.connection.prepareStatement("SELECT * FROM lolbans_punishments WHERE UUID = ?");

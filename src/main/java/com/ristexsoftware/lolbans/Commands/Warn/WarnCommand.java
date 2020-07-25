@@ -106,11 +106,13 @@ public class WarnCommand extends RistExCommand {
             if (target.isOnline()) {
                 String WarnedMessage = Messages.Translate("Warn.WarnedMessage", Variables);
                 User u = Main.USERS.get(target.getUniqueId());
+                System.out.println(u);
                 User.playSound((Player) target,
                         Main.getPlugin(Main.class).getConfig().getString("WarningSettings.Sound"));
                 if (Main.getPlugin(Main.class).getConfig().getBoolean("WarningSettings.SimpleWarning")) {
                     ((Player) target).sendMessage(WarnedMessage);
                 } else {
+                    System.out.println(((Player)target).getLocation() + " " + WarnedMessage);
                     u.SetWarned(true, ((Player) target).getLocation(), WarnedMessage); // FIXME: This line produces a NPE, not sure why, Works For Me™
                     u.SendMessage(WarnedMessage);
                     // Send them a box as well. This will disallow them from sending move events.

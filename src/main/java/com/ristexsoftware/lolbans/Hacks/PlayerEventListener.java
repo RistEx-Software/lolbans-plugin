@@ -26,6 +26,7 @@ import com.ristexsoftware.lolbans.Main;
 import com.ristexsoftware.lolbans.Objects.User;
 import com.ristexsoftware.lolbans.Utils.Messages;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Entity;
@@ -45,6 +46,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 
 public class PlayerEventListener implements Listener
