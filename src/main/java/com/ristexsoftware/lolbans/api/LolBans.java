@@ -2,6 +2,7 @@
  *  LolBans - The advanced banning system for Minecraft
  *  Copyright (C) 2019-2020 Justin Crawford <Justin@Stacksmash.net>
  *  Copyright (C) 2019-2020 Zachery Coleman <Zachery@Stacksmash.net>
+ *  Copyright (C) 2019-2020 Skye Elliot <actuallyori@gmail.com>
  *  
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,6 +20,7 @@
 
 package com.ristexsoftware.lolbans.api;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -28,68 +30,57 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import com.ristexsoftware.lolbans.api.utils.logger.PluginLogger;
+import org.jetbrains.annotations.NotNull;
 
 import inet.ipaddr.IPAddressString;
 
-public class LolBans extends PluginLogger {
+import lombok.Getter;
+import lombok.Setter;
+
+// hihihihi
+public class LolBans extends JavaPlugin {
+    @Getter private static LolBans plugin;
+
+
+    // ur gay :3
+
+    public LolBans(@NotNull File dataFolder, @NotNull File file) {
+        super(dataFolder, file);
+        plugin = this;
+    }
+
     public static HashMap<Integer, Pattern> REGEX = new HashMap<Integer, Pattern>();
-    public static List<IPAddressString> BannedAddresses = new Vector<IPAddressString>();
+    public static List<IPAddressString> BANNED_ADDRESSES = new Vector<IPAddressString>();
 
     public static ExecutorService pool = Executors.newFixedThreadPool(3);
+    public static String prefix;
+    public static String networkName;
+    public static String website;
+    public static String serverError;
+    public static String invalidSyntax;
+    public static boolean discord;
 
     /**
-     * Get an offline user
+     * Get a user
      * 
      * @param username The username of the user to lookup
      * @return The user if found, if not found, null
      */
-    public static User getOfflineUser(UUID uuid) {
+    public static User getUser(UUID uuid) {
+        // If they are in the USERS HashMap, save some time and just return that
+        if (User.USERS.containsKey(uuid))
+            return User.USERS.get(uuid);
         return User.resolveUser(uuid.toString());
     }
 
     /**
-     * Get an offline user
+     * Get a user
      * 
-     * @deprecated Please use {@link #getOfflineUser(UUID)} as usernames are not unique past a single session
+     * @deprecated Please use {@link #getUser(UUID)} as usernames are not unique past a single session
      * @param username The username of the user to lookup
      * @return The user if found, if not found, null
      */
-    public static User getOfflineUser(String username) {
-        return User.resolveUser(username);
-    }
-
-    /**
-     * Get a currently online user by username
-     * 
-     * @deprecated Please use {@link #getUser(UUID)} instead
-     * @param username The username of the user to get
-     * @return null if user is not online
-     */
     public static User getUser(String username) {
-        User user = User.resolveUser(username);
-        if (user.isOnline())
-            return user;
-        return null;
-    }
-
-    /**
-     * Get a currently online user by uuid
-     * 
-     * @param uuid The uuid of the user to get
-     * @return null if user is not online
-     */
-    public static User getUser(UUID uuid) {
-        if (User.USERS.containsKey(uuid))
-            return User.USERS.get(uuid);
-        return null;
-    }
-
-    /**
-     * Convenience function to get LolBans logger
-     * @return LolBans plugin logger
-     */
-    public static Logger getLogger() {
-        return getLogger("LolBans");
+        return User.resolveUser(username);
     }
 }

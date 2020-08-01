@@ -17,65 +17,64 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.ristexsoftware.lolbans.api.punishment.runnables;
+ // TODO: this class
+// package com.ristexsoftware.lolbans.api.punishment.runnables;
 
-import inet.ipaddr.IPAddressString;
-import java.sql.*;
-import com.ristexsoftware.lolbans.api.LolBans;
-import com.ristexsoftware.lolbans.api.database.Database;
-import com.ristexsoftware.lolbans.api.utils.TimeUtil;
+// import inet.ipaddr.IPAddressString;
+// import java.sql.*;
+// import com.ristexsoftware.lolbans.api.LolBans;
+// import com.ristexsoftware.lolbans.api.Database;
 
-import org.bukkit.scheduler.BukkitRunnable;
+// import org.bukkit.scheduler.BukkitRunnable;
 
 
-public class Query extends BukkitRunnable
-{
-    public void run()
-    {
-        // Main self = Main.getPlugin(Main.class);
-        try
-        {
-            // self.connection.prepareStatement("DELETE FROM LinkConfirmations WHERE Expiry <= NOW()").executeUpdate();
-            // TODO: Report expirations should be configurable
-            PreparedStatement punps = Database.connection.prepareStatement("UPDATE lolbans_punishments SET Appealed = True, AppealReason = 'Expired', AppelleeName = 'CONSOLE', AppelleeUUID = 'CONSOLE', AppealTime = NOW() WHERE Expiry <= NOW()");
-            PreparedStatement regps = Database.connection.prepareStatement("UPDATE lolbans_regexbans SET Appealed = True, AppealReason = 'Expired', AppelleeName = 'CONSOLE', AppelleeUUID = 'CONSOLE', AppealTime = NOW() WHERE Expiry <= NOW()");
-            PreparedStatement ipps = Database.connection.prepareStatement("UPDATE lolbans_ipbans SET Appealed = True, AppealReason = 'Expired', AppelleeName = 'CONSOLE', AppelleeUUID = 'CONSOLE', AppealTime = NOW() WHERE Expiry <= NOW()");
-            Database.ExecuteUpdate(punps);
-            Database.ExecuteUpdate(regps);
-            Database.ExecuteUpdate(ipps);
-            // PreparedStatement ps = Database.connection.prepareStatement("UPDATE lolbans_reports SET Closed = True, CloseReason = 'Expired' WHERE TimeAdded <= ?");
-            // ps.setTimestamp(1, new Timestamp((TimeUtil.GetUnixTime() * 1000L) + TimeUtil.Duration(self.getConfig().getString("General.ReportExpiry", "3d")).get()));
-            // Database.ExecuteUpdate(ps);
+// public class Query extends BukkitRunnable
+// {
+//     public void run()
+//     {
+//         // Main self = Main.getPlugin(Main.class);
+//         try
+//         {
+//             // self.connection.prepareStatement("DELETE FROM LinkConfirmations WHERE Expiry <= NOW()").executeUpdate();
+//             // TODO: Report expirations should be configurable
+//             PreparedStatement punps = Database.connection.prepareStatement("UPDATE lolbans_punishments SET appealed = True, appeal_reason = 'Expired', unpunisher_name = 'CONSOLE', unpunisher_uuid = 'CONSOLE', appeal_time = NOW() WHERE expires_at <= NOW()");
+    
+//             Database.ExecuteUpdate(punps);
+//             Database.ExecuteUpdate(regps);
+//             Database.ExecuteUpdate(ipps);
+//             // PreparedStatement ps = Database.connection.prepareStatement("UPDATE lolbans_reports SET Closed = True, CloseReason = 'Expired' WHERE TimeAdded <= ?");
+//             // ps.setTimestamp(1, new Timestamp((TimeUtil.GetUnixTime() * 1000L) + TimeUtil.Duration(self.getConfig().getString("General.ReportExpiry", "3d")).get()));
+//             // Database.ExecuteUpdate(ps);
 
-            /*******************************************************************************
-             * Ensure our IP ban list is up to date.
-             */
+//             /*******************************************************************************
+//              * Ensure our IP ban list is up to date.
+//              */
 
-            // Grab all the latest IP bans from the databse and ensure everything is up to date.
-            ResultSet rs = Database.connection.prepareStatement("SELECT * FROM lolbans_ipbans WHERE Appealed = false").executeQuery();
-            while (rs.next())
-            {
-                IPAddressString addr = new IPAddressString(rs.getString("IPAddress"));
+//             // Grab all the latest IP bans from the databse and ensure everything is up to date.
+//             ResultSet rs = Database.connection.prepareStatement("SELECT * FROM lolbans_ipbans WHERE appealed = false").executeQuery();
+//             while (rs.next())
+//             {
+//                 IPAddressString addr = new IPAddressString(rs.getString("target_ip_address"));
 
-                // Try and find our address.
-                boolean found = false;
-                for (IPAddressString cb : LolBans.BannedAddresses)
-                {
-                    if (cb.compareTo(addr) == 0)
-                    { 
-                        found = true;
-                        break;
-                    }
-                }
+//                 // Try and find our address.
+//                 boolean found = false;
+//                 for (IPAddressString cb : LolBans.BANNED_ADDRESSES)
+//                 {
+//                     if (cb.compareTo(addr) == 0)
+//                     { 
+//                         found = true;
+//                         break;
+//                     }
+//                 }
 
-                // Add our banned cidr range if not found.
-                if (!found)
-                LolBans.BannedAddresses.add(addr);
-            }
-        }
-        catch(SQLException e)
-        {
-            e.printStackTrace();
-        }
-    }
-}
+//                 // Add our banned cidr range if not found.
+//                 if (!found)
+//                 LolBans.BANNED_ADDRESSES.add(addr);
+//             }
+//         }
+//         catch(SQLException e)
+//         {
+//             e.printStackTrace();
+//         }
+//     }
+// }

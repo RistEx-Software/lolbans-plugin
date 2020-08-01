@@ -142,7 +142,7 @@ public class TimeUtil
      */
     public static String Expires(long expires)
     {
-        long CurTime = TimeUtil.GetUnixTime();
+        long CurTime = TimeUtil.getUnixTime();
         if (expires == 0)
             return "never expires";
         else if (expires < CurTime)
@@ -222,26 +222,27 @@ public class TimeUtil
      */
     // I spent 2 hours ensuring this method worked...
     // Turns out, I need to read documentation more, java.sql.Timestamp uses milliseconds and not seconds, I somehow forgot that.
-    public static Timestamp ParseToTimestamp(String TimePeriod)
+    public static Timestamp toTimestamp(String TimePeriod)
     {
         // Parse ban time.
-        if (Messages.CompareMany(TimePeriod, new String[]{"*", "0"}))
+        if (Messages.compareMany(TimePeriod, new String[]{"*", "0"}))
             return null;
         
         // If it's numeric, lets do some extra checks!
         if (NumberUtil.isNumeric(TimePeriod)) {
             // Return null if it's greater 12 characters long
-            if (TimePeriod.length() > 12) return null;
+            if (TimePeriod.length() > 12) 
+                return null;
             Optional<Long> dur = TimeUtil.Duration(TimePeriod);
             if (dur.isPresent())
-                return new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L).getTime() >= new java.sql.Timestamp(253402261199L * 1000L).getTime() ? null : new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
+                return new Timestamp((TimeUtil.getUnixTime() + dur.get()) * 1000L).getTime() >= new java.sql.Timestamp(253402261199L * 1000L).getTime() ? null : new Timestamp((TimeUtil.getUnixTime() + dur.get()) * 1000L);
                 // 253402261199 x 1000L is the year 9999 in epoch, this ensures we don't have invalid timestamp exceptions.
         } 
-        if (!Messages.CompareMany(TimePeriod, new String[]{"*", "0"}))
+        if (!Messages.compareMany(TimePeriod, new String[]{"*", "0"}))
         {
             Optional<Long> dur = TimeUtil.Duration(TimePeriod);
             if (dur.isPresent())
-                return new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L).getTime() >= new java.sql.Timestamp(253402261199L * 1000L).getTime() ? null : new Timestamp((TimeUtil.GetUnixTime() + dur.get()) * 1000L);
+                return new Timestamp((TimeUtil.getUnixTime() + dur.get()) * 1000L).getTime() >= new java.sql.Timestamp(253402261199L * 1000L).getTime() ? null : new Timestamp((TimeUtil.getUnixTime() + dur.get()) * 1000L);
         }
             
         return null;
@@ -251,7 +252,7 @@ public class TimeUtil
      * Get the current system time as a Unix timestamp
      * @return Current number of seconds since Unix Epoch
      */
-    public static long GetUnixTime()
+    public static long getUnixTime()
     {
         return System.currentTimeMillis() / 1000L;
     }
@@ -262,6 +263,6 @@ public class TimeUtil
      */
     public static Timestamp TimestampNow()
     {
-        return new Timestamp(TimeUtil.GetUnixTime() * 1000L);
+        return new Timestamp(TimeUtil.getUnixTime() * 1000L);
     }
 }

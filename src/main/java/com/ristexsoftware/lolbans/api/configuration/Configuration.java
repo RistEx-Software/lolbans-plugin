@@ -2,6 +2,7 @@
  *  LolBans - The advanced banning system for Minecraft
  *  Copyright (C) 2019-2020 Justin Crawford <Justin@Stacksmash.net>
  *  Copyright (C) 2019-2020 Zachery Coleman <Zachery@Stacksmash.net>
+ *  Copyright (C) 2019-2020 Michael <md_5@spigotmc.org>
  *  
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,117 +18,90 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// package com.ristexsoftware.lolbans.api.configuration;
+package com.ristexsoftware.lolbans.api.configuration;
 
-// import java.io.File;    
-// import java.nio.channels.FileChannel;
-// import java.io.IOException;
-// import java.util.InputMismatchException;
-// import java.io.FileOutputStream;
-// import java.io.FileInputStream;
+import java.util.Map;
 
-// import org.bukkit.plugin.java.JavaPlugin;
-// import net.md_5.bungee.api.plugin.Plugin;
+/**
+ * Represents a source of configurable options and settings
+ */
+public interface Configuration extends ConfigurationSection {
+    /**
+     * Sets the default value of the given path as provided.
+     * <p>
+     * If no source {@link Configuration} was provided as a default
+     * collection, then a new {@link MemoryConfiguration} will be created to
+     * hold the new default value.
+     * <p>
+     * If value is null, the value will be removed from the default
+     * Configuration source.
+     *
+     * @param path Path of the value to set.
+     * @param value Value to set the default to.
+     * @throws IllegalArgumentException Thrown if path is null.
+     */
+    @Override
+    public void addDefault(String path,  Object value);
 
-// public class Configuration {
+    /**
+     * Sets the default values of the given paths as provided.
+     * <p>
+     * If no source {@link Configuration} was provided as a default
+     * collection, then a new {@link MemoryConfiguration} will be created to
+     * hold the new default values.
+     *
+     * @param defaults A map of Path{@literal ->}Values to add to defaults.
+     * @throws IllegalArgumentException Thrown if defaults is null.
+     */
+    public void addDefaults(Map<String, Object> defaults);
 
-//     /**
-//      * A ConfigType object pretty much just stores
-//      * the file path of the config file. This prevents
-//      * code dupe/hard coding withing the Config object
-//      * 
-//      * @param path The String path of the config
-//      * 
-//      * @see #Config
-//      */
-//     public enum ConfigType {
-//         MAIN_CONFIG("/config.yml"),
-//         LANG_CONFIG("/lang/messages.en_US.yml");
-        
-//         String p;
-//         ConfigType(String path) {
-//             this.p = path;
-//         }
+    /**
+     * Sets the default values of the given paths as provided.
+     * <p>
+     * If no source {@link Configuration} was provided as a default
+     * collection, then a new {@link MemoryConfiguration} will be created to
+     * hold the new default value.
+     * <p>
+     * This method will not hold a reference to the specified Configuration,
+     * nor will it automatically update if that Configuration ever changes. If
+     * you require this, you should set the default source with {@link
+     * #setDefaults(org.bukkit.configuration.Configuration)}.
+     *
+     * @param defaults A configuration holding a list of defaults to copy.
+     * @throws IllegalArgumentException Thrown if defaults is null or this.
+     */
+    public void addDefaults(Configuration defaults);
 
-//         String getPath() {
-//             return p;
-//         }
+    /**
+     * Sets the source of all default values for this {@link Configuration}.
+     * <p>
+     * If a previous source was set, or previous default values were defined,
+     * then they will not be copied to the new source.
+     *
+     * @param defaults New source of default values for this configuration.
+     * @throws IllegalArgumentException Thrown if defaults is null or this.
+     */
+    public void setDefaults(Configuration defaults);
 
-//     }
+    /**
+     * Gets the source {@link Configuration} for this configuration.
+     * <p>
+     * If no configuration source was set, but default values were added, then
+     * a {@link MemoryConfiguration} will be returned. If no source was set
+     * and no defaults were set, then this method will return null.
+     *
+     * @return Configuration source for default values, or null if none exist.
+     */
     
-//     private File conf;
-//     private Object self;
-//     private ConfigType t;
+    public Configuration getDefaults();
 
-//     /**
-//      * @param type The ConfigType (Provides config path)
-//      * @param overwrite Whether an existing config should be overwritten
-//      * @param plugin The plugin instance this config belongs to (Must be of type JavaPlugin or Plugin)
-//      * 
-//      * @see ConfigType
-//      * @see org.bukkit.plugin.java.JavaPlugin JavaPlugin
-//      * @see net.md_5.bungee.api.plugin.Plugin Plugin
-//      */
-//     public Configuration(ConfigType type, boolean overwrite, Object plugin) {
-//         if(!(plugin instanceof JavaPlugin || plugin instanceof Plugin))
-//             throw new InputMismatchException(String.valueOf(plugin.getClass()) + " is not a valid Plugin class");
-
-//         String pluginPath = null;
-
-//         if(plugin instanceof JavaPlugin)
-//             self = (JavaPlugin) plugin;
-//             pluginPath = ((JavaPlugin) self).getDataFolder().getPath();
-
-//         if(plugin instanceof Plugin)
-//             self = (Plugin) plugin;
-//             pluginPath = ((Plugin) self).getDataFolder().getPath();
-
-//         this.t = type;
-//         ClassLoader classLoader = plugin.getClass().getClassLoader();
-//         File f = new File(classLoader.getResource(type.getPath()).getPath());
-
-//         conf = new File(pluginPath + type.getPath());
-        
-//         if(conf.exists() && overwrite) {
-//             copyContents(f, conf);
-//             return;
-//         }
-
-//         copyContents(f, conf);
-//     }
+    /**
+     * Gets the {@link ConfigurationOptions} for this {@link Configuration}.
+     * <p>
+     * All setters through this method are chainable.
+     *
+     * @return Options for this configuration
+     */
     
-//     /**
-//      * @return Returns the ConfigType object
-//      */
-//     public ConfigType getType() {
-//         return this.t; //stfu VSCode
-//     }
-
-//     /**
-//      * @return Returns the plugin instance this config belongs to (may return JavaPlugin or Plugin)
-//      * 
-//      * @see org.bukkit.plugin.java.JavaPlugin JavaPlugin
-//      * @see net.md_5.bungee.api.plugin.Plugin Plugin
-//      */
-//     public Object getInstance() {
-//         return self;
-//     }
-
-//     void copyContents(File src, File dest) {
-//         try {
-//             // Thank you Java 
-//             FileInputStream srcIN = new FileInputStream(src); 
-//             FileOutputStream destOUT = new FileOutputStream(dest);
-
-//             FileChannel srcCH = srcIN.getChannel();
-//             FileChannel destCH = destOUT.getChannel();
-//             destCH.transferFrom(srcCH, 0L, srcCH.size()); 
-
-//             srcIN.close();
-//             destOUT.close();
-
-//         } catch(IOException e) {
-//             System.out.println(e);
-//         }
-//     }
-// }
+    public ConfigurationOptions options();
+}

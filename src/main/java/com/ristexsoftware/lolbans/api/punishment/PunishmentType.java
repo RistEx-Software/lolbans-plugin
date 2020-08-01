@@ -23,13 +23,14 @@ public enum PunishmentType
 {
     // WARN: Do not change the ordering of these or
     // it will mix up types.
-    PUNISH_BAN,
-    PUNISH_MUTE,
-    PUNISH_KICK,
-    PUNISH_WARN,
-    PUNISH_REGEX,
-    PUNISH_IP,
-    PUNISH_UNKNOWN;
+    BAN,
+    MUTE,
+    KICK,
+    WARN,
+    REGEX,
+    IP,
+    BANWAVE,
+    UNKNOWN;
 
     /**
      * Get the display name of the PunishmentType
@@ -39,12 +40,13 @@ public enum PunishmentType
     {
         switch (this)
         {
-            case PUNISH_BAN: return "Ban";
-            case PUNISH_MUTE: return "Mute";
-            case PUNISH_KICK: return "Kick";
-            case PUNISH_WARN: return "Warning";
-            case PUNISH_REGEX: return "Regex";
-            case PUNISH_IP: return "IP Ban";
+            case BAN: return "Ban";
+            case MUTE: return "Mute";
+            case KICK: return "Kick";
+            case WARN: return "Warning";
+            case REGEX: return "Regex";
+            case IP: return "IP Ban";
+            case BANWAVE: return "Ban Wave";
             default:
                 return "Unknown";
         }
@@ -58,12 +60,13 @@ public enum PunishmentType
     {
         switch (type)
         {
-            case PUNISH_BAN: return "Ban";
-            case PUNISH_MUTE: return "Mute";
-            case PUNISH_KICK: return "Kick";
-            case PUNISH_WARN: return "Warning";
-            case PUNISH_REGEX: return "Regex";
-            case PUNISH_IP: return "IP Ban";
+            case BAN: return "Ban";
+            case MUTE: return "Mute";
+            case KICK: return "Kick";
+            case WARN: return "Warning";
+            case REGEX: return "Regex";
+            case IP: return "IP Ban";
+            case BANWAVE: return "Ban Wave";
             default:
                 return "Unknown";
         }
@@ -78,14 +81,15 @@ public enum PunishmentType
     {
         switch (ordinal)
         {
-            case 0: return PunishmentType.PUNISH_BAN;
-            case 1: return PunishmentType.PUNISH_MUTE;
-            case 2: return PunishmentType.PUNISH_KICK;
-            case 3: return PunishmentType.PUNISH_WARN;
-            case 4: return PunishmentType.PUNISH_REGEX;
-            case 5: return PunishmentType.PUNISH_IP;
+            case 0: return PunishmentType.BAN;
+            case 1: return PunishmentType.MUTE;
+            case 2: return PunishmentType.KICK;
+            case 3: return PunishmentType.WARN;
+            case 4: return PunishmentType.REGEX;
+            case 5: return PunishmentType.IP;
+            case 6: return PunishmentType.BANWAVE;
             default:
-                return PunishmentType.PUNISH_UNKNOWN;
+                return PunishmentType.UNKNOWN;
         }
     }
 }
