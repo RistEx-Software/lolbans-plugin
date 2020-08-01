@@ -42,7 +42,7 @@ public class Translation {
     }
 
     // {VARIABLE|pluralize:"y,ies"}
-    private static String Pluralize(String lvalue, String arg) {
+    private static String pluralize(String lvalue, String arg) {
         String singlar = "", plural = (arg.isEmpty() ? "s" : arg);
         if (arg.contains(",")) {
             String values[] = arg.trim().split(",");
@@ -81,11 +81,12 @@ public class Translation {
      * function in the map below as:
      * {@code datetime(Variables.get("TimeBanned"), "HH:MM:SS")}
      */
-    public static TreeMap<String, BiFunction<String, String, String>> Functions = new TreeMap<String, BiFunction<String, String, String>>(
-            String.CASE_INSENSITIVE_ORDER) {
+    public static TreeMap<String, BiFunction<String, String, String>> Functions = new TreeMap<String, BiFunction<String, String, String>>(String.CASE_INSENSITIVE_ORDER) {
+        private static final long serialVersionUID = 1L;
+
         {
             put("pluralize", (String lvalue, String arg) -> {
-                return Pluralize(lvalue, arg);
+                return pluralize(lvalue, arg);
             });
             put("datetime", (String lvalue, String args) -> {
                 return lvalue == null || lvalue == "" ? "Never"
@@ -168,7 +169,7 @@ public class Translation {
      * @param message Message containing sequences of `chars` in it
      * @return A color formatted message for Minecraft clients.
      */
-    public static String TranslateColors(String chars, String message) {
+    public static String translateColors(String chars, String message) {
         if (message == null)
             return null;
 
@@ -208,7 +209,7 @@ public class Translation {
      *                  placeholders and their functions
      * @return Formatted string with all placeholders from Variables replaced.
      */
-    public static String TranslateVariables(String message, Map<String, String> Variables) {
+    public static String translateVariables(String message, Map<String, String> Variables) {
         // If it doesn't have the starting char for variables, skip it.
         if (!message.contains("{") || Variables == null)
             return message;
@@ -267,9 +268,9 @@ public class Translation {
      *         formatted message ready for the player.
      * @see TranslateVariables
      */
-    public static String Translate(String message, String ColorChars, Map<String, String> Variables) {
-        String retstr = Translation.TranslateColors(ColorChars, message);
-        retstr = Translation.TranslateVariables(retstr, Variables);
+    public static String translate(String message, String ColorChars, Map<String, String> Variables) {
+        String retstr = Translation.translateColors(ColorChars, message);
+        retstr = Translation.translateVariables(retstr, Variables);
         return retstr;
     }
     /**

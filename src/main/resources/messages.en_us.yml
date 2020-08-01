@@ -28,174 +28,174 @@
 # - yesno - converts a boolean to "yes" or "no" or custom yes/no boolean (identical syntax to Django minus the "maybe")
 
 # Global variables, you can use these in any message in this file.
-Prefix: "&bLolBans &f» "
-NetworkName: "&fMy Network"
-Website: "YourWebsiteHere.com"
+prefix: "&bLolBans &f» "
+network-name: "&fMy Network"
+website: "YourWebsiteHere.com"
 
 # Common messages used throughout the plugin
-InvalidSyntax: "{PREFIX}&cInvalid Syntax!"
-ServerError: "{PREFIX}&cThe server encountered an error, please try again later."
-PlayerDoesntExist: "{PREFIX}&cError! &f{PLAYER} &bdoesn't exist!"
-PlayerIsOffline: "{PREFIX}&cError! &f{PLAYER} &bis offline!"
-UserRequired: "{PREFIX}&cYou have to be a user to this command."
-NoPermission: "{PREFIX}&cYou do not have permission to use this command!"
-CommandComplete: "{PREFIX}&bDone! &f{MILLISECONDS}ms."
+invalid-syntax: "{PREFIX}&cInvalid Syntax!"
+server-error: "{PREFIX}&cThe server encountered an error, please try again later."
+player-doesnt-exist: "{PREFIX}&cError! &f{PLAYER} &bdoesn't exist!"
+player-is-offline: "{PREFIX}&cError! &f{PLAYER} &bis offline!"
+user-is-required: "{PREFIX}&cYou have to be a user to this command."
+no-permission: "{PREFIX}&cYou do not have permission to use this command!"
+command-complete: "{PREFIX}&bDone! &f{MILLISECONDS}ms."
 
-Discord:
+discord:
   # The large picture shown on the right side of the embed (Can be full body render, just the player head, etc.)
-  ThumbnailPictures: "https://crafatar.com/renders/head/{PLAYERUUID}?overlay&default=MHF_Steve"
+  thumbnail-pictures: "https://crafatar.com/renders/head/{PLAYERUUID}?overlay&default=MHF_Steve"
   # The picture shown in the footer of the embed
-  AvatarPictures: "https://crafatar.com/renders/head/{PLAYERUUID}?overlay&default=MHF_Steve"
+  avatar-pictures: "https://crafatar.com/renders/head/{PLAYERUUID}?overlay&default=MHF_Steve"
   # Profile picture to set for the CONSOLE user
-  ConsoleProfilePicture: "https://crafatar.com/renders/head/f78a4d8d-d51b-4b39-98a3-230f2de0c670?overlay&default=MHF_Steve"
+  console-profile-picture: "https://crafatar.com/renders/head/f78a4d8d-d51b-4b39-98a3-230f2de0c670?overlay&default=MHF_Steve"
   # Simple message style is just lines of text sent as a messgage instead of an embed.
-  Simple:
-    MessageBan: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}banned **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
-    MessageMute: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}muted **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
-    MessageKick: ":boot: **{ARBITERNAME}** kicked **{PlayerName}** for **{REASON}**{SILENT:empty_if_faGMVW-RSQM-XGRC-JLlse:\" *[SILENT]*\"} [#*{PUNISHID}*]"
-    MessageWarn: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}warned **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
-    BanwaveAdd: ":wave: **{ARBITERNAME}** added **{PLAYERNAME}** to the next ban wave."
-    BanwaveStart: ":hammer: **{ARBITERNAME}** started a ban wave which bans the following users:\n```\n{USERLIST}\n```"
-    Report: ":orange_book: **{ARBITERNAME}** reported **{PLAYERNAME}**: `{REASON}` [{REPORTTYPE} - #{PUNISHID}]"
-    BanObject: ":hammer: **{ARBITERNAME}** banned `{OBJECT}`{EXPIRY|empty_if_none:\" which expires on \"}{EXPIRY|datetime:\"**EEE, MMM d yyyy HH:mm:ss**\"}"
+  simple:
+    message-ban: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}banned **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    message-mute: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}muted **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    message-kick: ":boot: **{ARBITERNAME}** kicked **{PlayerName}** for **{REASON}**{SILENT:empty_if_faGMVW-RSQM-XGRC-JLlse:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    message-warn: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}warned **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    banwave-add: ":wave: **{ARBITERNAME}** added **{PLAYERNAME}** to the next ban wave."
+    banwave-start: ":hammer: **{ARBITERNAME}** started a ban wave which bans the following users:\n```\n{USERLIST}\n```"
+    report: ":orange_book: **{ARBITERNAME}** reported **{PLAYERNAME}**: `{REASON}` [{REPORTTYPE} - #{PUNISHID}]"
+    ban-object: ":hammer: **{ARBITERNAME}** banned `{OBJECT}`{EXPIRY|empty_if_none:\" which expires on \"}{EXPIRY|datetime:\"**EEE, MMM d yyyy HH:mm:ss**\"}"
   # Embedded discord messages.
   Embedded:
-    BanTitle: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}banned {PLAYERNAME}"
-    KickTitle: "{ARBITERNAME} kicked {PLAYERNAME}"
-    MuteTitle: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}muted {PLAYERNAME}"
-    WarnTitle: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}warned {PLAYERNAME}"
-    UnknownTitle: "{ARBITERNAME} did an unknown action to {PLAYERNAME}"
-    BanwaveAdd: "{ARBITERNAME} added {PLAYERNAME} to the next ban wave."
-    BanwaveStartTitle: "{ARBITERNAME} started a ban wave!"
-    BanwaveStartText: "The following users have been banned:\n{USERLIST}"
-    ReportTitle: "{ARBITERNAME} reported {PLAYERNAME}"
-    BanObjectTitle: "{ARBITERNAME} created a new ban"
+    ban-title: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}banned {PLAYERNAME}"
+    kick-title: "{ARBITERNAME} kicked {PLAYERNAME}"
+    mute-title: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}muted {PLAYERNAME}"
+    warn-title: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}warned {PLAYERNAME}"
+    unknown-title: "{ARBITERNAME} did an unknown action to {PLAYERNAME}"
+    banwave-add: "{ARBITERNAME} added {PLAYERNAME} to the next ban wave."
+    banwave-start-title: "{ARBITERNAME} started a ban wave!"
+    banwave-start-text: "The following users have been banned:\n{USERLIST}"
+    report-title: "{ARBITERNAME} reported {PLAYERNAME}"
+    ban-object-title: "{ARBITERNAME} created a new ban"
 
-Report:
-  ReasonRequired: "{PREFIX}&cError! You must provide a reason for reporting &f{PLAYER}"
+report:
+  reason-required: "{PREFIX}&cError! You must provide a reason for reporting &f{PLAYER}"
   # {REASON} is also a possible config option.
-  ReportSuccess: "{PREFIX}&aThank you for reporting &f{PLAYER}&a!"
+  report-success: "{PREFIX}&aThank you for reporting &f{PLAYER}&a!"
   # Message sent to everyone who is important
-  ReportAnnouncement: "{PREFIX}&f{ARBITER} &breported &f{PLAYER}&b: &f{REASON} &8[{TYPE} - #{PUNISHID}]"
+  report-announcement: "{PREFIX}&f{ARBITER} &breported &f{PLAYER}&b: &f{REASON} &8[{TYPE} - #{PUNISHID}]"
   # If a user attempts to report a player more than once
-  TooManyTries: "{PREFIX}&bYou have already filed a report against &f{PLAYER}&b!"
+  too-many-tries: "{PREFIX}&bYou have already filed a report against &f{PLAYER}&b!"
 
 # MESSAGES
 # BanMessage, {PLAYER} {REASON} {ARBITER} {EXPIRY} {PUNISHID}
-Ban:
-  TempBanMessage: "&bThe account &f{PLAYER} &bhas been suspended from {NETWORKNAME} &buntil &f{EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
-  PermBanMessage: "&bThe account &f{PLAYER} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
-  BanAnnouncement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}banned &b{PLAYER}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
-  PlayerIsBanned: "{PREFIX}&cError! &f{PLAYER} is already banned!"
-  PlayerIsNotBanned: "{PREFIX}&cError! &f{PLAYER} is not banned!"
+ban:
+  temp-ban-message: "&bThe account &f{PLAYER} &bhas been suspended from {NETWORKNAME} &buntil &f{EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
+  perm-ban-message: "&bThe account &f{PLAYER} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
+  ban=announcement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}banned &b{PLAYER}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
+  player-is-banned: "{PREFIX}&cError! &f{PLAYER} is already banned!"
+  player-is-not-banned: "{PREFIX}&cError! &f{PLAYER} is not banned!"
 
-IPBan:
-  PermIPBanMessage: "&bThe IP of &f{PLAYER} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
-  TempIPBanMessage: "&bThe IP of &f{PLAYER} &bhas been TEMPORARILY suspended from {NETWORKNAME} &buntil &f {EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
-  BanAnnouncement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}ip banned &b{CENSOREDIPADDRESS}&f: &f{REASON} &f[#{PUNISHID}] {SILENT|empty_if_false:\" &8[SILENT]\"}"
-  UnbanSuccess: "{PREFIX}&bThe IP of &f{CENSOREDIPADDRESS} &bhas been successfully unbanned."
-  IPIsBanned: "{PREFIX}&cError! &bThe IP of &f{PLAYER} &bis already banned!"
-  IPIsNotBanned: "{PREFIX}&cError! &bThe IP of &f{PLAYER} &bis not banned!"
-  Insanity: "{PREFIX}&cBanning &bThe IP of &f{PLAYER} &bwould ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
-  IPAltNotification: "{PREFIX}&f{PLAYER} &cjoined, is alt account of &f{BANNEDPLAYER} &8Check IP with an Admin!"
-  IPAltBanMessage: "&bThe Player &f{PLAYERNAME} &bis an alternate account of {ALTACCOUNT} which has been suspended on {NETWORKNAME} and is disallowed from connection.\n\n&bBanned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
+ip-ban:
+  perm-ip-ban-message: "&bThe IP of &f{PLAYER} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
+  temp-ip-ban-message: "&bThe IP of &f{PLAYER} &bhas been TEMPORARILY suspended from {NETWORKNAME} &buntil &f {EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
+  ban-announcement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}ip banned &b{CENSOREDIPADDRESS}&f: &f{REASON} &f[#{PUNISHID}] {SILENT|empty_if_false:\" &8[SILENT]\"}"
+  unban-success: "{PREFIX}&bThe IP of &f{CENSOREDIPADDRESS} &bhas been successfully unbanned."
+  ip-is-banned: "{PREFIX}&cError! &bThe IP of &f{PLAYER} &bis already banned!"
+  ip-is-not-banned: "{PREFIX}&cError! &bThe IP of &f{PLAYER} &bis not banned!"
+  insanity: "{PREFIX}&cBanning &bThe IP of &f{PLAYER} &bwould ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
+  ip-alt-notification: "{PREFIX}&f{PLAYER} &cjoined, is alt account of &f{BANNEDPLAYER} &8Check IP with an Admin!"
+  ip-alt-ban-message: "&bThe Player &f{PLAYERNAME} &bis an alternate account of {ALTACCOUNT} which has been suspended on {NETWORKNAME} and is disallowed from connection.\n\n&bBanned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
 
-IPCheck:
-  InvalidCIDR: "&bThe IP &f{IPADDRESS} &bdoes not match previous login CIDR range.\n\n&7If you believe this is a mistake, please contact the server administrator"
+ip-check:
+  invalid-cidr: "&bThe IP &f{IPADDRESS} &bdoes not match previous login CIDR range.\n\n&7If you believe this is a mistake, please contact the server administrator"
 
-RateLimit:
-  LimitReached: "&bYou are connecting too fast, please try again in &f{RATE} &bseconds!"
+ratelimit:
+  limit-reached: "&bYou are connecting too fast, please try again in &f{RATE} &bseconds!"
 
-RegexBan:
+regex-ban:
   # TODO: Fix these messages for regex-based bans.
-  TempBanMessage: "&bThe account &f{PLAYER} &bmatches pattern &f{REGEX}&b and has been suspended from {NETWORKNAME} &buntil &f{EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
-  PermBanMessage: "&bThe account &f{PLAYER} &bmatches pattern &f{REGEX}&b and has been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
-  BanAnnouncement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}banned expression &b{REGEX}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
-  Insanity: "{PREFIX}&bBanning {regex} would ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
-  RegexIsNotBanned: "{PREFIX}&cExpression/PunishID {REGEX} is not banned!"
-  UnbanSuccess: "{PREFIX}&f{REGEX} &bhas been successfully unbanned."
+  temp-ban-message: "&bThe account &f{PLAYER} &bmatches pattern &f{REGEX}&b and has been suspended from {NETWORKNAME} &buntil &f{EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
+  perm-ban-message: "&bThe account &f{PLAYER} &bmatches pattern &f{REGEX}&b and has been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
+  ban-announcement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}banned expression &b{REGEX}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
+  insanity: "{PREFIX}&bBanning {regex} would ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
+  regex-is-not-banned: "{PREFIX}&cExpression/PunishID {REGEX} is not banned!"
+  unban-success: "{PREFIX}&f{REGEX} &bhas been successfully unbanned."
 
-BanWave:
-  AddedToWave: "{PREFIX}&f{PLAYER} &bhas been added to the next ban wave."
-  AddedToWaveAnnouncement: "{PREFIX}&f{ARBITER} &bhas added &f{PLAYER} &bto the next ban wave: &f{REASON}{SILENT|empty_if_false:\" &8[SILENT]\"}"
-  RemovedFromWave: "{PREFIX}&f{PLAYER} &bhas been removed from the next ban wave."
-  PlayerIsInBanWave: "{PREFIX}&bError! &f{PLAYER} is already in the ban wave!"
-  PlayerNotInBanWave: "{PREFIX}&bError! &f{PLAYER} is not part of any ban waves!"
-  EmptyWave: "{PREFIX}&bThere are no players in the current ban wave."
-  BannedPlayersInBanWave: "&bBanned &f{AMOUNT} &bplayer{AMOUNT|pluralize}!"
-  BanWaveStart: "{PREFIX}&b{PLAYER} started a ban wave, please stand by..."
-  BanWaveFinished: "{PREFIX}Banned {PLAYERCOUNT} player{PLAYERCOUNT|pluralize} in {TIME}ms."
+ban-wave:
+  added-to-wave: "{PREFIX}&f{PLAYER} &bhas been added to the next ban wave."
+  added-to-wave-announcement: "{PREFIX}&f{ARBITER} &bhas added &f{PLAYER} &bto the next ban wave: &f{REASON}{SILENT|empty_if_false:\" &8[SILENT]\"}"
+  removed-from-wave: "{PREFIX}&f{PLAYER} &bhas been removed from the next ban wave."
+  player-is-in-wave: "{PREFIX}&bError! &f{PLAYER} is already in the ban wave!"
+  player-not-in-wave: "{PREFIX}&bError! &f{PLAYER} is not part of any ban waves!"
+  empty-wave: "{PREFIX}&bThere are no players in the current ban wave."
+  banned-players-in-wave: "&bBanned &f{AMOUNT} &bplayer{AMOUNT|pluralize}!"
+  banwave-start: "{PREFIX}&b{PLAYER} started a ban wave, please stand by..."
+  banwave-finished: "{PREFIX}Banned {PLAYERCOUNT} player{PLAYERCOUNT|pluralize} in {TIME}ms."
 
-Mute:
-  YouWereMuted: "{PREFIX}&bYou &fwere muted by &b{ARBITER} &ffor: &b{REASON} &f[#{PUNISHID}]\n&fYour mute expires on: &b{EXPIRY|duration}&f!"
-  YouWereUnMuted: "{PREFIX}&bYou &fwere un-muted by &b{ARBITER} &ffor: &b{REASON} &f[#{PUNISHID}]"
-  YouAreMuted: "{PREFIX}&bYou are muted and may not speak.\n&fYour mute expires on: &b{EXPIRY|duration}&f! &f[#{PUNISHID}]"
-  PlayerIsMuted: "{PREFIX}&bError! &f{PLAYER} is already muted!"
-  PlayerIsNotMuted: "{PREFIX}&bError! &f{PLAYER} is not muted!"
-  MuteAnnouncement: "{PREFIX}&b{ARBITER} &fhas {APPEALED|empty_if_false:\"un-\"}muted &b{PLAYER}&f: &b{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
-  GlobalMuted: "&bThe chat is currently muted and you may not send messages."
-  GlobalUnmuted: "&aThe chat is now unmuted, you may now converse."
-  ChatAttempt: "&7{PLAYER} tried to speak, but is muted: \"{MESSAGE}\""
+mute:
+  you-were-muted: "{PREFIX}&bYou &fwere muted by &b{ARBITER} &ffor: &b{REASON} &f[#{PUNISHID}]\n&fYour mute expires on: &b{EXPIRY|duration}&f!"
+  you-were-unmuted: "{PREFIX}&bYou &fwere un-muted by &b{ARBITER} &ffor: &b{REASON} &f[#{PUNISHID}]"
+  you-are-muted: "{PREFIX}&bYou are muted and may not speak.\n&fYour mute expires on: &b{EXPIRY|duration}&f! &f[#{PUNISHID}]"
+  player-is-muted: "{PREFIX}&bError! &f{PLAYER} is already muted!"
+  player-is-not-muted: "{PREFIX}&bError! &f{PLAYER} is not muted!"
+  mute-announcement: "{PREFIX}&b{ARBITER} &fhas {APPEALED|empty_if_false:\"un-\"}muted &b{PLAYER}&f: &b{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
+  global-muted: "&bThe chat is currently muted and you may not send messages."
+  global-unmuted: "&aThe chat is now unmuted, you may now converse."
+  chat-attempt: "&7{PLAYER} tried to speak, but is muted: \"{MESSAGE}\""
 
-Kick:
-  KickMessage: "&bYou were kicked from {NETWORKNAME}\n\n&bYou were kicked by: &f{ARBITER}\n&bReason: &f{REASON}"
-  KickAnnouncement: "{PREFIX}&b{ARBITER} &fkicked &b{PLAYER}&f: &b{REASON}{SILENT|empty_if_false:\" &8[SILENT]\"}"
+kick:
+  kick-message: "&bYou were kicked from {NETWORKNAME}\n\n&bYou were kicked by: &f{ARBITER}\n&bReason: &f{REASON}"
+  kick-announcement: "{PREFIX}&b{ARBITER} &fkicked &b{PLAYER}&f: &b{REASON}{SILENT|empty_if_false:\" &8[SILENT]\"}"
 
-Warn:
-  WarnAnnouncment: "&b{ARBITER} &fhas {APPEALED|empty_if_false:\"un-\"}warned &b{PLAYER} &f: &b{REASON} &f[#{PUNISHID}] {SILENT|empty_if_false:\" &8[SILENT]\"}"
-  WarnedMessage: "&b{ARBITER} &fwarned you: &b{REASON} &f[#{PUNISHID}]\n{SIMPLE|empty_if_true:\"&f» &bPlease acknowledge that you've been warned by typing &a/acknowledge.\"}"
-  RemovedSuccess: "{PREFIX}&fRemoved &b{PLAYER}&f's warning successfully!"
-  WarnedOnAction: "{PREFIX}&bYou have been warned and cannot perform that action!\n{PREFIX}&bPlease acknowledge that you've been warned by typing &a/acknowledge."
-  WarnKickMessage: "&bYou have been warned!\n\n&bReason: {REASON}\n\n&fBy rejoining you acknowledge that you've been warned!"
-  AcceptMessage: "&aThank you for accepting, you may resume your gameplay!"
-  NotWarned: "{PREFIX}&bYou have not been warned so there's nothing to accept!"
-  PlayerNotWarned: "{PREFIX}&cError! &f{PLAYER} &cis not warned!"
+warn:
+  warn-announcement: "&b{ARBITER} &fhas {APPEALED|empty_if_false:\"un-\"}warned &b{PLAYER} &f: &b{REASON} &f[#{PUNISHID}] {SILENT|empty_if_false:\" &8[SILENT]\"}"
+  warned-message: "&b{ARBITER} &fwarned you: &b{REASON} &f[#{PUNISHID}]\n{SIMPLE|empty_if_true:\"&f» &bPlease acknowledge that you've been warned by typing &a/acknowledge.\"}"
+  removed-success: "{PREFIX}&fRemoved &b{PLAYER}&f's warning successfully!"
+  warned-on-action: "{PREFIX}&bYou have been warned and cannot perform that action!\n{PREFIX}&bPlease acknowledge that you've been warned by typing &a/acknowledge."
+  warn-kick-message: "&bYou have been warned!\n\n&bReason: {REASON}\n\n&fBy rejoining you acknowledge that you've been warned!"
+  accept-message: "&aThank you for accepting, you may resume your gameplay!"
+  not-warned: "{PREFIX}&bYou have not been warned so there's nothing to accept!"
+  player-not-warned: "{PREFIX}&cError! &f{PLAYER} &cis not warned!"
   
-History:
-  NoHistory: "{PREFIX}&bPlayer &f{PLAYER}&b has no punishment history."
-  NoHistory2: "{PREFIX}&bThere are currently no reports"
-  ClearedHistory: "{PREFIX}&fCleared history for &b{PLAYER}&f."
-  HistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f - &f&lExpires: &f{EXPIRY}\n"
-  HistoryMessagePerm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f\n"
-  HistoryMessageReport: "\n&3:=:=:= &b[{PLAYERNAME}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lReporter: &f{ARBITER}&f\n"
-  StaffHistoryMessageTemp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f - &f&lExpires: &f{EXPIRY}\n"
-  StaffHistoryMessagePerm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f\n"
+history:
+  no-history: "{PREFIX}&bPlayer &f{PLAYER}&b has no punishment history."
+  no-history-2: "{PREFIX}&bThere are currently no reports"
+  cleared-history: "{PREFIX}&fCleared history for &b{PLAYER}&f."
+  history-message-temp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f - &f&lExpires: &f{EXPIRY}\n"
+  history-message-perm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f\n"
+  history-message-report: "\n&3:=:=:= &b[{PLAYERNAME}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lReporter: &f{ARBITER}&f\n"
+  staff-history-message-temp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f - &f&lExpires: &f{EXPIRY}\n"
+  staff-history-message-perm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f\n"
   # The number of times `HistoryMessageTemp` or `HistoryMessagePerm` is treated as a page. (Default is 2)
-  PageSize: 2
-  StaffPageSize: 2
-  Paginator: "&3:=:=:= &b[Page {CURRENT}/{TOTAL}]&3 =:=:=:"
+  page-size: 2
+  staff-page-size: 2
+  paginator: "&3:=:=:= &b[Page {CURRENT}/{TOTAL}]&3 =:=:=:"
 
-StaffRollback:
-  Announcement: "{PREFIX}&f{PLAYER} &brolled back &f{AFFECTED} &bpunishments!"
-  RollbackComplete: "{PREFIX}&fRolled back &b{AFFECTED} punishments&f."
-  NoRollback: "{PREFIX}&fThere are no users to rollback."
-  NoHistory: "{PREFIX}&f{PLAYER} &bhas performed no punishments."
+staff-rollback:
+  announcement: "{PREFIX}&f{PLAYER} &brolled back &f{AFFECTED} &bpunishments!"
+  rollback-complete: "{PREFIX}&fRolled back &b{AFFECTED} punishments&f."
+  no-rollback: "{PREFIX}&fThere are no users to rollback."
+  no-history: "{PREFIX}&f{PLAYER} &bhas performed no punishments."
 
-Freeze:
-  FrozenMessage: "{PREFIX}&bYou have been frozen by &f{ARBITER} &band may not move!"
-  FreezeAnnouncement: "{PREFIX}&f{ARBITER}&b {APPEALED|empty_if_false:\"un-\"}froze &f{PLAYER} {SILENT|empty_if_false:\" &8[SILENT]\"}"
+freeze:
+  frozen-message: "{PREFIX}&bYou have been frozen by &f{ARBITER} &band may not move!"
+  freeze-announcement: "{PREFIX}&f{ARBITER}&b {APPEALED|empty_if_false:\"un-\"}froze &f{PLAYER} {SILENT|empty_if_false:\" &8[SILENT]\"}"
 
-Statistics: "&3:=:=:= &bLolBans Statistics &3:=:=:=\n&bTotal Punishments:&f {PUNISHCOUNT}\n  &7>> &bBans:&f {BANS} ({REGEX} RegEx, {IPBANS} IP) ({BANPERCENT}%)\n  &7>> &bMutes:&f {MUTES} ({MUTEPERCENT}%)\n  &7>> &bWarnings:&f {WARNS} ({WARNPERCENT}%)\n  &7>> &bKicks:&f {KICKS} ({KICKPERCENT}%)\n\n&bTotal Users:&f {USERSCOUNT}\n  &7>> &bUsers Punished:&f {USERSPUNISHED} ({PERCENTPUNISHED}%)\n&r"
+statistics: "&3:=:=:= &bLolBans Statistics &3:=:=:=\n&bTotal Punishments:&f {PUNISHCOUNT}\n  &7>> &bBans:&f {BANS} ({REGEX} RegEx, {IPBANS} IP) ({BANPERCENT}%)\n  &7>> &bMutes:&f {MUTES} ({MUTEPERCENT}%)\n  &7>> &bWarnings:&f {WARNS} ({WARNPERCENT}%)\n  &7>> &bKicks:&f {KICKS} ({KICKPERCENT}%)\n\n&bTotal Users:&f {USERSCOUNT}\n  &7>> &bUsers Punished:&f {USERSPUNISHED} ({PERCENTPUNISHED}%)\n&r"
 # This section is not parsed by the above variable parser.
-Syntax:
-  Ban: "Usage: /ban [-s] [-o] <PlayerName> [Time|*] <Reason>"
-  Unban: "Usage: /unban [-s] <PlayerName|PunishID> <Reason>"
-  BanWave: "Usage: /banwave [-s] add <Player> <Time|*> <Reason>\nUsage: /banwave [-s] rm|remove|delete|del <Player>\nUsage: /banwave [-s] enforce|run|start|exec|execute"
-  IPBan: "Usage: /ipban [-s] <ip address>[/<cidr>] <Time|*> <Reason>" 
-  IPUnban: "Usage: /unipban [-s] <ip address>[/<cidr>] <Reason>"
-  RegexBan: "Usage: /regexban [-s] <Regex> <Time|*> <Reason>"
-  RegexUnban: "Usage: /regexunban [-s] <Regular Expression|PunishID> <Reason>"
-  History: "Usage: /history <PlayerName> [<Page>]\nUsage: /clearhistory <PlayerName> [<DateRange>]"
-  ReportHistory: "Usage: /reports [PlayerName] [<page>]"
-  PruneHistory: "Usage: /prunehistory <Player|PunishID|CIDR|Regex> <Time|*>"
-  StaffHistory: "Usage: /staffhistory <staffmember>"
-  Kick: "Usage: /kick [-s] <PlayerName> <Reason>"
-  Report: "Usage: /report <type> <player> <reason>"
-  Reports: "Usage: /reports [PlayerName] [<page>]"
-  StaffRollback: "Usage: /staffrollback [-s] <Staffmember> <Time|*>"
-  ChatMute: "Usage: /chatmute"
-  Mute: "Usage: /mute [-s] [-o] <Player> [Time|*] <Reason>"
-  Unmute: "Usage: /unmute [-s] <Player> <Reason>"
-  WarnAccept: "Usage: /acknowledge"
-  Warn: "Usage: /warn [-s] <Player> <Reason>"
-  UnWarn: "Usage: /unwarn [-s] <PlayerName|PunishID>"
+syntax:
+  ban: "Usage: /ban [-s] [-o] <PlayerName> [Time|*] <Reason>"
+  unban: "Usage: /unban [-s] <PlayerName|PunishID> <Reason>"
+  banwave: "Usage: /banwave [-s] add <Player> <Time|*> <Reason>\nUsage: /banwave [-s] rm|remove|delete|del <Player>\nUsage: /banwave [-s] enforce|run|start|exec|execute"
+  ip-ban: "Usage: /ipban [-s] <ip address>[/<cidr>] <Time|*> <Reason>" 
+  ip-unban: "Usage: /unipban [-s] <ip address>[/<cidr>] <Reason>"
+  regex-ban: "Usage: /regexban [-s] <Regex> <Time|*> <Reason>"
+  regex-unban: "Usage: /regexunban [-s] <Regular Expression|PunishID> <Reason>"
+  history: "Usage: /history <PlayerName> [<Page>]\nUsage: /clearhistory <PlayerName> [<DateRange>]"
+  report-history: "Usage: /reports [PlayerName] [<page>]"
+  prune-history: "Usage: /prunehistory <Player|PunishID|CIDR|Regex> <Time|*>"
+  staff-history: "Usage: /staffhistory <staffmember>"
+  kick: "Usage: /kick [-s] <PlayerName> <Reason>"
+  report: "Usage: /report <type> <player> <reason>"
+  reports: "Usage: /reports [PlayerName] [<page>]"
+  staff-rollback: "Usage: /staffrollback [-s] <Staffmember> <Time|*>"
+  chat-mute: "Usage: /chatmute"
+  mute: "Usage: /mute [-s] [-o] <Player> [Time|*] <Reason>"
+  unmute: "Usage: /unmute [-s] <Player> <Reason>"
+  warn-accept: "Usage: /acknowledge"
+  warn: "Usage: /warn [-s] <Player> <Reason>"
+  unwarn: "Usage: /unwarn [-s] <PlayerName|PunishID>"

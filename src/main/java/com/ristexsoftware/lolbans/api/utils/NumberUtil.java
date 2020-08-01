@@ -23,8 +23,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 public class NumberUtil {
-
-    /**
+        /**
      * <p>Checks if the String contains only unicode digits.
      * A decimal point is not a unicode digit and returns false.</p>
      *
@@ -92,5 +91,4 @@ public class NumberUtil {
         df.setRoundingMode(RoundingMode.HALF_EVEN);
         return Float.valueOf(df.format((x/z)*100));
     }
-
 }
