@@ -17,39 +17,32 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.ristexsoftware.lolbans.bukkit;
+package com.ristexsoftware.lolbans.bukkit.commands;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
-import com.ristexsoftware.lolbans.api.Database;
-import com.ristexsoftware.lolbans.api.LolBans;
-import com.ristexsoftware.lolbans.api.utils.PunishID;
-import com.ristexsoftware.lolbans.bukkit.commands.Test;
-import org.bukkit.Bukkit;
+import com.ristexsoftware.lolbans.api.User;
+import com.ristexsoftware.lolbans.api.punishment.InvalidPunishmentException;
+import com.ristexsoftware.lolbans.api.punishment.Punishment;
+import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
+import com.ristexsoftware.lolbans.bukkit.Main;
+
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandMap;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-import lombok.Getter;
 
-public class Main extends JavaPlugin {
-    @Getter
-    private static Main plugin;
-    List<Command> CommandList = new ArrayList<Command>();
+public class Test implements CommandExecutor {
 
     @Override
-    public void onEnable() {
-        new LolBans(getDataFolder(), getFile());
-        plugin = this;
-        if (!Database.initDatabase())
-            return;
-        this.getCommand("test").setExecutor(new Test());
-    }
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        try {
+            new Punishment(PunishmentType.BAN, new User(sender.getName(), ((Player) sender).getUniqueId()), User.resolveUser(args[0]), "a", null, false, false).Commit(new User(sender.getName(), ((Player) sender).getUniqueId()));
+        } catch (SQLException | InvalidPunishmentException e) {
+            e.printStackTrace();
+        }
 
-    @Override
-    public void onDisable() {
-
+        return true;
     }
+    
 }

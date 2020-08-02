@@ -1,5 +1,5 @@
 /* 
- *  LolBans - The advanced banning system for Minecraft
+ *  LolBans - An advanced punishment management system made for Minecraft
  *  Copyright (C) 2019-2020 Justin Crawford <Justin@Stacksmash.net>
  *  Copyright (C) 2019-2020 Zachery Coleman <Zachery@Stacksmash.net>
  *  
@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- // TODO: this class
+// TODO: this class
 // package com.ristexsoftware.lolbans.api.punishment.runnables;
 
 // import inet.ipaddr.IPAddressString;

@@ -1,5 +1,5 @@
 /* 
- *  LolBans - The advanced banning system for Minecraft
+ *  LolBans - An advanced punishment management system made for Minecraft
  *  Copyright (C) 2019-2020 Justin Crawford <Justin@Stacksmash.net>
  *  Copyright (C) 2019-2020 Zachery Coleman <Zachery@Stacksmash.net>
  *  Copyright (C) 2019-2020 Skye Elliot <actuallyori@gmail.com>
@@ -27,7 +27,6 @@ import java.util.UUID;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
@@ -35,14 +34,16 @@ import org.jetbrains.annotations.NotNull;
 import inet.ipaddr.IPAddressString;
 
 import lombok.Getter;
-import lombok.Setter;
 
-// hihihihi
+/**
+ * <h2>LolBans Punishment Management Plugin</h2>
+ *
+ * @author Justin Crawford &amp; Zachery Coleman
+ * @version 2.0.0
+ * @since 2019-11-13
+ */
 public class LolBans extends JavaPlugin {
     @Getter private static LolBans plugin;
-
-
-    // ur gay :3
 
     public LolBans(@NotNull File dataFolder, @NotNull File file) {
         super(dataFolder, file);
@@ -53,12 +54,6 @@ public class LolBans extends JavaPlugin {
     public static List<IPAddressString> BANNED_ADDRESSES = new Vector<IPAddressString>();
 
     public static ExecutorService pool = Executors.newFixedThreadPool(3);
-    public static String prefix;
-    public static String networkName;
-    public static String website;
-    public static String serverError;
-    public static String invalidSyntax;
-    public static boolean discord;
 
     /**
      * Get a user

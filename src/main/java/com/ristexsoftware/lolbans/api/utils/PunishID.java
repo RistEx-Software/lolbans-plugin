@@ -1,5 +1,5 @@
 /* 
- *  LolBans - The advanced banning system for Minecraft
+ *  LolBans - An advanced punishment management system made for Minecraft
  *  Copyright (C) 2019-2020 Justin Crawford <Justin@Stacksmash.net>
  *  Copyright (C) 2019-2020 Zachery Coleman <Zachery@Stacksmash.net>
  *  
@@ -30,13 +30,13 @@ class Luhn
 	 *           {@link String} card number
 	 * @return result {@link boolean} true of false
 	 */
-    public static boolean LuhnCheck(String card) 
+    public static boolean luhnCheck(String card) 
     {
 		if (card == null)
             return false;
             
 		char checkDigit = card.charAt(card.length() - 1);
-		String digit = CalculateCheckDigit(card.substring(0, card.length() - 1));
+		String digit = calculateCheckDigit(card.substring(0, card.length() - 1));
 		return checkDigit == digit.charAt(0);
 	}
 	
@@ -47,7 +47,7 @@ class Luhn
 	 *           {@link String} number
 	 * @return {@link String} the check digit
 	 */
-    public static String CalculateCheckDigit(String card)
+    public static String calculateCheckDigit(String card)
     {
 		if (card == null)
             return null;
@@ -89,7 +89,7 @@ public class PunishID
 	 * @param idstart An identifier to start the ID with (usually the position in the SQL table)
 	 * @return a Luhn-passable identifier
 	 */
-    public static String GenerateID(int idstart)
+    public static String generateID(int idstart)
     {
         CRC32 crc = new CRC32();
 
@@ -101,7 +101,7 @@ public class PunishID
         // Get the hash
         String crc32hash = Long.toHexString(crc.getValue());
         // Calculate the Luhn check digit
-        crc32hash += Luhn.CalculateCheckDigit(crc32hash);
+        crc32hash += Luhn.calculateCheckDigit(crc32hash);
         // return.
         return crc32hash.toUpperCase();
     }
@@ -111,8 +111,8 @@ public class PunishID
 	 * @param id a string to test against the Luhn algorithm
 	 * @return Whether the string passes the Luhn test
 	 */
-    public static boolean ValidateID(String id)
+    public static boolean validateID(String id)
     {
-        return Luhn.LuhnCheck(id);
+        return Luhn.luhnCheck(id);
     }
 }
