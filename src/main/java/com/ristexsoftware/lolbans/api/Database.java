@@ -1,8 +1,7 @@
 /* 
- *  LolBans - The advanced banning system for Minecraft
+ *  LolBans - An advanced punishment management system made for Minecraft
  *  Copyright (C) 2019-2020 Justin Crawford <Justin@Stacksmash.net>
  *  Copyright (C) 2019-2020 Zachery Coleman <Zachery@Stacksmash.net>
- *  Copyright (C) 2019-2020 Skye Elliot <actuallyori@gmail.com>
  *  
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,6 +27,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
+import com.ristexsoftware.lolbans.api.configuration.Messages;
+import com.ristexsoftware.lolbans.api.configuration.file.FileConfiguration;
+import com.ristexsoftware.lolbans.bukkit.Main;
+
 // import com.ristexsoftware.lolbans.api.punishment.runnables.Query;
 
 public class Database {
@@ -40,11 +43,16 @@ public class Database {
     private static Integer maxReconnects = 5;
 
     // private static Query CheckThread;
-    
-    public static boolean initDatabase() {
 
-        // server/plugins/LolBans
-        
+    public static boolean initDatabase() {
+        FileConfiguration config = LolBans.getPlugin().getConfig();
+        host = config.getString("database.host");
+        port = config.getInt("database.port");
+        database = config.getString("database.name");
+        username = config.getString("database.username");
+        password = config.getString("database.password");
+        maxReconnects = config.getInt("database.MaxReconnects");
+        // queryUpdateLong = config.getLong("database.QueryUpdate");
 
         try {
             openConnection(host, username, password, database, port, maxReconnects);
@@ -60,7 +68,7 @@ public class Database {
                                             // Player info stuffs
                                             +"target_uuid VARCHAR(36) NULL,"
                                             +"target_name VARCHAR(17) NULL,"
-                                            +"target_ip_address VARCHAR(48) NOT NULL," // default to '#' if target is not online and not in Users table
+                                            +"target_ip_address VARCHAR(48) DEFAULT '#',"
                                             // (General punish info)
                                             +"reason TEXT NULL,"
                                             +"punish_id VARCHAR(20) NOT NULL,"
@@ -72,9 +80,9 @@ public class Database {
                                             // Who banned (punshied) them
                                             +"punished_by_name VARCHAR(17) NOT NULL,"
                                             +"punished_by_uuid VARCHAR(36) NOT NULL,"
-                                            // Who un-punished (appealed their punishment) them
-                                            +"unpunished_by_name VARCHAR(17) NULL,"
-                                            +"unpunished_by_uuid VARCHAR(36) NULL," // Who has reviewed and approved/denied the appeal.           
+                                            // Who un-punished (appealed) them
+                                            +"appealed_by_name VARCHAR(17) NULL,"
+                                            +"appealed_by_uuid VARCHAR(36) NULL," // Who has reviewed and approved/denied the appeal.           
                                 
                                             // categorize this nonsense
                                             +"appealed BOOLEAN DEFAULT FALSE," // this will just make checking if they're banned or not easier...
@@ -82,8 +90,8 @@ public class Database {
                                             +"appealed_at TIMESTAMP NULL,"
                                             +"silent BOOLEAN DEFAULT FALSE," 
                                             +"warning_ack BOOLEAN DEFAULT FALSE,"  // Used only when type == 3 for warnings.
-                                            +"ip_ban BOOLEAN DEFAULT FALSE" // for IP bans
-                                            +"regex_ban BOOLEAN DEFAULT FALSE"  // for regex bans
+                                            +"ip_ban BOOLEAN DEFAULT FALSE," // for IP bans
+                                            +"regex_ban BOOLEAN DEFAULT FALSE,"  // for regex bans
                                             +"regex TEXT NULL,"
                                             +"banwave BOOLEAN DEFAULT FALSE"
                                             +")").execute();
@@ -136,66 +144,54 @@ public class Database {
      * 
      * @throws SQLException SQL exception if the connection fails
      */
-    private static void openConnection(String host, String username, String password, String database, Integer port, Integer maxReconnects) throws SQLException {
+    private static void openConnection(String host, String username, String password, String database, Integer port,
+            Integer maxReconnects) throws SQLException {
         if (connection != null && !connection.isClosed())
             return;
+            
+        synchronized (LolBans.getPlugin()) {
+            if (connection != null && !connection.isClosed())
+                return;
 
-        // This is.... very bad
-        // synchronized (Main.getPlugin(Main.class).isEnabled() ?
-        // Main.getPlugin(Main.class) : null)
-        // {
-        if (connection != null && !connection.isClosed())
-            return;
-
-        connection = DriverManager.getConnection(
-                String.format("jdbc:mysql://%s:%s/%s?autoReconnect=true&failOverReadOnly=false&maxReconnects=%d", host,
-                        port, database, maxReconnects),
-                username, password);
-        // }
+            connection = DriverManager.getConnection(
+                    String.format("jdbc:mysql://%s:%s/%s?autoReconnect=true&failOverReadOnly=false&maxReconnects=%d", host,
+                            port, database, maxReconnects),
+                    username, password);
+        }
     }
 
     /**
      * Terminate the connection to the database.
      */
-    public static void Terminate()
-    {
+    public static void Terminate() {
         // Terminate our thread.
         // if (CheckThread != null)
-            // CheckThread.cancel();
+        // CheckThread.cancel();
 
         // Close the database connection (if open)
-        if (connection != null)
-        {
-            try 
-            {
+        if (connection != null) {
+            try {
                 connection.close();
-            }
-            catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
     }
 
-        /**
+    /**
      * Execute a database query asynchronously and return the result later.
+     * 
      * @param statement A {@link java.sql.PreparedStatement} to execute later.
      * @return A future optional ResultSet of the results from the database query
      */
-    public static Future<Optional<ResultSet>> ExecuteLater(PreparedStatement statement)
-    {
-        FutureTask<Optional<ResultSet>> t = new FutureTask<>(new Callable<Optional<ResultSet>>()
-        {
+    public static Future<Optional<ResultSet>> ExecuteLater(PreparedStatement statement) {
+        FutureTask<Optional<ResultSet>> t = new FutureTask<>(new Callable<Optional<ResultSet>>() {
             @Override
-            public Optional<ResultSet> call()
-            {
-                //This is where you should do your database interaction
-                try 
-                {
+            public Optional<ResultSet> call() {
+                // This is where you should do your database interaction
+                try {
                     return Optional.ofNullable(statement.executeQuery());
-                } 
-                catch (Throwable e) 
-                {
+                } catch (Throwable e) {
                     e.printStackTrace();
                     return Optional.empty();
                 }
@@ -209,23 +205,18 @@ public class Database {
 
     /**
      * Asynchronously execute an update query for the database.
+     * 
      * @param statement the {@link java.sql.PreparedStatement} to execute later.
      * @return An integer of the number of rows updated by the statement.
      */
-    public static Future<Integer> ExecuteUpdate(PreparedStatement statement)
-    {
-        FutureTask<Integer> t = new FutureTask<>(new Callable<Integer>()
-        {
+    public static Future<Integer> ExecuteUpdate(PreparedStatement statement) {
+        FutureTask<Integer> t = new FutureTask<>(new Callable<Integer>() {
             @Override
-            public Integer call()
-            {
-                //This is where you should do your database interaction
-                try 
-                {
+            public Integer call() {
+                // This is where you should do your database interaction
+                try {
                     return statement.executeUpdate();
-                } 
-                catch (Throwable e) 
-                {
+                } catch (Throwable e) {
                     e.printStackTrace();
                 }
                 return -1;
@@ -237,40 +228,34 @@ public class Database {
     }
 
     /*
-    PUNISHMENT UTILS
-    */
+     * PUNISHMENT UTILS
+     */
 
     /**
      * Get the latest ID from the database table
+     * 
      * @param table Table to get the latest id from
      * @return The latest id
      * @throws SQLException An exception if the database query fails.
      */
-    public static int GenID(String table) throws SQLException
-    {
+    public static int genID(String table) throws SQLException {
         // Get the latest ID of the banned players to generate a PunishID form it.
         ResultSet ids = connection.createStatement().executeQuery("SELECT MAX(id) FROM " + table);
         int id = 1;
-        if (ids.next())
-        {
-            if (!ids.wasNull())
-                id = ids.getInt(1);
-        }
+        if (ids.next() && !ids.wasNull())
+            id = ids.getInt(1);
         return id;
     }
 
-    public static Future<Boolean> isUserBanned(UUID uuid)
-    {
-        FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
-        {
+    public static Future<Boolean> isUserBanned(UUID uuid) {
+        FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>() {
             @Override
-            public Boolean call()
-            {
+            public Boolean call() {
                 try {
                     PreparedStatement ps = Database.connection.prepareStatement(
                             "SELECT 1 FROM lolbans_punishments WHERE target_uuid = ? AND type = 0 AND appealed = FALSE LIMIT 1");
                     ps.setString(1, uuid.toString());
-        
+
                     return ps.executeQuery().next();
                 } catch (SQLException ex) {
                     ex.printStackTrace();
@@ -281,7 +266,7 @@ public class Database {
 
         LolBans.pool.execute(t);
 
-        return (Future<Boolean>)t;
+        return (Future<Boolean>) t;
     }
 
     /**
@@ -297,19 +282,19 @@ public class Database {
                 // This is where you should do your database interaction
                 try {
                     PreparedStatement ps = connection
-                            .prepareStatement("SELECT target_ip_address FROM lolbans_users WHERE UUID = ? LIMIT 1");
+                            .prepareStatement("SELECT ip_address FROM lolbans_users WHERE player_uuid = ? LIMIT 1");
                     ps.setString(1, uuid);
                     ResultSet results = ps.executeQuery();
                     if (results.next()) {
-                        if (results.getString("target_ip_address").contains(",")) {
-                            String[] iplist = results.getString("target_ip_address").split(",");
+                        if (results.getString("ip_address").contains(",")) {
+                            String[] iplist = results.getString("ip_address").split(",");
                             return iplist[iplist.length - 1];
                         }
-                        return results.getString("target_ip_address");
+                        return results.getString("ip_address");
                     }
 
-                    PreparedStatement ps1 = connection
-                            .prepareStatement("SELECT target_ip_address FROM lolbans_punishments WHERE target_uuid = ? LIMIT 1");
+                    PreparedStatement ps1 = connection.prepareStatement(
+                            "SELECT target_ip_address FROM lolbans_punishments WHERE target_uuid = ? LIMIT 1");
                     ps.setString(1, uuid);
                     ResultSet results1 = ps1.executeQuery();
                     if (results1.next()) {

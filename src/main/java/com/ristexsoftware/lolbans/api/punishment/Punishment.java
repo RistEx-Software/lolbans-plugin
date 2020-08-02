@@ -1,8 +1,7 @@
 /* 
- *  LolBans - The advanced banning system for Minecraft
+ *  LolBans - An advanced punishment management system made for Minecraft
  *  Copyright (C) 2019-2020 Justin Crawford <Justin@Stacksmash.net>
  *  Copyright (C) 2019-2020 Zachery Coleman <Zachery@Stacksmash.net>
- *  Copyright (C) 2019-2020 Skye Elliot <actuallyori@gmail.com>
  *  
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,6 +31,7 @@ import java.util.concurrent.FutureTask;
 
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
+import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.utils.TimeUtil;
 
@@ -43,6 +43,7 @@ import com.ristexsoftware.lolbans.api.utils.PunishID;
 
 public class Punishment {
     @Getter @Setter private User target; // Nullable
+    @Getter @Setter private IPAddress ipAddress;
 
     @Getter @Setter private String reason;
     @Getter @Setter private String punishId;
@@ -50,33 +51,33 @@ public class Punishment {
     @Getter @Setter private Timestamp timePunished;
     @Getter @Setter private Timestamp expiresAt;
     @Getter @Setter private Timestamp commitPunishmentBy;
-    @Getter @Setter private Boolean commited; 
+    @Getter @Setter private Boolean commited = false;
 
     @Getter @Setter private User punisher;
     
-    @Getter @Setter private Boolean appealed;
+    @Getter @Setter private Boolean appealed  = false;
     @Getter @Setter private User unpunisher;
     @Getter @Setter private String appealReason;
     @Getter @Setter private Timestamp appealedAt;
     
-    @Getter @Setter private Boolean silent;
+    @Getter @Setter private Boolean silent = false;
 
     
-    @Getter @Setter private Boolean warningAck;
+    @Getter @Setter private Boolean warningAck = false;
     
-    @Getter @Setter private Boolean ipBan;
+    @Getter @Setter private Boolean ipBan = false;
     
-    @Getter @Setter private Boolean regexBan;
+    @Getter @Setter private Boolean regexBan = false;
     @Getter @Setter private String regex;
     
-    @Getter @Setter private Boolean banwave;
+    @Getter @Setter private Boolean banwave  = false;
     
     public Punishment(PunishmentType type, User sender, User target, String reason, Timestamp expiry, Boolean silent, Boolean appealed) throws SQLException, InvalidPunishmentException {
         if (type == PunishmentType.UNKNOWN) {
             throw new InvalidPunishmentException("Unknown Punishment Type \"" + type.displayName() + "\" for " + target.getName() + " " + reason);
         }
         this.type = type;
-        this.punishId = PunishID.GenerateID(Database.GenID("lolbans_punishments"));
+        this.punishId = PunishID.generateID(Database.genID("lolbans_punishments"));
         this.reason = reason;
 
         // Users
@@ -109,6 +110,7 @@ public class Punishment {
      */
     public Punishment(User sender, String reason, Timestamp expiry, Boolean silent, Boolean appealed, IPAddress ipaddress) throws SQLException, InvalidPunishmentException {
         this(PunishmentType.IP, sender, null, reason, expiry, silent, appealed);
+        this.ipAddress = ipaddress;
         this.ipBan = true;
     }
 
@@ -253,8 +255,8 @@ public class Punishment {
                                                                     +"type = ?,"
                                                                     +"time_punished = ?,"
                                                                     +"appeal_reason = ?,"
-                                                                    +"unpunished_by_name = ?,"
-                                                                    +"unpunished_by_uuid = ?,"
+                                                                    +"appealed_by_name = ?,"
+                                                                    +"appealed_by_uuid = ?,"
                                                                     +"appealed_at = ?,"
                                                                     +"appealed = ?,"
                                                                     +"silent = ?,"
@@ -267,7 +269,7 @@ public class Punishment {
                                                                     
                         InsertBan.setString(i++, me.target == null ? null : me.target.getUniqueId().toString()); // UUID
                         InsertBan.setString(i++, me.target == null ? null : me.target.getName()); // PlayerName
-                        InsertBan.setString(i++, me.target.getAddress()); // IP Address
+                        InsertBan.setString(i++, me.ipAddress.toString()); // IP Address
                         InsertBan.setString(i++, me.reason); // Reason
                         InsertBan.setString(i++, me.punisher.getName()); // ArbiterName 
                         InsertBan.setString(i++, me.punisher.getUniqueId().toString()); // ArbiterUUID
@@ -305,12 +307,12 @@ public class Punishment {
                                                                                     + "ip_ban,"
                                                                                     + "regex,"
                                                                                     + "regex_ban,"
-                                                                                    + "banwave VALUES"
+                                                                                    + "banwave)"
+                                                                                    + " VALUES"
                                                                                             + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"));
-                        
-                        InsertBan.setString(i++, me.target == null ? null : me.target.getUniqueId().toString());
-                        InsertBan.setString(i++, me.target == null ? null : me.target.getName());
-                        InsertBan.setString(i++, me.target.getAddress());
+                        InsertBan.setString(i++, me.target == null ? "" : me.target.getUniqueId().toString());
+                        InsertBan.setString(i++, me.target == null ? "" : me.target.getName());
+                        InsertBan.setString(i++, me.ipAddress == null ? "#" : me.ipAddress.toString());
                         InsertBan.setString(i++, me.reason);
                         InsertBan.setString(i++, me.punisher.getName());
                         InsertBan.setString(i++, me.punisher.getUniqueId().toString());
@@ -322,6 +324,7 @@ public class Punishment {
                         InsertBan.setString(i++, regex);
                         InsertBan.setBoolean(i++, regexBan);
                         InsertBan.setBoolean(i++, banwave);
+                        System.out.println(InsertBan.toString());
                     }
                     InsertBan.executeUpdate();
 
@@ -331,9 +334,9 @@ public class Punishment {
                 {
                     e.printStackTrace();
                     if (sender == null)
-                        LolBans.getLogger().severe(LolBans.serverError);
+                        LolBans.getLogger().severe(Messages.serverError);
                     else
-                        sender.sendMessage(LolBans.serverError);
+                        sender.sendMessage(Messages.serverError);
                 }
                 return null;
             }
