@@ -19,6 +19,7 @@
 
 package com.ristexsoftware.lolbans.api.utils;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -94,6 +95,26 @@ public class ReflectionUtil {
 
     public static Object invokeProtectedMethod(Object o, String method, Object... args) {
         return invokeProtectedMethod(o.getClass(), o, method, args);
+    }
+
+    public static Constructor<?> getProtectedConstructor(Class<?> clazz, Class<?>... params) {
+        Constructor<?> c;
+
+        try {
+            c = clazz.getDeclaredConstructor(params);
+        } catch (NoSuchMethodException | SecurityException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        if (c == null)
+            return null;
+
+        int m = c.getModifiers();
+        if (Modifier.isProtected(m))
+            c.setAccessible(true);
+
+        return c;
     }
 
     public static Object invokeProtectedMethod(Class<?> c, Object o, String method, Object... args) {

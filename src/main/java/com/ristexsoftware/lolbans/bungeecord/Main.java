@@ -19,10 +19,18 @@
 
 package com.ristexsoftware.lolbans.bungeecord;
 
+import java.io.File;
+import java.util.TreeMap;
 import java.util.UUID;
 
-import com.ristexsoftware.lolbans.api.JavaPlugin;
+import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
+import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
+import com.ristexsoftware.lolbans.api.configuration.Messages;
+import com.ristexsoftware.lolbans.api.utils.CommandUtil;
+import com.ristexsoftware.lolbans.api.utils.ServerType;
+import com.ristexsoftware.lolbans.bungeecord.Listeners.ConnectionListener;
+import com.ristexsoftware.lolbans.commands.Ban;
 
 import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
@@ -31,13 +39,23 @@ import net.md_5.bungee.api.plugin.Plugin;
 
 public class Main extends Plugin {
     public static boolean isEnabled;
-    @Getter
-    public static JavaPlugin plugin;
+    @Getter public static Main plugin;
+    private static LolBans self = LolBans.getPlugin();
 
     @Override
-    public void onLoad() {
-        new LolBans(getDataFolder(), getFile());
+    public void onEnable() {
+        new LolBans(getDataFolder(), getFile(), ServerType.BUNGEECORD);
         isEnabled = true;
+        // Database.initDatabase();
+
+        // Make sure our messages file exists
+        Messages.getMessages();
+        
+        if (!Database.initDatabase())
+            return;
+
+        CommandUtil.BungeeCord.registerBungeeCommand(new Ban.BanCommand(LolBans.getPlugin()));
+        getProxy().getPluginManager().registerListener(this, new ConnectionListener());
     }
 
     @Override

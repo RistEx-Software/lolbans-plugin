@@ -5,13 +5,15 @@ general:
   kick-connection-error: true
   # Allow anyone who has been /op'ed to bypass all permission checks
   # (effectively making them have the same control as console)
-  ops-bypass-permissions: false
+  ops-bypass-permissions: true
   # How much time to wait until reports expire (Default is 3d)
   report-expiry: 3d
   # The translation file you wish to use. (Default: messages.en_us.yml)
   translation-file: "messages.en_us.yml"
   # If set to true, upon receiving a warning or mute, or trying to speak while muted, a sound will play to their client
   play-sound: false
+  # If true, this will print debug statements
+  debug: false
 
 # Show a GUI instead of chat for the history commands
 history-gui:
@@ -20,9 +22,9 @@ history-gui:
 database:
   host: localhost
   port: 3306
-  name: root
-  username: username
-  password: passwd
+  name: lolbans
+  username: lolbans
+  password: lolbans
   # Maximum number of times mysql will try to reconnect before giving up.
   max-reconnects: 5
   # Number of times to check for expired temp bans

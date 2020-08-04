@@ -32,9 +32,9 @@ import com.ristexsoftware.lolbans.api.utils.Translation;
 import lombok.Getter;
 
 public class Messages {
-    private static File configFile;
-    @Getter
-    private static FileConfiguration config;
+    private static LolBans self = LolBans.getPlugin();
+    private static File CustomConfigFile;
+    private static FileConfiguration CustomConfig;
     private static Messages localself = null;
 
     // Everything else
@@ -43,16 +43,15 @@ public class Messages {
     public static String website;
     public static String serverError;
     public static String invalidSyntax;
-    public static boolean discord;
+    public static boolean Discord;
 
     // Initialized by our GetMessages() function.
     protected Messages() {
-        String TranslationFile = LolBans.getPlugin().getConfig().getString("general.translation-file",
-                "messages.en_us.yml");
-        configFile = new File(LolBans.getPlugin().getDataFolder(), TranslationFile);
-        if (!configFile.exists()) {
-            configFile.getParentFile().mkdirs();
-            LolBans.getPlugin().saveResource(TranslationFile, false);
+        String TranslationFile = self.getConfig().getString("general.translation-file", "messages.en_us.yml");
+        CustomConfigFile = new File(self.getDataFolder(), TranslationFile);
+        if (!CustomConfigFile.exists()) {
+            CustomConfigFile.getParentFile().mkdirs();
+            self.saveResource(TranslationFile, false);
         }
 
         reload();
@@ -75,41 +74,49 @@ public class Messages {
     public static void reload() {
         FileConfiguration fc = new YamlConfiguration();
         try {
-            fc.load(configFile);
-            config = fc;
+            fc.load(CustomConfigFile);
+            CustomConfig = fc;
 
             // Messages
-            Messages.prefix = config.getString("prefix", "[lolbans] ").replace("&", "\u00A7");
-            Messages.networkName = Messages._translate(config.getString("network-name", "My Network"),
-                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
-            Messages.website = Messages._translate(config.getString("website", "YourWebsiteHere.com"),
-                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
-            Messages.serverError = Messages._translate(
-                    config.getString("server-error", "The server encountered an error!"),
-                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
-            Messages.invalidSyntax = Messages._translate(config.getString("invalid-syntax", "&cInvalid Syntax!"),
-                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
-            Messages.discord = LolBans.getPlugin().getConfig().getBoolean("discord.enabled", false);
-        } catch (IOException | InvalidConfigurationException e) {
+            Messages.prefix = CustomConfig.getString("prefix", "[lolbans] ").replace("&", "\u00A7");
+            Messages.networkName = Messages._translate(CustomConfig.getString("network-name", "My Network"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            Messages.website = Messages._translate(CustomConfig.getString("website", "YourWebsiteHere.com"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            Messages.serverError = Messages._translate(CustomConfig.getString("server-error", "The server encountered an error!"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            Messages.invalidSyntax = Messages._translate(CustomConfig.getString("invalid-syntax", "&cInvalid Syntax!"), new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER));
+            Messages.Discord = self.getConfig().getBoolean("discord.enabled", false);
+        } 
+        catch (IOException | InvalidConfigurationException e) 
+        {
             e.printStackTrace();
         }
     }
 
-    private static String _translate(String ConfigMessage, Map<String, String> Variables) {
-        if (ConfigMessage == null)
-            return null;
+    /**
+     * Get the configuration object for messages.yml
+     * @return {@link org.bukkit.configuration.file.FileConfiguration}
+     */
+    public FileConfiguration GetConfig()
+    {
+        return CustomConfig;
+    }
 
+    private static String _translate(String ConfigMessage, Map<String, String> Variables)
+    {
+        if (ConfigMessage == null)
+        return null;
+        
         Variables.put("prefix", Messages.prefix);
         Variables.put("networkname", Messages.networkName);
         Variables.put("website", Messages.website);
 
         return Translation.translate(ConfigMessage, "&", Variables);
     }
-
-    private static String _translateNoColor(String ConfigMessage, Map<String, String> Variables) {
+    
+    private static String _translateNoColor(String ConfigMessage, Map<String, String> Variables)
+    {
         if (ConfigMessage == null)
             return null;
-
+        
         Variables.put("prefix", Messages.prefix);
         Variables.put("networkname", Messages.networkName);
         Variables.put("website", Messages.website);
@@ -118,59 +125,55 @@ public class Messages {
     }
 
     /**
-     * Lookup the string from messages.yml, replace the placeholders and convert the
-     * color codes into colors then return the resulting string for sending to a
-     * minecraft client.
-     * 
+     * Lookup the string from messages.yml, replace the placeholders and convert the color codes into colors
+     * then return the resulting string for sending to a minecraft client.
      * @param ConfigNode The config node for the message in messages.yml
-     * @param Variables  Variables to use for placeholders
-     * @return A string to send to the minecraft client with all colors and
-     *         placeholders converted.
-     * @throws InvalidConfigurationException if the message node does not exist in
-     *                                       messages.yml
+     * @param Variables Variables to use for placeholders
+     * @return A string to send to the minecraft client with all colors and placeholders converted.
+     * @throws InvalidConfigurationException if the message node does not exist in messages.yml
      */
-    public static String translate(String ConfigNode, Map<String, String> Variables)
-            throws InvalidConfigurationException {
-        String configMessage = getMessages().config.getString(ConfigNode);
-        if (configMessage == null)
-            throw new InvalidConfigurationException("Configuration Node is invalid or does not exist: " + ConfigNode);
-
-        return _translate(configMessage, Variables);
+    public static String translate(String ConfigNode, Map<String, String> Variables) throws InvalidConfigurationException
+    {
+        getMessages();
+        String ConfigMessage = Messages.CustomConfig.getString(ConfigNode);
+        if (ConfigMessage == null)
+        throw new InvalidConfigurationException("Configuration Node is invalid or does not exist: " + ConfigNode);
+        
+        return _translate(ConfigMessage, Variables);
     }
 
     /**
-     * Lookup a string from the messages.yml file and replace the placeholders with
-     * the variables but do not convert the sequences which may be interpreted as
-     * color characters.
-     * 
+     * Lookup a string from the messages.yml file and replace the placeholders with the variables but do not 
+     * convert the sequences which may be interpreted as color characters.
      * @param ConfigNode the node from messages.yml to lookup for the string
-     * @param Variables  Placeholders to replace in the string looked up from
-     *                   messages.yml
+     * @param Variables Placeholders to replace in the string looked up from messages.yml
      * @return A string with all the placeholders converted
      * @throws InvalidConfigurationException If the messages.yml node does not exist
      */
-    public static String translateNc(String ConfigNode, Map<String, String> Variables)
-            throws InvalidConfigurationException {
-        String configMessage = getMessages().config.getString(ConfigNode);
-        if (configMessage == null)
+    public static String translateNc(String ConfigNode, Map<String, String> Variables) throws InvalidConfigurationException
+    {
+        getMessages();
+        String ConfigMessage = Messages.CustomConfig.getString(ConfigNode);
+        if (ConfigMessage == null)
             throw new InvalidConfigurationException("Configuration Node is invalid or does not exist: " + ConfigNode);
 
-        return _translateNoColor(configMessage, Variables);
+        return _translateNoColor(ConfigMessage, Variables);
     }
 
     /**
      * Check if many strings equal a single comparison string
-     * 
      * @param haystack the string to compare to
-     * @param needles  things that may match the comparison string
+     * @param needles things that may match the comparison string
      * @return Whether something matches.
      */
-    public static boolean compareMany(String haystack, String[] needles) {
-        for (String needle : needles) {
+    public static boolean compareMany(String haystack, String[] needles)
+    {
+        for (String needle : needles)
+        {
             if (haystack.equalsIgnoreCase(needle))
                 return true;
         }
-
+        
         return false;
     }
 }

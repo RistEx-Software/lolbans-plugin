@@ -29,6 +29,7 @@ import java.util.concurrent.FutureTask;
 
 import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.configuration.file.FileConfiguration;
+import com.ristexsoftware.lolbans.api.utils.TimeUtil;
 import com.ristexsoftware.lolbans.bukkit.Main;
 
 // import com.ristexsoftware.lolbans.api.punishment.runnables.Query;
@@ -51,7 +52,7 @@ public class Database {
         database = config.getString("database.name");
         username = config.getString("database.username");
         password = config.getString("database.password");
-        maxReconnects = config.getInt("database.MaxReconnects");
+        maxReconnects = config.getInt("database.max-reconnects");
         // queryUpdateLong = config.getLong("database.QueryUpdate");
 
         try {
@@ -148,14 +149,14 @@ public class Database {
             Integer maxReconnects) throws SQLException {
         if (connection != null && !connection.isClosed())
             return;
-            
+
         synchronized (LolBans.getPlugin()) {
             if (connection != null && !connection.isClosed())
                 return;
 
             connection = DriverManager.getConnection(
-                    String.format("jdbc:mysql://%s:%s/%s?autoReconnect=true&failOverReadOnly=false&maxReconnects=%d", host,
-                            port, database, maxReconnects),
+                    String.format("jdbc:mysql://%s:%s/%s?autoReconnect=true&failOverReadOnly=false&maxReconnects=%d",
+                            host, port, database, maxReconnects),
                     username, password);
         }
     }
@@ -328,5 +329,131 @@ public class Database {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Insert a user into the database.
+     * 
+     * @param UUID       UUID of the minecraft user
+     * @param PlayerName Name of the minecraft player
+     * @param IPAddress  IP address of the minecraft player
+     * @param FirstLogin The first time they logged in (as a timestamp)
+     * @param LastLogin  The last time they logged in (as a timestamp)
+     * @return True if the user was created successfully
+     */
+    public static Future<Boolean> insertUser(String UUID, String PlayerName, String IPAddress, Timestamp FirstLogin,
+            Timestamp LastLogin) {
+        FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>() {
+            @Override
+            public Boolean call() {
+                // This is where you should do your database interaction
+                try {
+                    // Make sure we're not duping data, if they already exist go ahead and update
+                    // them
+                    // This happens because we insert every time they join for the first time, but
+                    // if the playerdata is removed on the world
+                    // or the spigot plugin is setup in multiple servers using the same database, it
+                    // would add them a second time
+                    // lets not do that....
+                    int j = 1;
+                    PreparedStatement checkUser = connection
+                            .prepareStatement("SELECT id FROM lolbans_users WHERE player_uuid = ?");
+                    checkUser.setString(j++, UUID);
+                    ResultSet results = checkUser.executeQuery();
+                    if (results.next() && !results.wasNull()) {
+                        updateUser(UUID, PlayerName, IPAddress, LastLogin);
+                        return true;
+                    }
+
+                    // Preapre a statement
+                    int i = 1;
+                    PreparedStatement InsertUser = connection.prepareStatement(String.format(
+                            "INSERT INTO lolbans_users (player_uuid, player_name, ip_address, first_login, last_login, times_connected) VALUES (?, ?, ?, ?, ?, ?)"));
+                    InsertUser.setString(i++, UUID);
+                    InsertUser.setString(i++, PlayerName);
+                    InsertUser.setString(i++, IPAddress);
+                    InsertUser.setTimestamp(i++, FirstLogin);
+                    InsertUser.setTimestamp(i++, LastLogin);
+                    InsertUser.setInt(i++, 1);
+                    InsertUser.executeUpdate();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        LolBans.pool.execute(t);
+
+        return (Future<Boolean>) t;
+    }
+
+    /**
+     * Update a user record
+     * 
+     * @param UUID       lolbans_users current UUID
+     * @param PlayerName lolbans_users current player name
+     * @param IPAddress  lolbans_users current IP address
+     * @param LastLogin  The timestamp of the last time a user logged in
+     * @return True if the update was successful.
+     */
+    public static Future<Boolean> updateUser(String UUID, String PlayerName, String IPAddress, Timestamp LastLogin)
+    // (Timestamp LastLogin, String PlayerName, String IPAddress, String UUID)
+    {
+        FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>() {
+            @Override
+            public Boolean call() {
+                // This is where you should do your database interaction
+                try {
+                    int j = 1;
+                    // This is a fail-safe just incase the table was dropped or the player joined
+                    // the server BEFORE the plugin was added...
+                    // This will ensure they get added to the database no matter what.
+                    PreparedStatement CheckUser = connection
+                            .prepareStatement(String.format("SELECT id FROM lolbans_users WHERE player_uuid = ?"));
+                    CheckUser.setString(j++, UUID);
+                    ResultSet results = CheckUser.executeQuery();
+                    if (!results.next()) {
+                        Timestamp FirstLogin = TimeUtil.TimestampNow();
+                        insertUser(UUID, PlayerName, IPAddress, FirstLogin, LastLogin);
+                        return true;
+                    }
+
+                    PreparedStatement gtc = connection
+                            .prepareStatement(String.format("SELECT times_connected FROM lolbans_users WHERE player_uuid = ?"));
+                    gtc.setString(1, UUID);
+
+                    ResultSet gtc2 = gtc.executeQuery();
+                    int tc = 1;
+                    if (gtc2.next()) {
+                        if (!gtc2.wasNull()) {
+                            tc = gtc2.getInt("times_connected");
+                        } else {
+                            tc = 0;
+                        }
+                    }
+
+                    // Preapre a statement
+                    int i = 1;
+                    PreparedStatement UpdateUser = connection.prepareStatement(String.format(
+                            "UPDATE lolbans_users SET last_login = ?, player_name = ?, ip_address = ?, times_connected = ? WHERE player_uuid = ?"));
+                    UpdateUser.setTimestamp(i++, LastLogin);
+                    UpdateUser.setString(i++, PlayerName);
+                    UpdateUser.setString(i++, IPAddress);
+                    UpdateUser.setInt(i++, ++tc);
+                    UpdateUser.setString(i++, UUID);
+                    UpdateUser.executeUpdate();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        LolBans.pool.execute(t);
+
+        return (Future<Boolean>) t;
     }
 }
