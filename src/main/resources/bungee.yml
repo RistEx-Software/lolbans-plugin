@@ -1,7 +1,7 @@
 name: LolBans
 version: ${project.version}
 main: com.ristexsoftware.lolbans.bungeecord.Main
-authors: [Zachery Coleman, Justin Crawford]
+author: asdfasdfasdfasdf
 description: An advanced punishment management system made for Minecraft
 website: https://github.com/notzachery/lolbans-plugin
 api-version: 1.13   

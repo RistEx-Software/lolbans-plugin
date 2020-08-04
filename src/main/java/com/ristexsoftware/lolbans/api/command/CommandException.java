@@ -17,28 +17,31 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.ristexsoftware.lolbans.api.configuration.serialization;
-
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
+package com.ristexsoftware.lolbans.api.command;
 
 /**
- * Applies to a {@link ConfigurationSerializable} that will delegate all
- * deserialization to another {@link ConfigurationSerializable}.
+ * Thrown when an unhandled exception occurs during the execution of a Command
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface DelegateDeserialization {
+@SuppressWarnings("serial")
+public class CommandException extends RuntimeException {
+
     /**
-     * Which class should be used as a delegate for this classes
-     * deserialization
-     *
-     * @return Delegate class
+     * Creates a new instance of <code>CommandException</code> without detail
+     * message.
      */
-    
-    public Class<? extends ConfigurationSerializable> value();
+    public CommandException() {}
+
+    /**
+     * Constructs an instance of <code>CommandException</code> with the
+     * specified detail message.
+     *
+     * @param msg the detail message.
+     */
+    public CommandException(String msg) {
+        super(msg);
+    }
+
+    public CommandException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

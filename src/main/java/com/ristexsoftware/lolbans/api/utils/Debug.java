@@ -17,28 +17,18 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.ristexsoftware.lolbans.api.configuration.serialization;
+package com.ristexsoftware.lolbans.api.utils;
 
+import com.ristexsoftware.lolbans.api.LolBans;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import lombok.Getter;
 
+public class Debug {
+    private Long start = System.currentTimeMillis();
+    @Getter private Long time;
 
-/**
- * Applies to a {@link ConfigurationSerializable} that will delegate all
- * deserialization to another {@link ConfigurationSerializable}.
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface DelegateDeserialization {
-    /**
-     * Which class should be used as a delegate for this classes
-     * deserialization
-     *
-     * @return Delegate class
-     */
-    
-    public Class<? extends ConfigurationSerializable> value();
+    public void print(String message) {
+        if (LolBans.getPlugin().getConfig().getBoolean("general.debug"))
+            LolBans.getLogger().info(message + " | " + (System.currentTimeMillis() - start) + "ms");
+    }
 }

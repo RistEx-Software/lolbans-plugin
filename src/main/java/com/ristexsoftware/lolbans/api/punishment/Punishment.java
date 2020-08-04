@@ -55,7 +55,7 @@ public class Punishment {
 
     @Getter @Setter private User punisher;
     
-    @Getter @Setter private Boolean appealed  = false;
+    @Getter @Setter private Boolean appealed = false;
     @Getter @Setter private User unpunisher;
     @Getter @Setter private String appealReason;
     @Getter @Setter private Timestamp appealedAt;
@@ -70,7 +70,7 @@ public class Punishment {
     @Getter @Setter private Boolean regexBan = false;
     @Getter @Setter private String regex;
     
-    @Getter @Setter private Boolean banwave  = false;
+    @Getter @Setter private Boolean banwave = false;
     
     public Punishment(PunishmentType type, User sender, User target, String reason, Timestamp expiry, Boolean silent, Boolean appealed) throws SQLException, InvalidPunishmentException {
         if (type == PunishmentType.UNKNOWN) {
@@ -110,8 +110,8 @@ public class Punishment {
      */
     public Punishment(User sender, String reason, Timestamp expiry, Boolean silent, Boolean appealed, IPAddress ipaddress) throws SQLException, InvalidPunishmentException {
         this(PunishmentType.IP, sender, null, reason, expiry, silent, appealed);
-        this.ipAddress = ipaddress;
         this.ipBan = true;
+        this.ipAddress = ipaddress;
     }
 
     private Punishment() {} // Empty punishment - used by findPunishment
@@ -324,7 +324,6 @@ public class Punishment {
                         InsertBan.setString(i++, regex);
                         InsertBan.setBoolean(i++, regexBan);
                         InsertBan.setBoolean(i++, banwave);
-                        System.out.println(InsertBan.toString());
                     }
                     InsertBan.executeUpdate();
 
