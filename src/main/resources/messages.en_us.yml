@@ -88,6 +88,9 @@ ban:
   ban=announcement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}banned &b{PLAYER}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
   player-is-banned: "{PREFIX}&cError! &f{PLAYER} is already banned!"
   player-is-not-banned: "{PREFIX}&cError! &f{PLAYER} is not banned!"
+   # The reason to put when one is not specified
+  default-reason: "Your account has been suspended!"
+  default-unban: "You have been unbanned!"
 
 ip-ban:
   perm-ip-ban-message: "&bThe IP of &f{PLAYER} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
@@ -140,6 +143,8 @@ mute:
 kick:
   kick-message: "&bYou were kicked from {NETWORKNAME}\n\n&bYou were kicked by: &f{ARBITER}\n&bReason: &f{REASON}"
   kick-announcement: "{PREFIX}&b{ARBITER} &fkicked &b{PLAYER}&f: &b{REASON}{SILENT|empty_if_false:\" &8[SILENT]\"}"
+  # The default message to send when a staff member doesn't give a reason
+  default-reason: "You have been kicked by an administrator!"
 
 warn:
   warn-announcement: "&b{ARBITER} &fhas {APPEALED|empty_if_false:\"un-\"}warned &b{PLAYER} &f: &b{REASON} &f[#{PUNISHID}] {SILENT|empty_if_false:\" &8[SILENT]\"}"

@@ -1,0 +1,3 @@
+[Feature] Implement punishment and user caching via hashmaps or some other key/value
+[Feature] Queue engine for when database is not available
+[Feature] Log last 20 messages from someone after they get reported

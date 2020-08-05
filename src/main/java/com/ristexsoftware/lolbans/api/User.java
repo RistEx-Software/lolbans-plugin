@@ -21,7 +21,6 @@ package com.ristexsoftware.lolbans.api;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,16 +33,14 @@ import java.util.regex.Pattern;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
-import com.ristexsoftware.lolbans.api.utils.Debug;
-import com.ristexsoftware.lolbans.api.utils.ServerType;
-import com.ristexsoftware.lolbans.bukkit.Main;
+import com.ristexsoftware.lolbans.common.utils.Debug;
 
 import inet.ipaddr.AddressStringException;
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
 import inet.ipaddr.IncompatibleAddressException;
+import lombok.Setter;
 
 /**
  * Represents a player. Proxies bungee and bukkit methods.
@@ -54,7 +51,7 @@ public class User {
 
     private String username;
     private UUID uuid;
-    private IPAddress ipAddress;
+    @Setter IPAddress ipAddress;
 
     public User(String username, UUID uuid) {
         this.username = username;

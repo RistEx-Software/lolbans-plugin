@@ -1,11 +1,11 @@
-# LOLBANS CONFIGURATION FILE
-# Please see https://github.com/NotZachery/lolbans-plugin/blob/master/src/main/resources/config.yml for information on how to configure LolBans
 general:
   # Kick connecting players if the server encounters an error
   kick-connection-error: true
   # Allow anyone who has been /op'ed to bypass all permission checks
   # (effectively making them have the same control as console)
   ops-bypass-permissions: true
+  # Bukkit will not show commands on /help that players do not have permissions for
+  hidden-commands: false
   # How much time to wait until reports expire (Default is 3d)
   report-expiry: 3d
   # The translation file you wish to use. (Default: messages.en_us.yml)
@@ -33,6 +33,29 @@ database:
   # are doing with it.
   query-update: 30
 
+# LolBans caches data to prevent doing more expensive operations like API
+# and database queries, please do not change these settings unless you know
+# what you are doing as they can and will impact your server's performance
+#
+# TTL (Time to live): The amount of the cache should stay in memory (in seconds)
+# Max Size: The max size of the cache to store in memory (in kb)
+# Entry Count: The max amount of entries the cache can have
+cache:
+  user:
+    # Defalt: 24 hours
+    ttl: 86400
+    # Default: 2mb
+    max-size: 2048
+    # Default: 1000
+    entry-count: 1000
+  punishment:
+    # Default: 12 hours
+    ttl: 43200
+    # Default 24mb
+    max-size: 24576
+    # Default 500
+    entry-count: 500
+
 discord:
   enabled: false
   webhook: https://discordapp.com/api/webhooks/xxx/xxxxxx
@@ -53,13 +76,7 @@ connection:
     # The higher the number, the stricter.
     prefix: 23
 
-kick-settings:
-  default-reason: "You have been kicked by an administrator!"
-
 ban-settings:
-  # The reason to put when one is not specified
-  default-reason: "Your account has been suspended!"
-  default-unban: "You have been unbanned!"
   # Prevents over-reaching bans 
   insane:
     # Allow bans with insane ipmasks (over-reaching IP/CIDR bans)
