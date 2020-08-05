@@ -17,18 +17,18 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.ristexsoftware.lolbans.api.utils;
-
-import com.ristexsoftware.lolbans.api.LolBans;
+package com.ristexsoftware.lolbans.common.utils;
 
 import lombok.Getter;
 
-public class Debug {
+public class Timing {
     private Long start = System.currentTimeMillis();
+    private Long later = 0L;
     @Getter private Long time;
+    public Timing() {}
 
-    public void print(String message) {
-        if (LolBans.getPlugin().getConfig().getBoolean("general.debug"))
-            LolBans.getLogger().info(message + " | " + (System.currentTimeMillis() - start) + "ms");
+    public void finish() {
+        later = System.currentTimeMillis();
+        time = later - start;
     }
 }

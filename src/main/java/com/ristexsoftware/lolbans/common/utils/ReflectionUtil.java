@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.ristexsoftware.lolbans.api.utils;
+package com.ristexsoftware.lolbans.common.utils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

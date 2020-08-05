@@ -26,6 +26,7 @@ import java.util.TreeMap;
 import java.util.function.BiFunction;
 import java.text.SimpleDateFormat;
 import java.sql.Timestamp;
+import com.ristexsoftware.lolbans.api.utils.TimeUtil;
 
 public class Translation {
     private static HashMap<String, String> leetReplace = new HashMap<>();
@@ -82,8 +83,6 @@ public class Translation {
      * {@code datetime(Variables.get("TimeBanned"), "HH:MM:SS")}
      */
     public static TreeMap<String, BiFunction<String, String, String>> Functions = new TreeMap<String, BiFunction<String, String, String>>(String.CASE_INSENSITIVE_ORDER) {
-        private static final long serialVersionUID = 1L;
-
         {
             put("pluralize", (String lvalue, String arg) -> {
                 return pluralize(lvalue, arg);

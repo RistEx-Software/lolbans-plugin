@@ -17,13 +17,13 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.ristexsoftware.lolbans.api.utils;
+package com.ristexsoftware.lolbans.common.utils;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 public class NumberUtil {
-        /**
+    /**
      * <p>Checks if the String contains only unicode digits.
      * A decimal point is not a unicode digit and returns false.</p>
      *

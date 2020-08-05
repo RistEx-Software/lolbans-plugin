@@ -19,18 +19,17 @@
 
 package com.ristexsoftware.lolbans.bungeecord;
 
-import java.io.File;
-import java.util.TreeMap;
+import java.io.FileNotFoundException;
 import java.util.UUID;
 
 import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
-import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
-import com.ristexsoftware.lolbans.api.utils.CommandUtil;
+import com.ristexsoftware.lolbans.common.utils.CommandUtil;
+import com.ristexsoftware.lolbans.common.utils.MemoryUtil;
 import com.ristexsoftware.lolbans.api.utils.ServerType;
 import com.ristexsoftware.lolbans.bungeecord.Listeners.ConnectionListener;
-import com.ristexsoftware.lolbans.commands.Ban;
+import com.ristexsoftware.lolbans.common.commands.Ban;
 
 import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
@@ -39,18 +38,20 @@ import net.md_5.bungee.api.plugin.Plugin;
 
 public class Main extends Plugin {
     public static boolean isEnabled;
-    @Getter public static Main plugin;
-    private static LolBans self = LolBans.getPlugin();
+    @Getter
+    public static Main plugin;
 
     @Override
     public void onEnable() {
-        new LolBans(getDataFolder(), getFile(), ServerType.BUNGEECORD);
+        try {
+            new LolBans(getDataFolder(), getFile(), ServerType.BUNGEECORD);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         isEnabled = true;
-        // Database.initDatabase();
-
         // Make sure our messages file exists
         Messages.getMessages();
-        
+
         if (!Database.initDatabase())
             return;
 

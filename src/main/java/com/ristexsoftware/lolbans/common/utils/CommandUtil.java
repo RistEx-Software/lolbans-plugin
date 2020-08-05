@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.ristexsoftware.lolbans.api.utils;
+package com.ristexsoftware.lolbans.common.utils;
 
 import java.util.List;
 import java.lang.reflect.Constructor;
@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
+import com.ristexsoftware.lolbans.api.utils.ServerType;
 
 // This class caused great pain and suffering, please enjoy.
 public class CommandUtil {
@@ -36,7 +37,7 @@ public class CommandUtil {
         // to use reflection to unfuck it, just to create and register new commands...
         // At least now I can make command classes that are registerable by both bukkit and bungeecord.
         public static void registerBukkitCommand(AsyncCommand command) {
-            if (LolBans.getServer() != ServerType.BUKKIT || LolBans.getServer() != ServerType.PAPER) 
+            if (!(LolBans.getServer() == ServerType.BUKKIT || LolBans.getServer() == ServerType.PAPER))
                 return;
 
             com.ristexsoftware.lolbans.bukkit.Main bukkitPlugin = com.ristexsoftware.lolbans.bukkit.Main
@@ -75,27 +76,35 @@ public class CommandUtil {
                     return command.onTabComplete(user, args);
                 }
             });
-            // bukkitCmd.setAliases(command.getAliases());
-            // bukkitCmd.setDescription(command.getDescription());
-            // bukkitCmd.setPermission(command.getPermission());
+            bukkitCmd.setAliases(command.getAliases());
+            bukkitCmd.setDescription(command.getDescription());
+            if (LolBans.getPlugin().getConfig().getBoolean("general.hidden-commands"))
+                bukkitCmd.setPermission(command.getPermission());
 
+            // MD_5 and his knobbery continues. the CraftServer.java class has a
+            // `getCommandMap()`
+            // method and CommandMap is documented but there's no reasonable way to get the
+            // command
+            // map from within the server. Because MD_5 couldn't help but program like a 12
+            // year old
+            // we now have to use reflection to get a more reasonable way to register
+            // commands.
             org.bukkit.command.CommandMap cmap = ReflectionUtil.getProtectedValue(org.bukkit.Bukkit.getServer(),
                     "commandMap");
             cmap.register(bukkitPlugin.getName().toLowerCase(), bukkitCmd);
         }
-
     }
 
     public static class BungeeCord {
 
         // Look how stupid fucking easy this is compared to bukkit...
         public static void registerBungeeCommand(AsyncCommand command) {
-            if (LolBans.getServer() == ServerType.BUKKIT || LolBans.getServer() == ServerType.PAPER)
+            if (LolBans.getServer() != ServerType.BUNGEECORD)
                 return;
             
             com.ristexsoftware.lolbans.bungeecord.Main plugin = com.ristexsoftware.lolbans.bungeecord.Main.getPlugin();
 
-            net.md_5.bungee.api.plugin.Command cmd = new net.md_5.bungee.api.plugin.Command(command.getName()) {
+            net.md_5.bungee.api.plugin.Command cmd = new net.md_5.bungee.api.plugin.Command(command.getName(), command.getPermission(), command.getAliases().toArray(new String[0])) {
         
 
                 public void execute(net.md_5.bungee.api.CommandSender sender, String[] args) {
@@ -107,7 +116,7 @@ public class CommandUtil {
                 }
                 
             };
-
+            
             net.md_5.bungee.api.ProxyServer.getInstance().getPluginManager().registerCommand(plugin, cmd);
         }
     }

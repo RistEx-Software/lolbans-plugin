@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.ristexsoftware.lolbans.commands;
+package com.ristexsoftware.lolbans.common.commands;
 
 import java.util.Arrays;
 import java.util.List;

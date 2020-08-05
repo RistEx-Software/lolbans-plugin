@@ -42,6 +42,7 @@ import lombok.Setter;
 import com.ristexsoftware.lolbans.api.utils.PunishID;
 
 public class Punishment {
+     
     @Getter @Setter private User target; // Nullable
     @Getter @Setter private IPAddress ipAddress;
 
@@ -121,7 +122,7 @@ public class Punishment {
     * @param id The ID of the punishment
     * @return The punishment if found
     */
-    public static Optional<Punishment> findPunishment(String id)
+    public static Punishment findPunishment(String id)
     {
         try
         {
@@ -152,9 +153,9 @@ public class Punishment {
                     p.appealed = res.getBoolean("appealed");
                     p.appealReason = res.getString("appeal_reason");
 
-                    p.warningAck = res.getBoolean("WarningAck");
+                    p.warningAck = res.getBoolean("warning_ack");
 
-                    p.silent = res.getBoolean("Silent");
+                    p.silent = res.getBoolean("silent");
 
 
                     String punisher_uuid = res.getString("punisher_uuid"),
@@ -176,7 +177,7 @@ public class Punishment {
                             LolBans.getUser(UUID.fromString(res.getString("unpunisher_uuid")));
                     }
 
-                    return Optional.of(p);
+                    return Optional.of(p).get();
                 }
             }
         }
@@ -184,7 +185,7 @@ public class Punishment {
         {
             e.printStackTrace();
         }
-        return Optional.empty();
+        return null;
     }
 
 
@@ -195,7 +196,7 @@ public class Punishment {
      * @param Appealed Whether the punishment was appealed
      * @return The punishment if found.
      */
-    public static Optional<Punishment> findPunishment(PunishmentType Type, User Player, boolean Appealed)
+    public static Punishment findPunishment(PunishmentType Type, User Player, boolean Appealed)
     {
         try
         {
@@ -206,11 +207,11 @@ public class Punishment {
 
             Optional<ResultSet> ores = Database.ExecuteLater(pst3).get();
             if (!ores.isPresent())
-                return Optional.empty();
+                return null;
 
             ResultSet result = ores.get();
             if (!result.next())
-                return Optional.empty();
+                return null;
 
             return Punishment.findPunishment(result.getString("punish_id"));
         }
@@ -218,14 +219,14 @@ public class Punishment {
         {
             e.printStackTrace();
         }
-        return Optional.empty();
+        return null;
     }
 
     /**
      * Commit the punishment to the database.
      * @param sender The command sender to notify if an error occures.
      */
-    public void Commit(User sender)
+    public void commit(User sender)
     {
         Punishment me = this;
         FutureTask<Void> t = new FutureTask<>(new Callable<Void>()

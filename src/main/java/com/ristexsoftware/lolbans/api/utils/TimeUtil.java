@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 import com.ristexsoftware.lolbans.api.configuration.Messages;
+import com.ristexsoftware.lolbans.common.utils.NumberUtil;
 
 public class TimeUtil
 {
