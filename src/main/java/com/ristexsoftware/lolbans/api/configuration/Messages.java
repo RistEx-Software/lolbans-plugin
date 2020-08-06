@@ -95,21 +95,21 @@ public class Messages {
      * Get the configuration object for messages.yml
      * @return {@link org.bukkit.configuration.file.FileConfiguration}
      */
-    public FileConfiguration GetConfig()
+    public FileConfiguration getConfig()
     {
         return CustomConfig;
     }
 
-    private static String _translate(String ConfigMessage, Map<String, String> Variables)
+    private static String _translate(String configMessage, Map<String, String> vars)
     {
-        if (ConfigMessage == null)
+        if (configMessage == null)
         return null;
         
-        Variables.put("prefix", Messages.prefix);
-        Variables.put("networkname", Messages.networkName);
-        Variables.put("website", Messages.website);
+        vars.put("prefix", Messages.prefix);
+        vars.put("networkname", Messages.networkName);
+        vars.put("website", Messages.website);
 
-        return Translation.translate(ConfigMessage, "&", Variables);
+        return Translation.translate(configMessage, "&", vars);
     }
     
     private static String _translateNoColor(String ConfigMessage, Map<String, String> Variables)

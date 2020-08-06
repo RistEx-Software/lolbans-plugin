@@ -2,6 +2,8 @@ package com.ristexsoftware.lolbans.common.utils;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
 
 import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
@@ -11,11 +13,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class CacheUtil {
-    private static HashMap<UUID, User> users = new HashMap<UUID, User>();
-    private static HashMap<UUID, Long> userCachedAtTimestamps = new HashMap<UUID, Long>();
+    @Getter private static HashMap<String, User> users = new HashMap<String, User>();
+    private static HashMap<String, Long> userCachedAtTimestamps = new HashMap<String, Long>();
 
-    private static HashMap<String, Punishment> punishments = new HashMap<String, Punishment>();
+    @Getter private static HashMap<String, Punishment> punishments = new HashMap<String, Punishment>();
     private static HashMap<String, Long> punishmentCachedAtTimestamps = new HashMap<String, Long>();
+
+    // private static HashMap<String, String[]> userPunishments = new HashMap<String, String[]>();
 
     @Getter @Setter private static int maxUserEntryCount = 0;
 
@@ -49,14 +53,24 @@ public class CacheUtil {
     @Setter
     private static Long userExpiryRunnablePeriod = (long) (30 * 60e3);
 
+    @Getter
     private static Runnable userExpiryRunnable = new Runnable() {
         @Override
         public void run() {
-            userCachedAtTimestamps.forEach((k, v) -> {
-                if (v + userTTL < System.currentTimeMillis()) {
-                    removeUser(k);
+            FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>() {
+                @Override
+                public Boolean call() {
+                    userCachedAtTimestamps.forEach((k, v) -> {
+                        if (v + userTTL < System.currentTimeMillis()) {
+                            new Debug(CacheUtil.class).print("Evicting " + k + " from user cache");
+                            removeUser(k);
+                        }
+                    });
+                    return true;
                 }
             });
+    
+            LolBans.pool.execute(t);
         }
     };
 
@@ -67,18 +81,27 @@ public class CacheUtil {
     @Setter
     private static Long punishExpiryRunnablePeriod = (long) (30 * 60e3);
 
+    @Getter
     private static Runnable punishExpiryRunnable = new Runnable() {
         @Override
         public void run() {
-            punishmentCachedAtTimestamps.forEach((k, v) -> {
-                if (v + punishmentTTL < System.currentTimeMillis()
-                        || (punishments.get(k).getExpiresAt() != null ? System.currentTimeMillis()
-                                : punishments.get(k).getExpiresAt().getTime())
-                                + punishmentTTL < System.currentTimeMillis()
-                        || !punishments.get(k).getAppealed()) {
-                    removePunishment(k);
+            FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>() {
+                @Override
+                public Boolean call() {
+                    punishmentCachedAtTimestamps.forEach((k, v) -> {
+                        if (v + punishmentTTL < System.currentTimeMillis()
+                                || (punishments.get(k).getExpiresAt() != null ? System.currentTimeMillis()
+                                        : punishments.get(k).getExpiresAt().getTime())
+                                        + punishmentTTL < System.currentTimeMillis()
+                                || !punishments.get(k).getAppealed()) {
+                            removePunishment(k);
+                        }
+                    });
+                    return true;
                 }
             });
+    
+            LolBans.pool.execute(t);
         }
     };
 
@@ -123,15 +146,18 @@ public class CacheUtil {
      * @return The cached user, if they exist.
      */
     public static User getUser(UUID uuid) {
-        return users.get(uuid);
+        return users.get(uuid.toString());
     }
 
     /**
      * Get a user from the cache using their username.
      */
     public static User getUser(String username) {
+        Debug debug = new Debug(CacheUtil.class);
+
         for (User user : users.values()) {
-            if (user.getName() == username) {
+            if (user.getName().equals(username)) {
+                debug.print("Found cache entry for " + username + " (" + user.getUniqueId().toString() + ")");
                 return user;
             }
         }
@@ -142,11 +168,12 @@ public class CacheUtil {
      * Add a user to the cache.
      */
     public static void putUser(User user) {
-        if (users.get(user.getUniqueId()) != null) {
+        Debug debug = new Debug(CacheUtil.class);
+
+        if (users.get(user.getUniqueId().toString()) != null) {
+            debug.print("Skipping cache entry creation for " + user.getName() + " (" + user.getUniqueId().toString() + ") - already exists");
             return;
         }
-        
-
 
         if (maxUserEntryCount > 0) {
             while (users.size() >= maxUserEntryCount) {
@@ -155,35 +182,52 @@ public class CacheUtil {
         }
 
         if (maxUserMemoryUsage > 0) {
-            int size = MemoryUtil.getSizeOf(user);
-
-            if (!isUserCacheLowOnMemory) {
-                isUserCacheLowOnMemory = true;
-                LolBans.getLogger().warning(
-                        "The user cache is running out of memory! It might be a good idea to add more in the plugin configuration.");
-            }
-
-            while (userMemoryUsage + size > maxUserMemoryUsage) {
-                dropOldestUserEntry();
-            }
-            userMemoryUsage += size;
+            Runnable userMemoryReleaser = new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (this) {
+                        // userExpiryRunnable.run();
+                        int size = MemoryUtil.getSizeOf(user);
+                        while (userMemoryUsage + size > maxUserMemoryUsage) {
+                            if (!isUserCacheLowOnMemory) {
+                                isUserCacheLowOnMemory = true;
+                                LolBans.getLogger().warning(
+                                        "The user cache is running out of memory! It might be a good idea to add more in the plugin configuration.");
+                            }
+                            dropOldestUserEntry();
+                            userMemoryUsage += size;
+                            debug.print("Released memory for user cache");
+                        }
+                    }
+                }
+            };
+            debug.print("Submitted memory releaser runnable to executor pool");
+            LolBans.pool.submit(userMemoryReleaser);
         }
 
-        users.put(user.getUniqueId(), user);
-        userCachedAtTimestamps.put(user.getUniqueId(), System.currentTimeMillis());
+        users.put(user.getUniqueId().toString(), user);
+        userCachedAtTimestamps.put(user.getUniqueId().toString(), System.currentTimeMillis());
+        debug.print("Created cache entry for " + user.getName() + " (" + user.getUniqueId().toString() + ")");
     }
 
     /**
      * Remove a user from the cache.
      */
     public static boolean removeUser(User user) {
-        return removeUser(user.getUniqueId());
+        return removeUser(user.getUniqueId().toString());
     }
 
     /**
      * Remove a user with the given UUID from the cache.
      */
     public static boolean removeUser(UUID uuid) {
+        return removeUser(uuid.toString());
+    }
+
+    /**
+     * Remove a user with the given UUID in string format from the cache.
+     */
+    public static boolean removeUser(String uuid) {
         // Keep track of memory usage.
         if (maxUserMemoryUsage > 0) {
             userMemoryUsage -= MemoryUtil.getSizeOf(users.get(uuid));
@@ -196,10 +240,10 @@ public class CacheUtil {
      * Get the oldest user entry in the cache.
      */
     public static User getOldestUserEntry() {
-        UUID oldest = null;
+        String oldest = null;
         Long oldestTimestamp = Long.MAX_VALUE;
 
-        for (UUID k : userCachedAtTimestamps.keySet()) {
+        for (String k : userCachedAtTimestamps.keySet()) {
             Long v = userCachedAtTimestamps.get(k);
             if (v < oldestTimestamp) {
                 oldest = k;
@@ -251,7 +295,10 @@ public class CacheUtil {
      * Add a punishment to the cache.
      */
     public static void putPunishment(Punishment punishment) {
+        Debug debug = new Debug(CacheUtil.class);
+         
         if (punishments.get(punishment.getPunishId()) != null) {
+            debug.print("Skipping cache entry creation for punishment " + punishment.getPunishId() + " - already exists");
             return;
         }
 
@@ -262,22 +309,34 @@ public class CacheUtil {
         }
 
         if (maxPunishmentMemoryUsage > 0) {
-            int size = MemoryUtil.getSizeOf(punishment);
-            
-            if (!isPunishmentCacheLowOnMemory) {
-                isPunishmentCacheLowOnMemory = true;
-                LolBans.getLogger().warning(
-                        "The punishment cache is running out of memory! It might be a good idea to add more in the plugin configuration.");
-            }
+            Runnable punishmentMemoryReleaser = new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (this) {
+                        // punishExpiryRunnable.run();
+                        int size = MemoryUtil.getSizeOf(punishment);
 
-            while (punishmentMemoryUsage + size > maxPunishmentMemoryUsage) {
-                dropOldestPunishmentEntry();
-            }
-            punishmentMemoryUsage += size;
+                        while (punishmentMemoryUsage + size > maxPunishmentMemoryUsage) {
+                                if (!isPunishmentCacheLowOnMemory) {
+                                    isPunishmentCacheLowOnMemory = true;
+                                    LolBans.getLogger().warning(
+                                            "The punishment cache is running out of memory! It might be a good idea to add more in the plugin configuration.");
+                                }
+
+                            dropOldestUserEntry();
+                        }
+                        punishmentMemoryUsage += size;
+                        debug.print("Released memory from punishment cache");
+                    }
+                }
+            };
+            LolBans.pool.submit(punishmentMemoryReleaser);
+            debug.print("Submitted memory releaser runnable to executor pool");
         }
 
         punishments.put(punishment.getPunishId(), punishment);
         punishmentCachedAtTimestamps.put(punishment.getPunishId(), System.currentTimeMillis());
+        debug.print("Created cache entry for punishment " + punishment.getPunishId());
     }
 
     /**

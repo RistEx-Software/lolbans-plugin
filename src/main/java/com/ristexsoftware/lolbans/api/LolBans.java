@@ -24,14 +24,18 @@ import java.io.FileNotFoundException;
 import java.lang.reflect.GenericDeclaration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
 import java.util.UUID;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.configuration.file.FileConfiguration;
+import com.ristexsoftware.lolbans.api.runnables.Cache;
+import com.ristexsoftware.lolbans.api.runnables.Query;
 import com.ristexsoftware.lolbans.api.utils.ServerType;
 import com.ristexsoftware.lolbans.common.utils.CacheUtil;
 
@@ -49,8 +53,11 @@ import lombok.Setter;
  * @since 2019-11-13
  */
 public class LolBans extends JavaPlugin {
-    @Getter private static LolBans plugin;
-    @Getter @Setter static private ServerType server;
+    @Getter
+    private static LolBans plugin;
+    @Getter
+    @Setter
+    static private ServerType server;
 
     public LolBans(@NotNull File dataFolder, @NotNull File file, ServerType type) throws FileNotFoundException {
         super(dataFolder, file);
@@ -76,16 +83,35 @@ public class LolBans extends JavaPlugin {
         FileConfiguration config = getPlugin().getConfig();
 
         CacheUtil.setMaxUserMemoryUsage(config.getInt("cache.user.max-size") * 1000 * 8);
+        CacheUtil.setMaxUserEntryCount(config.getInt("cache.user.entry-count"));
         CacheUtil.setMaxPunishmentMemoryUsage(config.getInt("cache.punishment.max-size") * 1000 * 8);
-        CacheUtil.setUserTTL(config.getLong("cache.punishment.ttl"));
-        CacheUtil.setPunishmentTTL(config.getLong("cache.punishment.ttl"));
+        CacheUtil.setMaxPunishmentEntryCount(config.getInt("cache.punishment.entry-count"));
+        CacheUtil.setUserTTL(config.getLong("cache.user.ttl") * 1000);
+        CacheUtil.setPunishmentTTL(config.getLong("cache.punishment.ttl") * 1000);
         setServer(type);
+
+        // So, apparently Java gets all pissy and throws java.util.concurrent.RejectedExecutionException if spigot reloads.
+        // I agree with Java, stop reloading spigot, it's bad.
+        new Timer().scheduleAtFixedRate(new Cache(), 1000L, config.getLong("general.runnable-timer") * 1000L);
+        new Timer().scheduleAtFixedRate(new Query(), 1000L, config.getLong("general.runnable-timer") * 1000L);
     }
 
     public static HashMap<Integer, Pattern> REGEX = new HashMap<Integer, Pattern>();
-    public static List<IPAddressString> BANNED_ADDRESSES = new Vector<IPAddressString>();
+
+    @Deprecated
+    public static List<IPAddressString> BANNED_ADDRESSES = new Vector<IPAddressString>(); // Not sure why this is here, legacy? 
 
     public static ExecutorService pool = Executors.newFixedThreadPool(3);
+
+    public void destroy() {
+        getLogger().info("Shutting down executor pool...");
+        pool.shutdown();
+        try {
+            pool.awaitTermination(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Get a user
@@ -124,7 +150,18 @@ public class LolBans extends JavaPlugin {
      * @param player The player to register as a user
      */
     public static void registerUser(org.bukkit.entity.Player player) {
-        getOnlineUsers().put(player.getUniqueId(), new User(player.getName(), player.getUniqueId()));
+        User user = new User(player.getName(), player.getUniqueId());
+        CacheUtil.putUser(user);
+        getOnlineUsers().put(player.getUniqueId(), user);
+    }
+
+    /**
+     * Register a new user
+     * @param user The user to register with LolBans
+     */
+    public static void registerUser(User user) {
+        CacheUtil.putUser(user);
+        getOnlineUsers().put(user.getUniqueId(), user);
     }
 
     /**
@@ -132,7 +169,9 @@ public class LolBans extends JavaPlugin {
      * @param player The player to register as a user
      */
     public static void registerUser(net.md_5.bungee.api.connection.ProxiedPlayer player) {
-        getOnlineUsers().put(player.getUniqueId(), new User(player.getName(), player.getUniqueId()));
+        User user = new User(player.getName(), player.getUniqueId());
+        CacheUtil.putUser(user);
+        getOnlineUsers().put(player.getUniqueId(), user);
     }
 
     /**
@@ -149,5 +188,40 @@ public class LolBans extends JavaPlugin {
      */
     public static void removeUser(net.md_5.bungee.api.connection.ProxiedPlayer player) {
         getOnlineUsers().remove(player.getUniqueId());
+    }
+
+    /**
+     * Send all online staff members a message
+     * @param message The message to send
+     */
+    public static void notifyStaff(String message) {
+        for (User user : getOnlineUsers().values()) {
+            if (user.hasPermission("lolbans.alerts"))
+                user.sendMessage("");
+        }
+    }
+
+    /**
+     * Broadcast a message to all online players
+     * @param message The message to send
+     */
+    public static void broadcastMessage(String message) {
+        for (User user : getOnlineUsers().values()) {
+            user.sendMessage(message);
+        }
+    }
+
+    /**
+     * Send a message to all users on the server depending on whether it is
+     * silent and they have the alerts permission present.
+     * @param message The message to send to all users on the server
+     * @param silent Whether the announcement should be sent to everyone in the server or just people with the alerts permission
+     */
+    public static void broadcastEvent(String message, boolean silent) {
+        getLogger().info(message);
+        if (silent)
+            notifyStaff(message);
+        else
+            broadcastMessage(message);
     }
 }

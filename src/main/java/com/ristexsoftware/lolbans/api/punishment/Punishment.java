@@ -28,6 +28,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+import java.sql.Connection;
 
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
@@ -57,7 +58,7 @@ public class Punishment {
     @Getter @Setter private User punisher;
     
     @Getter @Setter private Boolean appealed = false;
-    @Getter @Setter private User unpunisher;
+    @Getter @Setter private User appealed_by;
     @Getter @Setter private String appealReason;
     @Getter @Setter private Timestamp appealedAt;
     
@@ -78,7 +79,7 @@ public class Punishment {
             throw new InvalidPunishmentException("Unknown Punishment Type \"" + type.displayName() + "\" for " + target.getName() + " " + reason);
         }
         this.type = type;
-        this.punishId = PunishID.generateID(Database.genID("lolbans_punishments"));
+        this.punishId = PunishID.generateID(Database.generateId("lolbans_punishments"));
         this.reason = reason;
 
         // Users
@@ -129,7 +130,7 @@ public class Punishment {
             PreparedStatement ps = Database.connection.prepareStatement("SELECT * FROM lolbans_punishments WHERE punish_id = ?");
             ps.setString(1, id);
 
-            Optional<ResultSet> result = Database.ExecuteLater(ps).get();
+            Optional<ResultSet> result = Database.executeLater(ps).get();
             if (result.isPresent())
             {
                 ResultSet res = result.get();
@@ -205,7 +206,7 @@ public class Punishment {
             pst3.setInt(2, Type.ordinal());
             pst3.setBoolean(3, Appealed);
 
-            Optional<ResultSet> ores = Database.ExecuteLater(pst3).get();
+            Optional<ResultSet> ores = Database.executeLater(pst3).get();
             if (!ores.isPresent())
                 return null;
 
@@ -234,18 +235,26 @@ public class Punishment {
             @Override
             public Void call()
             {
+
+                if (!Database.isConnected()) {
+                    Database.addPunishmentToQueue(me);
+                    return null;
+                }
+
+                Connection connection = Database.getConnection();
+
                 //This is where you should do your database interaction
                 try 
                 {
                     int i = 1;
-                    PreparedStatement InsertBan = null;
+                    PreparedStatement insertBanStatement = null;
                     
                     if (me.commited)
                     {
                         if (me.appealed && me.appealedAt == null)
                             me.appealedAt = TimeUtil.TimestampNow();
 
-                        InsertBan = Database.connection.prepareStatement("UPDATE lolbans_punishments SET target_uuid = ?,"
+                        insertBanStatement = connection.prepareStatement("UPDATE lolbans_punishments SET target_uuid = ?,"
                                                                     +"target_name = ?,"
                                                                     +"target_ip_address = ?,"
                                                                     +"reason = ?,"
@@ -268,33 +277,33 @@ public class Punishment {
                                                                     +"banwave = ?,"
                                                                     +"WHERE punish_id = ?");
                                                                     
-                        InsertBan.setString(i++, me.target == null ? null : me.target.getUniqueId().toString()); // UUID
-                        InsertBan.setString(i++, me.target == null ? null : me.target.getName()); // PlayerName
-                        InsertBan.setString(i++, me.ipAddress.toString()); // IP Address
-                        InsertBan.setString(i++, me.reason); // Reason
-                        InsertBan.setString(i++, me.punisher.getName()); // ArbiterName 
-                        InsertBan.setString(i++, me.punisher.getUniqueId().toString()); // ArbiterUUID
-                        InsertBan.setString(i++, me.punishId); // PunishID
-                        InsertBan.setTimestamp(i++, me.expiresAt); // Expiry
-                        InsertBan.setInt(i++, me.type.ordinal());
-                        InsertBan.setTimestamp(i++, me.timePunished); // TimePunished
-                        InsertBan.setString(i++, me.appealReason); // AppealReason 
-                        InsertBan.setString(i++, me.unpunisher == null ? null : me.unpunisher.getName()); // AppelleeName
-                        InsertBan.setString(i++, me.unpunisher == null ? null : me.unpunisher.getUniqueId().toString()); // AppelleeUUID
-                        InsertBan.setTimestamp(i++, me.appealedAt); //AppealTime
-                        InsertBan.setBoolean(i++, me.appealed); //Appealed
-                        InsertBan.setBoolean(i++, me.silent); //Silent
-                        InsertBan.setBoolean(i++, me.warningAck); //WarningAck
-                        InsertBan.setBoolean(i++, me.ipBan); //is this an ipban?
-                        InsertBan.setString(i++, me.regex); //regex
-                        InsertBan.setBoolean(i++, me.regexBan); //regex ban?
-                        InsertBan.setBoolean(i++, me.banwave); //banwave
-                        InsertBan.setString(i++, me.punishId); //id
+                        insertBanStatement.setString(i++, me.target == null ? null : me.target.getUniqueId().toString()); // UUID
+                        insertBanStatement.setString(i++, me.target == null ? null : me.target.getName()); // PlayerName
+                        insertBanStatement.setString(i++, me.ipAddress.toString()); // IP Address
+                        insertBanStatement.setString(i++, me.reason); // Reason
+                        insertBanStatement.setString(i++, me.punisher.getName()); // ArbiterName 
+                        insertBanStatement.setString(i++, me.punisher.getUniqueId().toString()); // ArbiterUUID
+                        insertBanStatement.setString(i++, me.punishId); // PunishID
+                        insertBanStatement.setTimestamp(i++, me.expiresAt); // Expiry
+                        insertBanStatement.setInt(i++, me.type.ordinal());
+                        insertBanStatement.setTimestamp(i++, me.timePunished); // TimePunished
+                        insertBanStatement.setString(i++, me.appealReason); // AppealReason 
+                        insertBanStatement.setString(i++, me.appealed_by == null ? null : me.appealed_by.getName()); // AppelleeName
+                        insertBanStatement.setString(i++, me.appealed_by == null ? null : me.appealed_by.getUniqueId().toString()); // AppelleeUUID
+                        insertBanStatement.setTimestamp(i++, me.appealedAt); //AppealTime
+                        insertBanStatement.setBoolean(i++, me.appealed); //Appealed
+                        insertBanStatement.setBoolean(i++, me.silent); //Silent
+                        insertBanStatement.setBoolean(i++, me.warningAck); //WarningAck
+                        insertBanStatement.setBoolean(i++, me.ipBan); //is this an ipban?
+                        insertBanStatement.setString(i++, me.regex); //regex
+                        insertBanStatement.setBoolean(i++, me.regexBan); //regex ban?
+                        insertBanStatement.setBoolean(i++, me.banwave); //banwave
+                        insertBanStatement.setString(i++, me.punishId); //id
                     }
                     else
                     {
                         // Preapre a statement
-                        InsertBan = Database.connection.prepareStatement(String.format("INSERT INTO lolbans_punishments ("
+                        insertBanStatement = Database.connection.prepareStatement(String.format("INSERT INTO lolbans_punishments ("
                                                                                     + "target_uuid,"
                                                                                     + "target_name,"
                                                                                     + "target_ip_address,"
@@ -311,22 +320,22 @@ public class Punishment {
                                                                                     + "banwave)"
                                                                                     + " VALUES"
                                                                                             + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"));
-                        InsertBan.setString(i++, me.target == null ? "" : me.target.getUniqueId().toString());
-                        InsertBan.setString(i++, me.target == null ? "" : me.target.getName());
-                        InsertBan.setString(i++, me.ipAddress == null ? "#" : me.ipAddress.toString());
-                        InsertBan.setString(i++, me.reason);
-                        InsertBan.setString(i++, me.punisher.getName());
-                        InsertBan.setString(i++, me.punisher.getUniqueId().toString());
-                        InsertBan.setString(i++, me.punishId);
-                        InsertBan.setTimestamp(i++, me.expiresAt);
-                        InsertBan.setInt(i++, me.type.ordinal());
-                        InsertBan.setBoolean(i++, silent);
-                        InsertBan.setBoolean(i++, ipBan);
-                        InsertBan.setString(i++, regex);
-                        InsertBan.setBoolean(i++, regexBan);
-                        InsertBan.setBoolean(i++, banwave);
+                        insertBanStatement.setString(i++, me.target == null ? "" : me.target.getUniqueId().toString());
+                        insertBanStatement.setString(i++, me.target == null ? "" : me.target.getName());
+                        insertBanStatement.setString(i++, me.ipAddress == null ? "#" : me.ipAddress.toString());
+                        insertBanStatement.setString(i++, me.reason);
+                        insertBanStatement.setString(i++, me.punisher.getName());
+                        insertBanStatement.setString(i++, me.punisher.getUniqueId().toString());
+                        insertBanStatement.setString(i++, me.punishId);
+                        insertBanStatement.setTimestamp(i++, me.expiresAt);
+                        insertBanStatement.setInt(i++, me.type.ordinal());
+                        insertBanStatement.setBoolean(i++, silent);
+                        insertBanStatement.setBoolean(i++, ipBan);
+                        insertBanStatement.setString(i++, regex);
+                        insertBanStatement.setBoolean(i++, regexBan);
+                        insertBanStatement.setBoolean(i++, banwave);
                     }
-                    InsertBan.executeUpdate();
+                    insertBanStatement.executeUpdate();
 
                     commited = true;
                 } 
@@ -339,6 +348,63 @@ public class Punishment {
                         sender.sendMessage(Messages.serverError);
                 }
                 return null;
+            }
+        });
+
+        LolBans.pool.execute(t);
+    }
+
+    public void update(String punishID) {
+        setCommited(true);
+        commit(User.getConsoleUser());
+    }
+
+    /**
+     * Erase this punishment record from the database.
+     * NOTE: This should not be used if you are unbanning someone.
+     */
+    public void delete()
+    {
+        Punishment me = this;
+        FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
+        {
+            @Override
+            public Boolean call()
+            {
+                //This is where you should do your database interaction
+                try 
+                {
+                    // Preapre a statement
+                    PreparedStatement pst2 = Database.connection.prepareStatement("DELETE FROM lolbans_punishments WHERE punish_id = ?");
+                    pst2.setString(1, getPunishId());
+                    pst2.executeUpdate();
+
+                    // Nullify everything!
+                    me.target = null;
+                    me.ipAddress = null;
+                    me.type = null;
+                    me.timePunished = null;
+                    me.expiresAt = null;
+                    me.commitPunishmentBy = null;
+                    me.commited = false;
+                    me.punisher = null;
+                    me.appealed = false;
+                    me.appealed_by = null;
+                    me.appealReason = null;
+                    me.appealedAt = null;
+                    me.silent = false;
+                    me.warningAck = false;
+                    me.ipBan = false;
+                    me.regexBan = false;
+                    me.regex = null;
+                    me.banwave = false;
+                } 
+                catch (SQLException e) 
+                {
+                    e.printStackTrace();
+                    return false;
+                }
+                return true;
             }
         });
 
