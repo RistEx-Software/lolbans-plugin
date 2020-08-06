@@ -20,14 +20,12 @@
 package com.ristexsoftware.lolbans.bukkit;
 
 import java.io.FileNotFoundException;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
-
 import com.ristexsoftware.lolbans.common.utils.CommandUtil;
 import com.ristexsoftware.lolbans.api.utils.ServerType;
 import com.ristexsoftware.lolbans.bukkit.Listeners.ConnectionListener;
@@ -35,9 +33,7 @@ import com.ristexsoftware.lolbans.common.commands.Ban;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-
 
 import lombok.Getter;
 
@@ -66,15 +62,12 @@ public class Main extends JavaPlugin {
             getLogger().warning(
                     "PlugMan detected! This WILL cause issues with LolBans, please consider restarting the server to update plugins!");
 
-        // Incase an admin does /reload
-        for (Player player : Bukkit.getOnlinePlayers())
-            LolBans.registerUser(player);
-
         // Make sure our messages file exists
         Messages.getMessages();
 
         if (!Database.initDatabase())
             return;
+
         // System.out.println("aaaa");
         CommandUtil.Bukkit.registerBukkitCommand(new Ban.BanCommand(LolBans.getPlugin()));
         getServer().getPluginManager().registerEvents(new ConnectionListener(), this);
@@ -83,7 +76,8 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        isEnabled = false;
+        LolBans.getPlugin().destroy();
         reloadConfig();
+        isEnabled = false;
     }
-} 
+}

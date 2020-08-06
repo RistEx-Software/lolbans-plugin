@@ -85,7 +85,7 @@ report:
 ban:
   temp-ban-message: "&bThe account &f{PLAYER} &bhas been suspended from {NETWORKNAME} &buntil &f{EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
   perm-ban-message: "&bThe account &f{PLAYER} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
-  ban=announcement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}banned &b{PLAYER}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
+  ban-announcement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}banned &b{PLAYER}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
   player-is-banned: "{PREFIX}&cError! &f{PLAYER} is already banned!"
   player-is-not-banned: "{PREFIX}&cError! &f{PLAYER} is not banned!"
    # The reason to put when one is not specified

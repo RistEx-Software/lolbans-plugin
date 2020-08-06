@@ -24,11 +24,16 @@ import com.ristexsoftware.lolbans.api.LolBans;
 import lombok.Getter;
 
 public class Debug {
-    private Long start = System.currentTimeMillis();
+    private Long start = System.nanoTime();
     @Getter private Long time;
+    private int count = 0;
+    private Class<?> clazz;
+    public Debug(Class<?> claz) {
+        this.clazz = claz;
+    }
 
     public void print(String message) {
         if (LolBans.getPlugin().getConfig().getBoolean("general.debug"))
-            LolBans.getLogger().info(message + " | " + (System.currentTimeMillis() - start) + "ms");
+            LolBans.getLogger().info("("+clazz.getSimpleName()+".class) " + message + " | " + ((System.nanoTime() - start) / 1e3) + "us" + " (" + ++count + ")");
     }
 }

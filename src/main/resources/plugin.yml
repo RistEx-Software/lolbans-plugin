@@ -5,9 +5,6 @@ authors: [Zachery Coleman, Justin Crawford]
 description: An advanced punishment management system made for Minecraft
 website: https://github.com/notzachery/lolbans-plugin
 api-version: 1.13
-commands:
-  test:
-    description: test
 permissions:
   lolbans.ban:
     description: Able to use ban command

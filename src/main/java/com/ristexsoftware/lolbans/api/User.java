@@ -25,15 +25,19 @@ import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.regex.Pattern;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
+import com.ristexsoftware.lolbans.common.utils.CacheUtil;
 import com.ristexsoftware.lolbans.common.utils.Debug;
 
 import inet.ipaddr.AddressStringException;
@@ -51,7 +55,8 @@ public class User {
 
     private String username;
     private UUID uuid;
-    @Setter IPAddress ipAddress;
+    @Setter
+    IPAddress ipAddress;
 
     public User(String username, UUID uuid) {
         this.username = username;
@@ -129,13 +134,13 @@ public class User {
                     org.bukkit.entity.Player player;
                     try {
                         Class<?> bukkit = Class.forName("org.bukkit.Bukkit");
-                        player = (org.bukkit.entity.Player) bukkit
-                            .getDeclaredMethod("getPlayer", UUID.class).invoke(bukkit, this.uuid);
-                        if (player != null) 
+                        player = (org.bukkit.entity.Player) bukkit.getDeclaredMethod("getPlayer", UUID.class)
+                                .invoke(bukkit, this.uuid);
+                        if (player != null)
                             ip = new IPAddressString(player.getAddress().getAddress().getHostAddress()).toAddress();
                     } catch (Exception e) {
                         e.printStackTrace();
-                    } 
+                    }
                     break;
                 }
                 case BUNGEECORD: {
@@ -143,20 +148,20 @@ public class User {
                     try {
                         Class<?> proxy = Class.forName("net.md_5.bungee.api.ProxyServer");
                         player = (net.md_5.bungee.api.connection.ProxiedPlayer) proxy
-                            .getDeclaredMethod("getPlayer", UUID.class).invoke(proxy, this.uuid);
-                        if (player != null) 
+                                .getDeclaredMethod("getPlayer", UUID.class).invoke(proxy, this.uuid);
+                        if (player != null)
                             ip = new IPAddressString(player.getAddress().getAddress().getHostAddress()).toAddress();
                     } catch (Exception e) {
                         e.printStackTrace();
-                    } 
+                    }
                     break;
                 }
                 default:
                     ip = new IPAddressString(Database.getLastAddress(this.uuid.toString())).toAddress();
             }
-		} catch (AddressStringException | IncompatibleAddressException e) {
-			e.printStackTrace();
-		}
+        } catch (AddressStringException | IncompatibleAddressException e) {
+            e.printStackTrace();
+        }
         this.ipAddress = ip;
         return ip == null ? null : ip.toString();
     }
@@ -178,40 +183,44 @@ public class User {
                     org.bukkit.entity.Player player;
                     try {
                         Class<?> bukkit = Class.forName("org.bukkit.Bukkit");
-                        player = (org.bukkit.entity.Player) bukkit.getDeclaredMethod("getPlayer", UUID.class).invoke(bukkit, this.uuid);
+                        player = (org.bukkit.entity.Player) bukkit.getDeclaredMethod("getPlayer", UUID.class)
+                                .invoke(bukkit, this.uuid);
                         if (player != null) {
-                            if (LolBans.getPlugin().getConfig().getBoolean("general.ops-bypass-permissions") && player.isOp())
+                            if (LolBans.getPlugin().getConfig().getBoolean("general.ops-bypass-permissions")
+                                    && player.isOp())
                                 return true;
                             return player.hasPermission(permission);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                    } 
+                    }
                     break;
                 }
                 case BUNGEECORD: {
                     net.md_5.bungee.api.connection.ProxiedPlayer player;
                     try {
                         // Class<?> proxy = Class.forName("net.md_5.bungee.api.ProxyServer");
-                        player = (net.md_5.bungee.api.connection.ProxiedPlayer) com.ristexsoftware.lolbans.bungeecord.Main.getPlayer(this.uuid);
-                        if (player != null) 
+                        player = (net.md_5.bungee.api.connection.ProxiedPlayer) com.ristexsoftware.lolbans.bungeecord.Main
+                                .getPlayer(this.uuid);
+                        if (player != null)
                             return player.hasPermission(permission);
                     } catch (Exception e) {
                         e.printStackTrace();
-                    } 
+                    }
                     break;
                 }
                 default:
                     return false;
             }
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     /**
      * Disconnect a user from the server
+     * 
      * @param message The message to send
      */
     public void disconnect(String message) {
@@ -225,7 +234,8 @@ public class User {
                 player.kickPlayer(message);
             }
             case BUNGEECORD: {
-                net.md_5.bungee.api.connection.ProxiedPlayer player = net.md_5.bungee.api.ProxyServer.getInstance().getPlayer(this.uuid);
+                net.md_5.bungee.api.connection.ProxiedPlayer player = net.md_5.bungee.api.ProxyServer.getInstance()
+                        .getPlayer(this.uuid);
                 player.disconnect(message);
             }
             default:
@@ -252,7 +262,7 @@ public class User {
         }
 
         switch (LolBans.getServer()) {
-            case PAPER: 
+            case PAPER:
             case BUKKIT: {
                 org.bukkit.entity.Player player = org.bukkit.Bukkit.getPlayer(this.uuid);
                 if (player != null) {
@@ -260,58 +270,83 @@ public class User {
                 }
             }
             case BUNGEECORD: {
-                net.md_5.bungee.api.connection.ProxiedPlayer player = com.ristexsoftware.lolbans.bungeecord.Main.getPlayer(this.uuid);
+                net.md_5.bungee.api.connection.ProxiedPlayer player = com.ristexsoftware.lolbans.bungeecord.Main
+                        .getPlayer(this.uuid);
                 if (player != null) {
                     player.sendMessage(message);
                 }
             }
-			default:
-				throw new UnknownError("something is horribly wrong");
+            default:
+                throw new UnknownError("something is horribly wrong");
         }
     }
 
-    public static User resolveUser(String Username) {
-        Debug debug = new Debug();
-        if (!Username.equals("") || Username != null) {
-            try {
-                // Let's check our users hashmap first, save a lot of time.
-                for (User u : USERS.values()) {
-                    if (u.getName().equals(Username) || Pattern.matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", Username) && u.getUniqueId().equals(UUID.fromString(Username))) {
-                        return u;
-                    }
+    public static User resolveUser(String username) {
+        Debug debug = new Debug(User.class);
+
+        if (username == null || username.equals(""))
+            return null;
+
+        try {
+            boolean isuuid = Pattern
+                    .matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", username);
+
+            // Let's check our users hashmap first, save a lot of time.
+            for (User u : USERS.values()) {
+                if (u.getName().equals(username) || isuuid && u.getUniqueId().equals(UUID.fromString(username))) {
+                    debug.print(String.format("Pulled entry for %s from users hashmap", u.getName()));
+                    CacheUtil.putUser(u);
+                    debug.print("Cached user " + u.getName());
+                    return u;
                 }
-                debug.print("resolveUser USERS loop");
-
-                try {
-                    PreparedStatement ps = Database.connection.prepareStatement("SELECT player_uuid, player_name FROM lolbans_users WHERE player_uuid OR player_name = ?");
-                    ps.setString(1, Username);
-                    ResultSet rs = ps.executeQuery();
-                    if (rs.next()) {
-                        return new User(rs.getString("player_name"), UUID.fromString(rs.getString("player_uuid")));
-                    }
-                    debug.print("resolveUser SQL query");
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                    // ignore and continue
-                }
-                // Alright lets do the more expensive operation of querying an API for the UUID to fetch the Username.
-                // api.mojang.com is slow as fuck, but i'll make this a config option
-                URL url = new URL("https://api.ashcon.app/mojang/v2/user/" + Username);
-                JsonElement jsonResponse = new JsonParser().parse(new InputStreamReader(url.openStream()));
-                String uuid = jsonResponse.getAsJsonObject().get("uuid").toString().replace("\"", "");
-                String username = jsonResponse.getAsJsonObject().get("username").toString().replace("\"", "");
-
-                debug.print("resolveUser API query");
-                if (uuid == null)
-                    return null;
-                return new User(username, UUID.fromString(uuid));
-
-            } catch (IOException e) {
-                // e.printStackTrace();
-                return null;
             }
+
+            // Lets also check our cache to save even more time.
+            User cache = CacheUtil.getUser(username) == null
+                    ? (isuuid ? CacheUtil.getUser(UUID.fromString(username)) : null)
+                    : CacheUtil.getUser(username);
+            if (cache != null) {
+                debug.print("Pulled entry for " + cache.getName() + " from cache");
+                return cache;
+            }
+
+            try {
+                PreparedStatement ps = Database.connection.prepareStatement(
+                        "SELECT player_uuid, player_name FROM lolbans_users WHERE player_uuid OR player_name = ?");
+                ps.setString(1, username);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    User user = new User(rs.getString("player_name"), UUID.fromString(rs.getString("player_uuid")));
+                    debug.print(String.format("Pulled entry for %s from database", user.getName()));
+                    CacheUtil.putUser(user);
+                    debug.print("Cached user " + user.getName());
+                    return user;
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                // ignore and continue
+            }
+            // Alright lets do the more expensive operation of querying an API for the UUID
+            // to fetch the Username.
+            // api.mojang.com is slow as fuck, but i'll make this a config option
+            URL url = new URL("https://api.ashcon.app/mojang/v2/user/" + username);
+            JsonElement jsonResponse = new JsonParser().parse(new InputStreamReader(url.openStream()));
+            String uuid = jsonResponse.getAsJsonObject().get("uuid").toString().replace("\"", "");
+            username = jsonResponse.getAsJsonObject().get("username").toString().replace("\"", "");
+
+            debug.print("Requesting user from API");
+            if (uuid == null)
+                return null;
+            User user = new User(username, UUID.fromString(uuid));
+            debug.print(String.format("Pulled entry for %s from API", user.getName()));
+            CacheUtil.putUser(user);
+            debug.print("Cached user " + user.getName());
+            return user;
+
+        } catch (IOException e) {
+            // e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public static User getConsoleUser() {
@@ -326,15 +361,42 @@ public class User {
      */
     public boolean permissionDenied(String permissionNode) {
         try {
-            sendMessage(
-                Messages.translate("no-permission", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {{
-                        put("sender", getName());
-                        put("permission", permissionNode);
-                    }}));
+            sendMessage(Messages.translate("no-permission", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                {
+                    put("sender", getName());
+                    put("permission", permissionNode);
+                }
+            }));
         } catch (Exception ex) {
             ex.printStackTrace();
             sendMessage("Permission Denied!");
         }
         return true;
+    }
+
+    public Timestamp getLastLogin() {
+        FutureTask<Timestamp> t = new FutureTask<>(new Callable<Timestamp>() {
+            @Override
+            public Timestamp call() {
+                // This is where you should do your database interaction
+                try {
+                    PreparedStatement ps = Database.connection
+                            .prepareStatement("SELECT last_login FROM lolbans_users WHERE player_uuid = ? LIMIT 1");
+                    ps.setString(1, uuid.toString());
+                    ResultSet rs = ps.executeQuery();
+                    return rs.next() ? rs.getTimestamp("last_login") : null;
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        });
+        LolBans.pool.execute(t);
+        try {
+            return t.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

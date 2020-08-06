@@ -61,6 +61,7 @@ public class Main extends Plugin {
 
     @Override
     public void onDisable() {
+        LolBans.getPlugin().destroy();
         isEnabled = false;
     }
 

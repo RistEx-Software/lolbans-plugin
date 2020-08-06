@@ -14,6 +14,9 @@ general:
   play-sound: false
   # If true, this will print debug statements
   debug: false
+  # The amount of time between check threads in seconds (Default: 30 seconds)
+  # NOTE: You shouldn't touch this unless you know what you are doing with it.
+  runnable-timer: 30
 
 # Show a GUI instead of chat for the history commands
 history-gui:
@@ -27,11 +30,6 @@ database:
   password: lolbans
   # Maximum number of times mysql will try to reconnect before giving up.
   max-reconnects: 5
-  # Number of times to check for expired temp bans
-  # Currently set to 30 seconds
-  # It's best to leave this alone unless you know what you
-  # are doing with it.
-  query-update: 30
 
 # LolBans caches data to prevent doing more expensive operations like API
 # and database queries, please do not change these settings unless you know
