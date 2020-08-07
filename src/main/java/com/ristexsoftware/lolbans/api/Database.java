@@ -247,7 +247,7 @@ public class Database {
             }
         });
 
-        LolBans.pool.execute(t);
+        LolBans.getPlugin().getPool().execute(t);
 
         return t;
     }
@@ -272,7 +272,7 @@ public class Database {
             }
         });
 
-        LolBans.pool.execute(t);
+        LolBans.getPlugin().getPool().execute(t);
         return t;
     }
 
@@ -313,7 +313,7 @@ public class Database {
             }
         });
 
-        LolBans.pool.execute(t);
+        LolBans.getPlugin().getPool().execute(t);
 
         return (Future<Boolean>) t;
     }
@@ -360,7 +360,7 @@ public class Database {
                 }
             }
         });
-        LolBans.pool.execute(t);
+        LolBans.getPlugin().getPool().execute(t);
         return (Future<String>) t;
     }
 
@@ -436,7 +436,7 @@ public class Database {
             }
         });
 
-        LolBans.pool.execute(t);
+        LolBans.getPlugin().getPool().execute(t);
 
         return (Future<Boolean>) t;
     }
@@ -509,7 +509,7 @@ public class Database {
             }
         });
 
-        LolBans.pool.execute(t);
+        LolBans.getPlugin().getPool().execute(t);
 
         return (Future<Boolean>) t;
     }

@@ -34,6 +34,6 @@ public class Debug {
 
     public void print(String message) {
         if (LolBans.getPlugin().getConfig().getBoolean("general.debug"))
-            LolBans.getLogger().info("("+clazz.getSimpleName()+".class) " + message + " | " + ((System.nanoTime() - start) / 1e3) + "us" + " (" + ++count + ")");
+            LolBans.getLogger().info("("+clazz.getSimpleName()+".class) " + message + " | " + ((System.nanoTime() - start) / 1e3) + "us" μ " (" + ++count + ")");
     }
 }

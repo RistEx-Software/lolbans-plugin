@@ -117,7 +117,7 @@ public abstract class AsyncCommand {
 			}
 		});
 
-		LolBans.pool.execute(t);
+		LolBans.getPlugin().getPool().execute(t);
 
 		return true;
 	}
