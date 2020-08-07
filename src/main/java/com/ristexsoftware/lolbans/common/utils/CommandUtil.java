@@ -37,7 +37,7 @@ public class CommandUtil {
         // to use reflection to unfuck it, just to create and register new commands...
         // At least now I can make command classes that are registerable by both bukkit and bungeecord.
         public static void registerBukkitCommand(AsyncCommand command) {
-            if (!(LolBans.getServer() == ServerType.BUKKIT || LolBans.getServer() == ServerType.PAPER))
+            if (!(LolBans.getServerType() == ServerType.BUKKIT || LolBans.getServerType() == ServerType.PAPER))
                 return;
 
             com.ristexsoftware.lolbans.bukkit.Main bukkitPlugin = com.ristexsoftware.lolbans.bukkit.Main
@@ -99,7 +99,7 @@ public class CommandUtil {
 
         // Look how stupid fucking easy this is compared to bukkit...
         public static void registerBungeeCommand(AsyncCommand command) {
-            if (LolBans.getServer() != ServerType.BUNGEECORD)
+            if (LolBans.getServerType() != ServerType.BUNGEECORD)
                 return;
             
             com.ristexsoftware.lolbans.bungeecord.Main plugin = com.ristexsoftware.lolbans.bungeecord.Main.getPlugin();

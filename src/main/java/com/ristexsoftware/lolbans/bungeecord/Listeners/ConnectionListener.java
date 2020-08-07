@@ -37,7 +37,7 @@ public class ConnectionListener implements Listener {
     @EventHandler
     public void onLogin(PostLoginEvent event) {
         ProxiedPlayer player = event.getPlayer();
-        LolBans.registerUser(player);
+        LolBans.getPlugin().registerUser(player);
 
         String ip = player.getAddress() == null ? null : player.getAddress().getAddress().getHostAddress();
         try {
@@ -51,7 +51,7 @@ public class ConnectionListener implements Listener {
     @EventHandler
     public void onKick(PlayerDisconnectEvent event) {
         ProxiedPlayer player = event.getPlayer();
-        LolBans.removeUser(player);
+        LolBans.getPlugin().removeUser(player);
         try {
             if (!(Database.updateUser(player.getUniqueId().toString(), player.getName(), player.getAddress().getAddress().getHostAddress(), new Timestamp(System.currentTimeMillis())).get()))
                 LolBans.getLogger().severe(Messages.serverError);

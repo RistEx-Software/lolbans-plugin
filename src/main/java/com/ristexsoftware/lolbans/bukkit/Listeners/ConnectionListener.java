@@ -41,7 +41,6 @@ import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 import com.ristexsoftware.lolbans.api.utils.IPUtil;
 import com.ristexsoftware.lolbans.api.utils.TimeUtil;
-import com.ristexsoftware.lolbans.common.utils.CacheUtil;
 import com.ristexsoftware.lolbans.common.utils.Debug;
 
 import org.bukkit.entity.Player;
@@ -66,7 +65,7 @@ public class ConnectionListener implements Listener {
     private static LolBans self = LolBans.getPlugin();
 
     @EventHandler
-    public static void OnPlayerConnectAsync(PlayerLoginEvent event) {
+    public void OnPlayerConnectAsync(PlayerLoginEvent event) {
         // Since PlayerLogineEvent is not asynchronous, we need to run this on a new
         // thread, we don't want to make the main thread wait for this to complete
         Debug debug = new Debug(ConnectionListener.class);
@@ -127,7 +126,7 @@ public class ConnectionListener implements Listener {
                     boolean foundBan = false;
                     boolean foundWarn = false;
 
-                    for (Punishment punish : CacheUtil.getPunishments().values()) {
+                    for (Punishment punish : LolBans.getPlugin().getPunishmentCache().getAll()) {
                         Map<String, String> vars = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                             {
                                 put("punishid", punish.getPunishId());
@@ -225,8 +224,8 @@ public class ConnectionListener implements Listener {
                         // Let's cache these!
                         switch (type) {
                             case IP:
-                                CacheUtil
-                                        .putPunishment(
+                                LolBans.getPlugin().getPunishmentCache()
+                                        .put(
                                                 new Punishment(
                                                         new User(punishmentRecord.getString("punished_by_name"),
                                                                 UUID.fromString(punishmentRecord
@@ -241,7 +240,7 @@ public class ConnectionListener implements Listener {
                                 break;
                             case BAN:
                             case MUTE:
-                                CacheUtil.putPunishment(new Punishment(type,
+                                LolBans.getPlugin().getPunishmentCache().put(new Punishment(type,
                                         new User(punishmentRecord.getString("punished_by_name"),
                                                 UUID.fromString(punishmentRecord.getString("punished_by_uuid"))),
                                         user, punishmentRecord.getString("reason"),
@@ -261,14 +260,14 @@ public class ConnectionListener implements Listener {
                                     warn.setWarningAck(true);
                                     warn.update(punishmentRecord.getString("punish_id"));
                                 }
-                                CacheUtil.putPunishment(warn);
+                                LolBans.getPlugin().getPunishmentCache().put(warn);
                                 break;
                         }
                     }
 
                     String rDNS = IPUtil.rDNSQUery(event.getRealAddress().getHostAddress());
                     // Do Regex matches since they're pre-compiled
-                    Iterator<?> it = LolBans.REGEX.entrySet().iterator();
+                    Iterator<?> it = LolBans.getPlugin().REGEX.entrySet().iterator();
                     while (it.hasNext()) {
                         Map.Entry<?, ?> pair = (Map.Entry<?, ?>) it.next();
                         Pattern regex = (Pattern) pair.getValue();
@@ -292,7 +291,7 @@ public class ConnectionListener implements Listener {
                             if (!result.next()) {
                                 // throw new SQLException("No such regex " + regex.pattern());
                                 LolBans.getLogger().info("No such regex: " + regex.pattern()); // Log the issue
-                                LolBans.REGEX.remove(pair.getKey()); // The ban doesn't exist in the database, don't
+                                LolBans.getPlugin().REGEX.remove(pair.getKey()); // The ban doesn't exist in the database, don't
                                                                      // keep
                                                                      // it around
                                 continue; // Skip this iteration, go to the next
@@ -327,7 +326,7 @@ public class ConnectionListener implements Listener {
                     UUID altaccount = AltRecords.get();
                     if (altaccount != null) {
                         // OfflinePlayer p = Bukkit.getOfflinePlayer(altaccount);
-                        User user = LolBans.getUser(altaccount);
+                        User user = LolBans.getPlugin().getUser(altaccount);
                         // Send a message to all ops with broadcast perms.
                         String message = Messages.translate("ip-ban.ip-alt-notification",
                                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
@@ -338,7 +337,7 @@ public class ConnectionListener implements Listener {
                                     }
                                 });
 
-                        LolBans.notifyStaff(message);
+                        LolBans.getPlugin().notifyStaff(message);
                         self.getLogger().warning(message);
 
                         if (self.getConfig().getBoolean("ip-ban-settings.kick-alt-accounts", false)) {
@@ -372,7 +371,7 @@ public class ConnectionListener implements Listener {
             }
         });
 
-        LolBans.pool.execute(t);
+        LolBans.getPlugin().getPool().execute(t);
 
         try {
             if (!t.get()) {
@@ -384,14 +383,14 @@ public class ConnectionListener implements Listener {
                 event.disallow(Result.KICK_FULL, Messages.serverError);
             e.printStackTrace();
         }
-        LolBans.registerUser(user);
+        LolBans.getPlugin().registerUser(user);
         debug.print("PlayerLoginEvent completed");
     }
 
     @EventHandler
     public void onKick(PlayerKickEvent event) {
         Player player = event.getPlayer();
-        LolBans.removeUser(player);
+        LolBans.getPlugin().removeUser(player);
         try {
             if (!(Database.updateUser(player.getUniqueId().toString(), player.getName(),
                     player.getAddress().getAddress().getHostAddress(), new Timestamp(System.currentTimeMillis()))
@@ -405,7 +404,7 @@ public class ConnectionListener implements Listener {
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        LolBans.removeUser(player);
+        LolBans.getPlugin().removeUser(player);
         try {
             if (!(Database.updateUser(player.getUniqueId().toString(), player.getName(),
                     player.getAddress().getAddress().getHostAddress(), new Timestamp(System.currentTimeMillis()))

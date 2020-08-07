@@ -31,7 +31,7 @@ import com.ristexsoftware.lolbans.api.Database;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class Query extends TimerTask {
+public class QueryRunnable extends TimerTask {
     @Override
     public void run() {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>() {
@@ -42,9 +42,9 @@ public class Query extends TimerTask {
                     // self.connection.prepareStatement("DELETE FROM LinkConfirmations WHERE Expiry
                     // <= NOW()").executeUpdate();
                     // TODO: Report expirations should be configurable
-                    PreparedStatement punps = Database.connection.prepareStatement("UPDATE lolbans_punishments SET appealed = True, appeal_reason = 'Expired', appealed_by_name = 'CONSOLE', appealed_by_uuid = 'CONSOLE', appealed_at = NOW() WHERE expires_at <= NOW()");
+                    PreparedStatement punps = Database.getConnection().prepareStatement("UPDATE lolbans_punishments SET appealed = True, appeal_reason = 'Expired', appealed_by_name = 'CONSOLE', appealed_by_uuid = 'CONSOLE', appealed_at = NOW() WHERE expires_at <= NOW()");
                     Database.executeUpdate(punps);
-                    // PreparedStatement ps = Database.connection.prepareStatement("UPDATE
+                    // PreparedStatement ps = Database.getConnection().prepareStatement("UPDATE
                     // lolbans_reports SET Closed = True, CloseReason = 'Expired' WHERE TimeAdded <=
                     // ?");
                     // ps.setTimestamp(1, new Timestamp((TimeUtil.GetUnixTime() * 1000L) +
@@ -58,7 +58,7 @@ public class Query extends TimerTask {
 
                     // Grab all the latest IP bans from the databse and ensure everything is up to
                     // date.
-                    ResultSet rs = Database.connection.prepareStatement(
+                    ResultSet rs = Database.getConnection().prepareStatement(
                             "SELECT * FROM lolbans_punishments WHERE appealed = FALSE AND type = 5 AND ip_ban = TRUE")
                             .executeQuery();
                     while (rs.next()) {
@@ -66,7 +66,7 @@ public class Query extends TimerTask {
 
                         // Try and find our address.
                         boolean found = false;
-                        for (IPAddressString cb : LolBans.BANNED_ADDRESSES) {
+                        for (IPAddressString cb : LolBans.getPlugin().BANNED_ADDRESSES) {
                             if (cb.compareTo(addr) == 0) {
                                 found = true;
                                 break;
@@ -75,15 +75,17 @@ public class Query extends TimerTask {
 
                         // Add our banned cidr range if not found.
                         if (!found)
-                            LolBans.BANNED_ADDRESSES.add(addr);
-                    }
+                            LolBans.getPlugin().BANNED_ADDRESSES.add(addr);
+                    
+                
+                    }   
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
                 return true;
             }
         });
-        if (!LolBans.pool.isShutdown())
-            LolBans.pool.execute(t);
+        if (!LolBans.getPlugin().getPool().isShutdown())
+            LolBans.getPlugin().getPool().execute(t);
     }
 }

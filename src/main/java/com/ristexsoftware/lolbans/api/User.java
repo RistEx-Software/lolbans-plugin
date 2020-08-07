@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
-import com.ristexsoftware.lolbans.common.utils.CacheUtil;
+import com.ristexsoftware.lolbans.api.utils.Cacheable;
 import com.ristexsoftware.lolbans.common.utils.Debug;
 
 import inet.ipaddr.AddressStringException;
@@ -50,7 +50,7 @@ import lombok.Setter;
  * Represents a player. Proxies bungee and bukkit methods.
  */
 @SuppressWarnings("deprecation")
-public class User {
+public class User implements Cacheable {
     public static HashMap<UUID, User> USERS = new HashMap<>();
 
     private String username;
@@ -83,6 +83,10 @@ public class User {
      */
     public UUID getUniqueId() {
         return this.uuid;
+    }
+
+    public String getKey() {
+        return this.uuid.toString();
     }
 
     /**
@@ -128,7 +132,7 @@ public class User {
         IPAddress ip = null;
         // Let's cache this.
         try {
-            switch (LolBans.getServer()) {
+            switch (LolBans.getServerType()) {
                 case PAPER:
                 case BUKKIT: {
                     org.bukkit.entity.Player player;
@@ -177,7 +181,7 @@ public class User {
             return true;
 
         try {
-            switch (LolBans.getServer()) {
+            switch (LolBans.getServerType()) {
                 case PAPER:
                 case BUKKIT: {
                     org.bukkit.entity.Player player;
@@ -227,7 +231,7 @@ public class User {
         if (message == null || message.equals(""))
             message = "You have been kicked by an operator!";
 
-        switch (LolBans.getServer()) {
+        switch (LolBans.getServerType()) {
             case PAPER:
             case BUKKIT: {
                 org.bukkit.entity.Player player = org.bukkit.Bukkit.getPlayer(this.username);
@@ -261,7 +265,7 @@ public class User {
             return;
         }
 
-        switch (LolBans.getServer()) {
+        switch (LolBans.getServerType()) {
             case PAPER:
             case BUKKIT: {
                 org.bukkit.entity.Player player = org.bukkit.Bukkit.getPlayer(this.uuid);
@@ -295,16 +299,15 @@ public class User {
             for (User u : USERS.values()) {
                 if (u.getName().equals(username) || isuuid && u.getUniqueId().equals(UUID.fromString(username))) {
                     debug.print(String.format("Pulled entry for %s from users hashmap", u.getName()));
-                    CacheUtil.putUser(u);
+                    LolBans.getPlugin().getUserCache().put(u);
                     debug.print("Cached user " + u.getName());
                     return u;
                 }
             }
 
             // Lets also check our cache to save even more time.
-            User cache = CacheUtil.getUser(username) == null
-                    ? (isuuid ? CacheUtil.getUser(UUID.fromString(username)) : null)
-                    : CacheUtil.getUser(username);
+            final String fuckyoujava = username;
+            User cache = LolBans.getPlugin().getUserCache().find((t) -> t.username == fuckyoujava);
             if (cache != null) {
                 debug.print("Pulled entry for " + cache.getName() + " from cache");
                 return cache;
@@ -318,7 +321,7 @@ public class User {
                 if (rs.next()) {
                     User user = new User(rs.getString("player_name"), UUID.fromString(rs.getString("player_uuid")));
                     debug.print(String.format("Pulled entry for %s from database", user.getName()));
-                    CacheUtil.putUser(user);
+                    LolBans.getPlugin().getUserCache().put(user);
                     debug.print("Cached user " + user.getName());
                     return user;
                 }
@@ -339,7 +342,7 @@ public class User {
                 return null;
             User user = new User(username, UUID.fromString(uuid));
             debug.print(String.format("Pulled entry for %s from API", user.getName()));
-            CacheUtil.putUser(user);
+             LolBans.getPlugin().getUserCache().put(user);
             debug.print("Cached user " + user.getName());
             return user;
 
@@ -391,7 +394,7 @@ public class User {
                 }
             }
         });
-        LolBans.pool.execute(t);
+        LolBans.getPlugin().getPool().execute(t);
         try {
             return t.get();
         } catch (InterruptedException | ExecutionException e) {

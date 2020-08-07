@@ -53,7 +53,7 @@ public class IPUtil {
                     if (!hn.isAddress())
                         return Optional.empty();
 
-                    for (IPAddressString cb : LolBans.BANNED_ADDRESSES) {
+                    for (IPAddressString cb : LolBans.getPlugin().BANNED_ADDRESSES) {
                         // They're a banned cidr, query for the reason and kick them.
                         if (cb.contains(hn.asAddressString())) {
                             PreparedStatement pst = Database.connection.prepareStatement(
@@ -74,7 +74,7 @@ public class IPUtil {
             }
         });
 
-        LolBans.pool.execute(t);
+        LolBans.getPlugin().getPool().execute(t);
 
         return t;
     }
@@ -121,7 +121,7 @@ public class IPUtil {
             }
         });
 
-        LolBans.pool.execute(t);
+        LolBans.getPlugin().getPool().execute(t);
         return t;
     }
 
@@ -146,7 +146,7 @@ public class IPUtil {
 
         // Try and find our address.
         boolean found = false;
-        for (IPAddressString cb : LolBans.BANNED_ADDRESSES) {
+        for (IPAddressString cb : LolBans.getPlugin().BANNED_ADDRESSES) {
             if (cb.compareTo(addr) == 0) {
                 found = true;
                 break;
@@ -155,6 +155,6 @@ public class IPUtil {
 
         // Add our banned cidr range if not found.
         if (!found)
-            LolBans.BANNED_ADDRESSES.add(addr);
+            LolBans.getPlugin().BANNED_ADDRESSES.add(addr);
     }
 }

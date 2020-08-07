@@ -35,6 +35,7 @@ import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.utils.TimeUtil;
+import com.ristexsoftware.lolbans.api.utils.Cacheable;
 
 import inet.ipaddr.IPAddress;
 import lombok.Getter;
@@ -42,7 +43,7 @@ import lombok.Setter;
 
 import com.ristexsoftware.lolbans.api.utils.PunishID;
 
-public class Punishment {
+public class Punishment implements Cacheable {
      
     @Getter @Setter private User target; // Nullable
     @Getter @Setter private IPAddress ipAddress;
@@ -143,7 +144,7 @@ public class Punishment {
                     p.type = PunishmentType.fromOrdinal(res.getInt("type"));
                     p.reason = res.getString("reason");
                         
-                    p.target = LolBans.getUser(UUID.fromString(res.getString("target_uuid")));
+                    p.target = LolBans.getPlugin().getUser(UUID.fromString(res.getString("target_uuid")));
                     if (p.target == null) {
                         p.target = new User(res.getString("target_name"), UUID.fromString(res.getString("target_uuid")));
                     }
@@ -167,7 +168,7 @@ public class Punishment {
                         if (punisher_uuid.equalsIgnoreCase("00000000-0000-0000-0000-000000000000"))
                             p.punisher = User.getConsoleUser();
                         else
-                            p.punisher = LolBans.getUser(UUID.fromString(res.getString("punisher_uuid")));
+                            p.punisher = LolBans.getPlugin().getUser(UUID.fromString(res.getString("punisher_uuid")));
                     }
 
                     if (unpunisher_uuid != null)
@@ -175,7 +176,7 @@ public class Punishment {
                         if (unpunisher_uuid.equalsIgnoreCase("00000000-0000-0000-0000-000000000000"))
                             p.punisher = User.getConsoleUser();
                         else
-                            LolBans.getUser(UUID.fromString(res.getString("unpunisher_uuid")));
+                            LolBans.getPlugin().getUser(UUID.fromString(res.getString("unpunisher_uuid")));
                     }
 
                     return Optional.of(p).get();
@@ -351,7 +352,7 @@ public class Punishment {
             }
         });
 
-        LolBans.pool.execute(t);
+        LolBans.getPlugin().getPool().execute(t);
     }
 
     public void update(String punishID) {
@@ -366,16 +367,14 @@ public class Punishment {
     public void delete()
     {
         Punishment me = this;
-        FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>()
-        {
+        FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>() {
             @Override
-            public Boolean call()
-            {
+            public Boolean call() {
                 //This is where you should do your database interaction
-                try 
-                {
+                try {
                     // Preapre a statement
-                    PreparedStatement pst2 = Database.connection.prepareStatement("DELETE FROM lolbans_punishments WHERE punish_id = ?");
+                    PreparedStatement pst2 = Database.connection
+                            .prepareStatement("DELETE FROM lolbans_punishments WHERE punish_id = ?");
                     pst2.setString(1, getPunishId());
                     pst2.executeUpdate();
 
@@ -398,9 +397,7 @@ public class Punishment {
                     me.regexBan = false;
                     me.regex = null;
                     me.banwave = false;
-                } 
-                catch (SQLException e) 
-                {
+                } catch (SQLException e) {
                     e.printStackTrace();
                     return false;
                 }
@@ -408,6 +405,10 @@ public class Punishment {
             }
         });
 
-        LolBans.pool.execute(t);
+        LolBans.getPlugin().getPool().execute(t);
+    }
+    
+    public String getKey() {
+        return punishId;
     }
 }
