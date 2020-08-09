@@ -77,7 +77,7 @@ public class ConnectionListener implements Listener {
             @Override
             public Boolean call() {
                 try {
-                    Timestamp login = TimeUtil.TimestampNow();
+                    Timestamp login = TimeUtil.now();
 
                     // Before we do anything, make sure they're abiding the ratelimit
                     if (self.getConfig().getBoolean("connection.rate-limiting.enabled")
@@ -129,7 +129,7 @@ public class ConnectionListener implements Listener {
                     for (Punishment punish : LolBans.getPlugin().getPunishmentCache().getAll()) {
                         Map<String, String> vars = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                             {
-                                put("punishid", punish.getPunishId());
+                                put("punishid", punish.getPunishID());
                                 put("ipaddress", event.getRealAddress().getHostAddress());
                                 put("player", user.getName());
                                 put("reason", punish.getReason());
@@ -142,7 +142,7 @@ public class ConnectionListener implements Listener {
                             PunishmentType type = punish.getType();
                             if (!foundIP && type == PunishmentType.IP && punish.getIpAddress().toString().equals(event.getRealAddress().getHostAddress())) {
                                 foundIP = true;
-
+                                
                                 String disconnectReason = Messages.translate(
                                         punish.getExpiresAt() != null ? "ip-ban.temp-ip-ban-message"
                                                 : "ip-ban.perm-ip-ban-message",
@@ -151,11 +151,35 @@ public class ConnectionListener implements Listener {
 
                                 continue;
                             }
+
+                            if (!foundBan
+                                    && type == PunishmentType.BAN) {
+                                foundBan = true;
+
+                                String disconnectReason = Messages.translate(
+                                        punish.getExpiresAt() != null ? "ban.temp-ban-message"
+                                                : "ban.perm-ban-message",
+                                        vars);
+                                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, disconnectReason);
+
+                                continue;
+                            }
+
+                            if (!foundWarn
+                                    && type == PunishmentType.WARN) {
+                                foundWarn = true;
+
+                                String disconnectReason = Messages.translate("warn.warn-kick-message", vars);
+                                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, disconnectReason);
+
+                                continue;
+                            }
+
                         }
                     }
 
                     final PreparedStatement punishmentQuery = Database.connection.prepareStatement(
-                            "SELECT * FROM lolbans_punishments WHERE target_uuid = ? OR target_ip_address = ? AND appealed = FALSE AND warning_ack = FALSE OR (expires_at IS NOT NULL >= NOW() OR expires_at IS NULL)");
+                            "SELECT * FROM lolbans_punishments WHERE (target_uuid = ? OR (type = 5 AND target_ip_address = ?)) AND appealed = FALSE AND warning_ack = FALSE AND (expires_at IS NOT NULL >= NOW() OR expires_at IS NULL)");
                     punishmentQuery.setString(1, player.getUniqueId().toString());
                     punishmentQuery.setString(2, event.getRealAddress().getHostAddress());
 
@@ -184,6 +208,7 @@ public class ConnectionListener implements Listener {
                         if (!foundIP && PunishmentType.fromOrdinal(punishmentRecord.getInt("type")) == PunishmentType.IP
                                 && punishmentRecord.getString("target_ip_address")
                                         .equals(event.getRealAddress().getHostAddress())) {
+                            debug.print("Found active IP ban for " + user.getName() + " (" + user.getUniqueId().toString() + ")");
                             foundIP = true;
 
                             String disconnectReason = Messages.translate(
@@ -198,6 +223,7 @@ public class ConnectionListener implements Listener {
 
                         if (!foundBan
                                 && PunishmentType.fromOrdinal(punishmentRecord.getInt("type")) == PunishmentType.BAN) {
+                            debug.print("Found active ban for " + user.getName() + " (" + user.getUniqueId().toString() + ")");
                             foundBan = true;
 
                             String disconnectReason = Messages.translate(
@@ -212,6 +238,7 @@ public class ConnectionListener implements Listener {
 
                         if (!foundWarn
                                 && PunishmentType.fromOrdinal(punishmentRecord.getInt("type")) == PunishmentType.WARN) {
+                            debug.print("Found unacknowledged warn for " + user.getName() + " (" + user.getUniqueId().toString() + ")");
                             foundWarn = true;
 
                             String disconnectReason = Messages.translate("warn.warn-kick-message", vars);

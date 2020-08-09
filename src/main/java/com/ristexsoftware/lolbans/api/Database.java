@@ -382,15 +382,15 @@ public class Database {
     /**
      * Insert a user into the database.
      * 
-     * @param UUID       UUID of the minecraft user
-     * @param PlayerName Name of the minecraft player
-     * @param IPAddress  IP address of the minecraft player
-     * @param FirstLogin The first time they logged in (as a timestamp)
-     * @param LastLogin  The last time they logged in (as a timestamp)
+     * @param uuid       UUID of the minecraft user
+     * @param playerName Name of the minecraft player
+     * @param ipAddress  IP address of the minecraft player
+     * @param firstLogin The first time they logged in (as a timestamp)
+     * @param lastLogin  The last time they logged in (as a timestamp)
      * @return True if the user was created successfully
      */
-    public static Future<Boolean> insertUser(String UUID, String PlayerName, String IPAddress, Timestamp FirstLogin,
-            Timestamp LastLogin) {
+    public static Future<Boolean> insertUser(String uuid, String playerName, String ipAddress, Timestamp firstLogin,
+            Timestamp lastLogin) {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>() {
             @Override
             public Boolean call() {
@@ -405,29 +405,29 @@ public class Database {
                     // would add them a second time
                     // lets not do that....
                     int j = 1;
-                    debug.print("Checking database entries for " + PlayerName);
+                    debug.print("Checking database entries for " + playerName);
                     PreparedStatement checkUser = getConnection()
                             .prepareStatement("SELECT id FROM lolbans_users WHERE player_uuid = ?");
-                    checkUser.setString(j++, UUID);
+                    checkUser.setString(j++, uuid);
                     ResultSet results = checkUser.executeQuery();
                     if (results.next() && !results.wasNull()) {
-                        debug.print("Database entry for " + PlayerName + " found, updating user");
-                        updateUser(UUID, PlayerName, IPAddress, LastLogin);
+                        debug.print("Database entry for " + playerName + " found, updating user");
+                        updateUser(uuid, playerName, ipAddress, lastLogin);
                         return true;
                     }
-                    debug.print("Adding database entry for " + PlayerName);
+                    debug.print("Adding database entry for " + playerName);
                     // Preapre a statement
                     int i = 1;
                     PreparedStatement InsertUser = getConnection().prepareStatement(String.format(
                             "INSERT INTO lolbans_users (player_uuid, player_name, ip_address, first_login, last_login, times_connected) VALUES (?, ?, ?, ?, ?, ?)"));
-                    InsertUser.setString(i++, UUID);
-                    InsertUser.setString(i++, PlayerName);
-                    InsertUser.setString(i++, IPAddress);
-                    InsertUser.setTimestamp(i++, FirstLogin);
-                    InsertUser.setTimestamp(i++, LastLogin);
+                    InsertUser.setString(i++, uuid);
+                    InsertUser.setString(i++, playerName);
+                    InsertUser.setString(i++, ipAddress);
+                    InsertUser.setTimestamp(i++, firstLogin);
+                    InsertUser.setTimestamp(i++, lastLogin);
                     InsertUser.setInt(i++, 1);
                     InsertUser.executeUpdate();
-                    debug.print("Successfully added database entry for " + PlayerName);
+                    debug.print("Successfully added database entry for " + playerName);
                 } catch (Throwable e) {
                     e.printStackTrace();
                     return false;
@@ -444,13 +444,13 @@ public class Database {
     /**
      * Update a user record
      * 
-     * @param UUID       lolbans_users current UUID
-     * @param PlayerName lolbans_users current player name
-     * @param IPAddress  lolbans_users current IP address
-     * @param LastLogin  The timestamp of the last time a user logged in
+     * @param uuid       lolbans_users current UUID
+     * @param playerName lolbans_users current player name
+     * @param ipAddress  lolbans_users current IP address
+     * @param lastLogin  The timestamp of the last time a user logged in
      * @return True if the update was successful.
      */
-    public static Future<Boolean> updateUser(String UUID, String PlayerName, String IPAddress, Timestamp LastLogin)
+    public static Future<Boolean> updateUser(String uuid, String playerName, String ipAddress, Timestamp lastLogin)
     // (Timestamp LastLogin, String PlayerName, String IPAddress, String UUID)
     {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>() {
@@ -463,22 +463,22 @@ public class Database {
                     // This is a fail-safe just incase the table was dropped or the player joined
                     // the server BEFORE the plugin was added...
                     // This will ensure they get added to the database no matter what.
-                    debug.print("Checking database entries for " + PlayerName);
+                    debug.print("Checking database entries for " + playerName);
                     PreparedStatement CheckUser = getConnection()
                             .prepareStatement(String.format("SELECT id FROM lolbans_users WHERE player_uuid = ?"));
-                    CheckUser.setString(j++, UUID);
+                    CheckUser.setString(j++, uuid);
                     ResultSet results = CheckUser.executeQuery();
                     if (!results.next()) {
-                        debug.print("No database entry for " + PlayerName + " found, inserting user");
-                        Timestamp FirstLogin = TimeUtil.TimestampNow();
-                        insertUser(UUID, PlayerName, IPAddress, FirstLogin, LastLogin);
+                        debug.print("No database entry for " + playerName + " found, inserting user");
+                        Timestamp firstLogin = TimeUtil.now();
+                        insertUser(uuid, playerName, ipAddress, firstLogin, lastLogin);
                         return true;
                     }
-                    debug.print("Database entry for " + PlayerName + " found, updating");
+                    debug.print("Database entry for " + playerName + " found, updating");
 
                     PreparedStatement gtc = getConnection()
                     .prepareStatement(String.format("SELECT times_connected FROM lolbans_users WHERE player_uuid = ?"));
-                    gtc.setString(1, UUID);
+                    gtc.setString(1, uuid);
 
                     ResultSet gtc2 = gtc.executeQuery();
                     int tc = 1;
@@ -494,13 +494,13 @@ public class Database {
                     int i = 1;
                     PreparedStatement UpdateUser = getConnection().prepareStatement(String.format(
                             "UPDATE lolbans_users SET last_login = ?, player_name = ?, ip_address = ?, times_connected = ? WHERE player_uuid = ?"));
-                    UpdateUser.setTimestamp(i++, LastLogin);
-                    UpdateUser.setString(i++, PlayerName);
-                    UpdateUser.setString(i++, IPAddress);
+                    UpdateUser.setTimestamp(i++, lastLogin);
+                    UpdateUser.setString(i++, playerName);
+                    UpdateUser.setString(i++, ipAddress);
                     UpdateUser.setInt(i++, ++tc);
-                    UpdateUser.setString(i++, UUID);
+                    UpdateUser.setString(i++, uuid);
                     UpdateUser.executeUpdate();
-                    debug.print("Successfully updated database entry for " + PlayerName);
+                    debug.print("Successfully updated database entry for " + playerName);
                 } catch (Throwable e) {
                     e.printStackTrace();
                     return false;

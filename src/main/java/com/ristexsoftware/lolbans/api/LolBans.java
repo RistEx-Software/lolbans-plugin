@@ -205,7 +205,7 @@ public class LolBans extends JavaPlugin {
     public void notifyStaff(String message) {
         for (User user : getOnlineUsers().values()) {
             if (user.hasPermission("lolbans.alerts"))
-                user.sendMessage("");
+                user.sendMessage(message);
         }
     }
 

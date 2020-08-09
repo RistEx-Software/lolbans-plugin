@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
 import com.ristexsoftware.lolbans.common.utils.Debug;
+import com.ristexsoftware.lolbans.api.punishment.Punishment;
 
 import lombok.Getter;
 import lombok.Setter;

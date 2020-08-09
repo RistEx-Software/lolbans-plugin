@@ -59,7 +59,7 @@ discord:
     report: ":orange_book: **{ARBITERNAME}** reported **{PLAYERNAME}**: `{REASON}` [{REPORTTYPE} - #{PUNISHID}]"
     ban-object: ":hammer: **{ARBITERNAME}** banned `{OBJECT}`{EXPIRY|empty_if_none:\" which expires on \"}{EXPIRY|datetime:\"**EEE, MMM d yyyy HH:mm:ss**\"}"
   # Embedded discord messages.
-  Embedded:
+  embedded:
     ban-title: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}banned {PLAYERNAME}"
     kick-title: "{ARBITERNAME} kicked {PLAYERNAME}"
     mute-title: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}muted {PLAYERNAME}"

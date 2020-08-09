@@ -19,7 +19,7 @@
 
 package com.ristexsoftware.lolbans.common.commands;
 
-import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
@@ -29,13 +29,12 @@ import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
-import com.ristexsoftware.lolbans.api.punishment.InvalidPunishmentException;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
-
-import inet.ipaddr.AddressStringException;
-import inet.ipaddr.IPAddress;
-import inet.ipaddr.IPAddressString;
-import inet.ipaddr.IncompatibleAddressException;
+import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
+import com.ristexsoftware.lolbans.api.command.Arguments;
+import com.ristexsoftware.lolbans.api.utils.TimeUtil;
+import com.ristexsoftware.lolbans.common.utils.Debug;
+import com.ristexsoftware.lolbans.common.utils.Timing;
 
 public class Ban {
 
@@ -67,34 +66,94 @@ public class Ban {
 
 		@Override
 		public boolean run(User sender, String commandLabel, String[] args) {
+
+			// Even if we set the permission in the constructor, we have to check here
+			// just incase the user doesn't enable the real permission check in bukkit's 
+			// command constructor, I don't want to force this because the command doesn't 
+			// show up otherwise.
 			if (!sender.hasPermission("lolbans.ban"))
-				return sender.permissionDenied("lolbans.ban");
+			return sender.permissionDenied("lolbans.ban");
+			
+			// Let's start timing how long this command takes
+			Debug debug = new Debug(getClass());
+			Timing time = new Timing();
+			debug.print(sender.getName() + " is executing a command");
 			try {
-				new Punishment(sender, "testing", null, false, false, new IPAddressString("127.0.0.1").toAddress())
-						.commit(sender);
-			} catch (SQLException | InvalidPunishmentException | AddressStringException
-					| IncompatibleAddressException e) {
+				Arguments a = new Arguments(args);
+				a.optionalFlag("silent", "-s");
+				a.optionalFlag("overwrite", "-o");
+				a.requiredString("username");
+				a.optionalTimestamp("expiry");
+				a.optionalSentence("reason"); 
+				
+				if (!a.valid()) 
+					return false;
+				
+				boolean silent = a.exists("silent");
+				boolean overwrite = a.exists("overwrite");
+				String username = a.get("username");
+				Timestamp expiry = !a.exists("expiry") ? null : a.getTimestamp("expiry");
+
+				User target = User.resolveUser(username);
+
+				if (overwrite && !sender.hasPermission("lolbans.ban.overwrite"))
+					return sender.permissionDenied("lolbans.ban.overwrite");
+
+				if (target.isBanned() && !overwrite)
+					return sender.sendReferencedLocalizedMessage("ban.player-is-banned", target.getName(), false);
+			
+				if (expiry == null && !sender.hasPermission("lolbans.ban.perm"))
+					return sender.permissionDenied("lolbans.ban.perm");
+
+				if (expiry != null && expiry.getTime() > sender.getTimeGroup().getTime())
+					expiry = sender.getTimeGroup();
+
+				String reason = a.get("reason");
+				if (reason == null || reason.trim().equals("null")) {
+					String configReason = Messages.getMessages().getConfig().getString("ban.default-reason");
+					reason = configReason == null ? "Your account has been suspended!" : configReason;
+				}
+								
+				Punishment punishment = new Punishment(PunishmentType.BAN, sender, target, reason, expiry, silent, false);
+				punishment.commit(sender);
+			
+				if (overwrite) {
+					target.removeLatestPunishmentOfType(PunishmentType.BAN, sender,
+							"Overwritten by #" + punishment.getPunishID(), silent);
+				}
+				if (target.isOnline())
+					target.disconnect(punishment);
+
+				punishment.broadcast();
+
+				time.finish(sender);
+				debug.print("Command completed");
+			} catch (Exception e ){ 
 				e.printStackTrace();
 			}
-			for (User user : User.USERS.values()) {
-				sender.sendMessage(user.getName() + " " + user.getUniqueId());
-				System.out.println(user.getName() + " " + user.getUniqueId());
-			}
-			sender.sendMessage("hello!");
 			return true;
 		}
-
     }
 
+	// !IMPORTANT FIXME: Unban command doesn't pull from cache after a ban was just created
 	public static class UnbanCommand extends AsyncCommand {
 
 		public UnbanCommand(LolBans plugin) {
 			super("unban", plugin);
+			this.setDescription("Remove a player ban");
+			this.setPermission("lolbans.unban");
 		}
 
 		@Override
 		public void onSyntaxError(User sender, String label, String[] args) {
-
+			sender.sendMessage(Messages.invalidSyntax);
+			try {
+				sender.sendMessage(
+						Messages.translate("syntax.unban", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+			} catch (InvalidConfigurationException e) {
+				e.printStackTrace();
+				sender.sendMessage(Messages.serverError);
+			}
 		}
 
 		@Override
@@ -104,7 +163,37 @@ public class Ban {
 
 		@Override
 		public boolean run(User sender, String commandLabel, String[] args) {
-			return false;
+			Timing time = new Timing();
+
+			Arguments a = new Arguments(args);
+			a.optionalFlag("silent", "-s");
+			a.requiredString("username");
+			a.optionalSentence("reason"); 
+			
+			if (!a.valid()) 
+				return false;
+			
+			boolean silent = a.exists("silent");
+			String username = a.get("username");
+
+			User target = User.resolveUser(username);
+
+			if (!target.isBanned())
+				return sender.sendReferencedLocalizedMessage("ban.player-is-not-banned", target.getName(), false);
+		
+			String reason = a.get("reason");
+			if (reason == null || reason.trim().equals("null")) {
+				String configReason = Messages.getMessages().getConfig().getString("ban.default-reason");
+				reason = configReason == null ? "Your account has been suspended!" : configReason;
+			}
+
+			Punishment punishment = target.removeLatestPunishmentOfType(PunishmentType.BAN, sender, reason, silent);
+			punishment.broadcast();
+
+			time.finish(sender);
+			
+			boolean uwu = true;
+			return uwu;
 		}
 		
 	}

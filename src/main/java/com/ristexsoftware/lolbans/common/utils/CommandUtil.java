@@ -76,8 +76,9 @@ public class CommandUtil {
                     return command.onTabComplete(user, args);
                 }
             });
-            bukkitCmd.setAliases(command.getAliases());
             bukkitCmd.setDescription(command.getDescription());
+            if (command.getAliases() != null)
+                bukkitCmd.setAliases(command.getAliases());
             if (LolBans.getPlugin().getConfig().getBoolean("general.hidden-commands"))
                 bukkitCmd.setPermission(command.getPermission());
 
