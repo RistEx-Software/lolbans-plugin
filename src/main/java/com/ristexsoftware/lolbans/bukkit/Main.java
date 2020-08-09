@@ -33,6 +33,7 @@ import com.ristexsoftware.lolbans.common.commands.Ban;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
@@ -65,11 +66,15 @@ public class Main extends JavaPlugin {
         // Make sure our messages file exists
         Messages.getMessages();
 
+        for (Player player : Bukkit.getOnlinePlayers())
+            LolBans.getPlugin().registerUser(player);
+
         if (!Database.initDatabase())
             return;
 
         // System.out.println("aaaa");
         CommandUtil.Bukkit.registerBukkitCommand(new Ban.BanCommand(LolBans.getPlugin()));
+        CommandUtil.Bukkit.registerBukkitCommand(new Ban.UnbanCommand(LolBans.getPlugin()));
         getServer().getPluginManager().registerEvents(new ConnectionListener(), this);
 
     }

@@ -51,8 +51,8 @@ public class TimeUtil {
      * @param t {@link java.sql.Timestamp}
      * @return a human readable duration
      */
-    public static String DurationString(Timestamp t) {
-        return TimeUtil.DurationString(t.getTime() / 1000L);
+    public static String durationString(Timestamp t) {
+        return TimeUtil.durationString(t.getTime() / 1000L);
     }
 
     /**
@@ -61,7 +61,7 @@ public class TimeUtil {
      * @param t unix timestamp
      * @return human readable duration
      */
-    public static String DurationString(long t) {
+    public static String durationString(long t) {
         long years = t / 31449600;
         long weeks = (t / 604800) % 52;
         long days = (t / 86400) % 7;
@@ -113,10 +113,10 @@ public class TimeUtil {
      * @param ts {@link java.sql.Timestamp}
      * @return A string stating the duration forward or backward in time.
      */
-    public static String Expires(Timestamp ts) {
+    public static String expires(Timestamp ts) {
         if (ts == null)
             return "";
-        return TimeUtil.Expires(ts.getTime() / 1000L);
+        return TimeUtil.expires(ts.getTime() / 1000L);
     }
 
     /**
@@ -126,14 +126,14 @@ public class TimeUtil {
      * @param expires A unix timestamp
      * @return A string stating the duration forward or backward in time.
      */
-    public static String Expires(long expires) {
+    public static String expires(long expires) {
         long CurTime = TimeUtil.getUnixTime();
         if (expires == 0)
             return "never expires";
         else if (expires < CurTime)
-            return String.format("%s ago", TimeUtil.DurationString(CurTime - expires));
+            return String.format("%s ago", TimeUtil.durationString(CurTime - expires));
         else
-            return String.format("%s from now", TimeUtil.DurationString(expires - CurTime));
+            return String.format("%s from now", TimeUtil.durationString(expires - CurTime));
     }
 
     /**
@@ -142,7 +142,7 @@ public class TimeUtil {
      * @param s the string of characters to convert to a quantity of seconds
      * @return The duration converted to seconds
      */
-    public static Optional<Long> Duration(String s) {
+    public static Optional<Long> duration(String s) {
         long total = 0;
         long subtotal = 0;
 
@@ -181,8 +181,8 @@ public class TimeUtil {
      *             {@link java.text.SimpleDateFormat}
      */
     @Deprecated
-    public static String TimeString(long t) {
-        return TimeUtil.TimeString(new Timestamp(t));
+    public static String timeString(long t) {
+        return TimeUtil.timeString(new Timestamp(t));
     }
 
     /**
@@ -196,7 +196,7 @@ public class TimeUtil {
      *             {@link java.text.SimpleDateFormat}
      */
     @Deprecated
-    public static String TimeString(Timestamp ts) {
+    public static String timeString(Timestamp ts) {
         if (ts == null)
             return "";
         return sdf.format(ts);
@@ -205,23 +205,23 @@ public class TimeUtil {
     /**
      * Convert a human-readable duration to a SQL Timestamp object
      * 
-     * @param TimePeriod A duration string (eg, "2y1w10d40m6s")
+     * @param timePeriod A duration string (eg, "2y1w10d40m6s")
      * @return {@link java.sql.Timestamp}
      */
     // I spent 2 hours ensuring this method worked...
     // Turns out, I need to read documentation more, java.sql.Timestamp uses
     // milliseconds and not seconds, I somehow forgot that.
-    public static Timestamp toTimestamp(String TimePeriod) {
+    public static Timestamp toTimestamp(String timePeriod) {
         // Parse ban time.
-        if (Messages.compareMany(TimePeriod, new String[] { "*", "0" }))
+        if (Messages.compareMany(timePeriod, new String[] { "*", "0" }))
             return null;
 
         // If it's numeric, lets do some extra checks!
-        if (NumberUtil.isNumeric(TimePeriod)) {
+        if (NumberUtil.isNumeric(timePeriod)) {
             // Return null if it's greater 12 characters long
-            if (TimePeriod.length() > 12)
+            if (timePeriod.length() > 12)
                 return null;
-            Optional<Long> dur = TimeUtil.Duration(TimePeriod);
+            Optional<Long> dur = TimeUtil.duration(timePeriod);
             if (dur.isPresent())
                 return new Timestamp((TimeUtil.getUnixTime() + dur.get()) * 1000L)
                         .getTime() >= new java.sql.Timestamp(253402261199L * 1000L).getTime() ? null
@@ -229,8 +229,8 @@ public class TimeUtil {
             // 253402261199 x 1000L is the year 9999 in epoch, this ensures we don't have
             // invalid timestamp exceptions.
         }
-        if (!Messages.compareMany(TimePeriod, new String[] { "*", "0" })) {
-            Optional<Long> dur = TimeUtil.Duration(TimePeriod);
+        if (!Messages.compareMany(timePeriod, new String[] { "*", "0" })) {
+            Optional<Long> dur = TimeUtil.duration(timePeriod);
             if (dur.isPresent())
                 return new Timestamp((TimeUtil.getUnixTime() + dur.get()) * 1000L)
                         .getTime() >= new java.sql.Timestamp(253402261199L * 1000L).getTime() ? null
@@ -254,7 +254,7 @@ public class TimeUtil {
      * 
      * @return {@link java.sql.Timestamp}
      */
-    public static Timestamp TimestampNow() {
+    public static Timestamp now() {
         return new Timestamp(TimeUtil.getUnixTime() * 1000L);
     }
 }

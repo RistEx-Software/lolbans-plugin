@@ -92,10 +92,10 @@ public class Translation {
                         : (new SimpleDateFormat(args)).format(Timestamp.valueOf(lvalue));
             });
             put("duration", (String lvalue, String unused) -> {
-                return lvalue == null || lvalue == "" ? "Never" : TimeUtil.Expires(Timestamp.valueOf(lvalue));
+                return lvalue == null || lvalue == "" ? "Never" : TimeUtil.expires(Timestamp.valueOf(lvalue));
             });
             put("expiry", (String lvalue, String unused) -> {
-                return lvalue == null || lvalue == "" ? "Never" : TimeUtil.Expires(Timestamp.valueOf(lvalue));
+                return lvalue == null || lvalue == "" ? "Never" : TimeUtil.expires(Timestamp.valueOf(lvalue));
             });
             put("cut", (String lvalue, String arg) -> {
                 return lvalue.replace(arg, "");

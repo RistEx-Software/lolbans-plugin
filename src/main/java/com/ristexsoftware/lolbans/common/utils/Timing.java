@@ -19,16 +19,41 @@
 
 package com.ristexsoftware.lolbans.common.utils;
 
+import java.util.TreeMap;
+
+import com.ristexsoftware.lolbans.api.User;
+import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
+import com.ristexsoftware.lolbans.api.configuration.Messages;
+
 import lombok.Getter;
 
 public class Timing {
     private Long start = System.currentTimeMillis();
     private Long later = 0L;
-    @Getter private Long time;
-    public Timing() {}
+    @Getter
+    private Long time;
+
+    public Timing() {
+    }
 
     public void finish() {
         later = System.currentTimeMillis();
         time = later - start;
+    }
+
+    public void finish(User sender) {
+        try {
+            finish();
+            if (sender.isOnline()) {
+                sender.sendMessage(
+                        Messages.translate("command-complete", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                            {
+                                put("Milliseconds", Long.toString(time));
+                            }
+                        }));
+            }
+        } catch (InvalidConfigurationException ex) {
+            ex.printStackTrace();
+        }
     }
 }

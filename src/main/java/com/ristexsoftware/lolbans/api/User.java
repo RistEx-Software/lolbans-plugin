@@ -26,6 +26,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -36,8 +38,13 @@ import java.util.regex.Pattern;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.ristexsoftware.lolbans.api.configuration.ConfigurationSection;
+import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
+import com.ristexsoftware.lolbans.api.punishment.Punishment;
+import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 import com.ristexsoftware.lolbans.api.utils.Cacheable;
+import com.ristexsoftware.lolbans.api.utils.TimeUtil;
 import com.ristexsoftware.lolbans.common.utils.Debug;
 
 import inet.ipaddr.AddressStringException;
@@ -95,6 +102,13 @@ public class User implements Cacheable {
      * @return True if this user is banned
      */
     public boolean isBanned() {
+        Punishment punishment = LolBans.getPlugin().getPunishmentCache().find((it) -> (it.getType() == PunishmentType.BAN 
+                                                    && !it.getAppealed() && it.getTarget().getUniqueId().toString() == uuid.toString()));
+
+        if (punishment != null) {
+            return true;
+        }
+
         try {
             return Database.isUserBanned(this.uuid).get();
         } catch (InterruptedException | ExecutionException e) {
@@ -222,6 +236,51 @@ public class User implements Cacheable {
         return false;
     }
 
+    public void disconnect(Punishment punishment) {
+        if (punishment != null) {
+            PunishmentType type = punishment.getType();
+            TreeMap<String, String> vars = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                {
+                    put("player", punishment.getTarget().getName());
+                    put("reason", punishment.getReason());
+                    put("arbiter", punishment.getPunisher().getName());
+                    put("expiry", punishment.getExpiresAt() == null ? "" : punishment.getExpiresAt().toString());
+                    put("silent", Boolean.toString(punishment.getSilent()));
+                    put("appealed",Boolean.toString(punishment.getAppealed()));
+                    put("expires",Boolean.toString(punishment.getExpiresAt() != null && !punishment.getAppealed()));
+                    put("punishid", punishment.getPunishID());
+                }
+            };
+            try {
+                switch(type) {
+                    case BAN:
+                        disconnect(Messages.translate(punishment.getExpiresAt() == null ? "ban.perm-ban-message" : "ban.temp-ban-message", vars));
+                        break;
+                    case MUTE:
+                        disconnect(Messages.translate("mute.you-were-muted", vars));
+                        break;
+                    case KICK:
+                        disconnect(Messages.translate("kick.kick-message", vars));
+                        break;
+                    case WARN:
+                        disconnect(Messages.translate("warn.warn-kick-message", vars));
+                        break;
+                    case IP:
+                        disconnect(Messages.translate(punishment.getExpiresAt() == null ? "ip-ban.perm-ip-ban-message" : "ip-ban.temp-ip-ban-message", vars));
+                        break;
+                    case REGEX:
+                        disconnect(Messages.translate(punishment.getExpiresAt() == null ? "regex-ban.perm-ban-message" : "regex-ban.temp-ban-message", vars));
+                        break;
+                    default:
+                        break;
+                }
+            } catch (InvalidConfigurationException e) {
+                e.printStackTrace();
+                disconnect(Messages.serverError);
+            }
+        }
+    }
+
     /**
      * Disconnect a user from the server
      * 
@@ -231,11 +290,16 @@ public class User implements Cacheable {
         if (message == null || message.equals(""))
             message = "You have been kicked by an operator!";
 
+        final String msg = message; // MuSt Be FiNaL
+
         switch (LolBans.getServerType()) {
             case PAPER:
             case BUKKIT: {
                 org.bukkit.entity.Player player = org.bukkit.Bukkit.getPlayer(this.username);
-                player.kickPlayer(message);
+                // player.kickPlayer(msg);
+                org.bukkit.Bukkit.getScheduler().runTaskLater(
+                        com.ristexsoftware.lolbans.bukkit.Main.getPlugin(com.ristexsoftware.lolbans.bukkit.Main.class),
+                        () -> player.kickPlayer(msg), 1L);
             }
             case BUNGEECORD: {
                 net.md_5.bungee.api.connection.ProxiedPlayer player = net.md_5.bungee.api.ProxyServer.getInstance()
@@ -258,7 +322,7 @@ public class User implements Cacheable {
     public void sendMessage(String message) {
 
         if (isConsole()) {
-            return;
+            System.out.println(message);
         }
 
         if (!isOnline()) {
@@ -306,8 +370,8 @@ public class User implements Cacheable {
             }
 
             // Lets also check our cache to save even more time.
-            final String fuckyoujava = username;
-            User cache = LolBans.getPlugin().getUserCache().find((t) -> t.username == fuckyoujava);
+            final String uwuwuwuwuwuwuwuw = username;
+            User cache = LolBans.getPlugin().getUserCache().find((t) -> t.username.equalsIgnoreCase(uwuwuwuwuwuwuwuw));
             if (cache != null) {
                 debug.print("Pulled entry for " + cache.getName() + " from cache");
                 return cache;
@@ -342,7 +406,7 @@ public class User implements Cacheable {
                 return null;
             User user = new User(username, UUID.fromString(uuid));
             debug.print(String.format("Pulled entry for %s from API", user.getName()));
-             LolBans.getPlugin().getUserCache().put(user);
+            LolBans.getPlugin().getUserCache().put(user);
             debug.print("Cached user " + user.getName());
             return user;
 
@@ -402,4 +466,73 @@ public class User implements Cacheable {
             return null;
         }
     }
+
+    /**
+     * Send a message to a player from messages.yml whose only argument is the
+     * player name
+     * 
+     * @param configNode The message node from messages.yml
+     * @param playerName The name of the player to use as a placeholder
+     * @param ret        The value to return from this function
+     * @return The value provided as <code>ret</code>
+     */
+    public boolean sendReferencedLocalizedMessage(String configNode, String playerName, boolean ret) {
+        try {
+            sendMessage(Messages.translate(configNode, new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                {
+                    put("player", playerName);
+                    put("ipaddress", playerName);
+                    put("sender", getName());
+                }
+            }));
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
+        /**
+     * Remove a punishment from a player
+     * 
+     * @param type   The punishment type to remove
+     * @param reason The reason for removal
+     * @param silent Is the punishment removal silent
+     */
+    public Punishment removeLatestPunishmentOfType(PunishmentType type, User unpunisher, String reason, boolean silent) {
+        Punishment op = Punishment.findPunishment(type, this, false);
+        op.setAppealReason(reason);
+        op.setAppealed(true);
+        op.setAppealedAt(TimeUtil.now());
+        op.setAppealedBy(unpunisher);
+
+        op.update(op.getPunishID());
+  
+        // try {
+        //     DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+        // } catch (InvalidConfigurationException e) {
+        //     e.printStackTrace();
+        // }
+
+        return op;
+    }
+
+    public Timestamp getTimeGroup() {
+
+        Timestamp defaultTime = TimeUtil.toTimestamp(LolBans.getPlugin().getConfig().getString("max-time.default"));
+        ConfigurationSection configTimeGroups = LolBans.getPlugin().getConfig().getConfigurationSection("max-time");
+        ArrayList<String> timeGroups = new ArrayList<String>();
+        
+        timeGroups.addAll(configTimeGroups.getKeys(false));
+        Collections.reverse(timeGroups);
+
+        for (String key : timeGroups) {
+            if (hasPermission("lolbans.maxtime." + key)) {
+                return TimeUtil.toTimestamp(LolBans.getPlugin().getConfig().getString("max-time." + key));
+            }
+        }
+
+        return defaultTime == null ? TimeUtil.toTimestamp("7d") : defaultTime;
+    }
+
+
 }
