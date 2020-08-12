@@ -13,6 +13,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
+import com.ristexsoftware.lolbans.api.User;
 
 // Javadocs for IPAddress: https://seancfoley.github.io/IPAddress/IPAddress/apidocs/
 public class IPUtil {
@@ -156,5 +157,42 @@ public class IPUtil {
         // Add our banned cidr range if not found.
         if (!found)
             LolBans.getPlugin().BANNED_ADDRESSES.add(addr);
+    }
+
+    /**
+     * Get the number of users affected by an IP ban.
+     */
+    public static int getBanAffected(IPAddress target) {
+        int affected = 0;
+        for (User user : LolBans.getPlugin().getOnlineUserCache().getAll()) {
+            HostName host = new HostName(user.getAddress());
+            if (target.contains(host.asAddress()))
+                affected++;
+        }
+        return affected;
+    }
+
+    /**
+     * Get the percentage of online player IPs the target IP contains. 
+     * 
+     * @return true if it is an insane (over-reaching) ban.
+	 */
+	public static double getBanPercentage(IPAddress target) {
+		int affected = getBanAffected(target);
+        int total = LolBans.getPlugin().getOnlineUsers().size();
+
+        if (total == 0) {
+            return 0.0;
+        }
+
+        return affected / total * 100;
+    }
+    
+    /**
+     * Check whether the target IP address matches greater than the insanity percentage.Address
+     */
+    public static boolean isTargetIpInsane(IPAddress target) {
+        double cutoff = LolBans.getPlugin().getConfig().getDouble("ban-settings.insane.trigger");
+        return getBanPercentage(target) >= cutoff;
     }
 }

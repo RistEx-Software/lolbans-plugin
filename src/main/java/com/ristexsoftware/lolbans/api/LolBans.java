@@ -21,7 +21,6 @@ package com.ristexsoftware.lolbans.api;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.reflect.GenericDeclaration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -31,14 +30,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+// import java.util.ArrayList;
 
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.configuration.file.FileConfiguration;
+// import com.ristexsoftware.lolbans.api.event.Event;
+// import com.ristexsoftware.lolbans.api.event.Listener;
+// import com.ristexsoftware.lolbans.api.event.RegisteredListener;
+import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.runnables.CacheRunnable;
 import com.ristexsoftware.lolbans.api.runnables.QueryRunnable;
-import com.ristexsoftware.lolbans.api.utils.ServerType;
 import com.ristexsoftware.lolbans.api.utils.Cache;
-import com.ristexsoftware.lolbans.api.punishment.Punishment;
+import com.ristexsoftware.lolbans.api.utils.ServerType;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -67,6 +69,10 @@ public class LolBans extends JavaPlugin {
     public List<IPAddressString> BANNED_ADDRESSES = new Vector<IPAddressString>(); // Not sure why this is here, legacy? 
 
     @Getter private ExecutorService pool = Executors.newFixedThreadPool(3);
+
+    @Setter
+    @Getter
+    private boolean chatMute = false;
 
     // Caches
     @Getter private Cache<User> userCache = new Cache<>(User.class);
@@ -107,18 +113,12 @@ public class LolBans extends JavaPlugin {
         punishmentCache.setTtl(config.getLong("cache.punishment.ttl"));
 
         setServerType(type);
+        getLogger().info("Running on server: " + type.name());
 
         // So, apparently Java gets all pissy and throws java.util.concurrent.RejectedExecutionException if spigot reloads.
         // I agree with Java, stop reloading spigot, it's bad.
         new Timer().scheduleAtFixedRate(new CacheRunnable(), 1000L, config.getLong("general.runnable-timer") * 1000L);
         new Timer().scheduleAtFixedRate(new QueryRunnable(), 1000L, config.getLong("general.runnable-timer") * 1000L);
-    }
-
-    /**
-     * Fetch a reference to the plugin singelton.
-     */
-    public static LolBans getPlugin() {
-        return plugin;
     }
 
     /**
@@ -243,4 +243,61 @@ public class LolBans extends JavaPlugin {
         }
     }
 
-}
+    // private HashMap<Class<? extends Event>, ArrayList<Listener>> eventHandlers = new HashMap<>();
+
+    // /**
+    //  * Call an event object.
+    //  */
+    // public void callEvent(@NotNull Event event) {
+    //     ArrayList<Listener> handlers = eventHandlers.get(event.getClass());
+        
+    //     handlers.
+    // }
+
+    // @Override
+    // public void registerEvents(@NotNull Listener listener) {
+
+    //     for (Map.Entry<Class<? extends Event>, Set<RegisteredListener>> entry : plugin.getPluginLoader().createRegisteredListeners(listener, plugin).entrySet()) {
+    //         getEventListeners(getRegistrationClass(entry.getKey())).registerAll(entry.getValue());
+    //     }
+
+    // }
+
+    // @Override
+    // public void registerEvent(@NotNull Class<? extends Event> event, @NotNull Listener listener, @NotNull EventPriority priority, @NotNull EventExecutor executor) {
+    //     registerEvent(event, listener, priority, executor, plugin, false);
+    // }
+
+    // /**
+    //  * Registers the given event to the specified listener using a directly
+    //  * passed EventExecutor
+    //  *
+    //  * @param event Event class to register
+    //  * @param listener PlayerListener to register
+    //  * @param priority Priority of this event
+    //  * @param executor EventExecutor to register
+    //  * @param plugin Plugin to register
+    //  * @param ignoreCancelled Do not call executor if event was already
+    //  *     cancelled
+    //  */
+    // @Override
+    // public void registerEvent(@NotNull Class<? extends Event> event, @NotNull Listener listener, @NotNull EventPriority priority, @NotNull EventExecutor executor, @NotNull Plugin plugin, boolean ignoreCancelled) {
+    //     Validate.notNull(listener, "Listener cannot be null");
+    //     Validate.notNull(priority, "Priority cannot be null");
+    //     Validate.notNull(executor, "Executor cannot be null");
+    
+    //     getEventListeners(event).register(new RegisteredListener(listener, executor, priority, plugin, ignoreCancelled));
+    // }
+
+    // @NotNull
+    // private HandlerList getEventListeners(@NotNull Class<? extends Event> type) {
+    //     try {
+    //         Method method = getRegistrationClass(type).getDeclaredMethod("getHandlerList");
+    //         method.setAccessible(true);
+    //         return (HandlerList) method.invoke(null);
+    //     } catch (Exception e) {
+    //         throw new IllegalPluginAccessException(e.toString());
+    //     }
+    // }
+
+}  

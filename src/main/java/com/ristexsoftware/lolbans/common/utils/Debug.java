@@ -19,6 +19,7 @@
 
 package com.ristexsoftware.lolbans.common.utils;
 
+import java.util.Random;
 import com.ristexsoftware.lolbans.api.LolBans;
 
 import lombok.Getter;
@@ -28,12 +29,23 @@ public class Debug {
     @Getter private Long time;
     private int count = 0;
     private Class<?> clazz;
+    Random r = new Random();
+    String alphabet = "3569abcde";
+    String randomcolor = "\u00A7"+alphabet.charAt(r.nextInt(alphabet.length()));
     public Debug(Class<?> claz) {
         this.clazz = claz;
     }
 
     public void print(Object message) {
         if (LolBans.getPlugin().getConfig().getBoolean("general.debug"))
-            LolBans.getLogger().info("("+clazz.getSimpleName()+".class) " + message + " | " + ((System.nanoTime() - start) / 1e3) + "μ" + " (" + ++count + ")");
+            LolBans.getLogger().info(randomcolor + "(" + ++count + ") " + "("+clazz.getSimpleName()+".class) \u00A7r" + message + " | " + ((System.nanoTime() - start) / 1e3) + "μ");
+    }
+
+    /**
+     * Reset this debug instance.
+     */
+    public void reset() {
+        start = System.nanoTime();
+        count = 0;
     }
 }

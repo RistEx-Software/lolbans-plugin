@@ -124,9 +124,21 @@ public class ConnectionListener implements Listener {
 
                     boolean foundIP = false;
                     boolean foundBan = false;
+                    boolean foundRegex = false;
                     boolean foundWarn = false;
 
+                    debug.print("Checking cache for outstanding punishments...");
+
                     for (Punishment punish : LolBans.getPlugin().getPunishmentCache().getAll()) {
+
+                        if (punish.getType() == PunishmentType.REGEX) {
+                            debug.print(punish.getRegex() + " " + user.getName());
+                        }
+
+                        if (punish.getAppealed()) {
+                            continue;
+                        }
+
                         Map<String, String> vars = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                             {
                                 put("punishid", punish.getPunishID());
@@ -136,54 +148,81 @@ public class ConnectionListener implements Listener {
                                 put("arbiter", punish.getPunisher().getName());
                                 Timestamp expiresAt = punish.getExpiresAt();
                                 put("expiry", expiresAt != null ? expiresAt.toString() : "Never");
+                                put("regex", punish.getRegex() == null ? "" : punish.getRegex());
                             }
                         };
-                        if (!punish.getRegexBan() && (punish.getTarget() == null ? punish.getIpAddress().toString().equals(event.getRealAddress().getHostAddress()) && !punish.getAppealed() : punish.getTarget().getUniqueId()) == user.getUniqueId()) {
-                            PunishmentType type = punish.getType();
-                            if (!foundIP && type == PunishmentType.IP && punish.getIpAddress().toString().equals(event.getRealAddress().getHostAddress())) {
-                                foundIP = true;
-                                
-                                String disconnectReason = Messages.translate(
-                                        punish.getExpiresAt() != null ? "ip-ban.temp-ip-ban-message"
-                                                : "ip-ban.perm-ip-ban-message",
-                                        vars);
-                                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, disconnectReason);
+                    
+                        PunishmentType type = punish.getType();
+                        if (!foundIP && type == PunishmentType.IP && punish.getIpAddress().toString().equals(event.getRealAddress().getHostAddress())) {
+                            foundIP = true;
+                            
+                            String disconnectReason = Messages.translate(
+                                    punish.getExpiresAt() != null ? "ip-ban.temp-ip-ban-message"
+                                            : "ip-ban.perm-ip-ban-message",
+                                    vars);
+                            
+                            debug.print("Found a valid and matching IP ban - disconnecting...");
+                            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, disconnectReason);
 
-                                continue;
-                            }
-
-                            if (!foundBan
-                                    && type == PunishmentType.BAN) {
-                                foundBan = true;
-
-                                String disconnectReason = Messages.translate(
-                                        punish.getExpiresAt() != null ? "ban.temp-ban-message"
-                                                : "ban.perm-ban-message",
-                                        vars);
-                                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, disconnectReason);
-
-                                continue;
-                            }
-
-                            if (!foundWarn
-                                    && type == PunishmentType.WARN) {
-                                foundWarn = true;
-
-                                String disconnectReason = Messages.translate("warn.warn-kick-message", vars);
-                                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, disconnectReason);
-
-                                continue;
-                            }
-
+                            continue;
                         }
+
+       
+                        if (!foundRegex
+                                && type == PunishmentType.REGEX
+                                && Pattern.matches(punish.getRegex(), user.getName())) {
+                            
+                            foundRegex = true;
+                            String disconnectReason = Messages.translate(punish.getExpiresAt() != null ? "regex-ban.temp-ban-message" : "regex-ban.perm-ban-message", vars);
+                            
+                            debug.print("Found a valid and matching regex ban - disconnecting...");
+                            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, disconnectReason);
+                        }
+
+                        if (punish.getTarget() == null
+                                || !punish.getTarget().getUniqueId().equals(user.getUniqueId())) {
+                            continue;
+                        }
+
+                        if (!foundBan
+                                && type == PunishmentType.BAN) {
+
+                            foundBan = true;
+
+                            String disconnectReason = Messages.translate(
+                                    punish.getExpiresAt() != null ? "ban.temp-ban-message"
+                                            : "ban.perm-ban-message",
+                                    vars);
+
+                             debug.print("Found a valid ban - disconnecting...");
+                            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, disconnectReason);
+
+                            continue;
+                        }
+
+                        if (!foundWarn && type == PunishmentType.WARN && !punish.getWarningAck()) {
+                            foundWarn = true;
+
+                            String disconnectReason = Messages.translate("warn.warn-kick-message", vars);
+
+                            debug.print("Found a valid and unacknowledged warn - disconnecting...");
+                            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, disconnectReason);
+
+                            debug.print("Marking outstanding warning as acknowledged");
+                            punish.setWarningAck(true);
+                            punish.update();
+
+                            continue;
+                        }
+
                     }
 
                     final PreparedStatement punishmentQuery = Database.connection.prepareStatement(
-                            "SELECT * FROM lolbans_punishments WHERE (target_uuid = ? OR (type = 5 AND target_ip_address = ?)) AND appealed = FALSE AND warning_ack = FALSE AND (expires_at IS NOT NULL >= NOW() OR expires_at IS NULL)");
-                    punishmentQuery.setString(1, player.getUniqueId().toString());
-                    punishmentQuery.setString(2, event.getRealAddress().getHostAddress());
+                            "SELECT * FROM lolbans_punishments WHERE appealed = FALSE AND (expires_at IS NOT NULL >= NOW() OR expires_at IS NULL)");
 
                     ResultSet punishmentRecord = Database.executeLater(punishmentQuery).get().get();
+
+                    debug.print("Checking database for outstanding punishments...");
 
                     // So basically, we need to go in this order for punishments
                     // IP Ban check > Normal ban check > Warning check
@@ -191,7 +230,16 @@ public class ConnectionListener implements Listener {
                     // until we've found an IP Ban
                     while (punishmentRecord.next()) {
 
+                        if (punishmentRecord.getBoolean("appealed")) {
+                            continue;
+                        }
+
                         PunishmentType type = PunishmentType.fromOrdinal(punishmentRecord.getInt("type"));
+
+                        if (type == PunishmentType.REGEX) {
+                            debug.print(punishmentRecord.getString("regex") + " " + user.getName());
+                        }
+
                         Map<String, String> vars = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                             {
                                 put("punishid", punishmentRecord.getString("punish_id"));
@@ -201,14 +249,15 @@ public class ConnectionListener implements Listener {
                                 put("arbiter", punishmentRecord.getString("punished_by_name"));
                                 Timestamp expiresAt = punishmentRecord.getTimestamp("expires_at");
                                 put("expiry", expiresAt != null ? expiresAt.toString() : "Never");
+                                put("regex", punishmentRecord.getString("regex"));
                             }
                         };
 
                         // We want to check for ip bans first.
-                        if (!foundIP && PunishmentType.fromOrdinal(punishmentRecord.getInt("type")) == PunishmentType.IP
+                        if (!foundIP && type == PunishmentType.IP
                                 && punishmentRecord.getString("target_ip_address")
                                         .equals(event.getRealAddress().getHostAddress())) {
-                            debug.print("Found active IP ban for " + user.getName() + " (" + user.getUniqueId().toString() + ")");
+                        debug.print("Found a valid IP ban - disconnecting...");
                             foundIP = true;
 
                             String disconnectReason = Messages.translate(
@@ -221,9 +270,25 @@ public class ConnectionListener implements Listener {
                             continue;
                         }
 
+                        if (!foundRegex
+                                && type == PunishmentType.REGEX
+                                && Pattern.matches(punishmentRecord.getString("regex") == null ? ""
+                                        : punishmentRecord.getString("regex"), user.getName())) {
+                            debug.print("Found a valid and matching regex ban - disconnecting...");
+                                    
+                            foundRegex = true;
+                            String disconnectReason = Messages.translate(punishmentRecord.getTimestamp("expires_at") != null ? "regex-ban.temp-ban-message" : "regex-ban.perm-ban-message", vars);
+                            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, disconnectReason);
+                        }
+
+                        if (punishmentRecord.getString("target_uuid") == null    
+                            || !punishmentRecord.getString("target_uuid").equals(user.getUniqueId().toString())) {
+                            continue;
+                        }
+
                         if (!foundBan
-                                && PunishmentType.fromOrdinal(punishmentRecord.getInt("type")) == PunishmentType.BAN) {
-                            debug.print("Found active ban for " + user.getName() + " (" + user.getUniqueId().toString() + ")");
+                                && type == PunishmentType.BAN) {
+                            debug.print("Found a valid ban - disconnecting...");
                             foundBan = true;
 
                             String disconnectReason = Messages.translate(
@@ -231,14 +296,16 @@ public class ConnectionListener implements Listener {
                                             : "ban.perm-ban-message",
                                     vars);
                             event.disallow(PlayerLoginEvent.Result.KICK_BANNED, disconnectReason);
-
+                            
                             punishmentRecord.beforeFirst();
+
                             continue;
                         }
-
+                        
                         if (!foundWarn
-                                && PunishmentType.fromOrdinal(punishmentRecord.getInt("type")) == PunishmentType.WARN) {
-                            debug.print("Found unacknowledged warn for " + user.getName() + " (" + user.getUniqueId().toString() + ")");
+                                && type == PunishmentType.WARN
+                                && !punishmentRecord.getBoolean("warning_ack")) {
+                            debug.print("Found a valid and unacknowledged warn - disconnecting...");
                             foundWarn = true;
 
                             String disconnectReason = Messages.translate("warn.warn-kick-message", vars);
@@ -247,6 +314,8 @@ public class ConnectionListener implements Listener {
                             punishmentRecord.beforeFirst();
                             continue;
                         }
+
+                        debug.print("Caching user punishments...");
 
                         // Let's cache these!
                         switch (type) {
@@ -282,15 +351,23 @@ public class ConnectionListener implements Listener {
                                         user, punishmentRecord.getString("reason"),
                                         punishmentRecord.getTimestamp("expires_at"),
                                         punishmentRecord.getBoolean("silent"), punishmentRecord.getBoolean("appealed"));
-
-                                if (!foundWarn) {
+                                
+                                warn.setWarningAck(punishmentRecord.getBoolean("warning_ack"));
+                                    
+                                if (foundWarn) {
+                                    debug.print("Marking outstanding warning as acknowledged");
                                     warn.setWarningAck(true);
-                                    warn.update(punishmentRecord.getString("punish_id"));
-                                }
-                                LolBans.getPlugin().getPunishmentCache().put(warn);
+                                    warn.update();
+                                } 
+                                else 
+                                    LolBans.getPlugin().getPunishmentCache().update(warn);
+                                break;
+                            default:
                                 break;
                         }
                     }
+                    
+                    // bork bork nom nom
 
                     String rDNS = IPUtil.rDNSQUery(event.getRealAddress().getHostAddress());
                     // Do Regex matches since they're pre-compiled

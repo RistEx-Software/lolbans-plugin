@@ -29,7 +29,7 @@ import com.ristexsoftware.lolbans.common.utils.CommandUtil;
 import com.ristexsoftware.lolbans.common.utils.MemoryUtil;
 import com.ristexsoftware.lolbans.api.utils.ServerType;
 import com.ristexsoftware.lolbans.bungeecord.Listeners.ConnectionListener;
-import com.ristexsoftware.lolbans.common.commands.Ban;
+import com.ristexsoftware.lolbans.common.commands.ban.Ban;
 
 import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;

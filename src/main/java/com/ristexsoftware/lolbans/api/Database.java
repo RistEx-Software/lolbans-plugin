@@ -32,6 +32,7 @@ import java.util.HashSet;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.configuration.file.FileConfiguration;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
+import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 import com.ristexsoftware.lolbans.api.utils.TimeUtil;
 import com.ristexsoftware.lolbans.bukkit.Main;
 import com.ristexsoftware.lolbans.common.utils.Debug;
@@ -71,6 +72,7 @@ public class Database {
         // Ensure Our tables are created.
         try {
             // TODO: Support table prefixes?
+            // TODO: Remove usernames from tables
             connection.prepareStatement(
                     "CREATE TABLE IF NOT EXISTS lolbans_punishments (" + "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                     // Player info stuffs
@@ -296,14 +298,15 @@ public class Database {
         return id;
     }
 
-    public static Future<Boolean> isUserBanned(UUID uuid) {
+    public static Future<Boolean> isUserPunished(PunishmentType type, UUID uuid) {
         FutureTask<Boolean> t = new FutureTask<>(new Callable<Boolean>() {
             @Override
             public Boolean call() {
                 try {
                     PreparedStatement ps = getConnection().prepareStatement(
-                            "SELECT 1 FROM lolbans_punishments WHERE target_uuid = ? AND type = 0 AND appealed = FALSE LIMIT 1");
+                            "SELECT 1 FROM lolbans_punishments WHERE target_uuid = ? AND type = ? AND appealed = FALSE LIMIT 1");
                     ps.setString(1, uuid.toString());
+                    ps.setInt(2, type.ordinal());
 
                     return ps.executeQuery().next();
                 } catch (SQLException ex) {
@@ -317,7 +320,7 @@ public class Database {
 
         return (Future<Boolean>) t;
     }
-
+    
     /**
      * Get the last ip of a user
      * 

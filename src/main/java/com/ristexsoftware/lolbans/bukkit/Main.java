@@ -23,13 +23,21 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
-import com.ristexsoftware.lolbans.common.utils.CommandUtil;
 import com.ristexsoftware.lolbans.api.utils.ServerType;
 import com.ristexsoftware.lolbans.bukkit.Listeners.ConnectionListener;
-import com.ristexsoftware.lolbans.common.commands.Ban;
+import com.ristexsoftware.lolbans.common.commands.ban.Ban;
+import com.ristexsoftware.lolbans.common.commands.ban.BanWave;
+import com.ristexsoftware.lolbans.common.commands.ban.IPBan;
+import com.ristexsoftware.lolbans.common.commands.ban.RegexBan;
+import com.ristexsoftware.lolbans.common.commands.history.History;
+import com.ristexsoftware.lolbans.common.commands.history.PruneHistory;
+import com.ristexsoftware.lolbans.common.commands.misc.Kick;
+import com.ristexsoftware.lolbans.common.commands.misc.Rollback;
+import com.ristexsoftware.lolbans.common.commands.misc.Warn;
+import com.ristexsoftware.lolbans.common.utils.CommandUtil;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -72,9 +80,29 @@ public class Main extends JavaPlugin {
         if (!Database.initDatabase())
             return;
 
-        // System.out.println("aaaa");
+        // System.out.println("aaaa ur gay");
         CommandUtil.Bukkit.registerBukkitCommand(new Ban.BanCommand(LolBans.getPlugin()));
         CommandUtil.Bukkit.registerBukkitCommand(new Ban.UnbanCommand(LolBans.getPlugin()));
+
+        CommandUtil.Bukkit.registerBukkitCommand(new IPBan.Ban(LolBans.getPlugin()));
+        CommandUtil.Bukkit.registerBukkitCommand(new IPBan.Unban(LolBans.getPlugin()));    
+
+        CommandUtil.Bukkit.registerBukkitCommand(new RegexBan.Ban(LolBans.getPlugin()));
+        CommandUtil.Bukkit.registerBukkitCommand(new RegexBan.Unban(LolBans.getPlugin()));
+
+        CommandUtil.Bukkit.registerBukkitCommand(new BanWave(LolBans.getPlugin()));
+
+        CommandUtil.Bukkit.registerBukkitCommand(new History(LolBans.getPlugin()));
+        CommandUtil.Bukkit.registerBukkitCommand(new PruneHistory(LolBans.getPlugin()));
+
+        CommandUtil.Bukkit.registerBukkitCommand(new Kick(LolBans.getPlugin()));
+
+        CommandUtil.Bukkit.registerBukkitCommand(new Warn.WarnCommand(LolBans.getPlugin()));
+        CommandUtil.Bukkit.registerBukkitCommand(new Warn.UnwarnCommand(LolBans.getPlugin()));
+        CommandUtil.Bukkit.registerBukkitCommand(new Warn.AcknowledgeWarnCommand(LolBans.getPlugin()));
+
+        CommandUtil.Bukkit.registerBukkitCommand(new Rollback(LolBans.getPlugin()));
+
         getServer().getPluginManager().registerEvents(new ConnectionListener(), this);
 
     }

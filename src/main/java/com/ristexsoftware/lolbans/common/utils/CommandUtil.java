@@ -19,12 +19,14 @@
 
 package com.ristexsoftware.lolbans.common.utils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
+import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
 import com.ristexsoftware.lolbans.api.utils.ServerType;
 
@@ -104,21 +106,33 @@ public class CommandUtil {
                 return;
             
             com.ristexsoftware.lolbans.bungeecord.Main plugin = com.ristexsoftware.lolbans.bungeecord.Main.getPlugin();
+            net.md_5.bungee.api.ProxyServer.getInstance().getPluginManager().registerCommand(plugin, new TabableCommand(command));
+        }
 
-            net.md_5.bungee.api.plugin.Command cmd = new net.md_5.bungee.api.plugin.Command(command.getName(), command.getPermission(), command.getAliases().toArray(new String[0])) {
-        
+        private static class TabableCommand extends net.md_5.bungee.api.plugin.Command
+                implements net.md_5.bungee.api.plugin.TabExecutor {
+            private AsyncCommand parent;
 
-                public void execute(net.md_5.bungee.api.CommandSender sender, String[] args) {
-                    User user = (!(sender instanceof net.md_5.bungee.api.connection.ProxiedPlayer))
-                    ? User.getConsoleUser()
-                    : User.resolveUser(((net.md_5.bungee.api.connection.ProxiedPlayer) sender).getUniqueId().toString());
+            public TabableCommand(AsyncCommand parent) {
+                super(parent.getName(), parent.getPermission(), parent.getAliases().toArray(new String[0]));
+                this.parent = parent;
+            }
 
-                    command.execute(user, command.getName(), args);
-                }
-                
-            };
+            public void execute(net.md_5.bungee.api.CommandSender sender, String[] args) {
+                User user = (!(sender instanceof net.md_5.bungee.api.connection.ProxiedPlayer)) ? User.getConsoleUser()
+                        : User.resolveUser(
+                                ((net.md_5.bungee.api.connection.ProxiedPlayer) sender).getUniqueId().toString());
+
+                parent.execute(user, getName(), args);
+            }
             
-            net.md_5.bungee.api.ProxyServer.getInstance().getPluginManager().registerCommand(plugin, cmd);
+            @Override
+            public Iterable<String> onTabComplete(net.md_5.bungee.api.CommandSender sender, String[] args) {
+                User user = !(sender instanceof net.md_5.bungee.api.connection.ProxiedPlayer) ? User.getConsoleUser()
+                        : User.resolveUser(((net.md_5.bungee.api.connection.ProxiedPlayer) sender).getUniqueId().toString());
+                            
+                return parent.onTabComplete(user, args);
+            }
         }
     }
 }

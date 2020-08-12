@@ -81,7 +81,7 @@ public abstract class AsyncCommand {
 	 * @return Whether or not the command succeeded, returning false will trigger
 	 *         onSyntaxError()
 	 */
-	public abstract boolean run(User sender, String commandLabel, String[] args);
+	public abstract boolean run(User sender, String commandLabel, String[] args) throws Throwable;
 
 	/**
 	 * This is a vastly simplified command class. We only check if the plugin is
@@ -110,10 +110,10 @@ public abstract class AsyncCommand {
 					if (!self.run(sender, commandLabel, args))
 						self.onSyntaxError(sender, commandLabel, args);
 				} catch (Throwable ex) {
-					throw new CommandException(
-							"Unhandled exception executing command '" + commandLabel + "' in plugin " + "LolBans", ex);
+					getPlugin().getLogger().warning("Unhandled exception executing command '" + commandLabel + "'");
+					ex.printStackTrace();
 				}
-				return true;
+				return true;	
 			}
 		});
 

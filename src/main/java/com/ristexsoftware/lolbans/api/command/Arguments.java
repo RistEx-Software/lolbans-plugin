@@ -4,10 +4,10 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 import com.ristexsoftware.lolbans.api.utils.TimeUtil;
 import com.ristexsoftware.lolbans.common.utils.Debug;
+import com.ristexsoftware.lolbans.common.utils.NumberUtil;
 
 import lombok.Getter;
 
@@ -23,6 +23,7 @@ public class Arguments {
 
     public void invalidate(String name) {
         debug.print("Invalidated by argument " + name);
+        valid = false;
     }
 
     public boolean valid() {
@@ -123,15 +124,16 @@ public class Arguments {
      */
     public Arguments optionalSentence(String name, int length) {
         int end = position + length;
-        debug.print("Looking for required sentence - start = " + String.valueOf(position) + ", end = " + String.valueOf(end) + ", length = " + String.valueOf(length));
+        debug.print("Looking for optional sentence - start = " + String.valueOf(position) + ", end = " + String.valueOf(end) + ", length = " + String.valueOf(length));
     
-        if (position >= end)
-            throw new IllegalArgumentException("start cannot be greater than or equal to end");
+        if (position >= end) {
+            debug.print("Start cannot be greater than or equal to end");
+            return this;
+        }
         
         if (unparsedArgs.size() < position + length) {
             debug.print("Could not find sentence of appropriate length (args are size " + String.valueOf(position)
-                    + ") - marking as invalid");
-            invalidate(name);
+                    + ")");
             return this;
         }
 
@@ -207,9 +209,75 @@ public class Arguments {
         if (unparsedArgs.size() > position && TimeUtil.toTimestamp(unparsedArgs.get(position)) != null) {
             parsedArgs.put(name, String.valueOf(TimeUtil.toTimestamp(unparsedArgs.get(position)).getTime()));
             position++;
-            debug.print("Found timestamp at position " + String.valueOf(position) + " - new args size = " + String.valueOf(unparsedArgs.size()));
-        } else 
+            debug.print("Found timestamp at position " + String.valueOf(position) + " - new args size = "
+                    + String.valueOf(unparsedArgs.size()));
+        } else
             debug.print("Could not find timestamp");
+
+        return this;
+    }
+
+    /**
+     * Create an optional integer argument.
+     */
+    public Arguments optionalInt(String name) {
+        debug.print("Looking for optional int " + name + "...");
+
+        if (unparsedArgs.size() > position && NumberUtil.isInteger(unparsedArgs.get(position))) {
+            parsedArgs.put(name, unparsedArgs.get(position));
+            unparsedArgs.remove(position);
+            debug.print("Found int at position " + String.valueOf(position) + " - new args size = " + String.valueOf(unparsedArgs.size()));
+        } else 
+            debug.print("Could not find int");
+
+        return this;
+    }
+
+    public Arguments requiredInt(String name) {
+        debug.print("Looking for optional required " + name + "...");
+
+        if (unparsedArgs.size() > position && NumberUtil.isInteger(unparsedArgs.get(position))) {
+            parsedArgs.put(name, unparsedArgs.get(position));
+            position++;
+            debug.print("Found int at position " + String.valueOf(position) + " - new args size = " + String.valueOf(unparsedArgs.size()));
+        } else  {
+            debug.print("Could not find int - marking as invalid");
+            invalidate(name);
+        }
+
+        return this;
+    }
+
+    /**
+     * Create an optional duration argument.
+     */
+    public Arguments optionalDuration(String name) {
+        debug.print("Looking for optional duration " + name + "...");
+
+        if (unparsedArgs.size() > position && TimeUtil.duration(unparsedArgs.get(position)).isPresent()) {
+            parsedArgs.put(name, unparsedArgs.get(position));
+            unparsedArgs.remove(position);
+            debug.print("Found duration at position " + String.valueOf(position) + " - new args size = " + String.valueOf(unparsedArgs.size()));
+        } else 
+            debug.print("Could not find duration");
+
+        return this;
+    }
+
+    /**
+     * Create a required duration argument.
+     */
+    public Arguments requiredDuration(String name) {
+        debug.print("Looking for required duration " + name + "...");
+
+        if (unparsedArgs.size() > position && TimeUtil.duration(unparsedArgs.get(position)).isPresent()) {
+            parsedArgs.put(name, unparsedArgs.get(position));
+              position++;
+            debug.print("Found duration at position " + String.valueOf(position) + " - new args size = " + String.valueOf(unparsedArgs.size()));
+        } else {
+            debug.print("Could not find duration - marking as invalid");
+            invalidate(name);
+        }
 
         return this;
     }
@@ -225,10 +293,48 @@ public class Arguments {
      * Fetch a timestamp.
      */
     public Timestamp getTimestamp(String name) {
-        return TimeUtil.toTimestamp(name);
+        if (parsedArgs.get(name) == null) {
+            return null;
+        }
+        return TimeUtil.toTimestamp(parsedArgs.get(name));
     }
 
+    /**
+     * Fetch an integer.
+     */
+    public Integer getInt(String name) {
+        try {
+            return Integer.parseInt(parsedArgs.get(name));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Return whether an argument exists.
+     */
     public Boolean exists(String name) {
         return parsedArgs.get(name) != null;
+    }
+
+    /**
+     * Return whether a flag is set.
+     */
+    public Boolean getFlag(String name) {
+        return exists(name);
+    }
+
+    /**
+     * Fetch a boolean value (usually a flag).
+     */
+    public Boolean getBoolean(String name) {
+        return Boolean.valueOf(parsedArgs.get(name));
+    }
+
+    /**
+     * Fetch a duration value.
+     */
+    public Long getDuration(String name) {
+        return TimeUtil.duration(parsedArgs.get(name)).get();
     }
 }
