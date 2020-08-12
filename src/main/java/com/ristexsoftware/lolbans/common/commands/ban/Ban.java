@@ -17,13 +17,15 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.ristexsoftware.lolbans.common.commands;
+package com.ristexsoftware.lolbans.common.commands.ban;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 
+import com.google.common.collect.ImmutableList;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
@@ -61,7 +63,19 @@ public class Ban {
 
 		@Override
 		public List<String> onTabComplete(User sender, String[] args) {
-			return null;
+			if (args.length < 2) {
+				ArrayList<String> usernames = new ArrayList<>();
+				for (User user : LolBans.getPlugin().getUserCache().getAll()) {
+					usernames.add(user.getName());
+				}
+				return usernames;
+			}
+	
+			if (args.length < 3) {
+				return ImmutableList.of("1m", "15m", "1h", "3h", "12h", "1d", "1w", "1mo", "1y");
+			}
+
+			return Arrays.asList(); // u cute
 		}
 
 		@Override
@@ -72,12 +86,12 @@ public class Ban {
 			// command constructor, I don't want to force this because the command doesn't 
 			// show up otherwise.
 			if (!sender.hasPermission("lolbans.ban"))
-			return sender.permissionDenied("lolbans.ban");
+				return sender.permissionDenied("lolbans.ban");
 			
 			// Let's start timing how long this command takes
 			Debug debug = new Debug(getClass());
 			Timing time = new Timing();
-			debug.print(sender.getName() + " is executing a command");
+
 			try {
 				Arguments a = new Arguments(args);
 				a.optionalFlag("silent", "-s");
@@ -89,17 +103,20 @@ public class Ban {
 				if (!a.valid()) 
 					return false;
 				
-				boolean silent = a.exists("silent");
-				boolean overwrite = a.exists("overwrite");
+				boolean silent = a.getBoolean("silent");
+				boolean overwrite = a.getBoolean("overwrite");
 				String username = a.get("username");
-				Timestamp expiry = !a.exists("expiry") ? null : a.getTimestamp("expiry");
+				Timestamp expiry = !a.getBoolean("expiry") ? null : a.getTimestamp("expiry");
 
 				User target = User.resolveUser(username);
+
+				if (target == null)
+					return sender.sendReferencedLocalizedMessage("player-doesnt-exist", a.get("username"), true);
 
 				if (overwrite && !sender.hasPermission("lolbans.ban.overwrite"))
 					return sender.permissionDenied("lolbans.ban.overwrite");
 
-				if (target.isBanned() && !overwrite)
+				if (target.isPunished(PunishmentType.BAN) && !overwrite)
 					return sender.sendReferencedLocalizedMessage("ban.player-is-banned", target.getName(), false);
 			
 				if (expiry == null && !sender.hasPermission("lolbans.ban.perm"))
@@ -115,21 +132,22 @@ public class Ban {
 				}
 								
 				Punishment punishment = new Punishment(PunishmentType.BAN, sender, target, reason, expiry, silent, false);
-				punishment.commit(sender);
-			
+				
 				if (overwrite) {
 					target.removeLatestPunishmentOfType(PunishmentType.BAN, sender,
-							"Overwritten by #" + punishment.getPunishID(), silent);
+					"Overwritten by #" + punishment.getPunishID(), silent);
 				}
 				if (target.isOnline())
 					target.disconnect(punishment);
-
+				
+				
+				punishment.commit(sender);
 				punishment.broadcast();
-
 				time.finish(sender);
 				debug.print("Command completed");
 			} catch (Exception e ){ 
 				e.printStackTrace();
+				sender.sendMessage(Messages.serverError);
 			}
 			return true;
 		}
@@ -158,7 +176,16 @@ public class Ban {
 
 		@Override
 		public List<String> onTabComplete(User sender, String[] args) {
-			return null;
+			if (args.length < 2) {
+				ArrayList<String> punishments = new ArrayList<>();
+				for (Punishment punishment : LolBans.getPlugin().getPunishmentCache().getAll()) {
+					if (punishment.getType() == PunishmentType.BAN && !punishment.getAppealed() && punishments.contains(punishment.getTarget().getName()))
+						punishments.add(punishment.getTarget().getName());
+				}
+				return punishments;
+			}
+
+			return Arrays.asList();
 		}
 
 		@Override
@@ -173,12 +200,15 @@ public class Ban {
 			if (!a.valid()) 
 				return false;
 			
-			boolean silent = a.exists("silent");
+			boolean silent = a.getBoolean("silent");
 			String username = a.get("username");
 
 			User target = User.resolveUser(username);
 
-			if (!target.isBanned())
+			if (target == null)
+				return sender.sendReferencedLocalizedMessage("player-doesnt-exist", a.get("username"), true);
+
+			if (!target.isPunished(PunishmentType.BAN))
 				return sender.sendReferencedLocalizedMessage("ban.player-is-not-banned", target.getName(), false);
 		
 			String reason = a.get("reason");
@@ -189,7 +219,6 @@ public class Ban {
 
 			Punishment punishment = target.removeLatestPunishmentOfType(PunishmentType.BAN, sender, reason, silent);
 			punishment.broadcast();
-
 			time.finish(sender);
 			
 			boolean uwu = true;

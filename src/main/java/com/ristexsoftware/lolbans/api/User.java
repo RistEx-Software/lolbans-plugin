@@ -51,6 +51,7 @@ import inet.ipaddr.AddressStringException;
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
 import inet.ipaddr.IncompatibleAddressException;
+import lombok.Getter;
 import lombok.Setter;
 
 /**
@@ -64,6 +65,12 @@ public class User implements Cacheable {
     private UUID uuid;
     @Setter
     IPAddress ipAddress;
+    @Getter
+    @Setter
+    private boolean isFrozen = false;
+
+    @Getter
+    private boolean commandConfirm = false;
 
     public User(String username, UUID uuid) {
         this.username = username;
@@ -97,20 +104,20 @@ public class User implements Cacheable {
     }
 
     /**
-     * Check if this user is banned
+     * Check if this user has an active punishment of a specific type
      * 
+     * @param type The punishment type to look up
      * @return True if this user is banned
      */
-    public boolean isBanned() {
-        Punishment punishment = LolBans.getPlugin().getPunishmentCache().find((it) -> (it.getType() == PunishmentType.BAN 
-                                                    && !it.getAppealed() && it.getTarget().getUniqueId().toString() == uuid.toString()));
+    public boolean isPunished(PunishmentType type) {
+        Punishment punishment = LolBans.getPlugin().getPunishmentCache().find((it) -> (it.getType() == type && !it.getAppealed() && it.getTarget().getUniqueId().toString() == uuid.toString()));
 
         if (punishment != null) {
             return true;
         }
 
         try {
-            return Database.isUserBanned(this.uuid).get();
+            return Database.isUserPunished(type, this.uuid).get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -123,7 +130,23 @@ public class User implements Cacheable {
      * @return True if the user is online
      */
     public boolean isOnline() {
+        if (isConsole()) {
+            return true;
+        }
+
         return USERS.containsKey(this.uuid);
+    }
+
+    public void setCommandConfirm(boolean commandConfirm) {
+        this.commandConfirm = commandConfirm;
+        // Start a timer for 10 seconds, then invalidate the confirmation
+        new java.util.Timer().schedule(
+            new java.util.TimerTask() {
+                @Override
+                public void run() {
+                    setCommandConfirm(false);
+                }
+            }, 10000L);
     }
 
     /**
@@ -147,20 +170,20 @@ public class User implements Cacheable {
         // Let's cache this.
         try {
             switch (LolBans.getServerType()) {
-                case PAPER:
-                case BUKKIT: {
-                    org.bukkit.entity.Player player;
-                    try {
-                        Class<?> bukkit = Class.forName("org.bukkit.Bukkit");
-                        player = (org.bukkit.entity.Player) bukkit.getDeclaredMethod("getPlayer", UUID.class)
-                                .invoke(bukkit, this.uuid);
-                        if (player != null)
-                            ip = new IPAddressString(player.getAddress().getAddress().getHostAddress()).toAddress();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                }
+                // case PAPER:
+                // case BUKKIT: {
+                //     org.bukkit.entity.Player player;
+                //     try {
+                //         Class<?> bukkit = Class.forName("org.bukkit.Bukkit");
+                //         player = (org.bukkit.entity.Player) bukkit.getDeclaredMethod("getPlayer", UUID.class)
+                //                 .invoke(bukkit, this.uuid);
+                //         if (player != null)
+                //             ip = new IPAddressString(player.getAddress().getAddress().getHostAddress()).toAddress();
+                //     } catch (Exception e) {
+                //         e.printStackTrace();
+                //     }
+                //     break;
+                // }
                 case BUNGEECORD: {
                     net.md_5.bungee.api.connection.ProxiedPlayer player;
                     try {
@@ -196,24 +219,24 @@ public class User implements Cacheable {
 
         try {
             switch (LolBans.getServerType()) {
-                case PAPER:
-                case BUKKIT: {
-                    org.bukkit.entity.Player player;
-                    try {
-                        Class<?> bukkit = Class.forName("org.bukkit.Bukkit");
-                        player = (org.bukkit.entity.Player) bukkit.getDeclaredMethod("getPlayer", UUID.class)
-                                .invoke(bukkit, this.uuid);
-                        if (player != null) {
-                            if (LolBans.getPlugin().getConfig().getBoolean("general.ops-bypass-permissions")
-                                    && player.isOp())
-                                return true;
-                            return player.hasPermission(permission);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                }
+                // case PAPER:
+                // case BUKKIT: {
+                //     org.bukkit.entity.Player player;
+                //     try {
+                //         Class<?> bukkit = Class.forName("org.bukkit.Bukkit");
+                //         player = (org.bukkit.entity.Player) bukkit.getDeclaredMethod("getPlayer", UUID.class)
+                //                 .invoke(bukkit, this.uuid);
+                //         if (player != null) {
+                //             if (LolBans.getPlugin().getConfig().getBoolean("general.ops-bypass-permissions")
+                //                     && player.isOp())
+                //                 return true;
+                //             return player.hasPermission(permission);
+                //         }
+                //     } catch (Exception e) {
+                //         e.printStackTrace();
+                //     }
+                //     break;
+                // }
                 case BUNGEECORD: {
                     net.md_5.bungee.api.connection.ProxiedPlayer player;
                     try {
@@ -293,24 +316,67 @@ public class User implements Cacheable {
         final String msg = message; // MuSt Be FiNaL
 
         switch (LolBans.getServerType()) {
-            case PAPER:
-            case BUKKIT: {
-                org.bukkit.entity.Player player = org.bukkit.Bukkit.getPlayer(this.username);
-                // player.kickPlayer(msg);
-                org.bukkit.Bukkit.getScheduler().runTaskLater(
-                        com.ristexsoftware.lolbans.bukkit.Main.getPlugin(com.ristexsoftware.lolbans.bukkit.Main.class),
-                        () -> player.kickPlayer(msg), 1L);
-            }
+            // case PAPER:
+            // case BUKKIT: {
+            //     org.bukkit.entity.Player player = org.bukkit.Bukkit.getPlayer(this.username);
+            //     // player.kickPlayer(msg);
+            //     org.bukkit.Bukkit.getScheduler().runTaskLater(
+            //             com.ristexsoftware.lolbans.bukkit.Main.getPlugin(com.ristexsoftware.lolbans.bukkit.Main.class),
+            //             () -> player.kickPlayer(msg), 1L);
+
+            //     break;
+            // }
             case BUNGEECORD: {
                 net.md_5.bungee.api.connection.ProxiedPlayer player = net.md_5.bungee.api.ProxyServer.getInstance()
                         .getPlayer(this.uuid);
                 player.disconnect(message);
+                break;
             }
             default:
-                throw new UnknownError("something is horribly wrong");
+                throw new UnknownError("something is horribly wrong");  
         }
     }
 
+    /**
+     * Send a player a message
+     * @param punishment The punishment for the message to send to the player
+     */
+    public void sendMessage(Punishment punishment) {
+        if (punishment != null) {
+            PunishmentType type = punishment.getType();
+            TreeMap<String, String> vars = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                {
+                    put("player", punishment.getTarget().getName());
+                    put("reason", punishment.getReason());
+                    put("arbiter", punishment.getPunisher().getName());
+                    put("expiry", punishment.getExpiresAt() == null ? "" : punishment.getExpiresAt().toString());
+                    put("silent", Boolean.toString(punishment.getSilent()));
+                    put("appealed",Boolean.toString(punishment.getAppealed()));
+                    put("expires",Boolean.toString(punishment.getExpiresAt() != null && !punishment.getAppealed()));
+                    put("punishid", punishment.getPunishID());
+                }
+            };
+            try {
+                switch(type) {
+                    case MUTE: {
+                        if (!punishment.getAppealed())
+                            sendMessage(Messages.translate("mute.you-were-muted", vars));
+                        else
+                            sendMessage(Messages.translate("mute.you-were-unmuted", vars));
+                    }
+                        break;
+                    case WARN:
+                        sendMessage(Messages.translate("warn.warned-message", vars));
+                        break;
+                    default:
+                        break;
+                }
+            } catch (InvalidConfigurationException e) {
+                e.printStackTrace();
+                sendMessage(Messages.serverError);
+            }
+        }
+    }
     /**
      * Send a message to a user.
      * 
@@ -330,19 +396,21 @@ public class User implements Cacheable {
         }
 
         switch (LolBans.getServerType()) {
-            case PAPER:
-            case BUKKIT: {
-                org.bukkit.entity.Player player = org.bukkit.Bukkit.getPlayer(this.uuid);
-                if (player != null) {
-                    player.sendMessage(message);
-                }
-            }
+            // case PAPER:
+            // case BUKKIT: {
+            //     org.bukkit.entity.Player player = org.bukkit.Bukkit.getPlayer(this.uuid);
+            //     if (player != null) {
+            //         player.sendMessage(message);
+            //     }
+            //     break;
+            // }
             case BUNGEECORD: {
                 net.md_5.bungee.api.connection.ProxiedPlayer player = com.ristexsoftware.lolbans.bungeecord.Main
                         .getPlayer(this.uuid);
                 if (player != null) {
                     player.sendMessage(message);
                 }
+                break;
             }
             default:
                 throw new UnknownError("something is horribly wrong");
@@ -364,7 +432,7 @@ public class User implements Cacheable {
                 if (u.getName().equals(username) || isuuid && u.getUniqueId().equals(UUID.fromString(username))) {
                     debug.print(String.format("Pulled entry for %s from users hashmap", u.getName()));
                     LolBans.getPlugin().getUserCache().put(u);
-                    debug.print("Cached user " + u.getName());
+                    // debug.print("Cached user " + u.getName());
                     return u;
                 }
             }
@@ -379,8 +447,11 @@ public class User implements Cacheable {
 
             try {
                 PreparedStatement ps = Database.connection.prepareStatement(
-                        "SELECT player_uuid, player_name FROM lolbans_users WHERE player_uuid OR player_name = ?");
+                        "SELECT player_uuid, player_name FROM lolbans_users WHERE player_uuid = ? OR player_name = ?");
+                
                 ps.setString(1, username);
+                ps.setString(2, username);
+                  
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
                     User user = new User(rs.getString("player_name"), UUID.fromString(rs.getString("player_uuid")));
@@ -396,14 +467,18 @@ public class User implements Cacheable {
             // Alright lets do the more expensive operation of querying an API for the UUID
             // to fetch the Username.
             // api.mojang.com is slow as fuck, but i'll make this a config option
+            debug.print("Requesting user from API...");
+                        
             URL url = new URL("https://api.ashcon.app/mojang/v2/user/" + username);
             JsonElement jsonResponse = new JsonParser().parse(new InputStreamReader(url.openStream()));
             String uuid = jsonResponse.getAsJsonObject().get("uuid").toString().replace("\"", "");
             username = jsonResponse.getAsJsonObject().get("username").toString().replace("\"", "");
-
-            debug.print("Requesting user from API");
-            if (uuid == null)
+            
+            if (uuid == null) {
+                debug.print("No user could be found");
                 return null;
+            }
+
             User user = new User(username, UUID.fromString(uuid));
             debug.print(String.format("Pulled entry for %s from API", user.getName()));
             LolBans.getPlugin().getUserCache().put(user);
@@ -491,7 +566,14 @@ public class User implements Cacheable {
         return ret;
     }
 
-        /**
+    /**
+     * Fetch the latest punishment of a given type.
+     */
+    public Punishment getLatestPunishmentOfType(PunishmentType type) {
+        return Punishment.findPunishment(type, uuid.toString(), false);
+    }
+
+    /**
      * Remove a punishment from a player
      * 
      * @param type   The punishment type to remove
@@ -499,14 +581,15 @@ public class User implements Cacheable {
      * @param silent Is the punishment removal silent
      */
     public Punishment removeLatestPunishmentOfType(PunishmentType type, User unpunisher, String reason, boolean silent) {
-        Punishment op = Punishment.findPunishment(type, this, false);
+        Punishment op = Punishment.findPunishment(type, uuid.toString(), false);
         op.setAppealReason(reason);
         op.setAppealed(true);
         op.setAppealedAt(TimeUtil.now());
         op.setAppealedBy(unpunisher);
 
-        op.update(op.getPunishID());
+        op.update();
   
+        // TODO: Discord util
         // try {
         //     DiscordUtil.GetDiscord().SendDiscord(punish, silent);
         // } catch (InvalidConfigurationException e) {

@@ -1,12 +1,12 @@
 package com.ristexsoftware.lolbans.api.utils;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
+import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.common.utils.Debug;
-import com.ristexsoftware.lolbans.api.punishment.Punishment;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,8 +16,8 @@ public class Cache<T extends Cacheable> {
         boolean match(T object);
     }
 
-    private HashMap<String, T> objects = new HashMap<String, T>();
-    private HashMap<String, Long> objectInsertionTimestamps = new HashMap<String, Long>();
+    private ConcurrentHashMap<String, T> objects = new ConcurrentHashMap<String, T>();
+    private ConcurrentHashMap<String, Long> objectInsertionTimestamps = new ConcurrentHashMap<String, Long>();
 
     @Getter @Setter private Long ttl = (long) (30 * 60e3);
 
@@ -51,6 +51,8 @@ public class Cache<T extends Cacheable> {
         this.clazz = clazz;
     }
 
+    private Debug debug = new Debug(getClass());
+
     /**
      * Return the size of this cache.
      */
@@ -76,7 +78,7 @@ public class Cache<T extends Cacheable> {
      * Retrieve an object from the cache.
      */
     public T get(String key) {
-        Debug debug = new Debug(getClass());
+        debug.reset();
         T object = objects.get(key);
         
         if (object != null)
@@ -93,7 +95,7 @@ public class Cache<T extends Cacheable> {
      * Find an object using the given tester lambda.
      */
     public T find(CacheTester<T> tester) {
-        Debug debug = new Debug(getClass());
+        debug.reset();
         for (T object : objects.values()) {
             if (tester.match(object)) {
                 debug.print("Found cached entry for " + clazz.getSimpleName() + " with key " + object.getKey());
@@ -108,7 +110,7 @@ public class Cache<T extends Cacheable> {
      * Store an object in the cache.
      */
     public void put(T object) {
-        Debug debug = new Debug(getClass());
+        debug.reset();
 
         if (objects.containsKey(object.getKey())) {
             debug.print("Skipping insertion for " + clazz.getSimpleName() + " " + object.getKey() + " - already exists.");
@@ -121,14 +123,12 @@ public class Cache<T extends Cacheable> {
             }
         }
 
-        if (maxMemoryUsage > 0) {
-            Runnable punishmentMemoryReleaser = new Runnable() {
+        int size = MemoryUtil.getSizeOf(object);
+        if (maxMemoryUsage > 0 && memoryUsage + size > maxMemoryUsage) {
+            Runnable memoryReleaser = new Runnable() {
                 @Override
                 public void run() {
                     synchronized (this) {
-                        // punishExpiryRunnable.run();
-                        int size = MemoryUtil.getSizeOf(object);
-
                         while (memoryUsage + size > maxMemoryUsage) {
                                 // if (!isPunishmentCacheLowOnMemory) {
                                 //     isPunishmentCacheLowOnMemory = true;
@@ -143,6 +143,7 @@ public class Cache<T extends Cacheable> {
                     }
                 }
             };
+            LolBans.getPlugin().getPool().submit(memoryReleaser);
         }
 
         objects.put(object.getKey(), object);
@@ -151,13 +152,23 @@ public class Cache<T extends Cacheable> {
     }
 
     /**
-     * Remove an object from the cache.
+     * Update a value in the cache - bypasses not-null check!
+     */
+    public void update(T object) {
+        if (objects.containsKey(object.getKey())) {
+            remove(object);
+        }
+        put(object);
+    }
+
+    /**
+     * Remove an object from the cache, returning the old object.
      */
     public T remove(T object) {
-        Debug debug = new Debug(getClass());
-        T removed = objects.remove(object);
+        debug.reset();
+        T didRemove = objects.remove(object.getKey());
 
-        if (removed == null) {
+        if (didRemove == null) {
             debug.print("Could not remove entry for " + clazz.getSimpleName() + " with key " + object.getKey() + " - does not exist");
             return null;
         }
@@ -167,7 +178,7 @@ public class Cache<T extends Cacheable> {
         }
         
         debug.print("Removed entry for " + clazz.getSimpleName() + " with key " + object.getKey());
-        return removed;
+        return didRemove;
     }
 
     public T removeKey(String key) {

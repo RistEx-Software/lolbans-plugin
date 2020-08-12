@@ -40,6 +40,7 @@ import com.ristexsoftware.lolbans.api.utils.TimeUtil;
 import com.ristexsoftware.lolbans.api.utils.Cacheable;
 
 import inet.ipaddr.IPAddress;
+import inet.ipaddr.IPAddressString;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -66,16 +67,10 @@ public class Punishment implements Cacheable {
     @Getter @Setter private Timestamp appealedAt;
     
     @Getter @Setter private Boolean silent = false;
-
     
     @Getter @Setter private Boolean warningAck = false;
     
-    @Getter @Setter private Boolean ipBan = false;
-    
-    @Getter @Setter private Boolean regexBan = false;
     @Getter @Setter private String regex;
-    
-    @Getter @Setter private Boolean banwave = false;
     
     public Punishment(PunishmentType type, User sender, User target, String reason, Timestamp expiry, Boolean silent, Boolean appealed) throws SQLException, InvalidPunishmentException {
         if (type == PunishmentType.UNKNOWN) {
@@ -104,7 +99,6 @@ public class Punishment implements Cacheable {
      */
     public Punishment(User sender, String reason, Timestamp expiry, Boolean silent, Boolean appealed, String regex) throws SQLException, InvalidPunishmentException {
         this(PunishmentType.REGEX, sender, null, reason, expiry, silent, appealed);
-        this.regexBan = true;
         this.regex = regex;
     }
     
@@ -113,10 +107,9 @@ public class Punishment implements Cacheable {
      * 
      * @throws InvalidPunishmentException
      */
-    public Punishment(User sender, String reason, Timestamp expiry, Boolean silent, Boolean appealed, IPAddress ipaddress) throws SQLException, InvalidPunishmentException {
+    public Punishment(User sender, String reason, Timestamp expiry, Boolean silent, Boolean appealed, IPAddress ipAddress) throws SQLException, InvalidPunishmentException {
         this(PunishmentType.IP, sender, null, reason, expiry, silent, appealed);
-        this.ipBan = true;
-        this.ipAddress = ipaddress;
+        this.ipAddress = ipAddress;
     }
 
     private Punishment() {} // Empty punishment - used by findPunishment
@@ -145,19 +138,29 @@ public class Punishment implements Cacheable {
                     p.punishID = res.getString("punish_id");
                     p.type = PunishmentType.fromOrdinal(res.getInt("type"));
                     p.reason = res.getString("reason");
-                        
-                    p.target = LolBans.getPlugin().getUser(UUID.fromString(res.getString("target_uuid")));
-                    if (p.target == null) {
-                        p.target = new User(res.getString("target_name"), UUID.fromString(res.getString("target_uuid")));
-                    }
                     
+                    try {
+                        p.target = LolBans.getPlugin().getUser(UUID.fromString(res.getString("target_uuid")));
+                        if (p.target == null) {
+                            p.target = new User(res.getString("target_name"), UUID.fromString(res.getString("target_uuid")));
+                        }
+                    } catch (IllegalArgumentException e) {
+                    }
+                             
                     p.timePunished = res.getTimestamp("time_punished");
                     p.expiresAt = res.getTimestamp("expires_at");
 
                     p.appealed = res.getBoolean("appealed");
                     p.appealReason = res.getString("appeal_reason");
-
+                    
+                    // Per-punish type fields   
                     p.warningAck = res.getBoolean("warning_ack");
+
+                    try {
+                        p.ipAddress = new IPAddressString(res.getString("target_ip_address")).toAddress();
+                    } catch(Exception e) {}
+             
+                    p.regex = res.getString("regex");
 
                     p.silent = res.getBoolean("silent");
 
@@ -196,18 +199,20 @@ public class Punishment implements Cacheable {
     /**
      * Find a punishment based on it's type and who was punished
      * @param type The type of punishment to look for
-     * @param player The player being punished
+     * @param search The key to search for
      * @param appealed Whether the punishment was appealed
      * @return The punishment if found.
      */
-    public static Punishment findPunishment(PunishmentType type, User player, boolean appealed)
+    public static Punishment findPunishment(PunishmentType type, String search, boolean appealed)
     {
         try
         {
-            PreparedStatement pst3 = Database.connection.prepareStatement("SELECT punish_id FROM lolbans_punishments WHERE target_uuid = ? AND type = ? AND appealed = ?");
-            pst3.setString(1, player.getUniqueId().toString());
-            pst3.setInt(2, type.ordinal());
-            pst3.setBoolean(3, appealed);
+            PreparedStatement pst3 = Database.connection.prepareStatement("SELECT punish_id FROM lolbans_punishments WHERE (target_uuid = ? OR regex = ? OR target_ip_address = ?) AND type = ? AND appealed = ? ORDER BY time_punished DESC");
+            pst3.setString(1, search);
+            pst3.setString(2, search);
+            pst3.setString(3, search);
+            pst3.setInt(4, type.ordinal());
+            pst3.setBoolean(5, appealed);
 
             Optional<ResultSet> ores = Database.executeLater(pst3).get();
             if (!ores.isPresent())
@@ -274,11 +279,8 @@ public class Punishment implements Cacheable {
                                                                     +"appealed = ?,"
                                                                     +"silent = ?,"
                                                                     +"warning_ack = ?,"
-                                                                    +"ip_ban = ?,"
-                                                                    +"regex = ?,"
-                                                                    +"regex_ban = ?,"
-                                                                    +"banwave = ? "
-                                                                    +"WHERE punish_id = ?");
+                                                                    +"regex = ?"
+                                                                    +" WHERE punish_id = ?");
                                                                     
                                                                     insertBanStatement.setString(i++, me.target == null ? null : me.target.getUniqueId().toString()); // UUID
                                                                     insertBanStatement.setString(i++, me.target == null ? null : me.target.getName()); // PlayerName
@@ -297,32 +299,17 @@ public class Punishment implements Cacheable {
                         insertBanStatement.setBoolean(i++, me.appealed); //Appealed
                         insertBanStatement.setBoolean(i++, me.silent); //Silent
                         insertBanStatement.setBoolean(i++, me.warningAck); //WarningAck
-                        insertBanStatement.setBoolean(i++, me.ipBan); //is this an ipban?
                         insertBanStatement.setString(i++, me.regex); //regex
-                        insertBanStatement.setBoolean(i++, me.regexBan); //regex ban?
-                        insertBanStatement.setBoolean(i++, me.banwave); //banwave
                         insertBanStatement.setString(i++, me.punishID); //id
                     }
                     else
                     {
                         // Preapre a statement
-                        insertBanStatement = Database.connection.prepareStatement(String.format("INSERT INTO lolbans_punishments ("
-                                                                                    + "target_uuid,"
-                                                                                    + "target_name,"
-                                                                                    + "target_ip_address,"
-                                                                                    + "reason,"
-                                                                                    + "punished_by_name,"
-                                                                                    + "punished_by_uuid,"
-                                                                                    + "punish_id,"
-                                                                                    + "expires_at,"
-                                                                                    + "type,"
-                                                                                    + "silent,"
-                                                                                    + "ip_ban,"
-                                                                                    + "regex,"
-                                                                                    + "regex_ban,"
-                                                                                    + "banwave)"
-                                                                                    + " VALUES"
-                                                                                            + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"));
+                        insertBanStatement = Database.connection
+                                .prepareStatement(String.format("INSERT INTO lolbans_punishments (" + "target_uuid,"
+                                        + "target_name," + "target_ip_address," + "reason," + "punished_by_name,"
+                                        + "punished_by_uuid," + "punish_id," + "expires_at," + "type," + "silent,"
+                                        + "regex)" + " VALUES" + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"));
                         insertBanStatement.setString(i++, me.target == null ? "" : me.target.getUniqueId().toString());
                         insertBanStatement.setString(i++, me.target == null ? "" : me.target.getName());
                         insertBanStatement.setString(i++, me.ipAddress == null ? "#" : me.ipAddress.toString());
@@ -333,11 +320,9 @@ public class Punishment implements Cacheable {
                         insertBanStatement.setTimestamp(i++, me.expiresAt);
                         insertBanStatement.setInt(i++, me.type.ordinal());
                         insertBanStatement.setBoolean(i++, silent);
-                        insertBanStatement.setBoolean(i++, ipBan);
                         insertBanStatement.setString(i++, regex);
-                        insertBanStatement.setBoolean(i++, regexBan);
-                        insertBanStatement.setBoolean(i++, banwave);
                     }
+
                     insertBanStatement.executeUpdate();
 
                     commited = true;
@@ -354,12 +339,14 @@ public class Punishment implements Cacheable {
             }
         });
 
+        LolBans.getPlugin().getPunishmentCache().update(this);
         LolBans.getPlugin().getPool().execute(t);
     }
 
-    public void update(String punishID) {
+    public void update() {
         setCommited(true);
         commit(User.getConsoleUser());
+        // LolBans.getPlugin().getPunishmentCache().update(this);
     }
 
     /**
@@ -395,10 +382,7 @@ public class Punishment implements Cacheable {
                     me.appealedAt = null;
                     me.silent = false;
                     me.warningAck = false;
-                    me.ipBan = false;
-                    me.regexBan = false;
                     me.regex = null;
-                    me.banwave = false;
                 } catch (SQLException e) {
                     e.printStackTrace();
                     return false;
@@ -414,11 +398,11 @@ public class Punishment implements Cacheable {
         PunishmentType type = this.getType();
         TreeMap<String, String> vars = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
             {
-                put("player", getTarget().getName());
+                put("player", getTarget() == null ? null : getTarget().getName());
                 put("ipaddress", getIpAddress() == null ? "#" : getIpAddress().toString());
                 put("reason", getAppealed() ? getAppealReason() : getReason());
                 put("arbiter", getAppealed() ? getAppealedBy().getName() : getPunisher().getName());
-                put("expiry", getExpiresAt() == null ? "" : getExpiresAt().toString());
+                    put("expiry", getExpiresAt() == null ? "" : getExpiresAt().toString());
                 put("silent", Boolean.toString(getSilent()));
                 put("appealed",Boolean.toString(getAppealed()));
                 put("expires",Boolean.toString(getExpiresAt() != null && !getAppealed()));
@@ -433,13 +417,13 @@ public class Punishment implements Cacheable {
                     self.broadcastEvent(Messages.translate("ban.ban-announcement", vars), silent);
                     break;
                 case MUTE:
-                    self.broadcastEvent(Messages.translate("mute.you-were-muted", vars), silent);
+                    self.broadcastEvent(Messages.translate("mute.mute-announcement", vars), silent);
                     break;
                 case KICK:
-                    self.broadcastEvent(Messages.translate("kick.kick-message", vars), silent);
+                    self.broadcastEvent(Messages.translate("kick.kick-announcement", vars), silent);
                     break;
                 case WARN:
-                    self.broadcastEvent(Messages.translate("warn-kick-message", vars), silent);
+                    self.broadcastEvent(Messages.translate("warn.warn-announcement", vars), silent);
                     break;
                 case IP:
                     self.broadcastEvent(Messages.translate("ip-ban.ban-announcement", vars), silent);
@@ -448,7 +432,10 @@ public class Punishment implements Cacheable {
                     self.broadcastEvent(Messages.translate("regex-ban.ban-announcement", vars), silent);
                     break;
                 case BANWAVE:
-                    self.broadcastEvent(Messages.translate("added-to-wave-announcement", vars), silent);
+                    if (getAppealed()) 
+                        self.broadcastEvent(Messages.translate("ban-wave.removed-from-wave", vars), silent);
+                    else
+                        self.broadcastEvent(Messages.translate("ban-wave.added-to-wave-announcement", vars), silent);
                     break;
                 default:
                     break;
@@ -458,6 +445,32 @@ public class Punishment implements Cacheable {
             if (getPunisher().isOnline())
                 getPunisher().sendMessage(Messages.serverError);
         }
+    }
+    
+
+    /**
+     * Appeal a punishment
+     * 
+     * @param type   The punishment type to remove
+     * @param reason The reason for removal
+     * @param silent Is the punishment removal silent
+     */
+    public Punishment appeal(User unpunisher, String reason, boolean silent) {
+        setAppealReason(reason);
+        setAppealed(true);
+        setAppealedAt(TimeUtil.now());
+        setAppealedBy(unpunisher);
+
+        update();
+  
+        // TODO: Discord util
+        // try {
+        //     DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+        // } catch (InvalidConfigurationException e) {
+        //     e.printStackTrace();
+        // }
+
+        return this;
     }
     
     public String getKey() {
