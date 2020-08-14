@@ -24,11 +24,11 @@ import java.util.List;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import com.ristexsoftware.knappy.util.Version.ServerType;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
-import com.ristexsoftware.lolbans.api.utils.ServerType;
 
 // This class caused great pain and suffering, please enjoy.
 public class CommandUtil {
@@ -102,7 +102,7 @@ public class CommandUtil {
 
         // Look how stupid fucking easy this is compared to bukkit...
         public static void registerBungeeCommand(AsyncCommand command) {
-            if (LolBans.getServerType() != ServerType.BUNGEECORD)
+            if (LolBans.getServerType() != ServerType.BUNGEE)
                 return;
             
             com.ristexsoftware.lolbans.bungeecord.Main plugin = com.ristexsoftware.lolbans.bungeecord.Main.getPlugin();

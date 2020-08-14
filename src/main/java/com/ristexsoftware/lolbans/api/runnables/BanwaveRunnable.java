@@ -36,7 +36,7 @@ public class BanwaveRunnable implements Runnable  {
             ResultSet res = banwaveQuery.executeQuery();
 
             while (res.next()) {
-                User user = LolBans.getPlugin().getOnlineUsers().get(UUID.fromString(res.getString("target_uuid")));
+                User user = LolBans.getPlugin().getUser(UUID.fromString(res.getString("target_uuid")));
                 if (user != null && user.isOnline()) {
                     TreeMap<String, String> vars = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                         {

@@ -19,8 +19,8 @@
 
 package com.ristexsoftware.lolbans.api;
 
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -30,19 +30,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-// import java.util.ArrayList;
 
-import com.ristexsoftware.lolbans.api.configuration.file.FileConfiguration;
-// import com.ristexsoftware.lolbans.api.event.Event;
-// import com.ristexsoftware.lolbans.api.event.Listener;
-// import com.ristexsoftware.lolbans.api.event.RegisteredListener;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.runnables.CacheRunnable;
 import com.ristexsoftware.lolbans.api.runnables.QueryRunnable;
 import com.ristexsoftware.lolbans.api.utils.Cache;
-import com.ristexsoftware.lolbans.api.utils.ServerType;
-
-import org.jetbrains.annotations.NotNull;
+import com.ristexsoftware.lolbans.api.provider.ConfigProvider;
+import com.ristexsoftware.lolbans.api.provider.UserProvider;
+import com.ristexsoftware.knappy.configuration.file.FileConfiguration;
+import com.ristexsoftware.knappy.util.Version.ServerType;
 
 import inet.ipaddr.IPAddressString;
 import lombok.Getter;
@@ -56,7 +52,6 @@ import lombok.Setter;
  * @since 2019-11-13
  */
 public class LolBans extends JavaPlugin {
-    @Getter
     private static LolBans plugin;
     
     @Getter
@@ -70,6 +65,20 @@ public class LolBans extends JavaPlugin {
 
     @Getter private ExecutorService pool = Executors.newFixedThreadPool(3);
 
+    /**
+     * User provider - interfaces with the current Minecraft server to retrieve user data.
+     */
+    @Getter
+    @Setter
+    private UserProvider userProvider = null;
+
+    /**
+     * Plugin's config provider - used for storing/retrieval of persistent data.
+     */
+    @Getter
+    @Setter
+    private ConfigProvider configProvider = null;
+    
     @Setter
     @Getter
     private boolean chatMute = false;
@@ -79,28 +88,34 @@ public class LolBans extends JavaPlugin {
     @Getter private Cache<User> onlineUserCache = new Cache<>(User.class);
     @Getter private Cache<Punishment> punishmentCache = new Cache<>(Punishment.class);
 
-    public LolBans(@NotNull File dataFolder, @NotNull File file, ServerType type) throws FileNotFoundException {
-        super(dataFolder, file);
+    public LolBans(ConfigProvider configProvider, UserProvider userProvider, ServerType type) throws FileNotFoundException {
+        super(configProvider.getDataFolder(), configProvider.getConfigFile());
+
+        // Set these early on bc they're important (like you~)
+        this.configProvider = configProvider;
+        this.userProvider = userProvider;
+        LolBans.serverType = type;
+
         plugin = this;
-        if (!this.getDataFolder().exists()) {
+        if (!configProvider.dataFolderExists()) {
             getLogger().info("Error: No folder for lolbans was found! Creating...");
-            this.getDataFolder().mkdirs();
-            this.saveDefaultConfig();
+            getConfigProvider().getDataFolder().mkdirs();
+            getConfigProvider().saveDefaultConfig();
             getLogger().severe("Please configure lolbans and restart the server! :)");
             // They're not gonna have their database setup, just exit. It stops us from
             // having errors.
             throw new FileNotFoundException("Please configure lolbans and restart the server! :)");
         }
 
-        if (!(new File(this.getDataFolder(), "config.yml").exists())) {
-            this.saveDefaultConfig();
+        if (!configProvider.configExists()) {
+            configProvider.saveDefaultConfig();
             getLogger().severe("Please configure lolbans and restart the server! :)");
             // They're not gonna have their database setup, just exit. It stops us from
             // having errors.
             throw new FileNotFoundException("Please configure lolbans and restart the server! :)");
         }
 
-        FileConfiguration config = getPlugin().getConfig();
+        FileConfiguration config = configProvider.getConfig();
 
         userCache.setMaxSize(config.getInt("cache.user.entry-count"));
         userCache.setMaxMemoryUsage(config.getInt("cache.user.max-size") * 1000 * 8);
@@ -112,7 +127,6 @@ public class LolBans extends JavaPlugin {
         punishmentCache.setMaxMemoryUsage(config.getInt("cache.punishment.max-size") * 1000 * 8);
         punishmentCache.setTtl(config.getLong("cache.punishment.ttl"));
 
-        setServerType(type);
         getLogger().info("Running on server: " + type.name());
 
         // So, apparently Java gets all pissy and throws java.util.concurrent.RejectedExecutionException if spigot reloads.
@@ -128,9 +142,11 @@ public class LolBans extends JavaPlugin {
      * @return The user if found, if not found, null
      */
     public User getUser(UUID uuid) {
-        // If they are in the USERS HashMap, save some time and just return that
-        if (User.USERS.containsKey(uuid))
-            return User.USERS.get(uuid);
+        // If they are in the user cache
+
+        if (userCache.contains(uuid.toString()))
+            return userCache.get(uuid.toString());
+
         return User.resolveUser(uuid.toString());
     }
 
@@ -142,6 +158,12 @@ public class LolBans extends JavaPlugin {
      * @return The user if found, if not found, null
      */
     public User getUser(String username) {
+        final String name = username;
+        User user = userCache.find((it) -> it.getName().equals(name));
+
+        if (user != null)
+            return user;
+
         return User.resolveUser(username);
     }
 
@@ -149,8 +171,8 @@ public class LolBans extends JavaPlugin {
      * Get the USERS hashmap
      * @return The USERS hashmap from {@link com.ristexsoftware.lolbans.api.User}
      */
-    public HashMap<UUID, User> getOnlineUsers() {
-        return User.USERS;
+    public Collection<User> getOnlineUsers() {
+        return onlineUserCache.getAll();
     }
 
     /**
@@ -160,7 +182,7 @@ public class LolBans extends JavaPlugin {
     public void registerUser(org.bukkit.entity.Player player) {
         User user = new User(player.getName(), player.getUniqueId());
         userCache.put(user);
-        getOnlineUsers().put(player.getUniqueId(), user);
+        onlineUserCache.put(user);
     }
 
     /**
@@ -169,7 +191,7 @@ public class LolBans extends JavaPlugin {
      */
     public void registerUser(User user) {
         userCache.put(user);
-        getOnlineUsers().put(user.getUniqueId(), user);
+        onlineUserCache.put(user);
     }
 
     /**
@@ -179,7 +201,7 @@ public class LolBans extends JavaPlugin {
     public void registerUser(net.md_5.bungee.api.connection.ProxiedPlayer player) {
         User user = new User(player.getName(), player.getUniqueId());
         userCache.put(user);
-        getOnlineUsers().put(player.getUniqueId(), user);
+        getOnlineUsers().add(user);
     }
 
     /**
@@ -187,7 +209,10 @@ public class LolBans extends JavaPlugin {
      * @param player The player to register as a user
      */
     public void removeUser(org.bukkit.entity.Player player) {
-        getOnlineUsers().remove(player.getUniqueId());
+        for (User user : getOnlineUsers()) {
+            if (user.getUniqueId() == player.getUniqueId())
+                getOnlineUsers().remove(user);
+        }
     }
 
     /**
@@ -195,7 +220,10 @@ public class LolBans extends JavaPlugin {
      * @param player The player to register as a user
      */
     public void removeUser(net.md_5.bungee.api.connection.ProxiedPlayer player) {
-        getOnlineUsers().remove(player.getUniqueId());
+        for (User user : getOnlineUsers()) {
+            if (user.getUniqueId() == player.getUniqueId())
+                getOnlineUsers().remove(user);
+        }
     }
 
     /**
@@ -203,7 +231,7 @@ public class LolBans extends JavaPlugin {
      * @param message The message to send
      */
     public void notifyStaff(String message) {
-        for (User user : getOnlineUsers().values()) {
+        for (User user : getOnlineUsers()) {
             if (user.hasPermission("lolbans.alerts"))
                 user.sendMessage(message);
         }
@@ -214,7 +242,7 @@ public class LolBans extends JavaPlugin {
      * @param message The message to send
      */
     public void broadcastMessage(String message) {
-        for (User user : getOnlineUsers().values()) {
+        for (User user : getOnlineUsers()) {
             user.sendMessage(message);
         }
     }
@@ -242,62 +270,15 @@ public class LolBans extends JavaPlugin {
             e.printStackTrace();
         }
     }
-
-    // private HashMap<Class<? extends Event>, ArrayList<Listener>> eventHandlers = new HashMap<>();
-
-    // /**
-    //  * Call an event object.
-    //  */
-    // public void callEvent(@NotNull Event event) {
-    //     ArrayList<Listener> handlers = eventHandlers.get(event.getClass());
-        
-    //     handlers.
-    // }
-
-    // @Override
-    // public void registerEvents(@NotNull Listener listener) {
-
-    //     for (Map.Entry<Class<? extends Event>, Set<RegisteredListener>> entry : plugin.getPluginLoader().createRegisteredListeners(listener, plugin).entrySet()) {
-    //         getEventListeners(getRegistrationClass(entry.getKey())).registerAll(entry.getValue());
-    //     }
-
-    // }
-
-    // @Override
-    // public void registerEvent(@NotNull Class<? extends Event> event, @NotNull Listener listener, @NotNull EventPriority priority, @NotNull EventExecutor executor) {
-    //     registerEvent(event, listener, priority, executor, plugin, false);
-    // }
-
-    // /**
-    //  * Registers the given event to the specified listener using a directly
-    //  * passed EventExecutor
-    //  *
-    //  * @param event Event class to register
-    //  * @param listener PlayerListener to register
-    //  * @param priority Priority of this event
-    //  * @param executor EventExecutor to register
-    //  * @param plugin Plugin to register
-    //  * @param ignoreCancelled Do not call executor if event was already
-    //  *     cancelled
-    //  */
-    // @Override
-    // public void registerEvent(@NotNull Class<? extends Event> event, @NotNull Listener listener, @NotNull EventPriority priority, @NotNull EventExecutor executor, @NotNull Plugin plugin, boolean ignoreCancelled) {
-    //     Validate.notNull(listener, "Listener cannot be null");
-    //     Validate.notNull(priority, "Priority cannot be null");
-    //     Validate.notNull(executor, "Executor cannot be null");
     
-    //     getEventListeners(event).register(new RegisteredListener(listener, executor, priority, plugin, ignoreCancelled));
-    // }
+    private static LolBans instance = null;
 
-    // @NotNull
-    // private HandlerList getEventListeners(@NotNull Class<? extends Event> type) {
-    //     try {
-    //         Method method = getRegistrationClass(type).getDeclaredMethod("getHandlerList");
-    //         method.setAccessible(true);
-    //         return (HandlerList) method.invoke(null);
-    //     } catch (Exception e) {
-    //         throw new IllegalPluginAccessException(e.toString());
-    //     }
-    // }
-
+    /**
+     * Fetch a static reference to the LolBans singelton instance.
+     */
+    public static LolBans getPlugin() {
+        if (instance == null) 
+            throw new RuntimeException("Cannot get plugin as it hasn't been insinstantiated");
+        return instance;
+    }
 }  

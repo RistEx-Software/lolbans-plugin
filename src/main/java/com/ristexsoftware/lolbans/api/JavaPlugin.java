@@ -42,6 +42,7 @@ import lombok.Getter;
  * <h2>hihihihi welcome to this class</h2>
  * This is somewhat dumb, because bukkit/bungee doesn't have any proxying *both* ways...
  * I can get net.md_5 from bukkit, but I can't get org.bukkit from bungee???
+ * @deprecated Please use {@link com.ristexsoftware.lolbans.api.provider.ConfigProvider}
  */
 public class JavaPlugin {
     @Getter private boolean isEnabled = false;
@@ -127,9 +128,8 @@ public class JavaPlugin {
         int lastIndex = resourcePath.lastIndexOf('/');
         File outDir = new File(dataFolder, resourcePath.substring(0, lastIndex >= 0 ? lastIndex : 0));
 
-        if (!outDir.exists()) {
+        if (!outDir.exists())
             outDir.mkdirs();
-        }
 
         try {
             if (!outFile.exists() || replace) {

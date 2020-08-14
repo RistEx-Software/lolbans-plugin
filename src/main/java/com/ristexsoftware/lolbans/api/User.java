@@ -35,6 +35,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.regex.Pattern;
+import java.net.InetSocketAddress;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -47,24 +48,19 @@ import com.ristexsoftware.lolbans.api.utils.Cacheable;
 import com.ristexsoftware.lolbans.api.utils.TimeUtil;
 import com.ristexsoftware.lolbans.common.utils.Debug;
 
-import inet.ipaddr.AddressStringException;
-import inet.ipaddr.IPAddress;
-import inet.ipaddr.IPAddressString;
-import inet.ipaddr.IncompatibleAddressException;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * Represents a player. Proxies bungee and bukkit methods.
  */
-@SuppressWarnings("deprecation")
 public class User implements Cacheable {
     public static HashMap<UUID, User> USERS = new HashMap<>();
 
     private String username;
     private UUID uuid;
     @Setter
-    IPAddress ipAddress;
+    InetSocketAddress ipAddress;
     @Getter
     @Setter
     private boolean isFrozen = false;
@@ -163,48 +159,11 @@ public class User implements Cacheable {
      * 
      * @return The player's address, or null if an address can't be found
      */
-    public String getAddress() {
+    public InetSocketAddress getAddress() {
         if (this.ipAddress != null)
-            return this.ipAddress.toString();
-        IPAddress ip = null;
-        // Let's cache this.
-        try {
-            switch (LolBans.getServerType()) {
-                // case PAPER:
-                // case BUKKIT: {
-                //     org.bukkit.entity.Player player;
-                //     try {
-                //         Class<?> bukkit = Class.forName("org.bukkit.Bukkit");
-                //         player = (org.bukkit.entity.Player) bukkit.getDeclaredMethod("getPlayer", UUID.class)
-                //                 .invoke(bukkit, this.uuid);
-                //         if (player != null)
-                //             ip = new IPAddressString(player.getAddress().getAddress().getHostAddress()).toAddress();
-                //     } catch (Exception e) {
-                //         e.printStackTrace();
-                //     }
-                //     break;
-                // }
-                case BUNGEECORD: {
-                    net.md_5.bungee.api.connection.ProxiedPlayer player;
-                    try {
-                        Class<?> proxy = Class.forName("net.md_5.bungee.api.ProxyServer");
-                        player = (net.md_5.bungee.api.connection.ProxiedPlayer) proxy
-                                .getDeclaredMethod("getPlayer", UUID.class).invoke(proxy, this.uuid);
-                        if (player != null)
-                            ip = new IPAddressString(player.getAddress().getAddress().getHostAddress()).toAddress();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                }
-                default:
-                    ip = new IPAddressString(Database.getLastAddress(this.uuid.toString())).toAddress();
-            }
-        } catch (AddressStringException | IncompatibleAddressException e) {
-            e.printStackTrace();
-        }
-        this.ipAddress = ip;
-        return ip == null ? null : ip.toString();
+            return this.ipAddress;
+       
+        return LolBans.getPlugin().getUserProvider().getAddress(this);
     }
 
     /**
@@ -217,46 +176,7 @@ public class User implements Cacheable {
         if (isConsole())
             return true;
 
-        try {
-            switch (LolBans.getServerType()) {
-                // case PAPER:
-                // case BUKKIT: {
-                //     org.bukkit.entity.Player player;
-                //     try {
-                //         Class<?> bukkit = Class.forName("org.bukkit.Bukkit");
-                //         player = (org.bukkit.entity.Player) bukkit.getDeclaredMethod("getPlayer", UUID.class)
-                //                 .invoke(bukkit, this.uuid);
-                //         if (player != null) {
-                //             if (LolBans.getPlugin().getConfig().getBoolean("general.ops-bypass-permissions")
-                //                     && player.isOp())
-                //                 return true;
-                //             return player.hasPermission(permission);
-                //         }
-                //     } catch (Exception e) {
-                //         e.printStackTrace();
-                //     }
-                //     break;
-                // }
-                case BUNGEECORD: {
-                    net.md_5.bungee.api.connection.ProxiedPlayer player;
-                    try {
-                        // Class<?> proxy = Class.forName("net.md_5.bungee.api.ProxyServer");
-                        player = (net.md_5.bungee.api.connection.ProxiedPlayer) com.ristexsoftware.lolbans.bungeecord.Main
-                                .getPlayer(this.uuid);
-                        if (player != null)
-                            return player.hasPermission(permission);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                }
-                default:
-                    return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
+        return LolBans.getPlugin().getUserProvider().hasPermission(this, permission);
     }
 
     public void disconnect(Punishment punishment) {
@@ -313,28 +233,7 @@ public class User implements Cacheable {
         if (message == null || message.equals(""))
             message = "You have been kicked by an operator!";
 
-        final String msg = message; // MuSt Be FiNaL
-
-        switch (LolBans.getServerType()) {
-            // case PAPER:
-            // case BUKKIT: {
-            //     org.bukkit.entity.Player player = org.bukkit.Bukkit.getPlayer(this.username);
-            //     // player.kickPlayer(msg);
-            //     org.bukkit.Bukkit.getScheduler().runTaskLater(
-            //             com.ristexsoftware.lolbans.bukkit.Main.getPlugin(com.ristexsoftware.lolbans.bukkit.Main.class),
-            //             () -> player.kickPlayer(msg), 1L);
-
-            //     break;
-            // }
-            case BUNGEECORD: {
-                net.md_5.bungee.api.connection.ProxiedPlayer player = net.md_5.bungee.api.ProxyServer.getInstance()
-                        .getPlayer(this.uuid);
-                player.disconnect(message);
-                break;
-            }
-            default:
-                throw new UnknownError("something is horribly wrong");  
-        }
+        LolBans.getPlugin().getUserProvider().disconnect(this, message);
     }
 
     /**
@@ -387,34 +286,13 @@ public class User implements Cacheable {
      */
     public void sendMessage(String message) {
 
-        if (isConsole()) {
+        if (isConsole()) 
             System.out.println(message);
-        }
-
-        if (!isOnline()) {
+        
+        if (!isOnline()) 
             return;
-        }
-
-        switch (LolBans.getServerType()) {
-            // case PAPER:
-            // case BUKKIT: {
-            //     org.bukkit.entity.Player player = org.bukkit.Bukkit.getPlayer(this.uuid);
-            //     if (player != null) {
-            //         player.sendMessage(message);
-            //     }
-            //     break;
-            // }
-            case BUNGEECORD: {
-                net.md_5.bungee.api.connection.ProxiedPlayer player = com.ristexsoftware.lolbans.bungeecord.Main
-                        .getPlayer(this.uuid);
-                if (player != null) {
-                    player.sendMessage(message);
-                }
-                break;
-            }
-            default:
-                throw new UnknownError("something is horribly wrong");
-        }
+        
+        LolBans.getPlugin().getUserProvider().sendMessage(this, message);
     }
 
     public static User resolveUser(String username) {
