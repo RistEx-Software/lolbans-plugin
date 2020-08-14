@@ -97,7 +97,7 @@ ip-ban:
   temp-ip-ban-message: "&bThe IP of &f{PLAYER} &bhas been TEMPORARILY suspended from {NETWORKNAME} &buntil &f {EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
   ban-announcement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}ip banned &b{CENSOREDIPADDRESS}&f: &f{REASON} &f[#{PUNISHID}] {SILENT|empty_if_false:\" &8[SILENT]\"}"
   unban-success: "{PREFIX}&bThe IP of &f{CENSOREDIPADDRESS} &bhas been successfully unbanned."
-  ip-is-banned: "{PuREFIX}&cError! &bThe IP of &f{PLAYER} &bis already banned!"
+  ip-is-banned: "{PREFIX}&cError! &bThe IP of &f{PLAYER} &bis already banned!"
   ip-is-not-banned: "{PREFIX}&cError! &bThe IP of &f{PLAYER} &bis not banned!"
   insanity: "{PREFIX}&cBanning &bThe IP of &f{PLAYER} &bwould ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
   ip-alt-notification: "{PREFIX}&f{PLAYER} &cjoined, is alt account of &f{BANNEDPLAYER} &8Check IP with an Admin!"

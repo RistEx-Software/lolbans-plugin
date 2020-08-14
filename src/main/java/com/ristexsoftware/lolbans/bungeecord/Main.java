@@ -22,13 +22,14 @@ package com.ristexsoftware.lolbans.bungeecord;
 import java.io.FileNotFoundException;
 import java.util.UUID;
 
+import com.ristexsoftware.knappy.util.Version;
 import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.common.utils.CommandUtil;
-import com.ristexsoftware.lolbans.common.utils.MemoryUtil;
-import com.ristexsoftware.lolbans.api.utils.ServerType;
 import com.ristexsoftware.lolbans.bungeecord.Listeners.ConnectionListener;
+import com.ristexsoftware.lolbans.bungeecord.provider.BungeeConfigProvider;
+import com.ristexsoftware.lolbans.bungeecord.provider.BungeeUserProvider;
 import com.ristexsoftware.lolbans.common.commands.ban.Ban;
 
 import lombok.Getter;
@@ -44,7 +45,7 @@ public class Main extends Plugin {
     @Override
     public void onEnable() {
         try {
-            new LolBans(getDataFolder(), getFile(), ServerType.BUNGEECORD);
+            new LolBans(new BungeeConfigProvider(), new BungeeUserProvider(), Version.getServerType());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

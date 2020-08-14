@@ -137,7 +137,7 @@ public class IPBan {
 
                 // Send messages to all players (if not silent) or only to admins (if silent)
                 // and also kick players who match the ban.
-                for (User user : LolBans.getPlugin().getOnlineUsers().values())
+                for (User user : LolBans.getPlugin().getOnlineUsers())
                 {
                     HostName host = new HostName(user.getAddress());
                     if (target.contains(host.asAddress())) {

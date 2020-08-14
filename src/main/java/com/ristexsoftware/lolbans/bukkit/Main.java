@@ -26,8 +26,10 @@ import java.util.List;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
-import com.ristexsoftware.lolbans.api.utils.ServerType;
+import com.ristexsoftware.knappy.util.Version;
 import com.ristexsoftware.lolbans.bukkit.Listeners.ConnectionListener;
+import com.ristexsoftware.lolbans.bukkit.provider.BukkitConfigProvider;
+import com.ristexsoftware.lolbans.bukkit.provider.BukkitUserProvider;
 import com.ristexsoftware.lolbans.common.commands.ban.Ban;
 import com.ristexsoftware.lolbans.common.commands.ban.BanWave;
 import com.ristexsoftware.lolbans.common.commands.ban.IPBan;
@@ -57,13 +59,11 @@ public class Main extends JavaPlugin {
         plugin = this;
         isEnabled = true;
         try {
-            new LolBans(getDataFolder(), getFile(),
-                    Class.forName("com.destroystokyo.paper.VersionHistoryManager$VersionData") != null
-                            ? ServerType.PAPER
-                            : ServerType.BUKKIT);
-        } catch (ClassNotFoundException | FileNotFoundException e) {
-            e.printStackTrace();
+            new LolBans(new BukkitConfigProvider(), new BukkitUserProvider(), Version.getServerType());
+        } catch (FileNotFoundException e) {
+            return;
         }
+
 
         // This is dumb, plugman somehow breaks lolbans
         // but whatever, you shouldn't be using plugman anyway...
@@ -110,7 +110,7 @@ public class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         LolBans.getPlugin().destroy();
-        reloadConfig();
+        LolBans.getPlugin().saveConfig();
         isEnabled = false;
     }
 }

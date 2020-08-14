@@ -200,6 +200,11 @@
             <version>18.0.0</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.NotZachery</groupId>
+            <artifactId>knappy</artifactId>
+            <version>-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <reporting>

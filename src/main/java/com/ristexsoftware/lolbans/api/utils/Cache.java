@@ -92,6 +92,13 @@ public class Cache<T extends Cacheable> {
     }
 
     /**
+     * Return a boolean determining if the cache contains a value.
+     */
+    public boolean contains(String key) {
+        return get(key) != null;
+    }
+
+    /**
      * Find an object using the given tester lambda.
      */
     public T find(CacheTester<T> tester) {

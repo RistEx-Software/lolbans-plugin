@@ -410,6 +410,7 @@ public class Punishment implements Cacheable {
                 put("warningack", Boolean.toString(getWarningAck()));
                 put("regex", getRegex() == null ? "" : getRegex());
             }
+            
         };
         try {
             switch(type) {
