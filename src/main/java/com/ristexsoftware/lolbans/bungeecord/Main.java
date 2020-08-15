@@ -19,6 +19,7 @@
 
 package com.ristexsoftware.lolbans.bungeecord;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.UUID;
 
@@ -39,17 +40,22 @@ import net.md_5.bungee.api.plugin.Plugin;
 
 public class Main extends Plugin {
     public static boolean isEnabled;
+
     @Getter
     public static Main plugin;
 
+    @Getter
+    public static File folder;
+
     @Override
     public void onEnable() {
+        plugin = this;
+        isEnabled = true;
         try {
             new LolBans(new BungeeConfigProvider(), new BungeeUserProvider(), Version.getServerType());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        isEnabled = true;
         // Make sure our messages file exists
         Messages.getMessages();
 
