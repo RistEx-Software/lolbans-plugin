@@ -131,7 +131,8 @@ public class CommandUtil {
                 User user = !(sender instanceof net.md_5.bungee.api.connection.ProxiedPlayer) ? User.getConsoleUser()
                         : User.resolveUser(((net.md_5.bungee.api.connection.ProxiedPlayer) sender).getUniqueId().toString());
                             
-                return parent.onTabComplete(user, args);
+                // Bungee doesn't do stupid null checks so I have to do it for md_5
+                return parent.onTabComplete(user, args) == null ? Arrays.asList(new String[]{}) : parent.onTabComplete(user, args);
             }
         }
     }

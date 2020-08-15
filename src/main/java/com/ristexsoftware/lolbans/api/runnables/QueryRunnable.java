@@ -27,6 +27,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
 import com.ristexsoftware.lolbans.api.LolBans;
+import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.Database;
 
 import org.bukkit.scheduler.BukkitRunnable;
@@ -39,6 +40,12 @@ public class QueryRunnable extends TimerTask {
             public Boolean call() {
                 // Main self = Main.getPlugin(Main.class);
                 try {
+                    for (Punishment punish : LolBans.getPlugin().getPunishmentCache().getAll()) {
+                        if (punish.getExpiresAt().getTime() <= System.currentTimeMillis()) {
+                            punish.expire();
+                        }
+                    }
+
                     // self.connection.prepareStatement("DELETE FROM LinkConfirmations WHERE Expiry
                     // <= NOW()").executeUpdate();
                     // TODO: Report expirations should be configurable

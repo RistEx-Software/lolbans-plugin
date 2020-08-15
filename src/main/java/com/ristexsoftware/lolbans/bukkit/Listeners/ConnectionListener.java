@@ -130,6 +130,9 @@ public class ConnectionListener implements Listener {
                     debug.print("Checking cache for outstanding punishments...");
 
                     for (Punishment punish : LolBans.getPlugin().getPunishmentCache().getAll()) {
+                        if (punish.getExpiresAt() != null && punish.getExpiresAt().getTime() <= System.currentTimeMillis()) {
+                            punish.expire();
+                        }
 
                         if (punish.getType() == PunishmentType.REGEX) {
                             debug.print(punish.getRegex() + " " + user.getName());

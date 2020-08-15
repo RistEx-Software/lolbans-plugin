@@ -473,6 +473,27 @@ public class Punishment implements Cacheable {
 
         return this;
     }
+
+    /**
+     * Manually expire a punishment
+     */
+    public Punishment expire() {
+        setAppealReason("Expired");
+        setAppealed(true);
+        setAppealedAt(TimeUtil.now());
+        setAppealedBy(User.getConsoleUser());
+
+        update();
+  
+        // TODO: Discord util
+        // try {
+        //     DiscordUtil.GetDiscord().SendDiscord(punish, silent);
+        // } catch (InvalidConfigurationException e) {
+        //     e.printStackTrace();
+        // }
+
+        return this;
+    }
     
     public String getKey() {
         return punishID;

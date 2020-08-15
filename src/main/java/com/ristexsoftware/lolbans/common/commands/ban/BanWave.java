@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import com.ristexsoftware.lolbans.api.command.Arguments;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
@@ -54,9 +55,19 @@ public class BanWave extends AsyncCommand {
                 case "add":
                 case "remove":
                     ArrayList<String> usernames = new ArrayList<>();
-                    for (User user : LolBans.getPlugin().getUserCache().getAll()) {
-                        usernames.add(user.getName());
+                    if(!args[0].equals("")) {
+                        for(User user : LolBans.getPlugin().getUserCache().getAll()) {
+                            if(user.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
+                                usernames.add(user.getName());
+                            }
+                        }
+                    } else {
+                        // Instead of creating a stupid for loop here, let's just stream 
+                        usernames = (ArrayList<String>) LolBans.getPlugin().getUserCache().getAll().stream()
+                        .map(user -> user.getName())
+                        .collect(Collectors.toList());
                     }
+    
                     return usernames;
                 default:
                     return Arrays.asList();

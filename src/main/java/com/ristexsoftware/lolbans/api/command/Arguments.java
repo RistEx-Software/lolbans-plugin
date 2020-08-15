@@ -296,7 +296,7 @@ public class Arguments {
         if (parsedArgs.get(name) == null) {
             return null;
         }
-        return TimeUtil.toTimestamp(parsedArgs.get(name));
+        return new Timestamp(Long.valueOf(parsedArgs.get(name)));
     }
 
     /**

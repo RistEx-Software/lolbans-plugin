@@ -109,6 +109,7 @@ public class User implements Cacheable {
         Punishment punishment = LolBans.getPlugin().getPunishmentCache().find((it) -> (it.getType() == type && !it.getAppealed() && it.getTarget().getUniqueId().toString() == uuid.toString()));
 
         if (punishment != null) {
+            LolBans.getPlugin().getPunishmentCache().put(punishment);
             return true;
         }
 
@@ -458,12 +459,7 @@ public class User implements Cacheable {
      */
     public Punishment removeLatestPunishmentOfType(PunishmentType type, User unpunisher, String reason, boolean silent) {
         Punishment op = Punishment.findPunishment(type, uuid.toString(), false);
-        op.setAppealReason(reason);
-        op.setAppealed(true);
-        op.setAppealedAt(TimeUtil.now());
-        op.setAppealedBy(unpunisher);
-
-        op.update();
+        op.appeal(unpunisher, reason, silent);
   
         // TODO: Discord util
         // try {

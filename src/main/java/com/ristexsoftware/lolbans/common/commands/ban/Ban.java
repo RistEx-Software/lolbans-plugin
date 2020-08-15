@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
 import com.ristexsoftware.knappy.util.Debugger;
@@ -66,13 +68,29 @@ public class Ban {
 		public List<String> onTabComplete(User sender, String[] args) {
 			if (args.length < 2) {
 				ArrayList<String> usernames = new ArrayList<>();
+
 				for (User user : LolBans.getPlugin().getUserCache().getAll()) {
 					usernames.add(user.getName());
 				}
+
+				// TODO: Make this faster!!!
+				// if(!args[0].equals("")) {
+				// 	for(User user : LolBans.getPlugin().getUserCache().getAll()) {
+				// 		if(user.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
+				// 			usernames.add(user.getName());
+				// 		}
+				// 	}
+				// } else {
+				// 	// Instead of creating a stupid for loop here, let's just stream 
+				// 	usernames = (ArrayList<String>) LolBans.getPlugin().getUserCache().getAll().stream()
+				// 	.map(user -> user.getName())
+				// 	.collect(Collectors.toList());
+				// }
+
 				return usernames;
 			}
 	
-			if (args.length < 3) {
+			if (args.length < 3) {	
 				return ImmutableList.of("1m", "15m", "1h", "3h", "12h", "1d", "1w", "1mo", "1y");
 			}
 
@@ -107,7 +125,7 @@ public class Ban {
 				boolean silent = a.getBoolean("silent");
 				boolean overwrite = a.getBoolean("overwrite");
 				String username = a.get("username");
-				Timestamp expiry = !a.getBoolean("expiry") ? null : a.getTimestamp("expiry");
+				Timestamp expiry = !a.exists("expiry") ? null : a.getTimestamp("expiry");
 
 				User target = User.resolveUser(username);
 
@@ -118,7 +136,7 @@ public class Ban {
 					return sender.permissionDenied("lolbans.ban.overwrite");
 
 				if (target.isPunished(PunishmentType.BAN) && !overwrite)
-					return sender.sendReferencedLocalizedMessage("ban.player-is-banned", target.getName(), false);
+					return sender.sendReferencedLocalizedMessage("ban.player-is-banned", target.getName(), true);
 			
 				if (expiry == null && !sender.hasPermission("lolbans.ban.perm"))
 					return sender.permissionDenied("lolbans.ban.perm");
@@ -163,6 +181,7 @@ public class Ban {
 			super("unban", plugin);
 			this.setDescription("Remove a player ban");
 			this.setPermission("lolbans.unban");
+			this.setAliases(Arrays.asList(new String[]{}));
 		}
 
 		@Override
@@ -182,10 +201,28 @@ public class Ban {
 			if (args.length < 2) {
 				ArrayList<String> punishments = new ArrayList<>();
 				for (Punishment punishment : LolBans.getPlugin().getPunishmentCache().getAll()) {
-					if (punishment.getType() == PunishmentType.BAN && !punishment.getAppealed() && punishments.contains(punishment.getTarget().getName()))
+					if (punishment.getType() == PunishmentType.BAN && !punishment.getAppealed() && !punishments.contains(punishment.getTarget().getName()))
 						punishments.add(punishment.getTarget().getName());
 				}
 				return punishments;
+				// TODO: Make this faster... And make it work
+/* 				if(!args[0].equals("")) {
+					for(Punishment punish : LolBans.getPlugin().getPunishmentCache().getAll()) {
+						if (punish.getType() != PunishmentType.BAN && punish.getAppealed() && punishments.contains(punish.getTarget().getName())) continue;
+						if(punish.getTarget().getName().toLowerCase().startsWith(args[0].toLowerCase())) {
+							punishments.add(punish.getTarget().getName());
+						}
+					}
+				} else {
+					// Instead of creating a stupid for loop here, let's just stream 
+					LolBans.getPlugin().getPunishmentCache().getAll().stream()
+					.forEach(punish -> {
+						if (punish.getType() == PunishmentType.BAN && !punish.getAppealed() && !punishments.contains(punish.getTarget().getName())) 
+							punishments.add(punish.getTarget().getName());
+					});
+				}
+
+				return punishments; */
 			}
 
 			return Arrays.asList();

@@ -17,18 +17,15 @@ public class PruneHistory extends AsyncCommand {
 
     public PruneHistory(LolBans plugin) {
         super("purgehistory", plugin);
-        // TODO Auto-generated constructor stub
     }
 
     @Override
     public void onSyntaxError(User sender, String label, String[] args) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public List<String> onTabComplete(User sender, String[] args) {
-        // TODO Auto-generated method stub
         return null;
     }
 
