@@ -39,7 +39,6 @@ import java.net.InetSocketAddress;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.ristexsoftware.lolbans.api.configuration.ConfigurationSection;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
@@ -48,6 +47,7 @@ import com.ristexsoftware.lolbans.api.utils.Cacheable;
 import com.ristexsoftware.lolbans.api.utils.TimeUtil;
 import com.ristexsoftware.lolbans.common.utils.Debug;
 
+import com.ristexsoftware.knappy.configuration.ConfigurationSection;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -129,8 +129,7 @@ public class User implements Cacheable {
         if (isConsole()) {
             return true;
         }
-
-        return USERS.containsKey(this.uuid);
+        return LolBans.getPlugin().getOnlineUserCache().contains(getUniqueId().toString());
     }
 
     public void setCommandConfirm(boolean commandConfirm) {
@@ -289,10 +288,9 @@ public class User implements Cacheable {
         if (isConsole()) 
             System.out.println(message);
         
-        if (!isOnline()) 
-            return;
-        
-        LolBans.getPlugin().getUserProvider().sendMessage(this, message);
+        if (isOnline()) {
+            LolBans.getPlugin().getUserProvider().sendMessage(this, message);
+        }
     }
 
     public static User resolveUser(String username) {

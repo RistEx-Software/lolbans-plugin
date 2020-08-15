@@ -48,10 +48,10 @@ public class Messages {
     // Initialized by our GetMessages() function.
     protected Messages() {
         String translationFile = self.getConfig().getString("general.translation-file", "messages.en_us.yml");
-        customConfigFile = new File(self.getDataFolder(), translationFile);
+        customConfigFile = new File(self.getConfigProvider().getDataFolder(), translationFile);
         if (!customConfigFile.exists()) {
             customConfigFile.getParentFile().mkdirs();
-            self.saveResource(translationFile, false);
+            self.getConfigProvider().saveResource(translationFile, false);
         }
 
         reload();

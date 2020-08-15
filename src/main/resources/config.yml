@@ -56,7 +56,7 @@ cache:
 
 discord:
   enabled: false
-  webhook: https://discordapp.com/api/webhooks/xxx/xxxxxx
+  punishment-webhook: https://discordapp.com/api/webhooks/xxx/xxxxxx
   report-webhook: https://discordapp.com/api/webhooks/xxx/xxxxxx
   # Example: Justasic banned NotZachery for abusing villagers [SILENT] [#BF7BD5C85]
   use-simplified-message: false

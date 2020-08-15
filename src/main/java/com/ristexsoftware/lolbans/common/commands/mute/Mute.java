@@ -109,8 +109,12 @@ public class Mute {
                 if (overwrite && target.isPunished(PunishmentType.MUTE)) {
                     target.removeLatestPunishmentOfType(PunishmentType.MUTE, sender, "Overwritten by #" + punishment.getPunishID(), silent);
                 }
-                if (target.isOnline())
-                    target.disconnect(punishment);
+                if (target.isOnline()) {
+                    if (target.hasPermission("lolbans.mute.immune"))
+                        return sender.permissionDenied("lolbans.mute.immune"); // TODO: Make a new message for this case
+                    target.sendMessage(punishment);
+                }
+                    // target.disconnect(punishment);
                 
                 punishment.commit(sender);
                 punishment.broadcast();

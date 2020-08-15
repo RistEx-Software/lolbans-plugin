@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 import com.google.common.collect.ImmutableList;
+import com.ristexsoftware.knappy.util.Debugger;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
@@ -137,9 +138,11 @@ public class Ban {
 					target.removeLatestPunishmentOfType(PunishmentType.BAN, sender,
 					"Overwritten by #" + punishment.getPunishID(), silent);
 				}
-				if (target.isOnline())
+				if (target.isOnline()) {
+					if (target.hasPermission("lolbans.ban.immune"))
+						return sender.permissionDenied("lolbans.ban.immune"); // TODO: Make a new message for this case?
 					target.disconnect(punishment);
-				
+				}
 				
 				punishment.commit(sender);
 				punishment.broadcast();
@@ -209,7 +212,7 @@ public class Ban {
 				return sender.sendReferencedLocalizedMessage("player-doesnt-exist", a.get("username"), true);
 
 			if (!target.isPunished(PunishmentType.BAN))
-				return sender.sendReferencedLocalizedMessage("ban.player-is-not-banned", target.getName(), false);
+				return sender.sendReferencedLocalizedMessage("ban.player-is-not-banned", target.getName(), true);
 		
 			String reason = a.get("reason");
 			if (reason == null || reason.trim().equals("null")) {

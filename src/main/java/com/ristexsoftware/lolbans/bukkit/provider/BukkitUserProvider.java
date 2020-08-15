@@ -1,6 +1,7 @@
 package com.ristexsoftware.lolbans.bukkit.provider;
 
 import com.ristexsoftware.lolbans.api.provider.UserProvider;
+import com.ristexsoftware.lolbans.bukkit.Main;
 import com.ristexsoftware.lolbans.api.User;
 
 import java.net.InetSocketAddress;
@@ -43,8 +44,9 @@ public class BukkitUserProvider implements UserProvider {
      */
     public void disconnect(User user, String reason) {
         Player player = getPlayer(user);
+        // We want to run this task synchronously with the main thread, or bukkit complains.
         if (player != null)
-            player.kickPlayer(reason);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> player.kickPlayer(reason), 0L);
     }
 
     /**

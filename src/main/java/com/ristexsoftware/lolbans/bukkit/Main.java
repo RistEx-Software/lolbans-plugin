@@ -104,13 +104,12 @@ public class Main extends JavaPlugin {
         CommandUtil.Bukkit.registerBukkitCommand(new Rollback(LolBans.getPlugin()));
 
         getServer().getPluginManager().registerEvents(new ConnectionListener(), this);
-
     }
 
     @Override
     public void onDisable() {
         LolBans.getPlugin().destroy();
-        LolBans.getPlugin().saveConfig();
         isEnabled = false;
+        reloadConfig();
     }
 }
