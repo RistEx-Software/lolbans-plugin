@@ -29,6 +29,7 @@ import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.common.utils.CommandUtil;
 import com.ristexsoftware.lolbans.bungeecord.Listeners.ConnectionListener;
+import com.ristexsoftware.lolbans.bungeecord.Listeners.PlayerEventListener;
 import com.ristexsoftware.lolbans.bungeecord.provider.BungeeConfigProvider;
 import com.ristexsoftware.lolbans.bungeecord.provider.BungeeUserProvider;
 import com.ristexsoftware.lolbans.common.commands.ban.*;
@@ -90,6 +91,7 @@ public class Main extends Plugin {
             CommandUtil.BungeeCord.registerBungeeCommand(new Warn.AcknowledgeWarnCommand(LolBans.getPlugin()));
             CommandUtil.BungeeCord.registerBungeeCommand(new Rollback(LolBans.getPlugin()));
         getProxy().getPluginManager().registerListener(this, new ConnectionListener());
+        getProxy().getPluginManager().registerListener(this, new PlayerEventListener());
     }
 
     @Override

@@ -31,12 +31,12 @@ public class PlayerEventListener implements Listener {
                     List<String> commands = LolBans.getPlugin().getConfig()
                             .getStringList("chat-settings.mute-settings.blacklisted-commands");
                     for (String command : commands) {
-                        if (event.getMessage().toLowerCase().startsWith("/"+command.toLowerCase())) {
+                        if (event.getMessage().toLowerCase().startsWith("/" + command.toLowerCase())) {
                             Punishment punishment = user.getLatestPunishmentOfType(PunishmentType.MUTE);
-                            if (punishment != null) {
+                            if (punishment != null && !(punishment.getExpiresAt().getTime() <= System.currentTimeMillis())) {
                                 event.setCancelled(true);
                                 user.sendMessage(punishment);
-    
+
                                 LolBans.getPlugin().notifyStaff(Messages.translate("mute.chat-attempt",
                                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                                             {
@@ -79,7 +79,7 @@ public class PlayerEventListener implements Listener {
         }
 
         Punishment punishment = user.getLatestPunishmentOfType(PunishmentType.MUTE);
-        if (punishment != null) {
+        if (punishment != null  && !(punishment.getExpiresAt().getTime() <= System.currentTimeMillis())) {
             event.setCancelled(true);
             user.sendMessage(punishment);
             LolBans.getPlugin().notifyStaff(
