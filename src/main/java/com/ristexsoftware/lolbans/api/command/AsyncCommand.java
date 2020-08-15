@@ -20,6 +20,7 @@
 package com.ristexsoftware.lolbans.api.command;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
@@ -39,7 +40,6 @@ public abstract class AsyncCommand {
 	private String name;
 	private String nextLabel;
 	private String label;
-	@Getter
 	private List<String> aliases;
 	@Getter
 	protected String description;
@@ -170,6 +170,13 @@ public abstract class AsyncCommand {
     public AsyncCommand setAliases(@NotNull List<String> aliases) {
         this.aliases = aliases;
         return this;
-    }
+	}
+	
+	public List<String> getAliases() {
+		// BungeeCord wants to complain about this nonsense so I have to do this shit.
+		if (aliases == null)
+			return Arrays.asList(new String[]{});
+		return aliases;
+	}
 
 }
