@@ -28,6 +28,7 @@ import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.knappy.util.Version;
 import com.ristexsoftware.lolbans.bukkit.Listeners.ConnectionListener;
+import com.ristexsoftware.lolbans.bukkit.Listeners.PlayerEventListener;
 import com.ristexsoftware.lolbans.bukkit.provider.BukkitConfigProvider;
 import com.ristexsoftware.lolbans.bukkit.provider.BukkitUserProvider;
 import com.ristexsoftware.lolbans.common.commands.ban.Ban;
@@ -104,6 +105,7 @@ public class Main extends JavaPlugin {
         CommandUtil.Bukkit.registerBukkitCommand(new Rollback(LolBans.getPlugin()));
 
         getServer().getPluginManager().registerEvents(new ConnectionListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
     }
 
     @Override

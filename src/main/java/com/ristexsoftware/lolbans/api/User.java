@@ -447,6 +447,13 @@ public class User implements Cacheable {
      * Fetch the latest punishment of a given type.
      */
     public Punishment getLatestPunishmentOfType(PunishmentType type) {
+        Punishment punishment = LolBans.getPlugin().getPunishmentCache().find((it) -> (it.getType() == type && !it.getAppealed() && it.getTarget().getUniqueId().toString() == uuid.toString()));
+
+        if (punishment != null) {
+            LolBans.getPlugin().getPunishmentCache().put(punishment);
+            return punishment;
+        }
+
         return Punishment.findPunishment(type, uuid.toString(), false);
     }
 
@@ -488,6 +495,4 @@ public class User implements Cacheable {
 
         return defaultTime == null ? TimeUtil.toTimestamp("7d") : defaultTime;
     }
-
-
 }
