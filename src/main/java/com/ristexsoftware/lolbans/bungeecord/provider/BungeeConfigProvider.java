@@ -29,6 +29,7 @@ public class BungeeConfigProvider implements ConfigProvider {
 
     @Override
     public File getDataFolder() {
+        // System.out.println(main.getDataFolder());
         return Main.getPlugin().getDataFolder();
     }
 

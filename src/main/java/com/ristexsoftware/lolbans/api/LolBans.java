@@ -159,6 +159,7 @@ public class LolBans {
 
         // So, apparently Java gets all pissy and throws java.util.concurrent.RejectedExecutionException if spigot reloads.
         // I agree with Java, stop reloading spigot, it's bad.
+        System.out.println(config.getLong("general.runnable-timer") * 1000L);
         new Timer().scheduleAtFixedRate(new CacheRunnable(), 1000L, config.getLong("general.runnable-timer") * 1000L);
         new Timer().scheduleAtFixedRate(new QueryRunnable(), 1000L, config.getLong("general.runnable-timer") * 1000L);
 
