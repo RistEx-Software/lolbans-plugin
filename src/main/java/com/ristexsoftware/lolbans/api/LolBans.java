@@ -104,6 +104,10 @@ public class LolBans {
     @Getter
     private boolean enabled = false;
 
+    @Getter
+    @Setter
+    private boolean chatEnabled = true;
+
     // Caches
     @Getter private Cache<User> userCache = new Cache<>(User.class);
     @Getter private Cache<User> onlineUserCache = new Cache<>(User.class);
@@ -263,6 +267,17 @@ public class LolBans {
     public void notifyStaff(String message) {
         for (User user : getOnlineUsers()) {
             if (user.hasPermission("lolbans.alerts"))
+                user.sendMessage(message);
+        }
+    }
+
+    /**
+     * Send all online staff members a message
+     * @param message The message to send
+     */
+    public void notifyStaff(String message, String permission) {
+        for (User user : getOnlineUsers()) {
+            if (user.hasPermission(permission))
                 user.sendMessage(message);
         }
     }
