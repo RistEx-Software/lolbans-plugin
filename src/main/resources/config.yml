@@ -26,8 +26,8 @@ database:
   host: localhost
   port: 3306
   name: lolbans
-  username: lolbans
-  password: lolbans
+  username: username
+  password: password
   # Maximum number of times mysql will try to reconnect before giving up.
   max-reconnects: 5
 

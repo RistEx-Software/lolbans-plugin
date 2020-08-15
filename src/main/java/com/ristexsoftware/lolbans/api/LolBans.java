@@ -117,18 +117,10 @@ public class LolBans {
         // super(configProvider.getDataFolder(), configProvider.getConfigFile())
 
         // Set these early on bc they're important (like you~)
+        plugin = this;
         this.configProvider = configProvider;
         this.userProvider = userProvider;
-        this.config = configProvider.getConfig();
-
         localeProvider = new LocaleProvider(new File(configProvider.getDataFolder(), "locale"));
-
-        LolBans.serverType = type;
-        
-        if (this.config.getBoolean("discord.enabled"))
-            this.discord = new Discord(this.config.getString("discord.punishment-webhook"), this.config.getString("discord.report-webhook"));
-
-        plugin = this;
         if (!configProvider.dataFolderExists()) {
             getLogger().info("Error: No folder for lolbans was found! Creating...");
             getConfigProvider().getDataFolder().mkdirs();
@@ -138,7 +130,7 @@ public class LolBans {
             // having errors.
             throw new FileNotFoundException("Please configure lolbans and restart the server! :)");
         }
-
+        
         if (!configProvider.configExists()) {
             configProvider.saveDefaultConfig();
             getLogger().severe("Please configure lolbans and restart the server! :)");
@@ -146,9 +138,17 @@ public class LolBans {
             // having errors.
             throw new FileNotFoundException("Please configure lolbans and restart the server! :)");
         }
+        this.config = configProvider.getConfig();
 
+        
+        LolBans.serverType = type;
+        
+        if (this.config.getBoolean("discord.enabled"))
+            this.discord = new Discord(this.config.getString("discord.punishment-webhook"), this.config.getString("discord.report-webhook"));
+
+            
         FileConfiguration config = configProvider.getConfig();
-
+            
         userCache.setMaxSize(config.getInt("cache.user.entry-count"));
         userCache.setMaxMemoryUsage(config.getInt("cache.user.max-size") * 1000 * 8);
         userCache.setTtl(config.getLong("cache.user.ttl"));
@@ -165,7 +165,7 @@ public class LolBans {
         // I agree with Java, stop reloading spigot, it's bad.
         new Timer().scheduleAtFixedRate(new CacheRunnable(), 1000L, config.getLong("general.runnable-timer") * 1000L);
         new Timer().scheduleAtFixedRate(new QueryRunnable(), 1000L, config.getLong("general.runnable-timer") * 1000L);
-
+        
         enabled = true;
     }
 
