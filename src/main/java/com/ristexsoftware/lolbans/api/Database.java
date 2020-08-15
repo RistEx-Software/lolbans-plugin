@@ -29,15 +29,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.HashSet;
 
-import com.ristexsoftware.lolbans.api.configuration.Messages;
-import com.ristexsoftware.lolbans.api.configuration.file.FileConfiguration;
+import com.ristexsoftware.knappy.configuration.Configuration;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 import com.ristexsoftware.lolbans.api.utils.TimeUtil;
-import com.ristexsoftware.lolbans.bukkit.Main;
 import com.ristexsoftware.lolbans.common.utils.Debug;
-
-import lombok.Getter;
 
 // import com.ristexsoftware.lolbans.api.punishment.runnables.Query;
 
@@ -54,7 +50,7 @@ public class Database {
     // private static Query CheckThread;
 
     public static boolean initDatabase() {
-        FileConfiguration config = LolBans.getPlugin().getConfig();
+        Configuration config = LolBans.getPlugin().getConfigProvider().getConfig();
         host = config.getString("database.host");
         port = config.getInt("database.port");
         database = config.getString("database.name");
@@ -181,7 +177,7 @@ public class Database {
      * Update the database with missing punishments.
      */
     private static void updateMissingPunishments() {
-        Iterator it = punishmentQueue.iterator();
+        Iterator<Punishment> it = punishmentQueue.iterator();
         while (it.hasNext()) {
             Punishment punishment = (Punishment) it.next();
             punishment.commit(punishment.getPunisher());

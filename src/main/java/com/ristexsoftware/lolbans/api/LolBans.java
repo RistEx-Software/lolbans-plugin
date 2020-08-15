@@ -20,25 +20,29 @@
 package com.ristexsoftware.lolbans.api;
 
 import java.io.FileNotFoundException;
+import java.io.File;
 import java.util.Collection;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutorService;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.Timer;
 import java.util.UUID;
 import java.util.Vector;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.runnables.CacheRunnable;
 import com.ristexsoftware.lolbans.api.runnables.QueryRunnable;
 import com.ristexsoftware.lolbans.api.utils.Cache;
+import com.ristexsoftware.lolbans.api.utils.Discord;
 import com.ristexsoftware.lolbans.api.provider.ConfigProvider;
 import com.ristexsoftware.lolbans.api.provider.UserProvider;
 import com.ristexsoftware.knappy.configuration.file.FileConfiguration;
 import com.ristexsoftware.knappy.util.Version.ServerType;
+import com.ristexsoftware.knappy.translation.LocaleProvider;
 
 import inet.ipaddr.IPAddressString;
 import lombok.Getter;
@@ -51,7 +55,8 @@ import lombok.Setter;
  * @version 2.0.0
  * @since 2019-11-13
  */
-public class LolBans extends JavaPlugin {
+public class LolBans {
+    @Getter
     private static LolBans plugin;
     
     @Getter
@@ -78,10 +83,26 @@ public class LolBans extends JavaPlugin {
     @Getter
     @Setter
     private ConfigProvider configProvider = null;
-    
+
+    @Getter
+    @Setter
+    private static Logger logger = Logger.getLogger("LolBans"); 
+
     @Setter
     @Getter
     private boolean chatMute = false;
+
+    @Getter
+    private Discord discord = null;
+
+    @Getter
+    private FileConfiguration config;
+
+    @Getter
+    private LocaleProvider localeProvider;
+
+    @Getter
+    private boolean enabled = false;
 
     // Caches
     @Getter private Cache<User> userCache = new Cache<>(User.class);
@@ -89,12 +110,19 @@ public class LolBans extends JavaPlugin {
     @Getter private Cache<Punishment> punishmentCache = new Cache<>(Punishment.class);
 
     public LolBans(ConfigProvider configProvider, UserProvider userProvider, ServerType type) throws FileNotFoundException {
-        super(configProvider.getDataFolder(), configProvider.getConfigFile());
+        // super(configProvider.getDataFolder(), configProvider.getConfigFile())
 
         // Set these early on bc they're important (like you~)
         this.configProvider = configProvider;
         this.userProvider = userProvider;
+        this.config = configProvider.getConfig();
+
+        localeProvider = new LocaleProvider(new File(configProvider.getDataFolder(), "locale"));
+
         LolBans.serverType = type;
+        
+        if (this.config.getBoolean("discord.enabled"))
+            this.discord = new Discord(this.config.getString("discord.punishment-webhook"), this.config.getString("discord.report-webhook"));
 
         plugin = this;
         if (!configProvider.dataFolderExists()) {
@@ -133,6 +161,8 @@ public class LolBans extends JavaPlugin {
         // I agree with Java, stop reloading spigot, it's bad.
         new Timer().scheduleAtFixedRate(new CacheRunnable(), 1000L, config.getLong("general.runnable-timer") * 1000L);
         new Timer().scheduleAtFixedRate(new QueryRunnable(), 1000L, config.getLong("general.runnable-timer") * 1000L);
+
+        enabled = true;
     }
 
     /**
@@ -201,7 +231,7 @@ public class LolBans extends JavaPlugin {
     public void registerUser(net.md_5.bungee.api.connection.ProxiedPlayer player) {
         User user = new User(player.getName(), player.getUniqueId());
         userCache.put(user);
-        getOnlineUsers().add(user);
+        onlineUserCache.put(user);
     }
 
     /**
@@ -269,16 +299,19 @@ public class LolBans extends JavaPlugin {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        configProvider.saveConfig();
+        enabled = false;
     }
     
-    private static LolBans instance = null;
+    // private static LolBans instance = null;
 
-    /**
-     * Fetch a static reference to the LolBans singelton instance.
-     */
-    public static LolBans getPlugin() {
-        if (instance == null) 
-            throw new RuntimeException("Cannot get plugin as it hasn't been insinstantiated");
-        return instance;
-    }
+    // /**
+    //  * Fetch a static reference to the LolBans singelton instance.
+    //  */
+    // public static LolBans getPlugin() {
+    //     if (instance == null) 
+    //         throw new RuntimeException("Cannot get plugin as it hasn't been instantiated");
+    //     return instance;
+    // }
 }  

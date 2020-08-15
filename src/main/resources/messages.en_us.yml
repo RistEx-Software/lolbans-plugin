@@ -52,14 +52,33 @@ discord:
   simple:
     message-ban: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}banned **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
     message-mute: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}muted **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
-    message-kick: ":boot: **{ARBITERNAME}** kicked **{PlayerName}** for **{REASON}**{SILENT:empty_if_faGMVW-RSQM-XGRC-JLlse:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    message-kick: ":boot: **{ARBITERNAME}** kicked **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
     message-warn: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}warned **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
     banwave-add: ":wave: **{ARBITERNAME}** added **{PLAYERNAME}** to the next ban wave."
     banwave-start: ":hammer: **{ARBITERNAME}** started a ban wave which bans the following users:\n```\n{USERLIST}\n```"
     report: ":orange_book: **{ARBITERNAME}** reported **{PLAYERNAME}**: `{REASON}` [{REPORTTYPE} - #{PUNISHID}]"
     ban-object: ":hammer: **{ARBITERNAME}** banned `{OBJECT}`{EXPIRY|empty_if_none:\" which expires on \"}{EXPIRY|datetime:\"**EEE, MMM d yyyy HH:mm:ss**\"}"
+
   # Embedded discord messages.
-  embedded:
+  embed:  
+    title: "{punished_by_name} {APPEALED|empty_if_false:\"un\"{punishment_type} {player_name}"
+    descrption:
+    footer:
+    footer-image:
+    fields:
+      1:
+        title:
+        content:
+      2:
+        title:
+        content:
+      3:
+        title:
+        content:
+      4:
+        title:
+        content:
+      
     ban-title: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}banned {PLAYERNAME}"
     kick-title: "{ARBITERNAME} kicked {PLAYERNAME}"
     mute-title: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}muted {PLAYERNAME}"
