@@ -52,10 +52,14 @@ public class BukkitUserProvider implements UserProvider {
     /**
      * Get the IP address of the specified user.
      */
-    public InetSocketAddress getAddress(User user) {
+    public IPAddress getAddress(User user) {
         Player player = getPlayer(user);
-        if (player != null)
-            return player.getAddress();
+        try {
+            if (player != null)
+                return new IPAddressString(player.getAddress().getAddress().getHostAddress()).toAddress();
+        } catch(Exception e) {
+            return null;
+        }
         return null;
     }
 

@@ -19,7 +19,6 @@ public class PlayerEventListener implements Listener {
     
     @EventHandler
     public void onChat(ChatEvent event) throws InvalidConfigurationException {
-        System.out.println(event.getMessage());
         if (event.getSender() instanceof ProxiedPlayer) {
             User user = LolBans.getPlugin().getUser(((ProxiedPlayer) event.getSender()).getUniqueId());
             String message = event.getMessage();

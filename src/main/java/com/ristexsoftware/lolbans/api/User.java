@@ -35,7 +35,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.regex.Pattern;
-import java.net.InetSocketAddress;
+// import java.net.InetSocketAddress;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -46,6 +46,9 @@ import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 import com.ristexsoftware.lolbans.api.utils.Cacheable;
 import com.ristexsoftware.lolbans.api.utils.TimeUtil;
 import com.ristexsoftware.lolbans.common.utils.Debug;
+
+import inet.ipaddr.IPAddress;
+import inet.ipaddr.IPAddressString;
 
 import com.ristexsoftware.knappy.configuration.ConfigurationSection;
 import lombok.Getter;
@@ -60,7 +63,7 @@ public class User implements Cacheable {
     private String username;
     private UUID uuid;
     @Setter
-    InetSocketAddress ipAddress;
+    private IPAddress ipAddress;
     @Getter
     @Setter
     private boolean isFrozen = false;
@@ -159,7 +162,7 @@ public class User implements Cacheable {
      * 
      * @return The player's address, or null if an address can't be found
      */
-    public InetSocketAddress getAddress() {
+    public IPAddress getAddress() {
         if (this.ipAddress != null)
             return this.ipAddress;
        

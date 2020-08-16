@@ -27,7 +27,7 @@ public class BanWave extends AsyncCommand {
         super("banwave", plugin);
         setDescription("Manages ");
         setPermission("lolbans.banwave");
-        setAliases(Arrays.asList(new String[] { "eban", "tempban" }));
+        setAliases(Arrays.asList(new String[] {}));
     }
 
     @Override
@@ -55,35 +55,24 @@ public class BanWave extends AsyncCommand {
                 case "add":
                 case "remove":
                     ArrayList<String> usernames = new ArrayList<>();
-                    if(!args[0].equals("")) {
-                        for(User user : LolBans.getPlugin().getUserCache().getAll()) {
-                            if(user.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
+                    if (!args[0].equals("")) {
+                        for (User user : LolBans.getPlugin().getUserCache().getAll()) {
+                            if (user.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
                                 usernames.add(user.getName());
                             }
                         }
                     } else {
                         // Instead of creating a stupid for loop here, let's just stream 
                         usernames = (ArrayList<String>) LolBans.getPlugin().getUserCache().getAll().stream()
-                        .map(user -> user.getName())
-                        .collect(Collectors.toList());
+                                .map(user -> user.getName()).collect(Collectors.toList());
                     }
-    
+
                     return usernames;
                 default:
                     return Arrays.asList();
             }
         }
-
-        if (args.length < 4) {
-            switch (args[0]) {
-                case "add":
-                case "remove":
-                    return ImmutableList.of("1m", "15m", "1h", "3h", "12h", "1d", "1w", "1mo", "1y");
-                default:
-                    return Arrays.asList();
-                }
-        }
-
+        
         return Arrays.asList();
     }
 
@@ -128,7 +117,7 @@ public class BanWave extends AsyncCommand {
             Arguments a = new Arguments(args);
             a.requiredString("target");
             a.optionalTimestamp("expiry");
-            a.requiredSentence("reason");
+            a.optionalSentence("reason");
 
             if (!a.valid())
                 return false;
@@ -137,12 +126,15 @@ public class BanWave extends AsyncCommand {
             if (target == null) 
                 return sender.sendReferencedLocalizedMessage("player-doesnt-exist", a.get("target"), true);
             
+            if (target.hasPermission("lolbans.immune"))
+                return sender.permissionDenied("lolbans.banwave");
+
             if (Punishment.findPunishment(PunishmentType.BANWAVE, target.getUniqueId().toString(), false) != null) 
                 return sender.sendReferencedLocalizedMessage("ban-wave.player-is-in-wave", target.getName(), true);
         
             if (target.isPunished(PunishmentType.BAN))
                 return sender.sendReferencedLocalizedMessage("ban.player-is-banned", target.getName(), true);
-                
+
             Punishment punishment = new Punishment(PunishmentType.BANWAVE, sender, target, a.get("reason"),
                     a.getTimestamp("expiry"), silent, false);
             

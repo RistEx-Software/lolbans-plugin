@@ -4,6 +4,8 @@ import java.net.InetSocketAddress;
 
 import com.ristexsoftware.lolbans.api.User;
 
+import inet.ipaddr.IPAddress;
+
 /**
  * Provides an interface between the User class and the current server type.
  */
@@ -21,7 +23,7 @@ public interface UserProvider {
     /**
      * Get the IP address of the specified user.
      */
-    public InetSocketAddress getAddress(User user);
+    public IPAddress getAddress(User user);
 
     /**
      * Test whether the specified user has the given permission node.

@@ -96,9 +96,13 @@ public class IPBan {
                     return sender.permissionDenied("lolbans.ipban.perm"); 
                 
                 // Is a future, needed != null for some reason.
-                IPAddress target = new IPAddressString(a.get("cidr")).toAddress();
-                if (target == null) 
+                IPAddress target = null;
+                try {
+                    target = LolBans.getPlugin().getOnlineUser(a.get("cidr")) == null ? new IPAddressString(a.get("cidr")).toAddress() : LolBans.getPlugin().getOnlineUser(a.get("cidr")).getAddress();
+                } catch (Exception e) {
+                    // TODO: Add a ip is invalid message!
                     return false;
+                }
                     
                 // TODO: handle this better? Send the banned subnet string instead of the address they tried to ban?
                 Optional<ResultSet> res = IPUtil.isBanned(target.toInetAddress()).get();
@@ -110,14 +114,15 @@ public class IPBan {
                     try 
                     {
                         final int fuckingfinal = IPUtil.getBanAffected(target);
+                        final IPAddress javaisfuckingstupidaboutfinalvariables = target;
                         String insanity = Messages.translate("ip-ban.insanity",
                             new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                             {{
-                                put("ipaddress", String.valueOf(target.toAddressString()));
+                                put("ipaddress", String.valueOf(javaisfuckingstupidaboutfinalvariables.toString()));
                                 put("arbiter", sender.getName());
                                 put("AFFECTEDPLAYERS", String.valueOf(fuckingfinal));
                                 put("TOTALPLAYERS", String.valueOf(LolBans.getPlugin().getOnlineUsers().size()));
-                                put("INSANEPERCENT", String.valueOf(IPUtil.getBanPercentage(target)));
+                                put("INSANEPERCENT", String.valueOf(IPUtil.getBanPercentage(javaisfuckingstupidaboutfinalvariables)));
                                 put("INSANETHRESHOLD", String.valueOf(LolBans.getPlugin().getConfig().getDouble("ban-settings.insane.trigger")));
                             }}
                         );
