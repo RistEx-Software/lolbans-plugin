@@ -102,7 +102,7 @@ public class CommandUtil {
 
         // Look how stupid fucking easy this is compared to bukkit...
         public static void registerBungeeCommand(AsyncCommand command) {
-            if (LolBans.getServerType() != ServerType.BUNGEE)
+            if (LolBans.getServerType() != ServerType.BUNGEE && LolBans.getServerType() != ServerType.WATERFALL)
                 return;
             
             com.ristexsoftware.lolbans.bungeecord.Main plugin = com.ristexsoftware.lolbans.bungeecord.Main.getPlugin();

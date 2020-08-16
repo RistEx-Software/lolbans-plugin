@@ -70,34 +70,42 @@ public class Database {
             // TODO: Support table prefixes?
             // TODO: Remove usernames from tables
             connection.prepareStatement(
-                    "CREATE TABLE IF NOT EXISTS lolbans_punishments (" + "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
+                    "CREATE TABLE IF NOT EXISTS lolbans_punishments (" 
+                    + "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                     // Player info stuffs
-                            + "target_uuid VARCHAR(36) NULL," + "target_name VARCHAR(17) NULL,"
-                            + "target_ip_address VARCHAR(48) DEFAULT '#',"
-                            // (General punish info)
-                            + "reason TEXT NULL," + "punish_id VARCHAR(20) NOT NULL," + "type INT NOT NULL,"
-                            // 0 = Ban, 1 = Mute, 2 = Kick, 3 = Warn
-                            + "time_punished TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-                            + "expires_at TIMESTAMP NULL," + "commit_punishment_by TIMESTAMP NULL,"
-                            // Who banned (punshied) them
-                            + "punished_by_name VARCHAR(17) NOT NULL," + "punished_by_uuid VARCHAR(36) NOT NULL,"
-                            // Who un-punished (appealed) them
-                            + "appealed_by_name VARCHAR(17) NULL," + "appealed_by_uuid VARCHAR(36) NULL," // Who has
-                                                                                                          // reviewed
-                                                                                                          // and
-                                                                                                          // approved/denied
-                                                                                                          // the appeal.
+                    + "target_uuid VARCHAR(36) NULL," 
+                    + "target_name VARCHAR(17) NULL,"
+                    + "target_ip_address VARCHAR(48) DEFAULT '#',"
+                    // (General punish info)
+                    + "reason TEXT NULL," 
+                    + "punish_id VARCHAR(20) NOT NULL," 
+                    + "type INT NOT NULL,"
+                    // 0 = Ban, 1 = Mute, 2 = Kick, 3 = Warn
+                    + "time_punished TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+                    + "expires_at TIMESTAMP NULL," 
+                    + "commit_punishment_by TIMESTAMP NULL,"
+                    // Who banned (punshied) them
+                    + "punished_by_name VARCHAR(17) NOT NULL," 
+                    + "punished_by_uuid VARCHAR(36) NOT NULL,"
+                    // Who un-punished (appealed) them
+                    + "appealed_by_name VARCHAR(17) NULL," 
+                    + "appealed_by_uuid VARCHAR(36) NULL," // Who has
+                                                            // reviewed
+                                                            // and
+                                                            // approved/denied
+                                                            // the appeal.
 
-                            // categorize this nonsense
-                            + "appealed BOOLEAN DEFAULT FALSE," // this will just make checking if they're banned or not
-                                                                // easier...
-                            + "appeal_reason TEXT NULL," + "appealed_at TIMESTAMP NULL,"
-                            + "silent BOOLEAN DEFAULT FALSE," + "warning_ack BOOLEAN DEFAULT FALSE," // Used only when
-                                                                                                     // type == 3 for
-                                                                                                     // warnings.
-                            + "ip_ban BOOLEAN DEFAULT FALSE," // for IP bans
-                            + "regex_ban BOOLEAN DEFAULT FALSE," // for regex bans
-                            + "regex TEXT NULL," + "banwave BOOLEAN DEFAULT FALSE" + ")")
+                    // categorize this nonsense
+                    + "appealed BOOLEAN DEFAULT FALSE," // this will just make checking if they're banned or not
+                                                        // easier...
+                    + "appeal_reason TEXT NULL," 
+                    + "appealed_at TIMESTAMP NULL,"
+                    + "silent BOOLEAN DEFAULT FALSE," 
+                    + "warning_ack BOOLEAN DEFAULT FALSE," // Used only when
+                                                            // type == 3 for
+                                                            // warnings.
+                    + "regex TEXT NULL" 
+                    + ")")
                     .execute();
 
             connection.prepareStatement("CREATE TABLE IF NOT EXISTS lolbans_users "

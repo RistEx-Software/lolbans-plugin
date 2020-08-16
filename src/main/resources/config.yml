@@ -17,10 +17,9 @@ general:
   # The amount of time between check threads in seconds (Default: 30 seconds)
   # NOTE: You shouldn't touch this unless you know what you are doing with it.
   runnable-timer: 30
-
-# Show a GUI instead of chat for the history commands
-history-gui:
-  enabled: false
+  # The maintenance level for the server
+  # 0 = DISABLED, 1-4 = LOWEST to HIGHEST
+  maintenance: 0
 
 database:
   host: localhost
@@ -47,8 +46,8 @@ cache:
     # Default: 1000
     entry-count: 1000
   punishment:
-    # Default: 12 hours
-    ttl: 43200
+    # Default: 48 hours
+    ttl: 172800
     # Default 24mb
     max-size: 24576
     # Default 500

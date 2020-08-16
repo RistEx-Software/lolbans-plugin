@@ -8,6 +8,8 @@ api-version: 1.13
 permissions:
   lolbans.ban:
     description: Able to use ban command
+  lolbans.ban.immune:
+    description: Players will not be able to ban you
   lolbans.ban.overwite:
     description: Able to overwrite bans
   lolbans.ban.perm:
@@ -54,7 +56,7 @@ permissions:
     description: Able to report other players to server admins
   lolbans.report.history:
     description: Able to history of reports of a specific player or all reports
-  lolbans.ReceiveReports:
+  lolbans.receivereports:
     description: Able to receive reports from other players
   lolbans.staffrollback:
     description: Able to roll back actions of other staff members
@@ -66,6 +68,8 @@ permissions:
       description: Able to overwrite bans
   lolbans.mute.perm:
     description: Able to permanently mute other players
+  lolbans.mute.immune:
+    description: Be immune to mutes
   lolbans.unmute:
     description: Able to unmute players
   lolbans.warnaccept:
@@ -78,3 +82,15 @@ permissions:
     description: Able to bypass mutes
   lolbans.reload:
     description: Reload plugin.yml and messages.yml or import data
+  lolbans.maintenance.toggle:
+    description: Toggle maintenance mode
+  lolbans.maintenance.setlevel:
+    description: Set the maintenenace level
+  lolbans.maintenance.lowest:
+    description: Ability to join the server while running on maintenance mode 'lowest'
+  lolbans.maintenance.low:
+    description: Ability to join the server while running on maintenance mode 'low'
+  lolbans.maintenance.high:
+    description: Ability to join the server while running on maintenance mode 'high'
+  lolbans.maintenance.highest:
+    description: Ability to join the server while running on maintenance mode 'highest'

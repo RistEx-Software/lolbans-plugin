@@ -51,6 +51,8 @@ import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
 
 import com.ristexsoftware.knappy.configuration.ConfigurationSection;
+import com.ristexsoftware.knappy.translation.Translation;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -187,7 +189,9 @@ public class User implements Cacheable {
             PunishmentType type = punishment.getType();
             TreeMap<String, String> vars = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                 {
-                    put("player", punishment.getTarget().getName());
+                    put("player", punishment.getTarget() == null ? "" : punishment.getTarget().getName());
+                    put("ipaddress", punishment.getIpAddress() == null ? "#" : punishment.getIpAddress().toString());
+                    put("censoredipaddress", punishment.getIpAddress() == null ? "#" : Translation.censorWord(punishment.getIpAddress().toString()));
                     put("reason", punishment.getReason());
                     put("arbiter", punishment.getPunisher().getName());
                     put("expiry", punishment.getExpiresAt() == null ? "" : punishment.getExpiresAt().toString());

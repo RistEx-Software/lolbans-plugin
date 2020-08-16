@@ -201,6 +201,16 @@ freeze:
   freeze-announcement: "{PREFIX}&f{ARBITER}&b {APPEALED|empty_if_false:\"un-\"}froze &f{PLAYER} {SILENT|empty_if_false:\" &8[SILENT]\"}"
 
 statistics: "&3:=:=:= &bLolBans Statistics &3:=:=:=\n&bTotal Punishments:&f {PUNISHCOUNT}\n  &7>> &bBans:&f {BANS} ({REGEX} RegEx, {IPBANS} IP) ({BANPERCENT}%)\n  &7>> &bMutes:&f {MUTES} ({MUTEPERCENT}%)\n  &7>> &bWarnings:&f {WARNS} ({WARNPERCENT}%)\n  &7>> &bKicks:&f {KICKS} ({KICKPERCENT}%)\n\n&bTotal Users:&f {USERSCOUNT}\n  &7>> &bUsers Punished:&f {USERSPUNISHED} ({PERCENTPUNISHED}%)\n&r"
+
+maintenance:
+  # Possible variables:
+  # ONLINE, MAX
+  player-count: "&4Maintenance"
+  hover-message: "&cServer is under maintenance"
+  kick-message: "{NETWORKNAME}&c is currenly under maintenance!"
+  description: "&c{NETWORKNAME}&c is currently under maintenance!\n&cVisit &b{WEBSITE} &cfor more info!"
+  toggled: "{PREFIX}&f{PLAYER} &c{ENABLED|empty_if_false:\"disabled\"} {ENABLED|empty_if_true:\"enabled\"} mainenance mode with level &f{MAINTENANCELEVEL&c!"
+
 # This section is not parsed by the above variable parser.
 syntax:
   ban: "Usage: /ban [-s] [-o] <PlayerName> [Time|*] <Reason>"

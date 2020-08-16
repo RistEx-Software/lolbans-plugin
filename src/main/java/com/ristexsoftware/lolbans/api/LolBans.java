@@ -108,6 +108,14 @@ public class LolBans {
     @Setter
     private boolean chatEnabled = true;
 
+    @Getter
+    @Setter
+    private MaintenanceLevel maintenanceLevel = MaintenanceLevel.HIGH;
+
+    @Getter
+    @Setter
+    private Boolean maintenanceModeEnabled = false;
+
     // Caches
     @Getter private Cache<User> userCache = new Cache<>(User.class);
     @Getter private Cache<User> onlineUserCache = new Cache<>(User.class);
@@ -142,6 +150,7 @@ public class LolBans {
 
         
         LolBans.serverType = type;
+        this.maintenanceLevel = MaintenanceLevel.fromOrdinal(getConfig().getInt("general.maintenance"));
         
         if (this.config.getBoolean("discord.enabled"))
             this.discord = new Discord(this.config.getString("discord.punishment-webhook"), this.config.getString("discord.report-webhook"));
@@ -205,6 +214,7 @@ public class LolBans {
     public User getOnlineUser(String username) {
         for (User user : getOnlineUserCache().getAll()) {
             if (user.getName().equalsIgnoreCase(username));
+                return user;
         }
         return null;
     }
