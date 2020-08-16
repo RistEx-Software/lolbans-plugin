@@ -66,7 +66,7 @@ public class QueryRunnable extends TimerTask {
                     // Grab all the latest IP bans from the databse and ensure everything is up to
                     // date.
                     ResultSet rs = Database.getConnection().prepareStatement(
-                            "SELECT * FROM lolbans_punishments WHERE appealed = FALSE AND type = 5 AND ip_ban = TRUE")
+                            "SELECT * FROM lolbans_punishments WHERE appealed = FALSE AND type = 5")
                             .executeQuery();
                     while (rs.next()) {
                         IPAddressString addr = new IPAddressString(rs.getString("target_ip_address"));

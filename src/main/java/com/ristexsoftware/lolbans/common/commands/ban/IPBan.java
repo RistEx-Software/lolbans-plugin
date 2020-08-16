@@ -97,6 +97,7 @@ public class IPBan {
                 
                 // Is a future, needed != null for some reason.
                 IPAddress target = null;
+                System.out.println(LolBans.getPlugin().getOnlineUser(a.get("cidr")));
                 try {
                     target = LolBans.getPlugin().getOnlineUser(a.get("cidr")) == null ? new IPAddressString(a.get("cidr")).toAddress() : LolBans.getPlugin().getOnlineUser(a.get("cidr")).getAddress();
                 } catch (Exception e) {

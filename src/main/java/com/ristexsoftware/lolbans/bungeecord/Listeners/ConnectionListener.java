@@ -37,6 +37,7 @@ import com.ristexsoftware.knappy.util.Debugger;
 import com.ristexsoftware.knappy.util.TimeUtil;
 import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
+import com.ristexsoftware.lolbans.api.MaintenanceLevel;
 import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
@@ -67,6 +68,11 @@ public class ConnectionListener implements Listener {
             public Boolean call() {
                 try {
                     Timestamp login = TimeUtil.now();
+                    if (LolBans.getPlugin().getMaintenanceModeEnabled() && !player.hasPermission("lolbans.maintenance."+MaintenanceLevel.displayName(LolBans.getPlugin().getMaintenanceLevel()).toLowerCase())) {
+                        player.disconnect(Messages.translate("maintenance.kick-message", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
+                            put("maintenancelevel", MaintenanceLevel.displayName(LolBans.getPlugin().getMaintenanceLevel()));
+                        }}));
+                    }
 
                     // Before we do anything, make sure they're abiding the ratelimit
                     if (self.getConfig().getBoolean("connection.rate-limiting.enabled")
@@ -207,6 +213,9 @@ public class ConnectionListener implements Listener {
                         }
 
                     }
+
+                    if (foundBan || foundIP || foundRegex || foundWarn)
+                        return false;
 
                     final PreparedStatement punishmentQuery = Database.connection.prepareStatement(
                             "SELECT * FROM lolbans_punishments WHERE appealed = FALSE AND (expires_at IS NOT NULL >= NOW() OR expires_at IS NULL)");
@@ -359,6 +368,8 @@ public class ConnectionListener implements Listener {
                     }
                     
                     // bork bork nom nom
+                    if (foundBan || foundIP || foundRegex || foundWarn)
+                        return false;
 
                     String rDNS = IPUtil.rDNSQUery(player.getAddress().getAddress().getHostAddress().toString());
                     // Do Regex matches since they're pre-compiled
@@ -460,7 +471,6 @@ public class ConnectionListener implements Listener {
                     // Kick if there was a server error.
                     if (self.getConfig().getBoolean("general.kick-connection-error"))
                     user.disconnect(Messages.serverError);
-                    return false;
                 }
                 return true;
             }
@@ -469,10 +479,8 @@ public class ConnectionListener implements Listener {
         LolBans.getPlugin().getPool().execute(t);
 
         try {
-            if (!t.get()) {
-                if (self.getConfig().getBoolean("general.kick-connection-error"))
-                    user.disconnect(Messages.serverError);
-            }
+            if (!t.get())
+                return;
         } catch (InterruptedException | ExecutionException e) {
             if (self.getConfig().getBoolean("general.kick-connection-error"))
                 user.disconnect(Messages.serverError);

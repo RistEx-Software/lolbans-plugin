@@ -32,6 +32,7 @@ import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.common.utils.CommandUtil;
 import com.ristexsoftware.lolbans.bungeecord.Listeners.ConnectionListener;
+import com.ristexsoftware.lolbans.bungeecord.Listeners.PingEvent;
 import com.ristexsoftware.lolbans.bungeecord.Listeners.PlayerEventListener;
 import com.ristexsoftware.lolbans.bungeecord.provider.BungeeConfigProvider;
 import com.ristexsoftware.lolbans.bungeecord.provider.BungeeUserProvider;
@@ -96,16 +97,20 @@ public class Main extends Plugin {
         CommandUtil.BungeeCord.registerBungeeCommand(new BanWave(LolBans.getPlugin()));
 
         CommandUtil.BungeeCord.registerBungeeCommand(new History(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new PruneHistory(LolBans.getPlugin()));
+        // CommandUtil.BungeeCord.registerBungeeCommand(new PruneHistory(LolBans.getPlugin()));
+        // CommandUtil.BungeeCord.registerBungeeCommand(new Rollback(LolBans.getPlugin()));
 
         CommandUtil.BungeeCord.registerBungeeCommand(new Kick(LolBans.getPlugin()));
 
         CommandUtil.BungeeCord.registerBungeeCommand(new Warn.WarnCommand(LolBans.getPlugin()));
         CommandUtil.BungeeCord.registerBungeeCommand(new Warn.UnwarnCommand(LolBans.getPlugin()));
         CommandUtil.BungeeCord.registerBungeeCommand(new Warn.AcknowledgeWarnCommand(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new Rollback(LolBans.getPlugin()));
+
+        CommandUtil.BungeeCord.registerBungeeCommand(new Maintenance(LolBans.getPlugin()));
+
         getProxy().getPluginManager().registerListener(this, new ConnectionListener());
         getProxy().getPluginManager().registerListener(this, new PlayerEventListener());
+        getProxy().getPluginManager().registerListener(this, new PingEvent());
     }
 
     @Override
