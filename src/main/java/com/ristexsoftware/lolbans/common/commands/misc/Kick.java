@@ -68,7 +68,7 @@ public class Kick extends AsyncCommand {
         Arguments a = new Arguments(args);
         a.optionalFlag("silent", "-s");
         a.requiredString("username");
-        a.optionalSentence("reason"); 
+        a.requiredSentence("reason"); 
 
         if (!a.valid())
             return false;

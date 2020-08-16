@@ -149,17 +149,17 @@ public class Ban {
 					String configReason = Messages.getMessages().getConfig().getString("ban.default-reason");
 					reason = configReason == null ? "Your account has been suspended!" : configReason;
 				}
-								
-				Punishment punishment = new Punishment(PunishmentType.BAN, sender, target, reason, expiry, silent, false);
 				
-				if (overwrite) {
-					target.removeLatestPunishmentOfType(PunishmentType.BAN, sender,
-					"Overwritten by #" + punishment.getPunishID(), silent);
-				}
+				Punishment punishment = new Punishment(PunishmentType.BAN, sender, target, reason, expiry, silent, false);
 				if (target.isOnline()) {
 					if (target.hasPermission("lolbans.ban.immune"))
 						return sender.permissionDenied("lolbans.ban.immune"); // TODO: Make a new message for this case?
 					target.disconnect(punishment);
+				}
+				
+				if (overwrite) {
+					target.removeLatestPunishmentOfType(PunishmentType.BAN, sender,
+					"Overwritten by #" + punishment.getPunishID(), silent);
 				}
 				
 				punishment.commit(sender);

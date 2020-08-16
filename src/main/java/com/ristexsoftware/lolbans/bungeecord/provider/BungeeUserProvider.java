@@ -1,6 +1,10 @@
 package com.ristexsoftware.lolbans.bungeecord.provider;
 
 import com.ristexsoftware.lolbans.api.provider.UserProvider;
+
+import inet.ipaddr.IPAddress;
+import inet.ipaddr.IPAddressString;
+
 import com.ristexsoftware.lolbans.api.User;
 
 import java.net.InetSocketAddress;
@@ -45,10 +49,14 @@ public class BungeeUserProvider implements UserProvider {
     /**
      * Get the IP address of the specified user.
      */
-    public InetSocketAddress getAddress(User user) {
+    public IPAddress getAddress(User user) {
         ProxiedPlayer proxiedPlayer = getProxiedPlayer(user);
-        if (proxiedPlayer != null)
-            return proxiedPlayer.getAddress();
+        try {
+            if (proxiedPlayer != null)
+                return new IPAddressString(proxiedPlayer.getAddress().getAddress().getHostAddress()).toAddress();
+        } catch(Exception e) {
+            return null;
+        }
         return null;
     }
 

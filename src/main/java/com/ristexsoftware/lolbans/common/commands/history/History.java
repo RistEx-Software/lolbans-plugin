@@ -13,8 +13,9 @@ import java.util.stream.Stream;
 
 import com.ristexsoftware.lolbans.api.command.Arguments;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
+import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
-import com.google.common.collect.ImmutableList;
+import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
@@ -29,7 +30,14 @@ public class History extends AsyncCommand {
 
     @Override
     public void onSyntaxError(User sender, String label, String[] args) {
-
+        sender.sendMessage(Messages.invalidSyntax);
+        try {
+            sender.sendMessage(
+                    Messages.translate("syntax.purgehistory", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+            sender.sendMessage(Messages.serverError);
+        }
     }
 
     @Override
@@ -63,32 +71,29 @@ public class History extends AsyncCommand {
             a.optionalString("targetOrPage");
             a.optionalInt("pageGivenPlayer");
             
-            if (!a.valid()) {
+            if (!a.valid())
                 return false;
-            }
 
             String targetOrPage = a.get("targetOrPage");
             User target = User.resolveUser(targetOrPage);
 
             Integer page = a.getInt("pageGivenPlayer");
-            if (target == null) {
+            if (target == null)
                 page = a.getInt("targetOrPage");
-            }
+            
 
-            if (page == null) {
+            if (page == null)
                 page = 1;
-            }
 
             // Convert to SQL-readable page - is one minus user-readable.
             page--;
-            if (page < 0) {
+            if (page < 0)
                 return false;
-            }
 
             // Count rows to ensure page isn't out of range.
             PreparedStatement countQuery = Database.getConnection()
-                    .prepareStatement(
-                            "SELECT COUNT(*) AS count FROM lolbans_punishments WHERE target_name LIKE ? ORDER BY time_punished");
+                    .prepareStatement( 
+                            "SELECT COUNT(*) AS count FROM lolbans_punishments WHERE target_name LIKE ? ORDER BY time_punished DESC");
             countQuery.setString(1, target == null ? "%" : target.getName());
 
             ResultSet countResult = countQuery.executeQuery();
@@ -102,7 +107,7 @@ public class History extends AsyncCommand {
 
             // Fetch fixed amount of punishments (always less than 50).
             PreparedStatement punishmentQuery = Database.getConnection()
-                    .prepareStatement("SELECT * FROM lolbans_punishments WHERE target_name LIKE ? ORDER BY time_punished LIMIT ?, ?");
+                    .prepareStatement("SELECT * FROM lolbans_punishments WHERE target_name LIKE ? ORDER BY time_punished DESC LIMIT ?, ?");
             punishmentQuery.setString(1, target == null ? "%" : target.getName());
             punishmentQuery.setInt(2, page * pageSize);
             punishmentQuery.setInt(3, pageSize);

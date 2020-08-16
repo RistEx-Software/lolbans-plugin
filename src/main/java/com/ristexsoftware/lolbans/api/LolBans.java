@@ -185,6 +185,31 @@ public class LolBans {
     }
 
     /**
+     * Get an online user
+     * 
+     * @param UUID the UUID of the user to lookup
+     * @return The user if found, otherwise null
+     */
+    public User getOnlineUser(UUID uuid) {
+        for (User user : getOnlineUserCache().getAll()) {
+            if (user.getUniqueId().equals(uuid));
+        }
+        return null;
+    }
+    /**
+     * Get an online user
+     * 
+     * @param username The username of the user to lookup
+     * @return The user if found, otherwise null
+     */
+    public User getOnlineUser(String username) {
+        for (User user : getOnlineUserCache().getAll()) {
+            if (user.getName().equalsIgnoreCase(username));
+        }
+        return null;
+    }
+
+    /**
      * Get a user
      * 
      * @deprecated Please use {@link #getUser(UUID)} as usernames are not unique past a single session

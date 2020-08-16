@@ -1,17 +1,20 @@
 package com.ristexsoftware.lolbans.common.commands.history;
 
-import java.util.List;
-import java.sql.ResultSet;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.List;
+import java.util.TreeMap;
 
 import com.ristexsoftware.lolbans.api.command.Arguments;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
+import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.User;
-import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.utils.PunishID;
 import com.ristexsoftware.lolbans.api.utils.TimeUtil;
+import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
+import com.ristexsoftware.lolbans.api.configuration.Messages;
 
 public class PruneHistory extends AsyncCommand {
 
@@ -21,7 +24,14 @@ public class PruneHistory extends AsyncCommand {
 
     @Override
     public void onSyntaxError(User sender, String label, String[] args) {
-
+        sender.sendMessage(Messages.invalidSyntax);
+        try {
+            sender.sendMessage(
+                    Messages.translate("syntax.purgehistory", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+            sender.sendMessage(Messages.serverError);
+        }
     }
 
     @Override

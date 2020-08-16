@@ -2,15 +2,17 @@ package com.ristexsoftware.lolbans.common.commands.ban;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.TreeMap;
 
-import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.command.Arguments;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
+import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
 import com.ristexsoftware.lolbans.api.configuration.Messages;
+import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
-import com.ristexsoftware.lolbans.common.utils.Timing;
 import com.ristexsoftware.lolbans.api.User;
+import com.ristexsoftware.lolbans.common.utils.Timing;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -27,7 +29,14 @@ public class RegexBan {
 
         @Override
         public void onSyntaxError(User sender, String label, String[] args) {
-
+            sender.sendMessage(Messages.invalidSyntax);
+			try {
+				sender.sendMessage(
+						Messages.translate("syntax.regexban", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+			} catch (InvalidConfigurationException e) {
+				e.printStackTrace();
+				sender.sendMessage(Messages.serverError);
+			}
         }
 
         @Override
