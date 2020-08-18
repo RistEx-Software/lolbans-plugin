@@ -2,6 +2,7 @@ package com.ristexsoftware.lolbans.common.commands.history;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -20,6 +21,9 @@ public class PruneHistory extends AsyncCommand {
 
     public PruneHistory(LolBans plugin) {
         super("prunehistory", plugin);
+        setDescription("Ban a player");
+        setPermission("lolbans.history.prune");
+        setAliases(Arrays.asList(new String[] { "clearhistory", "purgehistory" }));
     }
 
     @Override
@@ -27,7 +31,7 @@ public class PruneHistory extends AsyncCommand {
         sender.sendMessage(Messages.invalidSyntax);
         try {
             sender.sendMessage(
-                    Messages.translate("syntax.purgehistory", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+                    Messages.translate("syntax.prune-history", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
         } catch (InvalidConfigurationException e) {
             e.printStackTrace();
             sender.sendMessage(Messages.serverError);
@@ -46,44 +50,48 @@ public class PruneHistory extends AsyncCommand {
             return sender.permissionDenied("lolbans.history.prune");
 
         Arguments a = new Arguments(args);
-        a.requiredString("searchable");
+        a.optionalString("searchable");
         a.optionalTimestamp("duration");
 
-        if (!a.valid()) {
+        if (!a.valid()) 
             return false;
-        }
 
-        String searchable = a.get("searchable");
-        // Boolean potentiallyReallyFuckingLargeDataErasure = !a.exists("duration");
+        if (a.getBoolean("searchable") == null && !sender.hasPermission("lolbans.history.prune.all"))
+            return sender.permissionDenied("lolbans.history.prune.all");
 
-        // // TODO Handle this
-        // if (potentiallyReallyFuckingLargeDataErasure) {
-        //     return false;
-        // }
+        String searchable = a.get("searchable") == null ? "%" : a.get("searchable");
 
         // Check for ID
         if (PunishID.validateID(searchable)) {
             Punishment punishment = Punishment.findPunishment(searchable);
             if (punishment != null) {
                 punishment.delete();
-                sender.sendMessage("Deleted punishment " + punishment.getPunishID() + ".");
+                sender.sendMessage(Messages.translate("prune-history.deleted-single-punishment", punishment.getVariableMap()));
                 return true;
             }
         }
 
+        String message = null;
         // Try resolve user
         User target = User.resolveUser(searchable);
-        if (target == null) {
-            return false;
-        }
+        if (target == null)
+            searchable = "%";
+
+        else
+            searchable = target.getUniqueId().toString();
 
         PreparedStatement punishmentDeleteQuery = Database.getConnection()
             .prepareStatement("DELETE FROM lolbans_punishments WHERE target_uuid LIKE ? AND time_punished <= ?");
-        punishmentDeleteQuery.setString(1, target.getUniqueId().toString());
+        punishmentDeleteQuery.setString(1, searchable);
         punishmentDeleteQuery.setTimestamp(2, a.getTimestamp("duration") == null ? TimeUtil.now() : a.getTimestamp("duration"));
 
         int res = punishmentDeleteQuery.executeUpdate();
-        sender.sendMessage("Cleared " + res + " punishments.");
+        final String MuStBeFiNaL = searchable;
+        sender.sendMessage(Messages.translate(target == null ? "prune-history.cleared-history-all" : "prune-history.cleared-history-player"
+        , new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
+            put("count", String.valueOf(res));
+            put("player", target == null ? MuStBeFiNaL : target.getName());
+        }}));
 
         return true;
     }

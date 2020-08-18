@@ -113,8 +113,9 @@ public class History extends AsyncCommand {
             punishmentQuery.setInt(3, pageSize);
 
             ResultSet res = punishmentQuery.executeQuery();
-            if (!res.next() || res.wasNull())
-                return sender.sendReferencedLocalizedMessage("history.no-history", args[0], true);
+            if (!res.next() || res.wasNull()) {
+                return target == null ? sender.sendReferencedLocalizedMessage("history.no-history", "", true) : sender.sendReferencedLocalizedMessage("history.no-history-player", target.getName(), true);
+            }
 
             // We use a do-while loop because we already checked if there was a result above.
             List<String> history = new ArrayList<String>();

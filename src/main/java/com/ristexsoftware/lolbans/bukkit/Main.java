@@ -38,7 +38,6 @@ import com.ristexsoftware.lolbans.common.commands.ban.RegexBan;
 import com.ristexsoftware.lolbans.common.commands.history.History;
 import com.ristexsoftware.lolbans.common.commands.history.PruneHistory;
 import com.ristexsoftware.lolbans.common.commands.misc.Kick;
-import com.ristexsoftware.lolbans.common.commands.misc.Rollback;
 import com.ristexsoftware.lolbans.common.commands.misc.Warn;
 import com.ristexsoftware.lolbans.common.commands.misc.Maintenance;
 import com.ristexsoftware.lolbans.common.utils.CommandUtil;
