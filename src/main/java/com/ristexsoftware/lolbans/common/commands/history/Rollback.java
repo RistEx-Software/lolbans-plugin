@@ -1,4 +1,4 @@
-package com.ristexsoftware.lolbans.common.commands.misc;
+package com.ristexsoftware.lolbans.common.commands.history;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -50,22 +50,24 @@ public class Rollback extends AsyncCommand {
             return sender.permissionDenied("lolbans.rollback");
 
         Arguments a = new Arguments(args);
+        a.optionalFlag("silent", "-s");
         a.requiredString("name");
         a.requiredDuration("duration");
         
         if (!a.valid()) 
             return false;
 
+        boolean silent = a.getFlag("silent");
         User target = User.resolveUser(a.get("name"));
         if (target == null) 
-            return false;
+            return sender.sendReferencedLocalizedMessage("player-doesnt-exist", a.get("name"), true);
 
         Long duration = a.getDuration("duration");
         Timestamp pivot = Timestamp.from(TimeUtil.now().toInstant().minus(duration, ChronoUnit.SECONDS));
         
         PreparedStatement countQuery = Database.getConnection()
                 .prepareStatement(
-                        "SELECT COUNT(*) AS count FROM lolbans_punishments WHERE target_uuid = ? AND time_punished >= ?");
+                        "SELECT COUNT(*) AS count FROM lolbans_punishments WHERE punished_by_uuid = ? AND time_punished >= ?");
         countQuery.setString(1, target.getUniqueId().toString());
         countQuery.setTimestamp(2, pivot);
 
@@ -77,10 +79,15 @@ public class Rollback extends AsyncCommand {
             return sender.sendReferencedLocalizedMessage("staff-rollback.no-rollback", null, true);
 
         PreparedStatement timeTravelStatement = Database.getConnection()
-                .prepareStatement("DELETE FROM lolbans_punishments WHERE time_punished >= ?");
+                .prepareStatement("DELETE FROM lolbans_punishments WHERE time_punished >= ? AND punished_by_uuid = ?");
         timeTravelStatement.setTimestamp(1, pivot);
+        timeTravelStatement.setString(2, target.getUniqueId().toString());
         
         int affected = timeTravelStatement.executeUpdate();
+        getPlugin().broadcastEvent(Messages.translate("staff-rollback.announcement", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
+            put("player", sender.getName());
+            put("affected", String.valueOf(affected));
+        }}), silent);
         return sender.sendReferencedLocalizedMessage("staff-rollback.rollback-complete", String.valueOf(affected), true);
     }
 }

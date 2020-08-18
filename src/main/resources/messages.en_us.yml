@@ -170,9 +170,9 @@ warn:
   player-not-warned: "{PREFIX}&cError! &f{PLAYER} &cis not warned!"
   
 history:
-  no-history: "{PREFIX}&bPlayer &f{PLAYER}&b has no punishment history."
-  no-history-2: "{PREFIX}&bThere are currently no reports"
-  cleared-history: "{PREFIX}&fCleared history for &b{PLAYER}&f."
+  no-history: "{PREFIX}&bThere is no punishment history."
+  no-history-player: "{PREFIX}&bPlayer &f{PLAYER}&b has no punishment history."
+  no-reports: "{PREFIX}&bThere are currently no reports"
   history-message-temp: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f - &f&lExpires: &f{EXPIRY}\n"
   history-message-perm: "&3:=:=:= &b[{PLAYERNAME} | #{PUNISHID}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lModerator: &f{ARBITER}\n&f&lType: &r&b{TYPE}&f\n"
   history-message-report: "\n&3:=:=:= &b[{PLAYERNAME}]&3 =:=:=:\n&f&lReason: &f{REASON}\n&f&lReporter: &f{ARBITER}&f\n"
@@ -182,6 +182,11 @@ history:
   page-size: 2
   staff-page-size: 2
   paginator: "&3:=:=:= &b[Page {CURRENT}/{TOTAL}]&3 =:=:=:"
+
+prune-history:
+  cleared-history-player: "{PREFIX}&bCleared punishment history for &f{PLAYER}&b!"
+  cleared-history-all: "{PREFIX}&bDeleted &f{COUNT} &bpunishments!"
+  deleted-single-punishment: "{PREFIX}&bDeleted punishment for &f{PLAYER} [{PUNISHID}]&b!"
 
 staff-rollback:
   announcement: "{PREFIX}&f{PLAYER} &brolled back &f{AFFECTED} &bpunishments!"

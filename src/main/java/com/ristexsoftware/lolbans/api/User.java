@@ -442,6 +442,7 @@ public class User implements Cacheable {
                     put("player", playerName);
                     put("ipaddress", playerName);
                     put("sender", getName());
+                    put("affected", playerName);
                 }
             }));
         } catch (InvalidConfigurationException e) {

@@ -97,8 +97,8 @@ public class Main extends Plugin {
         CommandUtil.BungeeCord.registerBungeeCommand(new BanWave(LolBans.getPlugin()));
 
         CommandUtil.BungeeCord.registerBungeeCommand(new History(LolBans.getPlugin()));
-        // CommandUtil.BungeeCord.registerBungeeCommand(new PruneHistory(LolBans.getPlugin()));
-        // CommandUtil.BungeeCord.registerBungeeCommand(new Rollback(LolBans.getPlugin()));
+        CommandUtil.BungeeCord.registerBungeeCommand(new PruneHistory(LolBans.getPlugin()));
+        CommandUtil.BungeeCord.registerBungeeCommand(new Rollback(LolBans.getPlugin()));
 
         CommandUtil.BungeeCord.registerBungeeCommand(new Kick(LolBans.getPlugin()));
 

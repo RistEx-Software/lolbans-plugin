@@ -52,7 +52,7 @@ import lombok.Setter;
  * <h2>LolBans Punishment Management Plugin</h2>
  *
  * @author Justin Crawford &amp; Zachery Coleman
- * @version 2.0.0
+ * @version 2.2.0
  * @since 2019-11-13
  */
 public class LolBans {
