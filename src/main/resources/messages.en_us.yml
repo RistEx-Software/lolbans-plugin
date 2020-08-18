@@ -40,6 +40,7 @@ player-is-offline: "{PREFIX}&cError! &f{PLAYER} &bis offline!"
 user-is-required: "{PREFIX}&cYou have to be a user to this command."
 no-permission: "{PREFIX}&cYou do not have permission to use this command!"
 command-complete: "{PREFIX}&bDone! &f{MILLISECONDS}ms."
+cannot-punish-operator: "{PREFIX}&cYou may not punish &f{PLAYER} &cas they are a operator!"
 
 discord:
   # The large picture shown on the right side of the embed (Can be full body render, just the player head, etc.)
@@ -62,22 +63,17 @@ discord:
   # Embedded discord messages.
   embed:  
     title: "{punished_by_name} {APPEALED|empty_if_false:\"un\"{punishment_type} {player_name}"
-    descrption:
-    footer:
+    descrption: "{REASON"
+    footer: "{PLAYERNAME} was {punishment_type}"
     footer-image:
+    # You can have up to 25 fields
     fields:
       1:
-        title:
-        content:
+        title: "Punish ID"
+        content: "{PUNISHID}"
       2:
-        title:
-        content:
-      3:
-        title:
-        content:
-      4:
-        title:
-        content:
+        title: "Expires"
+        content: "{EXPIRY}"
       
     ban-title: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}banned {PLAYERNAME}"
     kick-title: "{ARBITERNAME} kicked {PLAYERNAME}"
@@ -121,9 +117,6 @@ ip-ban:
   insanity: "{PREFIX}&cBanning &bThe IP of &f{PLAYER} &bwould ban {AFFECTEDPLAYERS} of {TOTALPLAYERS} ({INSANEPERCENT}%) and breaches the threashold of {INSANETHRESHOLD}, cannot execute this command."
   ip-alt-notification: "{PREFIX}&f{PLAYER} &cjoined, is alt account of &f{BANNEDPLAYER} &8Check IP with an Admin!"
   ip-alt-ban-message: "&bThe Player &f{PLAYERNAME} &bis an alternate account of {ALTACCOUNT} which has been suspended on {NETWORKNAME} and is disallowed from connection.\n\n&bBanned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
-
-ip-check:
-  invalid-cidr: "&bThe IP &f{IPADDRESS} &bdoes not match previous login CIDR range.\n\n&7If you believe this is a mistake, please contact the server administrator"
 
 ratelimit:
   limit-reached: "&bYou are connecting too fast, please try again in &f{RATE} &bseconds!"
@@ -209,7 +202,7 @@ maintenance:
   hover-message: "&cServer is under maintenance"
   kick-message: "{NETWORKNAME}&c is currenly under maintenance!"
   description: "&c{NETWORKNAME}&c is currently under maintenance!\n&cVisit &b{WEBSITE} &cfor more info!"
-  toggled: "{PREFIX}&f{PLAYER} &c{ENABLED|empty_if_false:\"disabled\"} {ENABLED|empty_if_true:\"enabled\"} mainenance mode with level &f{MAINTENANCELEVEL&c!"
+  toggled: "{PREFIX}&f{PLAYER}&c{TOGGLE|empty_if_true:\" disabled\"} {TOGGLE|empty_if_false:\"enabled \"}mainenance mode with level &f{MAINTENANCELEVEL}&c!"
 
 # This section is not parsed by the above variable parser.
 syntax:

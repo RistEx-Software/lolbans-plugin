@@ -76,15 +76,18 @@ public class Kick extends AsyncCommand {
         User target = User.resolveUser(a.get("username"));
         if (target == null)
             return sender.sendReferencedLocalizedMessage("player-doesnt-exist", a.get("username"), true);
-
+        if (!target.isOnline())
+            return sender.sendReferencedLocalizedMessage("player-is-offline", target.getName(), true);
+        if (target.hasPermission("lolbans.kick.immune"))
+            return sender.sendReferencedLocalizedMessage("cannot-punish-operator", target.getName(), true);
 
         Punishment punishment = new Punishment(PunishmentType.KICK, sender, target, a.get("reason"), a.getTimestamp("expiry"), a.getFlag("silent"), false);
-        punishment.commit(sender);
-        punishment.broadcast();
-
+        
         if (target.isOnline())
             target.disconnect(punishment);
         
+        punishment.commit(sender);
+        punishment.broadcast();
         return true;
     }
 }

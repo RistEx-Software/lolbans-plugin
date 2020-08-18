@@ -139,6 +139,8 @@ public class RegexBan {
             try {
                 Arguments a = new Arguments(args);
                 a.optionalFlag("silent", "-s");
+                a.optionalFlag("contains", "-c");
+                a.optionalFlag("ignoreCase", "-i");
                 a.requiredString("regex");
                 a.optionalSentence("reason");
 
@@ -148,6 +150,15 @@ public class RegexBan {
                 boolean silent = a.getFlag("silent");
                 String regexString = a.get("regex");
                 String reason = a.get("reason");
+                boolean contains = a.getFlag("contains");
+                boolean ignoreCase = a.getFlag("ignoreCase");
+
+                if (contains) 
+                    regexString = ("(?<=|^)" + regexString + "(?=|$)");
+
+                if (ignoreCase) 
+                    regexString = ("(?i)" + regexString);
+                
                 Pattern regex = null;
                 
                 try {

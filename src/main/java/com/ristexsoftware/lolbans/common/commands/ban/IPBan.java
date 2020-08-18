@@ -83,7 +83,7 @@ public class IPBan {
                 if (a.get("cidr") == null) 
                     return false;
                     
-                boolean silent = a.getBoolean("silent");
+                boolean silent = a.getFlag("silent");
                 Timestamp expiry = a.getTimestamp("expiry");
                 String reason = expiry == null ? a.get("Time") + " " + (a.get("Reason") == null ? "" : a.get("Reason")) : a.get("Reason");
                 

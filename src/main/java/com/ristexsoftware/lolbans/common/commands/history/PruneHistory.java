@@ -19,7 +19,7 @@ import com.ristexsoftware.lolbans.api.configuration.Messages;
 public class PruneHistory extends AsyncCommand {
 
     public PruneHistory(LolBans plugin) {
-        super("purgehistory", plugin);
+        super("prunehistory", plugin);
     }
 
     @Override

@@ -15,7 +15,7 @@ import com.ristexsoftware.lolbans.api.configuration.Messages;
 public class Maintenance extends AsyncCommand {
 
     public Maintenance(LolBans plugin) {
-        super("maintenace", plugin);
+        super("maintenance", plugin);
         setDescription("set the maintenance mode of the server");
         setPermission("lolbans.maintenance");
     }
@@ -57,10 +57,10 @@ public class Maintenance extends AsyncCommand {
                 return sender.permissionDenied("lolbans.maintenance.toggle");
 
             getPlugin().setMaintenanceModeEnabled(!getPlugin().getMaintenanceModeEnabled());
-            getPlugin().broadcastEvent(Messages.translate("maintenance.toggled", new TreeMap<String, String>(){{
+            getPlugin().broadcastEvent(Messages.translate("maintenance.toggled", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
                 put("maintenancelevel", getPlugin().getMaintenanceLevel().displayName());
                 put("player", sender.getName());
-                put("enabled", String.valueOf(getPlugin().getMaintenanceModeEnabled()));
+                put("toggle", String.valueOf(getPlugin().getMaintenanceModeEnabled()));
             }}), a.getFlag("silent"));
             return true;
         }
@@ -71,14 +71,19 @@ public class Maintenance extends AsyncCommand {
         MaintenanceLevel exactLevel = MaintenanceLevel.valueOf(level.toUpperCase()); // level is null here.
         if (exactLevel == null)
             return false;
-
+        
+        // gay
         getPlugin().setMaintenanceLevel(exactLevel);
-        getPlugin().broadcastEvent(Messages.translate("maintenance.toggled", new TreeMap<String, String>(){{
+        getPlugin().setMaintenanceModeEnabled(true);
+
+        getPlugin().broadcastEvent(Messages.translate("maintenance.toggled", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
             put("maintenancelevel", getPlugin().getMaintenanceLevel().displayName());
             put("player", sender.getName());
-            put("enabled", String.valueOf(getPlugin().getMaintenanceModeEnabled()));
-        }}), a.getFlag("silent"));
-        if (a.exists("kickPlayers"))
+            put("toggle", String.valueOf(getPlugin().getMaintenanceModeEnabled()));
+            }
+        }), a.getFlag("silent"));
+        
+        if (a.getFlag("kickPlayers"))
             kickAppropriatePlayers();
 
         return true;

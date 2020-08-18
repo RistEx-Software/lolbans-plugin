@@ -12,8 +12,6 @@ import com.ristexsoftware.knappy.configuration.file.YamlConfiguration;
 import com.ristexsoftware.lolbans.api.provider.ConfigProvider;
 import com.ristexsoftware.lolbans.bungeecord.Main;
 
-import net.md_5.bungee.config.ConfigurationProvider;
-
 public class BungeeConfigProvider implements ConfigProvider {
     private File configFile = new File(getDataFolder(), "config.yml");
     private FileConfiguration config = new YamlConfiguration();
@@ -35,22 +33,13 @@ public class BungeeConfigProvider implements ConfigProvider {
 
     @Override
     public FileConfiguration getConfig() {
-        FileConfiguration fc = new YamlConfiguration();
-        try {
-            fc.load(configFile);
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        return fc;
+        return config;
     }
 
     @Override
     public void saveConfig() {
         try {
-            final net.md_5.bungee.config.Configuration configuration = ConfigurationProvider.getProvider(net.md_5.bungee.config.YamlConfiguration.class).load(configFile);
-            ConfigurationProvider.getProvider(net.md_5.bungee.config.YamlConfiguration.class).save(configuration, new File(getDataFolder(), "config.yml"));
+            config.save(configFile);
         } catch (IOException e) {
             e.printStackTrace();
         }

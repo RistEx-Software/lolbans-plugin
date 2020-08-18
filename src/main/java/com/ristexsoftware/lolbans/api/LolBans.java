@@ -113,7 +113,6 @@ public class LolBans {
     private MaintenanceLevel maintenanceLevel = MaintenanceLevel.HIGH;
 
     @Getter
-    @Setter
     private Boolean maintenanceModeEnabled = false;
 
     // Caches
@@ -128,6 +127,7 @@ public class LolBans {
         plugin = this;
         this.configProvider = configProvider;
         this.userProvider = userProvider;
+
         localeProvider = new LocaleProvider(new File(configProvider.getDataFolder(), "locale"));
         if (!configProvider.dataFolderExists()) {
             getLogger().info("Error: No folder for lolbans was found! Creating...");
@@ -148,10 +148,11 @@ public class LolBans {
         }
         this.config = configProvider.getConfig();
 
-        
         LolBans.serverType = type;
-        this.maintenanceLevel = MaintenanceLevel.fromOrdinal(getConfig().getInt("general.maintenance"));
-        
+
+        this.maintenanceLevel = MaintenanceLevel.fromOrdinal(getConfig().getInt("general.maintenance-level"));
+        this.maintenanceModeEnabled = getConfig().getBoolean("general.maintenance-enabled");
+            
         if (this.config.getBoolean("discord.enabled"))
             this.discord = new Discord(this.config.getString("discord.punishment-webhook"), this.config.getString("discord.report-webhook"));
 
@@ -353,15 +354,11 @@ public class LolBans {
         configProvider.saveConfig();
         enabled = false;
     }
-    
-    // private static LolBans instance = null;
 
-    // /**
-    //  * Fetch a static reference to the LolBans singelton instance.
-    //  */
-    // public static LolBans getPlugin() {
-    //     if (instance == null) 
-    //         throw new RuntimeException("Cannot get plugin as it hasn't been instantiated");
-    //     return instance;
-    // }
+    public void setMaintenanceModeEnabled(Boolean enabled) {
+        this.maintenanceModeEnabled = enabled;
+        getConfig().set("general.maintenance-level", this.maintenanceLevel.ordinal());
+        getConfig().set("general.maintenance-enabled", enabled);
+        getConfigProvider().saveConfig();
+    }
 }  

@@ -18,8 +18,8 @@ general:
   # NOTE: You shouldn't touch this unless you know what you are doing with it.
   runnable-timer: 30
   # The maintenance level for the server
-  # 0 = DISABLED, 1-4 = LOWEST to HIGHEST
-  maintenance: 0
+  maintenance-level: 2
+  maintenance-enabled: false
 
 database:
   host: localhost
