@@ -88,7 +88,7 @@ public class BanWave extends AsyncCommand {
         if (!a.valid())
             return false;
 
-        boolean silent = a.getBoolean("silent");
+        boolean silent = a.getFlag("silent");
         String subCommand = a.get("subCommand").toLowerCase();
         String[] subArgs = Arrays.copyOfRange(a.getUnparsedArgs().toArray(new String[a.getUnparsedArgs().size()]), 1, a.getUnparsedArgs().size());
 
@@ -126,8 +126,8 @@ public class BanWave extends AsyncCommand {
             if (target == null) 
                 return sender.sendReferencedLocalizedMessage("player-doesnt-exist", a.get("target"), true);
             
-            if (target.hasPermission("lolbans.immune"))
-                return sender.permissionDenied("lolbans.banwave");
+            if (target.hasPermission("lolbans.banwave.immune"))
+                return sender.sendReferencedLocalizedMessage("cannot-punish-operator", target.getName(), true);
 
             if (Punishment.findPunishment(PunishmentType.BANWAVE, target.getUniqueId().toString(), false) != null) 
                 return sender.sendReferencedLocalizedMessage("ban-wave.player-is-in-wave", target.getName(), true);

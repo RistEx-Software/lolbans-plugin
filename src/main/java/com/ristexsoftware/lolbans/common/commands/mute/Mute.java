@@ -88,8 +88,8 @@ public class Mute {
                 if (!a.valid())
                     return false;
 
-                boolean silent = a.getBoolean("silent");
-                boolean overwrite = a.getBoolean("overwrite");
+                boolean silent = a.getFlag("silent");
+                boolean overwrite = a.getFlag("overwrite");
                 String username = a.get("username");
                 Timestamp expiry = a.getBoolean("expiry") ? null : a.getTimestamp("expiry");
 
@@ -125,7 +125,7 @@ public class Mute {
                 }
                 if (target.isOnline()) {
                     if (target.hasPermission("lolbans.mute.immune"))
-                        return sender.permissionDenied("lolbans.mute.immune"); // TODO: Make a new message for this case
+                        return sender.sendReferencedLocalizedMessage("cannot-punish-operator", target.getName(), true);
                     target.sendMessage(punishment);
                 }
                 // target.disconnect(punishment);

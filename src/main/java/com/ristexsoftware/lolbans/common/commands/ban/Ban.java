@@ -122,8 +122,9 @@ public class Ban {
 				if (!a.valid()) 
 					return false;
 				
-				boolean silent = a.getBoolean("silent");
-				boolean overwrite = a.getBoolean("overwrite");
+				boolean silent = a.getFlag("silent");
+				boolean overwrite = a.getFlag("overwrite");
+				boolean force = a.getFlag("force");
 				String username = a.get("username");
 				Timestamp expiry = !a.exists("expiry") ? null : a.getTimestamp("expiry");
 
@@ -153,7 +154,7 @@ public class Ban {
 				Punishment punishment = new Punishment(PunishmentType.BAN, sender, target, reason, expiry, silent, false);
 				if (target.isOnline()) {
 					if (target.hasPermission("lolbans.ban.immune"))
-						return sender.permissionDenied("lolbans.ban.immune"); // TODO: Make a new message for this case?
+						return sender.sendReferencedLocalizedMessage("cannot-punish-operator", target.getName(), true);
 					target.disconnect(punishment);
 				}
 				

@@ -349,6 +349,26 @@ public class Punishment implements Cacheable {
         // LolBans.getPlugin().getPunishmentCache().update(this);
     }
 
+    public TreeMap<String, String> getVariableMap() {
+        return new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+            {
+                put("player", getTarget() == null ? null : getTarget().getName());
+                put("ipaddress", getIpAddress() == null ? "#" : getIpAddress().toString());
+                put("reason", getAppealed() ? getAppealReason() : getReason());
+                put("arbiter", getAppealed() ? getAppealedBy().getName() : getPunisher().getName());
+                put("expiry", getExpiresAt() == null ? "" : getExpiresAt().toString());
+                put("silent", Boolean.toString(getSilent()));
+                put("appealed",Boolean.toString(getAppealed()));
+                put("expires",Boolean.toString(getExpiresAt() != null && !getAppealed()));
+                put("punishid", getPunishID());
+                put("warningack", Boolean.toString(getWarningAck()));
+                put("regex", getRegex() == null ? "" : getRegex());
+                put("type", getType().displayName());
+            }
+            
+        };
+    }
+
     /**
      * Erase this punishment record from the database.
      * NOTE: This should not be used if you are unbanning someone.
@@ -396,22 +416,7 @@ public class Punishment implements Cacheable {
 
     public void broadcast() {
         PunishmentType type = this.getType();
-        TreeMap<String, String> vars = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
-            {
-                put("player", getTarget() == null ? null : getTarget().getName());
-                put("ipaddress", getIpAddress() == null ? "#" : getIpAddress().toString());
-                put("reason", getAppealed() ? getAppealReason() : getReason());
-                put("arbiter", getAppealed() ? getAppealedBy().getName() : getPunisher().getName());
-                    put("expiry", getExpiresAt() == null ? "" : getExpiresAt().toString());
-                put("silent", Boolean.toString(getSilent()));
-                put("appealed",Boolean.toString(getAppealed()));
-                put("expires",Boolean.toString(getExpiresAt() != null && !getAppealed()));
-                put("punishid", getPunishID());
-                put("warningack", Boolean.toString(getWarningAck()));
-                put("regex", getRegex() == null ? "" : getRegex());
-            }
-            
-        };
+        TreeMap<String, String> vars = getVariableMap();
         try {
             switch(type) {
                 case BAN:
