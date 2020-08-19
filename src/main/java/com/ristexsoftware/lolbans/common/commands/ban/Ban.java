@@ -50,6 +50,7 @@ public class Ban {
 			setDescription("Ban a player");
 			setPermission("lolbans.ban");
 			setAliases(Arrays.asList(new String[] { "eban", "tempban" }));
+			setSyntax(Messages.getMessages().getConfig().getString("syntax.ban"));
 		}
 
 		@Override
@@ -124,7 +125,6 @@ public class Ban {
 				
 				boolean silent = a.getFlag("silent");
 				boolean overwrite = a.getFlag("overwrite");
-				boolean force = a.getFlag("force");
 				String username = a.get("username");
 				Timestamp expiry = !a.exists("expiry") ? null : a.getTimestamp("expiry");
 
@@ -183,6 +183,7 @@ public class Ban {
 			this.setDescription("Remove a player ban");
 			this.setPermission("lolbans.unban");
 			this.setAliases(Arrays.asList(new String[]{}));
+			setSyntax(Messages.getMessages().getConfig().getString("syntax.unban"));
 		}
 
 		@Override

@@ -11,6 +11,7 @@ import java.net.InetSocketAddress;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * Resolves users for Bungee.
@@ -27,13 +28,13 @@ public class BungeeUserProvider implements UserProvider {
         }
         return null;
     }
-    
+
     /**
      * Send a message to the specified user with the given content.
      */
     public void sendMessage(User user, String content) {
         ProxiedPlayer proxiedPlayer = getProxiedPlayer(user);
-        if (proxiedPlayer != null) 
+        if (proxiedPlayer != null)
             proxiedPlayer.sendMessage(content);
     }
 
@@ -54,7 +55,7 @@ public class BungeeUserProvider implements UserProvider {
         try {
             if (proxiedPlayer != null)
                 return new IPAddressString(proxiedPlayer.getAddress().getAddress().getHostAddress()).toAddress();
-        } catch(Exception e) {
+        } catch (Exception e) {
             return null;
         }
         return null;
@@ -68,5 +69,12 @@ public class BungeeUserProvider implements UserProvider {
         if (proxiedPlayer != null)
             return proxiedPlayer.hasPermission(permissionNode);
         return false;
+    }
+
+    @Override
+    public void sendMessage(User user, TextComponent content) {
+        ProxiedPlayer proxiedPlayer = getProxiedPlayer(user);
+        if (proxiedPlayer != null)
+            proxiedPlayer.sendMessage(content);
     }
 }

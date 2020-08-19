@@ -49,6 +49,10 @@ public abstract class AsyncCommand {
 	private String permissionMessage;
 
 	@Getter
+	@Setter
+	private String syntax;
+
+	@Getter
 	private LolBans plugin = LolBans.getPlugin();
 
 	/**

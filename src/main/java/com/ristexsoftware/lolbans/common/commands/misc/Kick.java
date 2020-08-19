@@ -22,6 +22,7 @@ public class Kick extends AsyncCommand {
         super("kick", plugin);
         setDescription("kick a player");
         setPermission("lolbans.kick");
+        setSyntax(Messages.getMessages().getConfig().getString("syntax.kick"));
     }
 
     @Override

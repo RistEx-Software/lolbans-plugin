@@ -21,9 +21,10 @@ public class PruneHistory extends AsyncCommand {
 
     public PruneHistory(LolBans plugin) {
         super("prunehistory", plugin);
-        setDescription("Ban a player");
+        setDescription("Delete the history of a specific player or everyone");
         setPermission("lolbans.history.prune");
         setAliases(Arrays.asList(new String[] { "clearhistory", "purgehistory" }));
+        setSyntax(Messages.getMessages().getConfig().getString("syntax.prune-history"));
     }
 
     @Override
@@ -95,5 +96,4 @@ public class PruneHistory extends AsyncCommand {
 
         return true;
     }
-    
 }

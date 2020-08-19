@@ -90,6 +90,7 @@ public class Punishment implements Cacheable {
 
         // Appeals
         this.appealed = appealed;
+        this.silent = silent;
     }
 
     /**

@@ -107,6 +107,7 @@ public class Main extends Plugin {
         CommandUtil.BungeeCord.registerBungeeCommand(new Warn.AcknowledgeWarnCommand(LolBans.getPlugin()));
 
         CommandUtil.BungeeCord.registerBungeeCommand(new Maintenance(LolBans.getPlugin()));
+        CommandUtil.BungeeCord.registerBungeeCommand(new com.ristexsoftware.lolbans.common.commands.misc.LolBans(LolBans.getPlugin()));
 
         getProxy().getPluginManager().registerListener(this, new ConnectionListener());
         getProxy().getPluginManager().registerListener(this, new PlayerEventListener());

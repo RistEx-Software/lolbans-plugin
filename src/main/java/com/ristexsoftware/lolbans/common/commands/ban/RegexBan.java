@@ -25,6 +25,7 @@ public class RegexBan {
             super("regexban", plugin);
             this.setDescription("Ban a username/hostname/ip address based on a Regular Expression");
             this.setPermission("lolbans.regexban");
+            setSyntax(Messages.getMessages().getConfig().getString("syntax.regex-ban"));
         }
 
         @Override
@@ -118,6 +119,7 @@ public class RegexBan {
             super("regexunban", plugin);
             this.setDescription("Ban a username/hostname/ip address based on a Regular Expression");
             this.setPermission("lolbans.regexunban");
+            setSyntax(Messages.getMessages().getConfig().getString("syntax.regex-unban"));
         }
 
         @Override

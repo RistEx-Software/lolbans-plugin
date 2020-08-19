@@ -28,6 +28,7 @@ public class BanWave extends AsyncCommand {
         setDescription("Manages ");
         setPermission("lolbans.banwave");
         setAliases(Arrays.asList(new String[] {}));
+        setSyntax(Messages.getMessages().getConfig().getString("syntax.banwave"));
     }
 
     @Override

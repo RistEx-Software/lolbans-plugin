@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
+import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * Resolves users for Bukkit.
@@ -24,18 +25,18 @@ public class BukkitUserProvider implements UserProvider {
      */
     private Player getPlayer(User user) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getUniqueId().equals(user.getUniqueId())) 
+            if (player.getUniqueId().equals(user.getUniqueId()))
                 return player;
         }
         return null;
     }
-    
+
     /**
      * Send a message to the specified user with the given content.
      */
     public void sendMessage(User user, String content) {
         Player player = getPlayer(user);
-        if (player != null) 
+        if (player != null)
             player.sendMessage(content);
     }
 
@@ -44,9 +45,11 @@ public class BukkitUserProvider implements UserProvider {
      */
     public void disconnect(User user, String reason) {
         Player player = getPlayer(user);
-        // We want to run this task synchronously with the main thread, or bukkit complains.
+        // We want to run this task synchronously with the main thread, or bukkit
+        // complains.
         if (player != null)
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> player.kickPlayer(reason), 0L);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(Main.class), () -> player.kickPlayer(reason),
+                    0L);
     }
 
     /**
@@ -57,7 +60,7 @@ public class BukkitUserProvider implements UserProvider {
         try {
             if (player != null)
                 return new IPAddressString(player.getAddress().getAddress().getHostAddress()).toAddress();
-        } catch(Exception e) {
+        } catch (Exception e) {
             return null;
         }
         return null;
@@ -71,5 +74,12 @@ public class BukkitUserProvider implements UserProvider {
         if (player != null)
             return player.hasPermission(permissionNode);
         return false;
+    }
+
+    @Override
+    public void sendMessage(User user, TextComponent content) {
+        Player player = getPlayer(user);
+        player.spigot().sendMessage(content);
+
     }
 }

@@ -38,6 +38,7 @@ import com.ristexsoftware.lolbans.api.runnables.CacheRunnable;
 import com.ristexsoftware.lolbans.api.runnables.QueryRunnable;
 import com.ristexsoftware.lolbans.api.utils.Cache;
 import com.ristexsoftware.lolbans.api.utils.Discord;
+import com.ristexsoftware.lolbans.api.command.AsyncCommand;
 import com.ristexsoftware.lolbans.api.provider.ConfigProvider;
 import com.ristexsoftware.lolbans.api.provider.UserProvider;
 import com.ristexsoftware.knappy.configuration.file.FileConfiguration;
@@ -52,7 +53,7 @@ import lombok.Setter;
  * <h2>LolBans Punishment Management Plugin</h2>
  *
  * @author Justin Crawford &amp; Zachery Coleman
- * @version 2.2.0
+ * @version 2.3.0
  * @since 2019-11-13
  */
 public class LolBans {
@@ -64,6 +65,9 @@ public class LolBans {
     private static ServerType serverType;
 
     public HashMap<Integer, Pattern> REGEX = new HashMap<Integer, Pattern>();
+
+    @Getter
+    public HashMap<String, AsyncCommand> REGISTERED_COMMANDS = new HashMap<String, AsyncCommand>();
 
     @Deprecated
     public List<IPAddressString> BANNED_ADDRESSES = new Vector<IPAddressString>(); // Not sure why this is here, legacy? 

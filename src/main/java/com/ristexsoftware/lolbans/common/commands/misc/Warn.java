@@ -43,7 +43,8 @@ public class Warn {
         public WarnCommand(LolBans plugin) {
 			super("warn", plugin);
 			setDescription("Warn a player");
-			setPermission("lolbans.warn");
+            setPermission("lolbans.warn");
+            setSyntax(Messages.getMessages().getConfig().getString("syntax.warn"));
 		}
 
         @Override
@@ -97,7 +98,8 @@ public class Warn {
         public UnwarnCommand(LolBans plugin) {
 			super("unwarn", plugin);
 			setDescription("Removes a player's previous warn");
-			setPermission("lolbans.unwarn");
+            setPermission("lolbans.unwarn");
+            setSyntax(Messages.getMessages().getConfig().getString("syntax.unwarn"));
 		}
 
         @Override
@@ -170,7 +172,8 @@ public class Warn {
         public AcknowledgeWarnCommand(LolBans plugin) {
 			super("acknowledge", plugin);
 			setDescription("Allows players to acknowledge warns they receive");
-			setPermission("lolbans.acknowledge");
+            setPermission("lolbans.acknowledge");
+            setSyntax(Messages.getMessages().getConfig().getString("syntax.warn-accept"));
         }
         
         @Override

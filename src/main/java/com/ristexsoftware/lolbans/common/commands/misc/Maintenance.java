@@ -18,6 +18,7 @@ public class Maintenance extends AsyncCommand {
         super("maintenance", plugin);
         setDescription("set the maintenance mode of the server");
         setPermission("lolbans.maintenance");
+        setSyntax(Messages.getMessages().getConfig().getString("syntax.maintenance"));
     }
     // -k flag = kick players
     // /maintenance [-k] [level]
