@@ -16,6 +16,7 @@ public class MuteChat extends AsyncCommand {
         this.setDescription("Mute the chat for all players (toggleable)");
         this.setPermission("lolbans.mutechat");
         this.setAliases(Arrays.asList(new String[] { "mute-chat" }));
+        setSyntax(Messages.getMessages().getConfig().getString("syntax.chat-mute"));
     }
 
     @Override

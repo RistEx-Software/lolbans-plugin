@@ -89,11 +89,7 @@ public class Database {
                     + "punished_by_uuid VARCHAR(36) NOT NULL,"
                     // Who un-punished (appealed) them
                     + "appealed_by_name VARCHAR(17) NULL," 
-                    + "appealed_by_uuid VARCHAR(36) NULL," // Who has
-                                                            // reviewed
-                                                            // and
-                                                            // approved/denied
-                                                            // the appeal.
+                    + "appealed_by_uuid VARCHAR(36) NULL," // The person appealing the punishment
 
                     // categorize this nonsense
                     + "appealed BOOLEAN DEFAULT FALSE," // this will just make checking if they're banned or not

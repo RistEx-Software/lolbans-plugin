@@ -25,6 +25,7 @@ public class Rollback extends AsyncCommand {
         super("rollback", plugin);
         setDescription("Roll back the punishment history by the given duration.");
         setPermission("lolbans.rollback");
+        setSyntax(Messages.getMessages().getConfig().getString("syntax.staff-rollback"));
     }
 
     @Override

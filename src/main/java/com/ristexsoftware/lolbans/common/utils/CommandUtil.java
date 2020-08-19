@@ -95,6 +95,7 @@ public class CommandUtil {
             org.bukkit.command.CommandMap cmap = ReflectionUtil.getProtectedValue(org.bukkit.Bukkit.getServer(),
                     "commandMap");
             cmap.register(bukkitPlugin.getName().toLowerCase(), bukkitCmd);
+            LolBans.getPlugin().getREGISTERED_COMMANDS().put(command.getName(), command);
         }
     }
 
@@ -107,6 +108,7 @@ public class CommandUtil {
             
             com.ristexsoftware.lolbans.bungeecord.Main plugin = com.ristexsoftware.lolbans.bungeecord.Main.getPlugin();
             net.md_5.bungee.api.ProxyServer.getInstance().getPluginManager().registerCommand(plugin, new TabableCommand(command));
+            LolBans.getPlugin().getREGISTERED_COMMANDS().put(command.getName(), command);
         }
 
         private static class TabableCommand extends net.md_5.bungee.api.plugin.Command
@@ -135,5 +137,6 @@ public class CommandUtil {
                 return parent.onTabComplete(user, args) == null ? Arrays.asList(new String[]{}) : parent.onTabComplete(user, args);
             }
         }
+
     }
 }

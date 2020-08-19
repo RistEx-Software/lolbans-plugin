@@ -25,7 +25,10 @@ public class History extends AsyncCommand {
 
     public History(LolBans plugin) {
         super("history", plugin);
-        
+        setPermission("lolbans.history");
+        setDescription("View the punishment history of a specific player or everyone");
+
+        setSyntax(Messages.getMessages().getConfig().getString("syntax.history"));
     }
 
     @Override
@@ -33,7 +36,7 @@ public class History extends AsyncCommand {
         sender.sendMessage(Messages.invalidSyntax);
         try {
             sender.sendMessage(
-                    Messages.translate("syntax.purgehistory", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+                    Messages.translate("syntax.history", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
         } catch (InvalidConfigurationException e) {
             e.printStackTrace();
             sender.sendMessage(Messages.serverError);
@@ -67,6 +70,8 @@ public class History extends AsyncCommand {
     @Override
     public boolean run(User sender, String commandLabel, String[] args) {
         try {
+            if (!sender.hasPermission("lolbans.history"))
+                return sender.permissionDenied("lolbans.history");
             Arguments a = new Arguments(args);
             a.optionalString("targetOrPage");
             a.optionalInt("pageGivenPlayer");

@@ -55,6 +55,7 @@ import com.ristexsoftware.knappy.translation.Translation;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * Represents a player. Proxies bungee and bukkit methods.
@@ -283,6 +284,7 @@ public class User implements Cacheable {
             }
         }
     }
+
     /**
      * Send a message to a user.
      * 
@@ -298,6 +300,24 @@ public class User implements Cacheable {
         
         if (isOnline()) {
             LolBans.getPlugin().getUserProvider().sendMessage(this, message);
+        }
+    }
+
+    /**
+     * Send a message to a user.
+     * 
+     * @param textComponent The text component to send
+     * @return If the user is not online
+     * @return If the player is not found
+     * @throws NullPointerException if <code>message</code> is null
+     */
+    public void sendMessage(TextComponent textComponent) {
+
+        if (isConsole()) 
+            System.out.println(textComponent.getText());
+        
+        if (isOnline()) {
+            LolBans.getPlugin().getUserProvider().sendMessage(this, textComponent);
         }
     }
 

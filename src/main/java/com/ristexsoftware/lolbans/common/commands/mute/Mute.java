@@ -29,6 +29,7 @@ public class Mute {
             setDescription("Mute a player");
             setPermission("lolbans.mute");
             setAliases(Arrays.asList(new String[] { "emute", "tempmute" }));
+            setSyntax(Messages.getMessages().getConfig().getString("syntax.mute"));
         }
 
         @Override

@@ -35,6 +35,7 @@ public class IPBan {
             setDescription("Ban an ip address or cidr range");
             setPermission("lolbans.ipban");
             setAliases(Arrays.asList(new String[] { "ip-ban", "banip" }));
+            setSyntax(Messages.getMessages().getConfig().getString("syntax.ip-ban"));
         }
 
         @Override
@@ -172,6 +173,7 @@ public class IPBan {
             this.setDescription("Remove an IP or cidr range ban");
             this.setPermission("lolbans.unipban");
             this.setAliases(Arrays.asList(new String[] { "unbanip", "ip-unban", "ipunban" }));
+            setSyntax(Messages.getMessages().getConfig().getString("syntax.ip-unban"));
         }
 
         @Override

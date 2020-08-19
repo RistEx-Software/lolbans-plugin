@@ -37,6 +37,7 @@ import com.ristexsoftware.lolbans.common.commands.ban.IPBan;
 import com.ristexsoftware.lolbans.common.commands.ban.RegexBan;
 import com.ristexsoftware.lolbans.common.commands.history.History;
 import com.ristexsoftware.lolbans.common.commands.history.PruneHistory;
+import com.ristexsoftware.lolbans.common.commands.history.Rollback;
 import com.ristexsoftware.lolbans.common.commands.misc.Kick;
 import com.ristexsoftware.lolbans.common.commands.misc.Warn;
 import com.ristexsoftware.lolbans.common.commands.misc.Maintenance;
@@ -94,8 +95,8 @@ public class Main extends JavaPlugin {
         CommandUtil.Bukkit.registerBukkitCommand(new BanWave(LolBans.getPlugin()));
 
         CommandUtil.Bukkit.registerBukkitCommand(new History(LolBans.getPlugin()));
-        // CommandUtil.Bukkit.registerBukkitCommand(new PruneHistory(LolBans.getPlugin()));
-        // CommandUtil.Bukkit.registerBukkitCommand(new Rollback(LolBans.getPlugin()));
+        CommandUtil.Bukkit.registerBukkitCommand(new PruneHistory(LolBans.getPlugin()));
+        CommandUtil.Bukkit.registerBukkitCommand(new Rollback(LolBans.getPlugin()));
 
         CommandUtil.Bukkit.registerBukkitCommand(new Kick(LolBans.getPlugin()));
 
