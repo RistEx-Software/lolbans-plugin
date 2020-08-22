@@ -25,6 +25,7 @@ hs_err_pid*
 # Text files
 # *.txt
 # additional ignores
+*.iml
 .classpath
 .factorypath
 .project

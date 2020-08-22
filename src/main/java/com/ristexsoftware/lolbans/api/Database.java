@@ -67,8 +67,7 @@ public class Database {
         try {
             // TODO: Support table prefixes?
             // TODO: Remove usernames from tables
-            connection.prepareStatement(
-                    "CREATE TABLE IF NOT EXISTS lolbans_punishments (" 
+            connection.prepareStatement("CREATE TABLE IF NOT EXISTS lolbans_punishments (" 
                     + "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                     // Player info stuffs
                     + "target_uuid VARCHAR(36) NULL," 
@@ -88,25 +87,26 @@ public class Database {
                     // Who un-punished (appealed) them
                     + "appealed_by_name VARCHAR(17) NULL," 
                     + "appealed_by_uuid VARCHAR(36) NULL," // The person appealing the punishment
-
-                    // categorize this nonsense
-                    + "appealed BOOLEAN DEFAULT FALSE," // this will just make checking if they're banned or not
-                                                        // easier...
+                    + "appealed BOOLEAN DEFAULT FALSE," // this will just make checking if they're banned or not easier...
                     + "appeal_reason TEXT NULL," 
                     + "appealed_at TIMESTAMP NULL,"
+
+                    // categorize this nonsense
                     + "silent BOOLEAN DEFAULT FALSE," 
-                    + "warning_ack BOOLEAN DEFAULT FALSE," // Used only when
-                                                            // type == 3 for
-                                                            // warnings.
+                    + "warning_ack BOOLEAN DEFAULT FALSE,"
                     + "regex TEXT NULL" 
                     + ")")
                     .execute();
 
             connection.prepareStatement("CREATE TABLE IF NOT EXISTS lolbans_users "
-                    + "(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," + "player_uuid VARCHAR(36) NOT NULL,"
-                    + "player_name VARCHAR(17)," + "ip_address VARCHAR(48) NOT NULL,"
+                    + "(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," 
+                    + "player_uuid VARCHAR(36) NOT NULL,"
+                    + "player_name VARCHAR(17)," 
+                    + "ip_address VARCHAR(48) NOT NULL,"
                     + "first_login TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-                    + "last_login TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP," + "times_connected INT NULL" + ")")
+                    + "last_login TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP," 
+                    + "times_connected INT NULL" 
+                    + ")")
                     .execute();
 
             // connection.prepareStatement("CREATE TABLE IF NOT EXISTS LinkConfirmations (id
@@ -114,15 +114,21 @@ public class Database {
             // Executioner varchar(17) NOT NULL, LinkID varchar(20) NOT NULL, TimeAdded
             // TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, Expiry TIMESTAMP NOT
             // NULL)").execute();
-            connection.prepareStatement(
-                    "CREATE TABLE IF NOT EXISTS lolbans_reports (" + "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-                            + "reported_by_uuid varchar(36) NOT NULL," + "reported_by_name varchar(17) NOT NULL,"
-                            + "reported_uuid varchar(36) NOT NULL," + "reported_name varchar(17) NOT NULL,"
-                            + "reason TEXT NOT NULL," + "claimed_by_name varchar(17) NULL,"
-                            + "claimed_by_uuid varchar(36) NULL," + "type varchar(32) NOT NULL,"
-                            + "close_reason TEXT NULL," + "closed boolean DEFAULT FALSE NOT NULL,"
-                            + "time_added TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-                            + "punish_id varchar(20) NOT NULL" + ")")
+            connection.prepareStatement("CREATE TABLE IF NOT EXISTS lolbans_reports (" 
+                    + "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
+                    + "reported_by_uuid varchar(36) NOT NULL," 
+                    + "reported_by_name varchar(17) NOT NULL,"
+                    + "reported_uuid varchar(36) NOT NULL," 
+                    + "reported_name varchar(17) NOT NULL,"
+                    + "reason TEXT NOT NULL," 
+                    + "claimed_by_name varchar(17) NULL,"
+                    + "claimed_by_uuid varchar(36) NULL," 
+                    + "type varchar(32) NOT NULL,"
+                    + "close_reason TEXT NULL," 
+                    + "closed boolean DEFAULT FALSE NOT NULL,"
+                    + "time_added TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+                    + "punish_id varchar(20) NOT NULL" 
+                    + ")")
                     .execute();
             // NOTE: This table compares both minecraft names AND client hostnames against
             // this, not sure yet if this is a good idea or not...

@@ -30,16 +30,6 @@ import com.ristexsoftware.lolbans.bukkit.Listeners.ConnectionListener;
 import com.ristexsoftware.lolbans.bukkit.Listeners.PlayerEventListener;
 import com.ristexsoftware.lolbans.bukkit.provider.BukkitConfigProvider;
 import com.ristexsoftware.lolbans.bukkit.provider.BukkitUserProvider;
-import com.ristexsoftware.lolbans.common.commands.ban.Ban;
-import com.ristexsoftware.lolbans.common.commands.ban.BanWave;
-import com.ristexsoftware.lolbans.common.commands.ban.IPBan;
-import com.ristexsoftware.lolbans.common.commands.ban.RegexBan;
-import com.ristexsoftware.lolbans.common.commands.history.History;
-import com.ristexsoftware.lolbans.common.commands.history.PruneHistory;
-import com.ristexsoftware.lolbans.common.commands.history.Rollback;
-import com.ristexsoftware.lolbans.common.commands.misc.Kick;
-import com.ristexsoftware.lolbans.common.commands.misc.Warn;
-import com.ristexsoftware.lolbans.common.commands.misc.Maintenance;
 import com.ristexsoftware.lolbans.common.utils.CommandUtil;
 
 import org.bukkit.Bukkit;
@@ -79,28 +69,30 @@ public class Main extends JavaPlugin {
             return;
 
         // System.out.println("aaaa ur gay");
-        CommandUtil.Bukkit.registerBukkitCommand(new Ban.BanCommand(LolBans.getPlugin()));
-        CommandUtil.Bukkit.registerBukkitCommand(new Ban.UnbanCommand(LolBans.getPlugin()));
+        // CommandUtil.Bukkit.registerBukkitCommand(new Ban.BanCommand(LolBans.getPlugin()));
+        // CommandUtil.Bukkit.registerBukkitCommand(new Ban.UnbanCommand(LolBans.getPlugin()));
 
-        CommandUtil.Bukkit.registerBukkitCommand(new IPBan.Ban(LolBans.getPlugin()));
-        CommandUtil.Bukkit.registerBukkitCommand(new IPBan.Unban(LolBans.getPlugin()));    
+        // CommandUtil.Bukkit.registerBukkitCommand(new IPBan.Ban(LolBans.getPlugin()));
+        // CommandUtil.Bukkit.registerBukkitCommand(new IPBan.Unban(LolBans.getPlugin()));    
 
-        CommandUtil.Bukkit.registerBukkitCommand(new RegexBan.Ban(LolBans.getPlugin()));
-        CommandUtil.Bukkit.registerBukkitCommand(new RegexBan.Unban(LolBans.getPlugin()));
+        // CommandUtil.Bukkit.registerBukkitCommand(new RegexBan.Ban(LolBans.getPlugin()));
+        // CommandUtil.Bukkit.registerBukkitCommand(new RegexBan.Unban(LolBans.getPlugin()));
 
-        CommandUtil.Bukkit.registerBukkitCommand(new BanWave(LolBans.getPlugin()));
+        // CommandUtil.Bukkit.registerBukkitCommand(new BanWave(LolBans.getPlugin()));
 
-        CommandUtil.Bukkit.registerBukkitCommand(new History(LolBans.getPlugin()));
-        CommandUtil.Bukkit.registerBukkitCommand(new PruneHistory(LolBans.getPlugin()));
-        CommandUtil.Bukkit.registerBukkitCommand(new Rollback(LolBans.getPlugin()));
+        // CommandUtil.Bukkit.registerBukkitCommand(new History(LolBans.getPlugin()));
+        // CommandUtil.Bukkit.registerBukkitCommand(new PruneHistory(LolBans.getPlugin()));
+        // CommandUtil.Bukkit.registerBukkitCommand(new Rollback(LolBans.getPlugin()));
 
-        CommandUtil.Bukkit.registerBukkitCommand(new Kick(LolBans.getPlugin()));
+        // CommandUtil.Bukkit.registerBukkitCommand(new Kick(LolBans.getPlugin()));
 
-        CommandUtil.Bukkit.registerBukkitCommand(new Warn.WarnCommand(LolBans.getPlugin()));
-        CommandUtil.Bukkit.registerBukkitCommand(new Warn.UnwarnCommand(LolBans.getPlugin()));
-        CommandUtil.Bukkit.registerBukkitCommand(new Warn.AcknowledgeWarnCommand(LolBans.getPlugin()));
+        // CommandUtil.Bukkit.registerBukkitCommand(new Warn.WarnCommand(LolBans.getPlugin()));
+        // CommandUtil.Bukkit.registerBukkitCommand(new Warn.UnwarnCommand(LolBans.getPlugin()));
+        // CommandUtil.Bukkit.registerBukkitCommand(new Warn.AcknowledgeWarnCommand(LolBans.getPlugin()));
 
-        CommandUtil.Bukkit.registerBukkitCommand(new Maintenance(LolBans.getPlugin()));
+        // CommandUtil.Bukkit.registerBukkitCommand(new Maintenance(LolBans.getPlugin()));
+
+        CommandUtil.registerAllCommands();
 
         getServer().getPluginManager().registerEvents(new ConnectionListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);

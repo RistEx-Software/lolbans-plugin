@@ -195,18 +195,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.2.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
                 <configuration>
+                    <excludePackageNames>com.ristexsoftware.lolbans.bukkit.*:com.ristexsoftware.lolbans.bungeecord.*:com.ristexsoftware.lolbans.common.*</excludePackageNames>
                     <skip>false</skip>
-                    <sourceFileIncludes>
-                        <exclude>bukkit/*.java</exclude>
-                        <exclude>bungeecord/*.java</exclude>
-                        <exclude>common/*.java</exclude>
-                    </sourceFileIncludes>
                     <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
                 </configuration>
               </plugin>

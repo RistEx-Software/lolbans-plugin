@@ -60,7 +60,7 @@ public abstract class AsyncCommand {
 	 * 
 	 * @param name The name of the command the user will execute
 	 */
-	public AsyncCommand(String name, LolBans plugin) {
+	protected AsyncCommand(String name, LolBans plugin) {
 		this.name = name;
 		this.plugin = plugin;
 	}

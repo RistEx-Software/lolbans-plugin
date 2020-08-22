@@ -25,12 +25,57 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import com.ristexsoftware.knappy.util.Version.ServerType;
+import com.ristexsoftware.knappy.util.ReflectionUtil;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
 
+import com.google.common.reflect.ClassPath;
+import com.google.common.collect.ImmutableSet;
+
 // This class caused great pain and suffering, please enjoy.
 public class CommandUtil {
+
+    /**
+     * Hacky reflection method to register all commands.api
+     */
+    public static void registerAllCommands() {
+        LolBans.getLogger().info("Registering commands...");
+
+        try {
+            ImmutableSet<ClassPath.ClassInfo> classes = ClassPath.from(LolBans.getPlugin().getClass().getClassLoader()).getTopLevelClassesRecursive("com.ristexsoftware.lolbans.common.commands");
+
+            for (ClassPath.ClassInfo info : classes) {
+                Class<?> clazz = info.load();
+                if (clazz == null)
+                    continue;
+                // Skip all classes that aren't extending AsyncCommand
+                if (!clazz.getSuperclass().equals(AsyncCommand.class)) 
+                    continue;
+
+                Constructor<?> constructor = clazz.getDeclaredConstructor(new Class<?>[]{LolBans.class});
+                if (constructor == null) 
+                    continue;
+
+                switch (LolBans.getServerType()) {
+                    case BUKKIT:
+                    case SPIGOT:
+                    case PAPER: {
+                        Bukkit.registerBukkitCommand((AsyncCommand) constructor.newInstance(LolBans.getPlugin()));
+                        break;
+                    }
+                    case BUNGEE:
+                    case WATERFALL: {
+                        BungeeCord.registerBungeeCommand((AsyncCommand) constructor.newInstance(LolBans.getPlugin()));
+                        break;
+                    }
+                }
+                
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public static class Bukkit {
 

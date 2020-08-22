@@ -8,8 +8,8 @@ import com.ristexsoftware.lolbans.api.command.AsyncCommand;
 
 public class Report extends AsyncCommand {
 
-    public Report(String name, LolBans plugin) {
-        super(name, plugin);
+    public Report(LolBans plugin) {
+        super("report", plugin);
     }
 
     @Override
