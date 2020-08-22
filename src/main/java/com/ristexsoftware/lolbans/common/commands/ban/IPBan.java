@@ -11,7 +11,6 @@ import java.util.TreeMap;
 import com.ristexsoftware.lolbans.api.command.Arguments;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.google.common.collect.ImmutableList;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
@@ -35,19 +34,14 @@ public class IPBan {
             setDescription("Ban an ip address or cidr range");
             setPermission("lolbans.ipban");
             setAliases(Arrays.asList(new String[] { "ip-ban", "banip" }));
-            setSyntax(Messages.getMessages().getConfig().getString("syntax.ip-ban"));
+            setSyntax(getPlugin().getLocaleProvider().get("syntax.ip-ban"));
         }
 
         @Override
         public void onSyntaxError(User sender, String label, String[] args) {
-            sender.sendMessage(Messages.invalidSyntax);
-            try {
-                sender.sendMessage(
-                        Messages.translate("syntax.ban", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-            } catch (InvalidConfigurationException e) {
-                e.printStackTrace();
-                sender.sendMessage(Messages.serverError);
-            }
+            sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("invalidSyntax"));
+            sender.sendMessage(
+                    LolBans.getPlugin().getLocaleProvider().translate("syntax.ban", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
         }
 
         @Override
@@ -89,8 +83,7 @@ public class IPBan {
                 String reason = expiry == null ? a.get("Time") + " " + (a.get("Reason") == null ? "" : a.get("Reason")) : a.get("Reason");
                 
                 if (reason == null || reason.trim().equals("null")) {
-                    String configReason = LolBans.getPlugin().getConfig().getString("BanSettings.DefaultReason");
-                    reason = configReason == null ? "Your account has suspended!" : configReason;
+                    reason = getPlugin().getLocaleProvider().getDefault("ban.default-reason" , "Your account has been suspended!");
                 };
 
                 if (expiry == null && !sender.hasPermission("lolbans.ipban.perm"))
@@ -113,28 +106,22 @@ public class IPBan {
 
                 if (IPUtil.isTargetIpInsane(target) && !sender.hasPermission("lolbans.insanityoverride")) {
                         // Format our messages.
-                    try 
-                    {
-                        final int fuckingfinal = IPUtil.getBanAffected(target);
-                        final IPAddress javaisfuckingstupidaboutfinalvariables = target;
-                        String insanity = Messages.translate("ip-ban.insanity",
-                            new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-                            {{
-                                put("ipaddress", String.valueOf(javaisfuckingstupidaboutfinalvariables.toString()));
-                                put("arbiter", sender.getName());
-                                put("AFFECTEDPLAYERS", String.valueOf(fuckingfinal));
-                                put("TOTALPLAYERS", String.valueOf(LolBans.getPlugin().getOnlineUsers().size()));
-                                put("INSANEPERCENT", String.valueOf(IPUtil.getBanPercentage(javaisfuckingstupidaboutfinalvariables)));
-                                put("INSANETHRESHOLD", String.valueOf(LolBans.getPlugin().getConfig().getDouble("ban-settings.insane.trigger")));
-                            }}
-                        );
-                        sender.sendMessage(insanity);
-                    }
-                    catch (InvalidConfigurationException e)
-                    {
-                        e.printStackTrace();
-                        sender.sendMessage(Messages.serverError);
-                    }
+            
+                    final int fuckingfinal = IPUtil.getBanAffected(target);
+                    final IPAddress javaisfuckingstupidaboutfinalvariables = target;
+                    String insanity = LolBans.getPlugin().getLocaleProvider().translate("ip-ban.insanity",
+                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+                        {{
+                            put("ipaddress", String.valueOf(javaisfuckingstupidaboutfinalvariables.toString()));
+                            put("arbiter", sender.getName());
+                            put("AFFECTEDPLAYERS", String.valueOf(fuckingfinal));
+                            put("TOTALPLAYERS", String.valueOf(LolBans.getPlugin().getOnlineUsers().size()));
+                            put("INSANEPERCENT", String.valueOf(IPUtil.getBanPercentage(javaisfuckingstupidaboutfinalvariables)));
+                            put("INSANETHRESHOLD", String.valueOf(LolBans.getPlugin().getConfig().getDouble("ban-settings.insane.trigger")));
+                        }}
+                    );
+                    sender.sendMessage(insanity);
+                
                     return true;
                 }
                 
@@ -159,7 +146,7 @@ public class IPBan {
                 
             } catch(Exception e) {
                 e.printStackTrace();
-                sender.sendMessage(Messages.serverError);
+                sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("serverError"));
             }
 			return true;
         }
@@ -173,19 +160,14 @@ public class IPBan {
             this.setDescription("Remove an IP or cidr range ban");
             this.setPermission("lolbans.unipban");
             this.setAliases(Arrays.asList(new String[] { "unbanip", "ip-unban", "ipunban" }));
-            setSyntax(Messages.getMessages().getConfig().getString("syntax.ip-unban"));
+            setSyntax(getPlugin().getLocaleProvider().get("syntax.ip-unban"));
         }
 
         @Override
         public void onSyntaxError(User sender, String label, String[] args) {
-            sender.sendMessage(Messages.invalidSyntax);
-            try {
-                sender.sendMessage(
-                        Messages.translate("syntax.unipban", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-            } catch (InvalidConfigurationException e) {
-                e.printStackTrace();
-                sender.sendMessage(Messages.serverError);
-            }
+            sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("invalidSyntax"));
+            sender.sendMessage(
+                    LolBans.getPlugin().getLocaleProvider().translate("syntax.unipban", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
         }
 
         @Override
@@ -248,7 +230,7 @@ public class IPBan {
                 
             } catch (Exception e) {
                 e.printStackTrace();
-                sender.sendMessage(Messages.serverError);
+                sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("serverError"));
             }
             return true;
         }

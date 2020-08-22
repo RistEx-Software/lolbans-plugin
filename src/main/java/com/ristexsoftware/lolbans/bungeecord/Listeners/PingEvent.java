@@ -5,7 +5,6 @@ import java.util.TreeMap;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.MaintenanceLevel;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.event.ProxyPingEvent;
@@ -19,13 +18,13 @@ public class PingEvent implements Listener {
         if (LolBans.getPlugin().getMaintenanceModeEnabled()) {
             final ServerPing ping = event.getResponse();
             ping.getVersion().setProtocol(1);
-            ping.getVersion().setName(Messages.translate("maintenance.player-count", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
+            ping.getVersion().setName(LolBans.getPlugin().getLocaleProvider().translate("maintenance.player-count", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
                     put("online", Integer.toString(ping.getPlayers().getOnline()));
                     put("max", Integer.toString(ping.getPlayers().getMax()));
-                    put("maintenancelevel",MaintenanceLevel.displayName(LolBans.getPlugin().getMaintenanceLevel()));
+                    put("maintenancelevel", MaintenanceLevel.displayName(LolBans.getPlugin().getMaintenanceLevel()));
             }}));
             
-            String[] hoverSplit = Messages.translate("maintenance.hover-message", new TreeMap<String, String>(){{
+            String[] hoverSplit = LolBans.getPlugin().getLocaleProvider().translate("maintenance.hover-message", new TreeMap<String, String>(){{
                 put("maintenancelevel",MaintenanceLevel.displayName(LolBans.getPlugin().getMaintenanceLevel()));
             }}).split("\n");
 
@@ -35,7 +34,7 @@ public class PingEvent implements Listener {
             }
             ping.getPlayers().setSample(sample);
 
-            ping.setDescription(Messages.translate("maintenance.description", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
+            ping.setDescription(LolBans.getPlugin().getLocaleProvider().translate("maintenance.description", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
                 put("maintenancelevel",MaintenanceLevel.displayName(LolBans.getPlugin().getMaintenanceLevel()));
             }}));
         }

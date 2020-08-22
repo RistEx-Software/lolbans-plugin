@@ -7,15 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.sql.SQLException;
 
 import com.ristexsoftware.lolbans.api.command.Arguments;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.google.common.collect.ImmutableList;
 import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
+import com.ristexsoftware.lolbans.api.punishment.InvalidPunishmentException;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 import com.ristexsoftware.lolbans.api.runnables.BanwaveRunnable;
 import com.ristexsoftware.lolbans.api.User;
@@ -28,19 +29,15 @@ public class BanWave extends AsyncCommand {
         setDescription("Manages ");
         setPermission("lolbans.banwave");
         setAliases(Arrays.asList(new String[] {}));
-        setSyntax(Messages.getMessages().getConfig().getString("syntax.banwave"));
+        setSyntax(getPlugin().getLocaleProvider().get("syntax.banwave"));
     }
 
     @Override
     public void onSyntaxError(User sender, String label, String[] args) {
-        sender.sendMessage(Messages.invalidSyntax);
-        try {
-            sender.sendMessage(
-                    Messages.translate("syntax.ban-wave", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-        } catch (InvalidConfigurationException e) {
-            e.printStackTrace();
-            sender.sendMessage(Messages.serverError);
-        }
+        sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("invalidSyntax"));
+    
+        sender.sendMessage(
+                LolBans.getPlugin().getLocaleProvider().translate("syntax.ban-wave", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
     }
 
     @Override
@@ -114,41 +111,42 @@ public class BanWave extends AsyncCommand {
         if (!sender.hasPermission("lolbans.banwave.add"))
             return sender.permissionDenied("lolbans.banwave.add");
 
-        try {
-            Arguments a = new Arguments(args);
-            a.requiredString("target");
-            a.optionalTimestamp("expiry");
-            a.optionalSentence("reason");
+        Arguments a = new Arguments(args);
+        a.requiredString("target");
+        a.optionalTimestamp("expiry");
+        a.optionalSentence("reason");
 
-            if (!a.valid())
-                return false;
+        if (!a.valid())
+            return false;
 
-            User target = User.resolveUser(a.get("target"));
-            if (target == null) 
-                return sender.sendReferencedLocalizedMessage("player-doesnt-exist", a.get("target"), true);
-            
-            if (target.hasPermission("lolbans.banwave.immune"))
-                return sender.sendReferencedLocalizedMessage("cannot-punish-operator", target.getName(), true);
-
-            if (Punishment.findPunishment(PunishmentType.BANWAVE, target.getUniqueId().toString(), false) != null) 
-                return sender.sendReferencedLocalizedMessage("ban-wave.player-is-in-wave", target.getName(), true);
+        User target = User.resolveUser(a.get("target"));
+        if (target == null) 
+            return sender.sendReferencedLocalizedMessage("player-doesnt-exist", a.get("target"), true);
         
-            if (target.isPunished(PunishmentType.BAN))
-                return sender.sendReferencedLocalizedMessage("ban.player-is-banned", target.getName(), true);
+        if (target.hasPermission("lolbans.banwave.immune"))
+            return sender.sendReferencedLocalizedMessage("cannot-punish-operator", target.getName(), true);
 
+        if (Punishment.findPunishment(PunishmentType.BANWAVE, target.getUniqueId().toString(), false) != null) 
+            return sender.sendReferencedLocalizedMessage("ban-wave.player-is-in-wave", target.getName(), true);
+    
+        if (target.isPunished(PunishmentType.BAN))
+            return sender.sendReferencedLocalizedMessage("ban.player-is-banned", target.getName(), true);
+
+        try {
             Punishment punishment = new Punishment(PunishmentType.BANWAVE, sender, target, a.get("reason"),
-                    a.getTimestamp("expiry"), silent, false);
-            
+                a.getTimestamp("expiry"), silent, false);
+        
             LolBans.getPlugin().getPunishmentCache().put(punishment);
+            
             punishment.commit(sender);
             punishment.broadcast();
 
             debug.print("Command execution complete");
-
-        } catch(Exception e) {
+        } catch (SQLException | InvalidPunishmentException e) {
             e.printStackTrace();
-            sender.sendMessage(Messages.serverError);
+            sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("serverError"));
         }
+
         return true;
     }
 
@@ -161,36 +159,30 @@ public class BanWave extends AsyncCommand {
         if (!sender.hasPermission("lolbans.banwave.remove"))
             return sender.permissionDenied("lolbans.banwave.remove");
 
-        try {
-            Arguments a = new Arguments(args);
-            a.requiredString("target");
-            a.requiredSentence("reason");
+        Arguments a = new Arguments(args);
+        a.requiredString("target");
+        a.requiredSentence("reason");
 
-            if (!a.valid())
-                return false;
+        if (!a.valid())
+            return false;
 
-            User target = User.resolveUser(a.get("target"));
-            if (target == null) {
-                return sender.sendReferencedLocalizedMessage("player-doesnt-exist", a.get("target"), true);
-            }
-                    
-            
-            Punishment punishment = Punishment.findPunishment(PunishmentType.BANWAVE, target.getUniqueId().toString(), false);
-
-            if (punishment == null) {
-                return sender.sendReferencedLocalizedMessage("ban-wave.player-not-in-wave", target.getName(), true);
-            }
-
-            punishment.appeal(sender, a.get("reason"), silent);
-            punishment.broadcast();
-
-            debug.print("Command execution complete");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            sender.sendMessage(Messages.serverError);
+        User target = User.resolveUser(a.get("target"));
+        if (target == null) {
+            return sender.sendReferencedLocalizedMessage("player-doesnt-exist", a.get("target"), true);
         }
+                
         
+        Punishment punishment = Punishment.findPunishment(PunishmentType.BANWAVE, target.getUniqueId().toString(), false);
+
+        if (punishment == null) {
+            return sender.sendReferencedLocalizedMessage("ban-wave.player-not-in-wave", target.getName(), true);
+        }
+
+        punishment.appeal(sender, a.get("reason"), silent);
+        punishment.broadcast();
+
+        debug.print("Command execution complete");
+    
         return true;
     }
     
@@ -213,7 +205,7 @@ public class BanWave extends AsyncCommand {
             sender.sendReferencedLocalizedMessage("ban-wave.wave-start", sender.getName(), true);
         } catch(Exception e) {
             e.printStackTrace();
-            sender.sendMessage(Messages.serverError);
+            sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("serverError"));
         }
 
         return true;

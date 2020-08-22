@@ -27,7 +27,6 @@ import java.lang.reflect.InvocationTargetException;
 import com.ristexsoftware.knappy.util.Version.ServerType;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
 
 // This class caused great pain and suffering, please enjoy.

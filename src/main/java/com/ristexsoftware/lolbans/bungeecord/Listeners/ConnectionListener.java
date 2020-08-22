@@ -39,7 +39,6 @@ import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.MaintenanceLevel;
 import com.ristexsoftware.lolbans.api.User;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 import com.ristexsoftware.lolbans.api.utils.IPUtil;
@@ -69,7 +68,7 @@ public class ConnectionListener implements Listener {
                 try {
                     Timestamp login = TimeUtil.now();
                     if (LolBans.getPlugin().getMaintenanceModeEnabled() && !player.hasPermission("lolbans.maintenance."+MaintenanceLevel.displayName(LolBans.getPlugin().getMaintenanceLevel()).toLowerCase())) {
-                        player.disconnect(Messages.translate("maintenance.kick-message", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
+                        player.disconnect(LolBans.getPlugin().getLocaleProvider().translate("maintenance.kick-message", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
                             put("maintenancelevel", MaintenanceLevel.displayName(LolBans.getPlugin().getMaintenanceLevel()));
                         }}));
                     }
@@ -99,7 +98,7 @@ public class ConnectionListener implements Listener {
                                             ihatejava - ((limitStamp.getTime() - lastLogin.getTime()) / 1000)));
                                 }
                             };
-                            user.disconnect(Messages.translate("rate-limit.limit-reached", variables));
+                            user.disconnect(LolBans.getPlugin().getLocaleProvider().translate("rate-limit.limit-reached", variables));
                             debug.print("PlayerLoginEvent complete");
                             return true; // Lets return so we don't update the login time!
                         }
@@ -153,7 +152,7 @@ public class ConnectionListener implements Listener {
                         if (!foundIP && type == PunishmentType.IP && punish.getIpAddress().toString().equals(player.getAddress().getAddress().getHostAddress().toString())) {
                             foundIP = true;
                             
-                            String disconnectReason = Messages.translate(
+                            String disconnectReason = LolBans.getPlugin().getLocaleProvider().translate(
                                     punish.getExpiresAt() != null ? "ip-ban.temp-ip-ban-message"
                                             : "ip-ban.perm-ip-ban-message",
                                     vars);
@@ -170,7 +169,7 @@ public class ConnectionListener implements Listener {
                                 && Pattern.matches(punish.getRegex(), user.getName())) {
                             
                             foundRegex = true;
-                            String disconnectReason = Messages.translate(punish.getExpiresAt() != null ? "regex-ban.temp-ban-message" : "regex-ban.perm-ban-message", vars);
+                            String disconnectReason = LolBans.getPlugin().getLocaleProvider().translate(punish.getExpiresAt() != null ? "regex-ban.temp-ban-message" : "regex-ban.perm-ban-message", vars);
                             
                             debug.print("Found a valid and matching regex ban - disconnecting...");
                             user.disconnect(disconnectReason);
@@ -186,7 +185,7 @@ public class ConnectionListener implements Listener {
 
                             foundBan = true;
 
-                            String disconnectReason = Messages.translate(
+                            String disconnectReason = LolBans.getPlugin().getLocaleProvider().translate(
                                     punish.getExpiresAt() != null ? "ban.temp-ban-message"
                                             : "ban.perm-ban-message",
                                     vars);
@@ -200,7 +199,7 @@ public class ConnectionListener implements Listener {
                         if (!foundWarn && type == PunishmentType.WARN && !punish.getWarningAck()) {
                             foundWarn = true;
 
-                            String disconnectReason = Messages.translate("warn.warn-kick-message", vars);
+                            String disconnectReason = LolBans.getPlugin().getLocaleProvider().translate("warn.warn-kick-message", vars);
 
                             debug.print("Found a valid and unacknowledged warn - disconnecting...");
                             user.disconnect(disconnectReason);
@@ -260,7 +259,7 @@ public class ConnectionListener implements Listener {
                         debug.print("Found a valid IP ban - disconnecting...");
                             foundIP = true;
 
-                            String disconnectReason = Messages.translate(
+                            String disconnectReason = LolBans.getPlugin().getLocaleProvider().translate(
                                     punishmentRecord.getTimestamp("expires_at") != null ? "ip-ban.temp-ip-ban-message"
                                             : "ip-ban.perm-ip-ban-message",
                                     vars);
@@ -277,7 +276,7 @@ public class ConnectionListener implements Listener {
                             debug.print("Found a valid and matching regex ban - disconnecting...");
                                     
                             foundRegex = true;
-                            String disconnectReason = Messages.translate(punishmentRecord.getTimestamp("expires_at") != null ? "regex-ban.temp-ban-message" : "regex-ban.perm-ban-message", vars);
+                            String disconnectReason = LolBans.getPlugin().getLocaleProvider().translate(punishmentRecord.getTimestamp("expires_at") != null ? "regex-ban.temp-ban-message" : "regex-ban.perm-ban-message", vars);
                             user.disconnect(disconnectReason);
                         }
 
@@ -291,7 +290,7 @@ public class ConnectionListener implements Listener {
                             debug.print("Found a valid ban - disconnecting...");
                             foundBan = true;
 
-                            String disconnectReason = Messages.translate(
+                            String disconnectReason = LolBans.getPlugin().getLocaleProvider().translate(
                                     punishmentRecord.getTimestamp("expires_at") != null ? "ban.temp-ban-message"
                                             : "ban.perm-ban-message",
                                     vars);
@@ -308,7 +307,7 @@ public class ConnectionListener implements Listener {
                             debug.print("Found a valid and unacknowledged warn - disconnecting...");
                             foundWarn = true;
 
-                            String disconnectReason = Messages.translate("warn.warn-kick-message", vars);
+                            String disconnectReason = LolBans.getPlugin().getLocaleProvider().translate("warn.warn-kick-message", vars);
                             user.disconnect(disconnectReason);
 
                             punishmentRecord.beforeFirst();
@@ -420,7 +419,7 @@ public class ConnectionListener implements Listener {
                             };
 
                             if (!appealed) {
-                                user.disconnect(Messages.translate(
+                                user.disconnect(LolBans.getPlugin().getLocaleProvider().translate(
                                         expiresAt != null ? "regex-ban.temp-ban-message" : "regex-ban.perm-ban-message",
                                         vars));
                             }
@@ -434,7 +433,7 @@ public class ConnectionListener implements Listener {
                         // OfflinePlayer p = Bukkit.getOfflinePlayer(altaccount);
                         User user = LolBans.getPlugin().getUser(altaccount);
                         // Send a message to all ops with broadcast perms.
-                        String message = Messages.translate("ip-ban.ip-alt-notification",
+                        String message = LolBans.getPlugin().getLocaleProvider().translate("ip-ban.ip-alt-notification",
                                 new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                                     {
                                         put("player", player.getName());
@@ -447,7 +446,7 @@ public class ConnectionListener implements Listener {
                         self.getLogger().warning(message);
 
                         if (self.getConfig().getBoolean("ip-ban-settings.kick-alt-accounts", false)) {
-                            user.disconnect(Messages.translate("ip-ban.ip-alt-ban-message",
+                            user.disconnect(LolBans.getPlugin().getLocaleProvider().translate("ip-ban.ip-alt-ban-message",
                                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                                         {
                                             // TODO: This!
@@ -470,7 +469,7 @@ public class ConnectionListener implements Listener {
                     ex.printStackTrace();
                     // Kick if there was a server error.
                     if (self.getConfig().getBoolean("general.kick-connection-error"))
-                    user.disconnect(Messages.serverError);
+                    user.disconnect(LolBans.getPlugin().getLocaleProvider().getDefaultTranslation("serverError"));
                 }
                 return true;
             }
@@ -483,7 +482,7 @@ public class ConnectionListener implements Listener {
                 return;
         } catch (InterruptedException | ExecutionException e) {
             if (self.getConfig().getBoolean("general.kick-connection-error"))
-                user.disconnect(Messages.serverError);
+                user.disconnect(LolBans.getPlugin().getLocaleProvider().getDefaultTranslation("serverError"));
             e.printStackTrace();
         }
         LolBans.getPlugin().registerUser(user);
@@ -496,7 +495,7 @@ public class ConnectionListener implements Listener {
         LolBans.getPlugin().removeUser(player);
         try {
             if (!(Database.updateUser(player.getUniqueId().toString(), player.getName(), player.getAddress().getAddress().getHostAddress(), new Timestamp(System.currentTimeMillis())).get()))
-                LolBans.getLogger().severe(Messages.serverError);
+                LolBans.getLogger().severe(LolBans.getPlugin().getLocaleProvider().getDefaultTranslation("serverError"));
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }

@@ -14,7 +14,6 @@ import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.command.Arguments;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 import com.ristexsoftware.lolbans.common.utils.Debug;
@@ -29,19 +28,14 @@ public class Mute {
             setDescription("Mute a player");
             setPermission("lolbans.mute");
             setAliases(Arrays.asList(new String[] { "emute", "tempmute" }));
-            setSyntax(Messages.getMessages().getConfig().getString("syntax.mute"));
+            setSyntax(getPlugin().getLocaleProvider().get("syntax.mute"));
         }
 
         @Override
         public void onSyntaxError(User sender, String label, String[] args) {
-            sender.sendMessage(Messages.invalidSyntax);
-            try {
-                sender.sendMessage(
-                        Messages.translate("syntax.mute", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-            } catch (InvalidConfigurationException e) {
-                e.printStackTrace();
-                sender.sendMessage(Messages.serverError);
-            }
+            sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("invalidSyntax"));
+            sender.sendMessage(
+                    LolBans.getPlugin().getLocaleProvider().translate("syntax.mute", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
         }
 
         @Override
@@ -113,8 +107,8 @@ public class Mute {
 
                 String reason = a.get("reason");
                 if (reason == null || reason.trim().equals("null")) {
-                    String configReason = Messages.getMessages().getConfig().getString("ban.default-reason");
-                    reason = configReason == null ? "Your account has been suspended!" : configReason;
+                    reason = getPlugin().getLocaleProvider().get("mute.default-reason", "You have been muted!");
+                    // reason = configReason == null ? "Your account has been suspended!" : configReason;
                 }
 
                 Punishment punishment = new Punishment(PunishmentType.MUTE, sender, target, reason, expiry, silent,
@@ -136,7 +130,7 @@ public class Mute {
                 time.finish(sender);
             } catch (Exception e) {
                 e.printStackTrace();
-                sender.sendMessage(Messages.serverError);
+                sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("serverError"));
             }
             return true;
         }
@@ -152,14 +146,9 @@ public class Mute {
 
         @Override
         public void onSyntaxError(User sender, String label, String[] args) {
-            sender.sendMessage(Messages.invalidSyntax);
-            try {
-                sender.sendMessage(Messages.translate("syntax.unmute",
-                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-            } catch (InvalidConfigurationException e) {
-                e.printStackTrace();
-                sender.sendMessage(Messages.serverError);
-            }
+            sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("invalidSyntax"));
+            sender.sendMessage(LolBans.getPlugin().getLocaleProvider().translate("syntax.unmute",
+                    new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
         }
 
         @Override
@@ -199,11 +188,13 @@ public class Mute {
 
             if (!target.isPunished(PunishmentType.MUTE))
                 return sender.sendReferencedLocalizedMessage("mute.player-is-not-muted", target.getName(), false);
+            Punishment oldPunishment = target.getLatestPunishmentOfType(PunishmentType.MUTE);
+            if (oldPunishment != null && oldPunishment.getPunisher().getUniqueId() != sender.getUniqueId() && !sender.hasPermission("lolbans.unban.others"))
+				return sender.sendReferencedLocalizedMessage("mute.cannot-unmute-other", target.getName(), true);
 
             String reason = a.get("reason");
             if (reason == null || reason.trim().equals("null")) {
-                String configReason = Messages.getMessages().getConfig().getString("mute.default-reason");
-                reason = configReason == null ? "You have been muted!" : configReason;
+                String configReason = getPlugin().getLocaleProvider().get("mute.default-reason", "You have been muted!");
             }
 
             Punishment punishment = target.removeLatestPunishmentOfType(PunishmentType.MUTE, sender, reason, silent);

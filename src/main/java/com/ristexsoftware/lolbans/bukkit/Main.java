@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.knappy.util.Version;
@@ -72,9 +71,6 @@ public class Main extends JavaPlugin {
         if (getServer().getPluginManager().getPlugin("PlugMan") != null)
             getLogger().warning(
                     "PlugMan detected! This WILL cause issues with LolBans, please consider restarting the server to update plugins!");
-
-        // Make sure our messages file exists
-        Messages.getMessages();
 
         for (Player player : Bukkit.getOnlinePlayers())
             LolBans.getPlugin().registerUser(player);

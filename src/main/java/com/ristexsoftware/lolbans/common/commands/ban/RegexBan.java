@@ -7,7 +7,6 @@ import java.util.TreeMap;
 import com.ristexsoftware.lolbans.api.command.Arguments;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
@@ -25,19 +24,14 @@ public class RegexBan {
             super("regexban", plugin);
             this.setDescription("Ban a username/hostname/ip address based on a Regular Expression");
             this.setPermission("lolbans.regexban");
-            setSyntax(Messages.getMessages().getConfig().getString("syntax.regex-ban"));
+            setSyntax(getPlugin().getLocaleProvider().get("syntax.regex-ban"));
         }
 
         @Override
         public void onSyntaxError(User sender, String label, String[] args) {
-            sender.sendMessage(Messages.invalidSyntax);
-			try {
-				sender.sendMessage(
-						Messages.translate("syntax.regexban", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-			} catch (InvalidConfigurationException e) {
-				e.printStackTrace();
-				sender.sendMessage(Messages.serverError);
-			}
+            sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("invalidSyntax"));
+            sender.sendMessage(
+                    LolBans.getPlugin().getLocaleProvider().translate("syntax.regexban", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
         }
 
         @Override
@@ -55,7 +49,9 @@ public class RegexBan {
             try {
                 Arguments a = new Arguments(args);
 				a.optionalFlag("silent", "-s");
-				a.optionalFlag("overwrite", "-o");
+                a.optionalFlag("overwrite", "-o");
+                a.optionalFlag("contains", "-c");
+                a.optionalFlag("ignoreCase", "-i");
 				a.requiredString("regex");
 				a.optionalTimestamp("expiry");
                 a.optionalSentence("reason");
@@ -68,6 +64,14 @@ public class RegexBan {
                 String regexString = a.get("regex");
                 Timestamp expiry = a.getTimestamp("expiry");
                 Pattern regex = null;
+                boolean contains = a.getFlag("contains");
+                boolean ignoreCase = a.getFlag("ignoreCase");
+
+                if (contains) 
+                    regexString = ("(?<=|^)" + regexString + "(?=|$)");
+
+                if (ignoreCase) 
+                    regexString = ("(?i)" + regexString);
 
                 try {
                     regex = Pattern.compile(regexString);
@@ -89,10 +93,9 @@ public class RegexBan {
 					expiry = sender.getTimeGroup();
 
                 String reason = a.get("reason");
-                if (reason == null || reason.trim().equals("null")) {
-					String configReason = Messages.getMessages().getConfig().getString("ban.default-reason");
-					reason = configReason == null ? "Your account has been suspended!" : configReason;
-				}
+                if (reason == null || reason.trim().equals("null"))
+					reason = getPlugin().getLocaleProvider().get("ban.default-reason", "Your account has been suspended!");
+
                 Punishment punishment = new Punishment(sender, reason, expiry, silent, false, regex.toString());
                 
                 if (overwrite) {
@@ -119,7 +122,7 @@ public class RegexBan {
             super("regexunban", plugin);
             this.setDescription("Ban a username/hostname/ip address based on a Regular Expression");
             this.setPermission("lolbans.regexunban");
-            setSyntax(Messages.getMessages().getConfig().getString("syntax.regex-unban"));
+            setSyntax(getPlugin().getLocaleProvider().get("syntax.regex-unban"));
         }
 
         @Override
@@ -178,7 +181,7 @@ public class RegexBan {
                 
             } catch (Exception e) {
                 e.printStackTrace(); 
-                sender.sendMessage(Messages.serverError);
+                sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("serverError"));
             }
             return true;
         }

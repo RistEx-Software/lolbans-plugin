@@ -40,7 +40,7 @@ player-is-offline: "{PREFIX}&cError! &f{PLAYER} &bis offline!"
 user-is-required: "{PREFIX}&cYou have to be a user to this command."
 no-permission: "{PREFIX}&cYou do not have permission to use this command!"
 command-complete: "{PREFIX}&bDone! &f{MILLISECONDS}ms."
-cannot-punish-operator: "{PREFIX}&cYou may not punish &f{PLAYER} &cas they are a operator!"
+cannot-punish-operator: "{PREFIX}&cYou may not punish &f{PLAYER} &cas they are an operator!"
 
 discord:
   # The large picture shown on the right side of the embed (Can be full body render, just the player head, etc.)
@@ -100,17 +100,20 @@ report:
 ban:
   temp-ban-message: "&bThe account &f{PLAYER} &bhas been suspended from {NETWORKNAME} &buntil &f{EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
   perm-ban-message: "&bThe account &f{PLAYER} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fIf you think this is a mistake contact us at {WEBSITE}!"
-  ban-announcement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}banned &b{PLAYER}&f: &f{REASON} &f[#{PUNISHID}]{SILENT|empty_if_false:\" &8[SILENT]\"}"
+  ban-announcement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}banned &b{PLAYER}&f: &f{REASON}{SILENT|empty_if_false:\" &8[SILENT]\"}"
+  hover: "&b&l{ARBITER} {APPEALED|empty_if_false:\"un-\"}banned {PLAYER}\n&f » &bPunish ID:&f {PUNISHID}\n&f » &bReason   :&f {REASON}\n&f » &bExpires  :&f {EXPIRY|duration}\n&f » &bSilent   :&f {SILENT|yesno}"
   player-is-banned: "{PREFIX}&cError! &f{PLAYER} is already banned!"
   player-is-not-banned: "{PREFIX}&cError! &f{PLAYER} is not banned!"
    # The reason to put when one is not specified
   default-reason: "Your account has been suspended!"
   default-unban: "You have been unbanned!"
+  cannot-unban-other: "{PREFIX}&cError! You may not unban players that other staff members punished"
 
 ip-ban:
   perm-ip-ban-message: "&bThe IP of &f{PLAYER} &bhas been INDEFINTELY suspended from {NETWORKNAME}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
   temp-ip-ban-message: "&bThe IP of &f{PLAYER} &bhas been TEMPORARILY suspended from {NETWORKNAME} &buntil &f {EXPIRY|datetime:\"EEE, MMM d yyyy HH:mm:ss\"}\n\n&bYou were banned by: &f{ARBITER} \n&bReason: &f{REASON}\n&bExpires: &f{EXPIRY|duration} \n\n&bBan ID: &f#{PUNISHID}\n&fSharing your Ban ID may affect the result of your appeal!"
   ban-announcement: "{PREFIX}&b{ARBITER} &f{APPEALED|empty_if_false:\"un-\"}ip banned &b{CENSOREDIPADDRESS}&f: &f{REASON} &f[#{PUNISHID}] {SILENT|empty_if_false:\" &8[SILENT]\"}"
+  hover: "&b&l{ARBITER} {APPEALED|empty_if_false:\"un-\"}ip banned {CENSOREDIPADDRESS}\n&f » &bPunish ID:&f {PUNISHID}\n&f » &bReason   :&f {REASON}\n&f » &bExpires  :&f {EXPIRY|duration}\n&f » &bSilent   :&f {SILENT|yesno}"
   unban-success: "{PREFIX}&bThe IP of &f{CENSOREDIPADDRESS} &bhas been successfully unbanned."
   ip-is-banned: "{PREFIX}&cError! &bThe IP of &f{PLAYER} &bis already banned!"
   ip-is-not-banned: "{PREFIX}&cError! &bThe IP of &f{PLAYER} &bis not banned!"
@@ -152,6 +155,7 @@ mute:
   global-muted: "&bThe chat is currently muted and you may not send messages."
   global-unmuted: "&aThe chat is now unmuted, you may now converse."
   chat-attempt: "&7{PLAYER} tried to speak, but is muted: \"{MESSAGE}\""
+  cannot-unmute-other: "{PREFIX}&cError! You may not unmute players that other staff members punished"
 
 kick:
   kick-message: "&bYou were kicked from {NETWORKNAME}\n\n&bYou were kicked by: &f{ARBITER}\n&bReason: &f{REASON}"
@@ -197,8 +201,6 @@ staff-rollback:
 freeze:
   frozen-message: "{PREFIX}&bYou have been frozen by &f{ARBITER} &band may not move!"
   freeze-announcement: "{PREFIX}&f{ARBITER}&b {APPEALED|empty_if_false:\"un-\"}froze &f{PLAYER} {SILENT|empty_if_false:\" &8[SILENT]\"}"
-
-statistics: "&3:=:=:= &bLolBans Statistics &3:=:=:=\n&bTotal Punishments:&f {PUNISHCOUNT}\n  &7>> &bBans:&f {BANS} ({REGEX} RegEx, {IPBANS} IP) ({BANPERCENT}%)\n  &7>> &bMutes:&f {MUTES} ({MUTEPERCENT}%)\n  &7>> &bWarnings:&f {WARNS} ({WARNPERCENT}%)\n  &7>> &bKicks:&f {KICKS} ({KICKPERCENT}%)\n\n&bTotal Users:&f {USERSCOUNT}\n  &7>> &bUsers Punished:&f {USERSPUNISHED} ({PERCENTPUNISHED}%)\n&r"
 
 maintenance:
   # Possible variables:

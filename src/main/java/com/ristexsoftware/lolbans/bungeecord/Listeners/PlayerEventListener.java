@@ -6,7 +6,6 @@ import java.util.TreeMap;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 
@@ -23,7 +22,7 @@ public class PlayerEventListener implements Listener {
             User user = LolBans.getPlugin().getUser(((ProxiedPlayer) event.getSender()).getUniqueId());
             String message = event.getMessage();
             Punishment punishment = user.getLatestPunishmentOfType(PunishmentType.MUTE);
-            List<String> commands = LolBans.getPlugin().getConfig().getStringList("chat-settings.mute-settings.blacklisted-commands");
+            List<String> commands = LolBans.getPlugin().getConfig().getStringList("mute-settings.blacklisted-commands");
             if (punishment == null || punishment.getExpiresAt().getTime() <= System.currentTimeMillis()) return;
             if (event.isCommand() || event.isProxyCommand()) {
                 for (String command : commands) {
@@ -32,7 +31,7 @@ public class PlayerEventListener implements Listener {
                             event.setCancelled(true);
                             user.sendMessage(punishment);
 
-                            LolBans.getPlugin().notifyStaff(Messages.translate("mute.chat-attempt",
+                            LolBans.getPlugin().notifyStaff(LolBans.getPlugin().getLocaleProvider().translate("mute.chat-attempt",
                                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                                         {
                                             put("player", user.getName());
@@ -47,7 +46,7 @@ public class PlayerEventListener implements Listener {
                 event.setCancelled(true);
                 user.sendMessage(punishment);
                 LolBans.getPlugin().notifyStaff(
-                    Messages.translate("mute.chat-attempt", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                    LolBans.getPlugin().getLocaleProvider().translate("mute.chat-attempt", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                         {
                             put("player", user.getName());
                             put("message", message);

@@ -11,7 +11,6 @@ import java.sql.ResultSet;
 import com.ristexsoftware.lolbans.api.command.Arguments;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
@@ -25,19 +24,14 @@ public class Rollback extends AsyncCommand {
         super("rollback", plugin);
         setDescription("Roll back the punishment history by the given duration.");
         setPermission("lolbans.rollback");
-        setSyntax(Messages.getMessages().getConfig().getString("syntax.staff-rollback"));
+        setSyntax(getPlugin().getLocaleProvider().get("syntax.staff-rollback"));
     }
 
     @Override
     public void onSyntaxError(User sender, String label, String[] args) {
-        sender.sendMessage(Messages.invalidSyntax);
-        try {
-            sender.sendMessage(
-                Messages.translate("syntax.staff-rollback", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-        } catch (InvalidConfigurationException e) {
-            e.printStackTrace();
-            sender.sendMessage(Messages.serverError);
-        }
+        sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("invalidSyntax"));
+        sender.sendMessage(
+            LolBans.getPlugin().getLocaleProvider().translate("syntax.staff-rollback", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
     }   
 
     @Override
@@ -85,7 +79,7 @@ public class Rollback extends AsyncCommand {
         timeTravelStatement.setString(2, target.getUniqueId().toString());
         
         int affected = timeTravelStatement.executeUpdate();
-        getPlugin().broadcastEvent(Messages.translate("staff-rollback.announcement", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
+        getPlugin().broadcastEvent(LolBans.getPlugin().getLocaleProvider().translate("staff-rollback.announcement", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
             put("player", sender.getName());
             put("affected", String.valueOf(affected));
         }}), silent);

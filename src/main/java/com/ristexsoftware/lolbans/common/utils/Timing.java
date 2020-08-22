@@ -23,7 +23,7 @@ import java.util.TreeMap;
 
 import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
+import com.ristexsoftware.lolbans.api.LolBans;
 
 import lombok.Getter;
 
@@ -42,18 +42,15 @@ public class Timing {
     }
 
     public void finish(User sender) {
-        try {
-            finish();
-            if (sender.isOnline()) {
-                sender.sendMessage(
-                        Messages.translate("command-complete", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
-                            {
-                                put("Milliseconds", Long.toString(time));
-                            }
-                        }));
-            }
-        } catch (InvalidConfigurationException ex) {
-            ex.printStackTrace();
+        finish();
+
+        if (sender.isOnline()) {
+            sender.sendMessage(
+                    LolBans.getPlugin().getLocaleProvider().translate("command-complete", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                        {
+                            put("Milliseconds", Long.toString(time));
+                        }
+                    }));
         }
     }
 }

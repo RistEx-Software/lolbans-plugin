@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.Optional;
 
-import com.ristexsoftware.lolbans.api.configuration.Messages;
+import com.ristexsoftware.knappy.translation.Translation;
 import com.ristexsoftware.lolbans.common.utils.NumberUtil;
 
 public class TimeUtil {
@@ -213,7 +213,7 @@ public class TimeUtil {
     // milliseconds and not seconds, I somehow forgot that.
     public static Timestamp toTimestamp(String timePeriod) {
         // Parse ban time.
-        if (Messages.compareMany(timePeriod, new String[] { "*", "0" }))
+        if (Translation.compareMany(timePeriod, new String[] { "*", "0" }))
             return null;
 
         // If it's numeric, lets do some extra checks!
@@ -229,7 +229,7 @@ public class TimeUtil {
             // 253402261199 x 1000L is the year 9999 in epoch, this ensures we don't have
             // invalid timestamp exceptions.
         }
-        if (!Messages.compareMany(timePeriod, new String[] { "*", "0" })) {
+        if (!Translation.compareMany(timePeriod, new String[] { "*", "0" })) {
             Optional<Long> dur = TimeUtil.duration(timePeriod);
             if (dur.isPresent())
                 return new Timestamp((TimeUtil.getUnixTime() + dur.get()) * 1000L)
