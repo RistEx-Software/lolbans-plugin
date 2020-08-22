@@ -1,4 +1,6 @@
 general:
+  # You may ignore this if you are running LolBans in BungeeCord already.
+  bungeecord: false
   # Kick connecting players if the server encounters an error
   kick-connection-error: true
   # Allow anyone who has been /op'ed to bypass all permission checks
@@ -20,6 +22,10 @@ general:
   # The maintenance level for the server
   maintenance-level: 2
   maintenance-enabled: false
+  # The server name of this server (If bungeecord is present this value will be what's defined in your bungeecord config)
+  server-name: "lolbans"
+  # The default ban and mute scope
+  default-scope: "*"
 
 database:
   host: localhost
@@ -66,12 +72,6 @@ connection:
   ratelimiting:
     enabled: true
     limit: 6 # Number of seconds before a user can re-connect
-  # Check the users IP against their last known IP, to see if it is coming from a different location
-  ip-check:
-    enabled: false
-    # CIDR Prefix to use, must be <31 and >0 (Default: 23)
-    # The higher the number, the stricter.
-    prefix: 23
 
 ban-settings:
   # Prevents over-reaching bans 
@@ -114,33 +114,27 @@ max-time:
   default: 1d
   moderator: 14d
 
-chat-settings:
-  mute-settings:
-    # The reason to put when one is not specified
-    default-reason: "Your account has been muted!"
-    default-unmute: "You have been unmuted!"
-    # The to play when a muted user tries to speak
-    sound: BLOCK_ANVIL_LAND
-    # Commands to block if a user is muted
-    blacklisted-commands:
-      - msg
-      - w
-      - r
-      - mail
-      - m
-      - t
-      - whisper
-      - emsg
-      - tell
-      - er
-      - reply
-      - ereply
-      - email
-      - action
-      - describe
-      - eme
-      - eaction
-      - edescribe
-      - etell
-      - ewhisper
-      - pm
+mute-settings:
+  # Commands to block if a user is muted
+  blacklisted-commands:
+    - msg
+    - w
+    - r
+    - mail
+    - m
+    - t
+    - whisper
+    - emsg
+    - tell
+    - er
+    - reply
+    - ereply
+    - email
+    - action
+    - describe
+    - eme
+    - eaction
+    - edescribe
+    - etell
+    - ewhisper
+    - pm

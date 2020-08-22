@@ -10,7 +10,6 @@ import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 import com.ristexsoftware.lolbans.common.utils.Debug;
@@ -50,7 +49,7 @@ public class BanwaveRunnable implements Runnable  {
                             put("punishid", res.getString("punish_id"));
                         }
                     };
-                    user.disconnect(Messages.translate("ban.ban-announcement", vars));
+                    user.disconnect(LolBans.getPlugin().getLocaleProvider().translate("ban.ban-announcement", vars));
                 }             
             }
 
@@ -69,7 +68,7 @@ public class BanwaveRunnable implements Runnable  {
             int updated = banwaveUpdateQuery.executeUpdate();
             
             debug.print("Banwave execution complete - updated " + String.valueOf(updated) + " punishments");
-        } catch (SQLException | InvalidConfigurationException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

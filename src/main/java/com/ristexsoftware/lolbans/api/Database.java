@@ -35,8 +35,6 @@ import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 import com.ristexsoftware.lolbans.api.utils.TimeUtil;
 import com.ristexsoftware.lolbans.common.utils.Debug;
 
-// import com.ristexsoftware.lolbans.api.punishment.runnables.Query;
-
 public class Database {
 
     public static Connection connection;

@@ -40,7 +40,6 @@ import java.util.regex.Pattern;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 import com.ristexsoftware.lolbans.api.utils.Cacheable;
@@ -202,35 +201,31 @@ public class User implements Cacheable {
                     put("punishid", punishment.getPunishID());
                 }
             };
-            try {
-                switch(type) {
-                    case BAN:
-                        disconnect(Messages.translate(punishment.getExpiresAt() == null ? "ban.perm-ban-message" : "ban.temp-ban-message", vars));
-                        break;
-                    case MUTE:
-                        disconnect(Messages.translate("mute.you-were-muted", vars));
-                        break;
-                    case KICK:
-                        disconnect(Messages.translate("kick.kick-message", vars));
-                        break;
-                    case WARN:
-                        disconnect(Messages.translate("warn.warn-kick-message", vars));
-                        break;
-                    case IP:
-                        disconnect(Messages.translate(punishment.getExpiresAt() == null ? "ip-ban.perm-ip-ban-message" : "ip-ban.temp-ip-ban-message", vars));
-                        break;
-                    case REGEX:
-                        disconnect(Messages.translate(punishment.getExpiresAt() == null ? "regex-ban.perm-ban-message" : "regex-ban.temp-ban-message", vars));
-                        break;
-                    default:
-                        break;
+            switch(type) {
+                case BAN:
+                    disconnect(LolBans.getPlugin().getLocaleProvider().translate(punishment.getExpiresAt() == null ? "ban.perm-ban-message" : "ban.temp-ban-message", vars));
+                    break;
+                case MUTE:
+                    disconnect(LolBans.getPlugin().getLocaleProvider().translate("mute.you-were-muted", vars));
+                    break;
+                case KICK:
+                    disconnect(LolBans.getPlugin().getLocaleProvider().translate("kick.kick-message", vars));
+                    break;
+                case WARN:
+                    disconnect(LolBans.getPlugin().getLocaleProvider().translate("warn.warn-kick-message", vars));
+                    break;
+                case IP:
+                    disconnect(LolBans.getPlugin().getLocaleProvider().translate(punishment.getExpiresAt() == null ? "ip-ban.perm-ip-ban-message" : "ip-ban.temp-ip-ban-message", vars));
+                    break;
+                case REGEX:
+                    disconnect(LolBans.getPlugin().getLocaleProvider().translate(punishment.getExpiresAt() == null ? "regex-ban.perm-ban-message" : "regex-ban.temp-ban-message", vars));
+                    break;
+                default:
+                    break;
                 }
-            } catch (InvalidConfigurationException e) {
-                e.printStackTrace();
-                disconnect(Messages.serverError);
             }
         }
-    }
+    
 
     /**
      * Disconnect a user from the server
@@ -263,24 +258,20 @@ public class User implements Cacheable {
                     put("punishid", punishment.getPunishID());
                 }
             };
-            try {
-                switch(type) {
-                    case MUTE: {
-                        if (!punishment.getAppealed())
-                            sendMessage(Messages.translate("mute.you-were-muted", vars));
-                        else
-                            sendMessage(Messages.translate("mute.you-were-unmuted", vars));
-                    }
-                        break;
-                    case WARN:
-                        sendMessage(Messages.translate("warn.warned-message", vars));
-                        break;
-                    default:
-                        break;
+           
+            switch(type) {
+                case MUTE: {
+                    if (!punishment.getAppealed())
+                        sendMessage(LolBans.getPlugin().getLocaleProvider().translate("mute.you-were-muted", vars));
+                    else
+                        sendMessage(LolBans.getPlugin().getLocaleProvider().translate("mute.you-were-unmuted", vars));
                 }
-            } catch (InvalidConfigurationException e) {
-                e.printStackTrace();
-                sendMessage(Messages.serverError);
+                    break;
+                case WARN:
+                    sendMessage(LolBans.getPlugin().getLocaleProvider().translate("warn.warned-message", vars));
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -407,7 +398,7 @@ public class User implements Cacheable {
      */
     public boolean permissionDenied(String permissionNode) {
         try {
-            sendMessage(Messages.translate("no-permission", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+            sendMessage(LolBans.getPlugin().getLocaleProvider().translate("no-permission", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                 {
                     put("sender", getName());
                     put("permission", permissionNode);
@@ -456,18 +447,15 @@ public class User implements Cacheable {
      * @return The value provided as <code>ret</code>
      */
     public boolean sendReferencedLocalizedMessage(String configNode, String playerName, boolean ret) {
-        try {
-            sendMessage(Messages.translate(configNode, new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
-                {
-                    put("player", playerName);
-                    put("ipaddress", playerName);
-                    put("sender", getName());
-                    put("affected", playerName);
-                }
-            }));
-        } catch (InvalidConfigurationException e) {
-            e.printStackTrace();
-        }
+        sendMessage(LolBans.getPlugin().getLocaleProvider().translate(configNode, new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+            {
+                put("player", playerName);
+                put("ipaddress", playerName);
+                put("sender", getName());
+                put("affected", playerName);
+            }
+        }));
+    
         return ret;
     }
 

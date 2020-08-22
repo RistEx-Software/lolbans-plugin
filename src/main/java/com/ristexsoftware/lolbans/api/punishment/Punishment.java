@@ -34,7 +34,6 @@ import java.sql.Connection;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.utils.TimeUtil;
 import com.ristexsoftware.lolbans.api.utils.Cacheable;
@@ -332,9 +331,9 @@ public class Punishment implements Cacheable {
                 {
                     e.printStackTrace();
                     if (sender == null)
-                        LolBans.getLogger().severe(Messages.serverError);
+                        LolBans.getLogger().severe(LolBans.getPlugin().getLocaleProvider().getDefaultTranslation("prefix"));
                     else
-                        sender.sendMessage(Messages.serverError);
+                        sender.sendMessage(LolBans.getPlugin().getLocaleProvider().getDefaultTranslation("prefix"));
                 }
                 return null;
             }
@@ -418,39 +417,34 @@ public class Punishment implements Cacheable {
     public void broadcast() {
         PunishmentType type = this.getType();
         TreeMap<String, String> vars = getVariableMap();
-        try {
-            switch(type) {
-                case BAN:
-                    self.broadcastEvent(Messages.translate("ban.ban-announcement", vars), silent);
-                    break;
-                case MUTE:
-                    self.broadcastEvent(Messages.translate("mute.mute-announcement", vars), silent);
-                    break;
-                case KICK:
-                    self.broadcastEvent(Messages.translate("kick.kick-announcement", vars), silent);
-                    break;
-                case WARN:
-                    self.broadcastEvent(Messages.translate("warn.warn-announcement", vars), silent);
-                    break;
-                case IP:
-                    self.broadcastEvent(Messages.translate("ip-ban.ban-announcement", vars), silent);
-                    break;
-                case REGEX:
-                    self.broadcastEvent(Messages.translate("regex-ban.ban-announcement", vars), silent);
-                    break;
-                case BANWAVE:
-                    if (getAppealed()) 
-                        self.broadcastEvent(Messages.translate("ban-wave.removed-from-wave", vars), silent);
-                    else
-                        self.broadcastEvent(Messages.translate("ban-wave.added-to-wave-announcement", vars), silent);
-                    break;
-                default:
-                    break;
-            }
-        } catch (InvalidConfigurationException e) {
-            e.printStackTrace();
-            if (getPunisher().isOnline())
-                getPunisher().sendMessage(Messages.serverError);
+
+        switch(type) {
+            case BAN:
+                self.broadcastEvent(LolBans.getPlugin().getLocaleProvider().translate("ban.ban-announcement", vars), silent);
+                break;
+            case MUTE:
+                self.broadcastEvent(LolBans.getPlugin().getLocaleProvider().translate("mute.mute-announcement", vars), silent);
+                break;
+            case KICK:
+                self.broadcastEvent(LolBans.getPlugin().getLocaleProvider().translate("kick.kick-announcement", vars), silent);
+                break;
+            case WARN:
+                self.broadcastEvent(LolBans.getPlugin().getLocaleProvider().translate("warn.warn-announcement", vars), silent);
+                break;
+            case IP:
+                self.broadcastEvent(LolBans.getPlugin().getLocaleProvider().translate("ip-ban.ban-announcement", vars), silent);
+                break;
+            case REGEX:
+                self.broadcastEvent(LolBans.getPlugin().getLocaleProvider().translate("regex-ban.ban-announcement", vars), silent);
+                break;
+            case BANWAVE:
+                if (getAppealed()) 
+                    self.broadcastEvent(LolBans.getPlugin().getLocaleProvider().translate("ban-wave.removed-from-wave", vars), silent);
+                else
+                    self.broadcastEvent(LolBans.getPlugin().getLocaleProvider().translate("ban-wave.added-to-wave-announcement", vars), silent);
+                break;
+            default:
+                break;
         }
     }
     
@@ -467,7 +461,7 @@ public class Punishment implements Cacheable {
         setAppealed(true);
         setAppealedAt(TimeUtil.now());
         setAppealedBy(unpunisher);
-
+        setSilent(silent);
         update();
   
         // TODO: Discord util

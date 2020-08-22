@@ -7,7 +7,6 @@ import java.util.TreeMap;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 
 public class MuteChat extends AsyncCommand {
 
@@ -16,7 +15,7 @@ public class MuteChat extends AsyncCommand {
         this.setDescription("Mute the chat for all players (toggleable)");
         this.setPermission("lolbans.mutechat");
         this.setAliases(Arrays.asList(new String[] { "mute-chat" }));
-        setSyntax(Messages.getMessages().getConfig().getString("syntax.chat-mute"));
+        setSyntax(getPlugin().getLocaleProvider().get("syntax.chat-mute"));
     }
 
     @Override
@@ -39,12 +38,12 @@ public class MuteChat extends AsyncCommand {
 
             //TODO: maybe add more info in here?
             if (LolBans.getPlugin().isChatMute()) 
-                LolBans.getPlugin().broadcastMessage(Messages.translate("mute.global-muted", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+                LolBans.getPlugin().broadcastMessage(LolBans.getPlugin().getLocaleProvider().translate("mute.global-muted", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
             else
-                LolBans.getPlugin().broadcastMessage(Messages.translate("mute.global-unmuted", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+                LolBans.getPlugin().broadcastMessage(LolBans.getPlugin().getLocaleProvider().translate("mute.global-unmuted", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
         } catch (Exception e) {
             e.printStackTrace();
-            sender.sendMessage(Messages.serverError);
+            sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("serverError"));
         }
         return false;
     }

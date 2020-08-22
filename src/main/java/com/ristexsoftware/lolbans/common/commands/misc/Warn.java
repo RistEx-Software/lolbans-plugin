@@ -30,7 +30,6 @@ import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 import com.ristexsoftware.lolbans.api.command.Arguments;
@@ -44,19 +43,14 @@ public class Warn {
 			super("warn", plugin);
 			setDescription("Warn a player");
             setPermission("lolbans.warn");
-            setSyntax(Messages.getMessages().getConfig().getString("syntax.warn"));
+            setSyntax(getPlugin().getLocaleProvider().get("syntax.warn"));
 		}
 
         @Override
         public void onSyntaxError(User sender, String label, String[] args) {
-            sender.sendMessage(Messages.invalidSyntax);
-            try {
-                sender.sendMessage(
-                        Messages.translate("syntax.warn", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-            } catch (InvalidConfigurationException e) {
-                e.printStackTrace();
-                sender.sendMessage(Messages.serverError);
-            }
+            sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("invalidSyntax"));
+            sender.sendMessage(
+                    LolBans.getPlugin().getLocaleProvider().translate("syntax.warn", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
         }
 
         @Override
@@ -99,19 +93,14 @@ public class Warn {
 			super("unwarn", plugin);
 			setDescription("Removes a player's previous warn");
             setPermission("lolbans.unwarn");
-            setSyntax(Messages.getMessages().getConfig().getString("syntax.unwarn"));
+            setSyntax(getPlugin().getLocaleProvider().get("syntax.unwarn"));
 		}
 
         @Override
         public void onSyntaxError(User sender, String label, String[] args) {
-            sender.sendMessage(Messages.invalidSyntax);
-            try {
-                sender.sendMessage(
-                        Messages.translate("syntax.unwarn", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-            } catch (InvalidConfigurationException e) {
-                e.printStackTrace();
-                sender.sendMessage(Messages.serverError);
-            }
+            sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("invalidSyntax"));
+            sender.sendMessage(
+                    LolBans.getPlugin().getLocaleProvider().translate("syntax.unwarn", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
         }
 
         @Override
@@ -173,19 +162,14 @@ public class Warn {
 			super("acknowledge", plugin);
 			setDescription("Allows players to acknowledge warns they receive");
             setPermission("lolbans.acknowledge");
-            setSyntax(Messages.getMessages().getConfig().getString("syntax.warn-accept"));
+            setSyntax(getPlugin().getLocaleProvider().get("syntax.warn-accept"));
         }
         
         @Override
         public void onSyntaxError(User sender, String label, String[] args) {
-            sender.sendMessage(Messages.invalidSyntax);
-            try {
-                sender.sendMessage(
-                        Messages.translate("syntax.unwarn", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-            } catch (InvalidConfigurationException e) {
-                e.printStackTrace();
-                sender.sendMessage(Messages.serverError);
-            }
+            sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("invalidSyntax"));
+            sender.sendMessage(
+                    LolBans.getPlugin().getLocaleProvider().translate("syntax.unwarn", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
         }
 
         @Override

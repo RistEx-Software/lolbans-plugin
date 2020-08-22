@@ -14,8 +14,6 @@ import java.util.stream.Stream;
 import com.ristexsoftware.lolbans.api.command.Arguments;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.Database;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
@@ -28,19 +26,14 @@ public class History extends AsyncCommand {
         setPermission("lolbans.history");
         setDescription("View the punishment history of a specific player or everyone");
 
-        setSyntax(Messages.getMessages().getConfig().getString("syntax.history"));
+        setSyntax(getPlugin().getLocaleProvider().get("syntax.history"));
     }
 
     @Override
     public void onSyntaxError(User sender, String label, String[] args) {
-        sender.sendMessage(Messages.invalidSyntax);
-        try {
-            sender.sendMessage(
-                    Messages.translate("syntax.history", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-        } catch (InvalidConfigurationException e) {
-            e.printStackTrace();
-            sender.sendMessage(Messages.serverError);
-        }
+        sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("invalidSyntax"));
+        sender.sendMessage(
+                LolBans.getPlugin().getLocaleProvider().translate("syntax.history", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
     }
 
     @Override
@@ -104,7 +97,7 @@ public class History extends AsyncCommand {
             ResultSet countResult = countQuery.executeQuery();
             countResult.next();
             int count = countResult.getInt("count");
-            int pageSize = Messages.getMessages().getConfig().getInt("history.page-size");
+            int pageSize = Integer.valueOf(getPlugin().getLocaleProvider().get("history.page-size"));
 
             if (count < page * pageSize) {
                 return false;
@@ -130,7 +123,7 @@ public class History extends AsyncCommand {
                 PunishmentType type = PunishmentType.fromOrdinal(res.getInt("type"));
                 Timestamp ts = res.getTimestamp("expires_at");
 
-                history.add(Messages.translate(ts == null ? "history.history-message-perm" : "history.history-message-temp", 
+                history.add(LolBans.getPlugin().getLocaleProvider().translate(ts == null ? "history.history-message-perm" : "history.history-message-temp", 
                     new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
                     {{
                         put("playername", res.getString("target_name"));
@@ -152,7 +145,7 @@ public class History extends AsyncCommand {
 
         } catch(Exception e) {
             e.printStackTrace();
-            sender.sendMessage(Messages.serverError);
+            sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("serverError"));
         }        
 
         return true;

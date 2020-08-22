@@ -21,6 +21,7 @@ public class Cache<T extends Cacheable> {
 
     @Getter @Setter private Long ttl = (long) (30 * 60e3);
 
+    @Getter
     private int memoryUsage = 0;
     @Getter @Setter
     private int maxMemoryUsage = 0;

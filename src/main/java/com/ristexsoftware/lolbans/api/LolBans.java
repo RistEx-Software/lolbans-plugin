@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutorService;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -44,6 +45,7 @@ import com.ristexsoftware.lolbans.api.provider.UserProvider;
 import com.ristexsoftware.knappy.configuration.file.FileConfiguration;
 import com.ristexsoftware.knappy.util.Version.ServerType;
 import com.ristexsoftware.knappy.translation.LocaleProvider;
+import com.ristexsoftware.knappy.util.Debugger;
 
 import inet.ipaddr.IPAddressString;
 import lombok.Getter;
@@ -64,11 +66,13 @@ public class LolBans {
     @Setter
     private static ServerType serverType;
 
+    // TODO convert this to a cache
     public HashMap<Integer, Pattern> REGEX = new HashMap<Integer, Pattern>();
 
     @Getter
-    public HashMap<String, AsyncCommand> REGISTERED_COMMANDS = new HashMap<String, AsyncCommand>();
+    public LinkedHashMap<String, AsyncCommand> REGISTERED_COMMANDS = new LinkedHashMap<String, AsyncCommand>();
 
+    // TODO convert this to a cache
     @Deprecated
     public List<IPAddressString> BANNED_ADDRESSES = new Vector<IPAddressString>(); // Not sure why this is here, legacy? 
 
@@ -128,11 +132,11 @@ public class LolBans {
         // super(configProvider.getDataFolder(), configProvider.getConfigFile())
 
         // Set these early on bc they're important (like you~)
-        plugin = this;
+        LolBans.plugin = this;
         this.configProvider = configProvider;
         this.userProvider = userProvider;
 
-        localeProvider = new LocaleProvider(new File(configProvider.getDataFolder(), "locale"));
+        
         if (!configProvider.dataFolderExists()) {
             getLogger().info("Error: No folder for lolbans was found! Creating...");
             getConfigProvider().getDataFolder().mkdirs();
@@ -150,7 +154,38 @@ public class LolBans {
             // having errors.
             throw new FileNotFoundException("Please configure lolbans and restart the server! :)");
         }
+
         this.config = configProvider.getConfig();
+        Debugger.setEnabled(getConfig().getBoolean("general.debug", false));
+        
+        // Configure and set up locale provider
+        this.localeProvider = new LocaleProvider(new File(configProvider.getDataFolder(), "locale"));
+        this.configProvider.saveResource("messages.en_us.yml", false);
+        
+        int loadedLocales = this.localeProvider.loadAllLocales();
+        Boolean localeEnabled = this.localeProvider.setDefaultLocale("messages.en_us");
+
+        if (!localeEnabled) {
+            getLogger().severe("Failed to configure default locale file - perhaps you deleted it? Will create a new one.");
+            // This is horrible and needs to be improved
+            try {
+                this.localeProvider.writeLocaleStream(this.configProvider.getResource("messages.en_us.yml"), "messages.en_us.yml", true);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new FileNotFoundException("Something went horribly wrong while saving the default locale.");
+            }
+            
+            this.localeProvider.loadAllLocales();
+            this.localeProvider.setDefaultLocale("messages.en_us");
+        } else logger.info("Loaded " + String.valueOf(loadedLocales) + " localizations");
+
+        // this is dumb but it works
+        this.localeProvider.registerDefaultTranslation("prefix", "prefix", "[lolbans]");
+        this.localeProvider.registerDefaultTranslation("network-name", "networkName", "My Network");
+        this.localeProvider.registerDefaultTranslation("website", "website", "YourWebsiteHere.com");
+        this.localeProvider.registerDefaultTranslation("server-error", "serverError", "The server encountered an error!");
+        this.localeProvider.registerDefaultTranslation("invalid-syntax", "invalidSyntax", "&cInvalid Syntax!");
+        this.localeProvider.registerDefaultTranslation("discord", "discord", String.valueOf(this.config.getBoolean("discord.enabled", false)));
 
         LolBans.serverType = type;
 
@@ -210,6 +245,7 @@ public class LolBans {
         }
         return null;
     }
+    
     /**
      * Get an online user
      * 

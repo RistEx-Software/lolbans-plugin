@@ -10,7 +10,6 @@ import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.command.Arguments;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 
 public class Maintenance extends AsyncCommand {
 
@@ -18,20 +17,15 @@ public class Maintenance extends AsyncCommand {
         super("maintenance", plugin);
         setDescription("set the maintenance mode of the server");
         setPermission("lolbans.maintenance");
-        setSyntax(Messages.getMessages().getConfig().getString("syntax.maintenance"));
+        setSyntax(getPlugin().getLocaleProvider().get("syntax.maintenance"));
     }
     // -k flag = kick players
     // /maintenance [-k] [level]
     @Override
     public void onSyntaxError(User sender, String label, String[] args) {
-        sender.sendMessage(Messages.invalidSyntax);
-        try {
-            sender.sendMessage(
-                    Messages.translate("syntax.maintenance", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-        } catch (InvalidConfigurationException e) {
-            e.printStackTrace();
-            sender.sendMessage(Messages.serverError);
-        }
+        sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("invalidSyntax"));
+        sender.sendMessage(
+                    LolBans.getPlugin().getLocaleProvider().translate("syntax.maintenance", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
     }
 
     @Override
@@ -58,7 +52,7 @@ public class Maintenance extends AsyncCommand {
                 return sender.permissionDenied("lolbans.maintenance.toggle");
 
             getPlugin().setMaintenanceModeEnabled(!getPlugin().getMaintenanceModeEnabled());
-            getPlugin().broadcastEvent(Messages.translate("maintenance.toggled", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
+            getPlugin().broadcastEvent(LolBans.getPlugin().getLocaleProvider().translate("maintenance.toggled", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
                 put("maintenancelevel", getPlugin().getMaintenanceLevel().displayName());
                 put("player", sender.getName());
                 put("toggle", String.valueOf(getPlugin().getMaintenanceModeEnabled()));
@@ -77,7 +71,7 @@ public class Maintenance extends AsyncCommand {
         getPlugin().setMaintenanceLevel(exactLevel);
         getPlugin().setMaintenanceModeEnabled(true);
 
-        getPlugin().broadcastEvent(Messages.translate("maintenance.toggled", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
+        getPlugin().broadcastEvent(LolBans.getPlugin().getLocaleProvider().translate("maintenance.toggled", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
             put("maintenancelevel", getPlugin().getMaintenanceLevel().displayName());
             put("player", sender.getName());
             put("toggle", String.valueOf(getPlugin().getMaintenanceModeEnabled()));
@@ -109,17 +103,12 @@ public class Maintenance extends AsyncCommand {
             }
 
             if (!hasPermission)
-                try {
-                    user.disconnect(Messages.translate("maintenance.kick-message",
-                            new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
-                                {
-                                    put("maintenancelevel", MaintenanceLevel.fromOrdinal(level).displayName());
-                                }
-                            }));
-                } catch (InvalidConfigurationException e) {
-                    e.printStackTrace();
-                    user.disconnect(Messages.serverError);
-                }
+                user.disconnect(LolBans.getPlugin().getLocaleProvider().translate("maintenance.kick-message",
+                        new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                            {
+                                put("maintenancelevel", MaintenanceLevel.fromOrdinal(level).displayName());
+                            }
+                        }));
         }
     }
 }

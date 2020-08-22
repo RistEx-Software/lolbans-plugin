@@ -9,7 +9,6 @@ import java.util.concurrent.FutureTask;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.event.EventHandler;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
@@ -29,7 +28,7 @@ public class PlayerEventListener implements Listener {
                 try {
                     User user = LolBans.getPlugin().getUser(event.getPlayer().getUniqueId());
                     List<String> commands = LolBans.getPlugin().getConfig()
-                            .getStringList("chat-settings.mute-settings.blacklisted-commands");
+                            .getStringList("mute-settings.blacklisted-commands");
                     for (String command : commands) {
                         if (event.getMessage().toLowerCase().startsWith("/" + command.toLowerCase())) {
                             Punishment punishment = user.getLatestPunishmentOfType(PunishmentType.MUTE);
@@ -37,7 +36,7 @@ public class PlayerEventListener implements Listener {
                                 event.setCancelled(true);
                                 user.sendMessage(punishment);
 
-                                LolBans.getPlugin().notifyStaff(Messages.translate("mute.chat-attempt",
+                                LolBans.getPlugin().notifyStaff(LolBans.getPlugin().getLocaleProvider().translate("mute.chat-attempt",
                                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                                             {
                                                 put("player", event.getPlayer().getName());
@@ -50,7 +49,7 @@ public class PlayerEventListener implements Listener {
                     }
                     return true;
                 } catch (Exception e) {
-                    event.getPlayer().sendMessage(Messages.serverError);
+                    event.getPlayer().sendMessage(LolBans.getPlugin().getLocaleProvider().getDefaultTranslation("serverError"));
                     return false;
                 }
             }
@@ -63,7 +62,7 @@ public class PlayerEventListener implements Listener {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             event.setCancelled(true);
-            event.getPlayer().sendMessage(Messages.serverError);
+            event.getPlayer().sendMessage(LolBans.getPlugin().getLocaleProvider().getDefaultTranslation("serverError"));
         }
     }
 
@@ -73,7 +72,7 @@ public class PlayerEventListener implements Listener {
         if (!LolBans.getPlugin().isChatEnabled()) {
             if (!event.getPlayer().hasPermission("lolbans.mute.bypass")) {
                 event.setCancelled(true);
-                event.getPlayer().sendMessage(Messages.translate("Mute.GlobalMuted",
+                event.getPlayer().sendMessage(LolBans.getPlugin().getLocaleProvider().translate("mute.global-muted",
                         new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
             }
         }
@@ -83,7 +82,7 @@ public class PlayerEventListener implements Listener {
             event.setCancelled(true);
             user.sendMessage(punishment);
             LolBans.getPlugin().notifyStaff(
-                    Messages.translate("mute.chat-attempt", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
+                    LolBans.getPlugin().getLocaleProvider().translate("mute.chat-attempt", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER) {
                         {
                             put("player", event.getPlayer().getName());
                             put("message", event.getMessage());

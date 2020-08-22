@@ -5,7 +5,6 @@ import java.util.TreeMap;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.MaintenanceLevel;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,7 +20,7 @@ public class PingListener implements Listener {
     public void onServerListPing(ServerListPingEvent event) throws InvalidConfigurationException {
         if (LolBans.getPlugin().getMaintenanceModeEnabled()) {
             
-            event.setMotd(Messages.translate("maintenance.description", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
+            event.setMotd(LolBans.getPlugin().getLocaleProvider().translate("maintenance.description", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
                 put("maintenancelevel", MaintenanceLevel.displayName(LolBans.getPlugin().getMaintenanceLevel()));
             }}));
 

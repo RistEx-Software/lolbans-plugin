@@ -12,7 +12,6 @@ import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.command.Arguments;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 
@@ -22,19 +21,13 @@ public class Kick extends AsyncCommand {
         super("kick", plugin);
         setDescription("kick a player");
         setPermission("lolbans.kick");
-        setSyntax(Messages.getMessages().getConfig().getString("syntax.kick"));
+        setSyntax(getPlugin().getLocaleProvider().get("syntax.kick"));
     }
 
     @Override
     public void onSyntaxError(User sender, String label, String[] args) {
-        sender.sendMessage(Messages.invalidSyntax);
-        try {
-            sender.sendMessage(
-                    Messages.translate("syntax.kick", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-        } catch (InvalidConfigurationException e) {
-            e.printStackTrace();
-            sender.sendMessage(Messages.serverError);
-        }
+        sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("invalidSyntax"));
+        sender.sendMessage(LolBans.getPlugin().getLocaleProvider().translate("syntax.kick", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
     }
 
     @Override

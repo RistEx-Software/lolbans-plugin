@@ -15,7 +15,6 @@ import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.utils.PunishID;
 import com.ristexsoftware.lolbans.api.utils.TimeUtil;
 import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
-import com.ristexsoftware.lolbans.api.configuration.Messages;
 
 public class PruneHistory extends AsyncCommand {
 
@@ -24,19 +23,14 @@ public class PruneHistory extends AsyncCommand {
         setDescription("Delete the history of a specific player or everyone");
         setPermission("lolbans.history.prune");
         setAliases(Arrays.asList(new String[] { "clearhistory", "purgehistory" }));
-        setSyntax(Messages.getMessages().getConfig().getString("syntax.prune-history"));
+        setSyntax(getPlugin().getLocaleProvider().get("syntax.prune-history"));
     }
 
     @Override
     public void onSyntaxError(User sender, String label, String[] args) {
-        sender.sendMessage(Messages.invalidSyntax);
-        try {
-            sender.sendMessage(
-                    Messages.translate("syntax.prune-history", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-        } catch (InvalidConfigurationException e) {
-            e.printStackTrace();
-            sender.sendMessage(Messages.serverError);
-        }
+        sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("invalidSyntax"));
+        sender.sendMessage(
+                LolBans.getPlugin().getLocaleProvider().translate("syntax.prune-history", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
     }
 
     @Override
@@ -67,7 +61,7 @@ public class PruneHistory extends AsyncCommand {
             Punishment punishment = Punishment.findPunishment(searchable);
             if (punishment != null) {
                 punishment.delete();
-                sender.sendMessage(Messages.translate("prune-history.deleted-single-punishment", punishment.getVariableMap()));
+                sender.sendMessage(LolBans.getPlugin().getLocaleProvider().translate("prune-history.deleted-single-punishment", punishment.getVariableMap()));
                 return true;
             }
         }
@@ -88,7 +82,7 @@ public class PruneHistory extends AsyncCommand {
 
         int res = punishmentDeleteQuery.executeUpdate();
         final String MuStBeFiNaL = searchable;
-        sender.sendMessage(Messages.translate(target == null ? "prune-history.cleared-history-all" : "prune-history.cleared-history-player"
+        sender.sendMessage(LolBans.getPlugin().getLocaleProvider().translate(target == null ? "prune-history.cleared-history-all" : "prune-history.cleared-history-player"
         , new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER){{
             put("count", String.valueOf(res));
             put("player", target == null ? MuStBeFiNaL : target.getName());
