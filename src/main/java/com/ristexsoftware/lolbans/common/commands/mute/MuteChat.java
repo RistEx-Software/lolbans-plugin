@@ -10,7 +10,7 @@ import com.ristexsoftware.lolbans.api.command.AsyncCommand;
 
 public class MuteChat extends AsyncCommand {
 
-    public MuteChat(String name, LolBans plugin) {
+    public MuteChat(LolBans plugin) {
         super("mutechat", plugin);
         this.setDescription("Mute the chat for all players (toggleable)");
         this.setPermission("lolbans.mutechat");

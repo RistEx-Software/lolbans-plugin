@@ -40,222 +40,127 @@ import com.ristexsoftware.lolbans.api.utils.TimeUtil;
 import com.ristexsoftware.lolbans.common.utils.Debug;
 import com.ristexsoftware.lolbans.common.utils.Timing;
 
-public class Ban {
+public class Ban extends AsyncCommand {
 
-	public static class BanCommand extends AsyncCommand {
+	public Ban(LolBans plugin) {
+		super("ban", plugin);
+		setDescription("Ban a player");
+		setPermission("lolbans.ban");
+		setAliases(Arrays.asList(new String[] { "eban", "tempban" }));
+		setSyntax(plugin.getLocaleProvider().get("syntax.ban"));
+	}
 
-		public BanCommand(LolBans plugin) {
-			super("ban", plugin);
-			setDescription("Ban a player");
-			setPermission("lolbans.ban");
-			setAliases(Arrays.asList(new String[] { "eban", "tempban" }));
-			setSyntax(plugin.getLocaleProvider().get("syntax.ban"));
-		}
-
-		@Override
-		public void onSyntaxError(User sender, String label, String[] args) {
-			sender.sendMessage(LolBans.getPlugin().getLocaleProvider().get("syntax.ban"));
-		
-			sender.sendMessage(
-					LolBans.getPlugin().getLocaleProvider().translate("syntax.ban", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-		}
-
-		@Override
-		public List<String> onTabComplete(User sender, String[] args) {
-			if (args.length < 2) {
-				ArrayList<String> usernames = new ArrayList<>();
-
-				for (User user : LolBans.getPlugin().getUserCache().getAll()) {
-					usernames.add(user.getName());
-				}
-
-				// TODO: Make this faster!!!
-				// if(!args[0].equals("")) {
-				// 	for(User user : LolBans.getPlugin().getUserCache().getAll()) {
-				// 		if(user.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
-				// 			usernames.add(user.getName());
-				// 		}
-				// 	}
-				// } else {
-				// 	// Instead of creating a stupid for loop here, let's just stream 
-				// 	usernames = (ArrayList<String>) LolBans.getPlugin().getUserCache().getAll().stream()
-				// 	.map(user -> user.getName())
-				// 	.collect(Collectors.toList());
-				// }
-
-				return usernames;
-			}
+	@Override
+	public void onSyntaxError(User sender, String label, String[] args) {
+		sender.sendMessage(LolBans.getPlugin().getLocaleProvider().get("syntax.ban"));
 	
-			if (args.length < 3) {	
-				return ImmutableList.of("1m", "15m", "1h", "3h", "12h", "1d", "1w", "1mo", "1y");
+		sender.sendMessage(
+				LolBans.getPlugin().getLocaleProvider().translate("syntax.ban", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
+	}
+
+	@Override
+	public List<String> onTabComplete(User sender, String[] args) {
+		if (args.length < 2) {
+			ArrayList<String> usernames = new ArrayList<>();
+
+			for (User user : LolBans.getPlugin().getUserCache().getAll()) {
+				usernames.add(user.getName());
 			}
 
-			return Arrays.asList(); // u cute
+			// TODO: Make this faster!!!
+			// if(!args[0].equals("")) {
+			// 	for(User user : LolBans.getPlugin().getUserCache().getAll()) {
+			// 		if(user.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
+			// 			usernames.add(user.getName());
+			// 		}
+			// 	}
+			// } else {
+			// 	// Instead of creating a stupid for loop here, let's just stream 
+			// 	usernames = (ArrayList<String>) LolBans.getPlugin().getUserCache().getAll().stream()
+			// 	.map(user -> user.getName())
+			// 	.collect(Collectors.toList());
+			// }
+
+			return usernames;
 		}
 
-		@Override
-		public boolean run(User sender, String commandLabel, String[] args) {
-
-			// Even if we set the permission in the constructor, we have to check here
-			// just incase the user doesn't enable the real permission check in bukkit's 
-			// command constructor, I don't want to force this because the command doesn't 
-			// show up otherwise.
-			if (!sender.hasPermission("lolbans.ban"))
-				return sender.permissionDenied("lolbans.ban");
-			
-			// Let's start timing how long this command takes
-			Debug debug = new Debug(getClass());
-			Timing time = new Timing();
-
-			try {
-				Arguments a = new Arguments(args);
-				a.optionalFlag("silent", "-s");
-				a.optionalFlag("overwrite", "-o");
-				a.requiredString("username");
-				a.optionalTimestamp("expiry");
-				a.optionalSentence("reason"); 
-				
-				if (!a.valid()) 
-					return false;
-				
-				boolean silent = a.getFlag("silent");
-				boolean overwrite = a.getFlag("overwrite");
-				String username = a.get("username");
-				Timestamp expiry = !a.exists("expiry") ? null : a.getTimestamp("expiry");
-
-				User target = User.resolveUser(username);
-
-				if (target == null)
-					return sender.sendReferencedLocalizedMessage("player-doesnt-exist", a.get("username"), true);
-
-				if (overwrite && !sender.hasPermission("lolbans.ban.overwrite"))
-					return sender.permissionDenied("lolbans.ban.overwrite");
-				if (target.isPunished(PunishmentType.BAN) && !overwrite)
-					return sender.sendReferencedLocalizedMessage("ban.player-is-banned", target.getName(), true);
-			
-				if (expiry == null && !sender.hasPermission("lolbans.ban.perm"))
-					return sender.permissionDenied("lolbans.ban.perm");
-
-				if (expiry != null && expiry.getTime() > sender.getTimeGroup().getTime())
-					expiry = sender.getTimeGroup();
-
-				String reason = a.get("reason");
-				if (reason == null || reason.trim().equals("null"))
-					reason = getPlugin().getLocaleProvider().getDefault("ban.default-reason" , "Your account has been suspended!");
-
-				Punishment punishment = new Punishment(PunishmentType.BAN, sender, target, reason, expiry, silent, false);
-				if (target.isOnline()) {
-					if (target.hasPermission("lolbans.ban.immune"))
-						return sender.sendReferencedLocalizedMessage("cannot-punish-operator", target.getName(), true);
-					target.disconnect(punishment);
-				}
-				
-				if (overwrite) {
-					target.removeLatestPunishmentOfType(PunishmentType.BAN, sender,
-					"Overwritten by #" + punishment.getPunishID(), silent);
-				}
-				
-				punishment.commit(sender);
-				punishment.broadcast();
-				time.finish(sender);
-				debug.print("Command completed");
-			} catch (Exception e ){ 
-				e.printStackTrace();
-				sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("serverError"));
-			}
-			return true;
-		}
-    }
-
-	// !IMPORTANT FIXME: Unban command doesn't pull from cache after a ban was just created
-	public static class UnbanCommand extends AsyncCommand {
-
-		public UnbanCommand(LolBans plugin) {
-			super("unban", plugin);
-			this.setDescription("Remove a player ban");
-			this.setPermission("lolbans.unban");
-			this.setAliases(Arrays.asList(new String[]{}));
-			setSyntax(getPlugin().getLocaleProvider().get("syntax.unban"));
+		if (args.length < 3) {	
+			return ImmutableList.of("1m", "15m", "1h", "3h", "12h", "1d", "1w", "1mo", "1y");
 		}
 
-		@Override
-		public void onSyntaxError(User sender, String label, String[] args) {
-			sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("syntaxError"));
-			sender.sendMessage(
-					LolBans.getPlugin().getLocaleProvider().translate("syntax.unban", new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)));
-		}
+		return Arrays.asList(); // u cute
+	}
 
-		@Override
-		public List<String> onTabComplete(User sender, String[] args) {
-			if (args.length < 2) {
-				ArrayList<String> punishments = new ArrayList<>();
-				for (Punishment punishment : LolBans.getPlugin().getPunishmentCache().getAll()) {
-					if (punishment.getType() == PunishmentType.BAN && !punishment.getAppealed() && !punishments.contains(punishment.getTarget().getName()))
-						punishments.add(punishment.getTarget().getName());
-				}
-				return punishments;
-				// TODO: Make this faster... And make it work
-/* 				if(!args[0].equals("")) {
-					for(Punishment punish : LolBans.getPlugin().getPunishmentCache().getAll()) {
-						if (punish.getType() != PunishmentType.BAN && punish.getAppealed() && punishments.contains(punish.getTarget().getName())) continue;
-						if(punish.getTarget().getName().toLowerCase().startsWith(args[0].toLowerCase())) {
-							punishments.add(punish.getTarget().getName());
-						}
-					}
-				} else {
-					// Instead of creating a stupid for loop here, let's just stream 
-					LolBans.getPlugin().getPunishmentCache().getAll().stream()
-					.forEach(punish -> {
-						if (punish.getType() == PunishmentType.BAN && !punish.getAppealed() && !punishments.contains(punish.getTarget().getName())) 
-							punishments.add(punish.getTarget().getName());
-					});
-				}
+	@Override
+	public boolean run(User sender, String commandLabel, String[] args) {
 
-				return punishments; */
-			}
+		// Even if we set the permission in the constructor, we have to check here
+		// just incase the user doesn't enable the real permission check in bukkit's 
+		// command constructor, I don't want to force this because the command doesn't 
+		// show up otherwise.
+		if (!sender.hasPermission("lolbans.ban"))
+			return sender.permissionDenied("lolbans.ban");
+		
+		// Let's start timing how long this command takes
+		Debug debug = new Debug(getClass());
+		Timing time = new Timing();
 
-			return Arrays.asList();
-		}
-
-		@Override
-		public boolean run(User sender, String commandLabel, String[] args) {
-			Timing time = new Timing();
-
+		try {
 			Arguments a = new Arguments(args);
 			a.optionalFlag("silent", "-s");
+			a.optionalFlag("overwrite", "-o");
 			a.requiredString("username");
+			a.optionalTimestamp("expiry");
 			a.optionalSentence("reason"); 
 			
 			if (!a.valid()) 
 				return false;
 			
-			boolean silent = a.getBoolean("silent");
+			boolean silent = a.getFlag("silent");
+			boolean overwrite = a.getFlag("overwrite");
 			String username = a.get("username");
+			Timestamp expiry = !a.exists("expiry") ? null : a.getTimestamp("expiry");
 
 			User target = User.resolveUser(username);
 
 			if (target == null)
 				return sender.sendReferencedLocalizedMessage("player-doesnt-exist", a.get("username"), true);
 
-			if (!target.isPunished(PunishmentType.BAN))
-				return sender.sendReferencedLocalizedMessage("ban.player-is-not-banned", target.getName(), true);
-
-			if (target.getLatestPunishmentOfType(PunishmentType.BAN) != null && target.getLatestPunishmentOfType(PunishmentType.BAN).getPunisher().getUniqueId() != sender.getUniqueId() && !sender.hasPermission("lolbans.unban.others"))
-				return sender.sendReferencedLocalizedMessage("ban.cannot-unban-other", target.getName(), true);
+			if (overwrite && !sender.hasPermission("lolbans.ban.overwrite"))
+				return sender.permissionDenied("lolbans.ban.overwrite");
+			if (target.isPunished(PunishmentType.BAN) && !overwrite)
+				return sender.sendReferencedLocalizedMessage("ban.player-is-banned", target.getName(), true);
 		
-			String reason = a.get("reason");
-			if (reason == null || reason.trim().equals("null")) {
-				String configReason = getPlugin().getLocaleProvider().get("ban.default-reason");
-				reason = configReason == null ? "Your account has been suspended!" : configReason;
-			}
+			if (expiry == null && !sender.hasPermission("lolbans.ban.perm"))
+				return sender.permissionDenied("lolbans.ban.perm");
 
-			Punishment punishment = target.removeLatestPunishmentOfType(PunishmentType.BAN, sender, reason, silent);
+			if (expiry != null && expiry.getTime() > sender.getTimeGroup().getTime())
+				expiry = sender.getTimeGroup();
+
+			String reason = a.get("reason");
+			if (reason == null || reason.trim().equals("null"))
+				reason = getPlugin().getLocaleProvider().getDefault("ban.default-reason" , "Your account has been suspended!");
+
+			Punishment punishment = new Punishment(PunishmentType.BAN, sender, target, reason, expiry, silent, false);
+			if (target.isOnline()) {
+				if (target.hasPermission("lolbans.ban.immune"))
+					return sender.sendReferencedLocalizedMessage("cannot-punish-operator", target.getName(), true);
+				target.disconnect(punishment);
+			}
+			
+			if (overwrite) {
+				target.removeLatestPunishmentOfType(PunishmentType.BAN, sender,
+				"Overwritten by #" + punishment.getPunishID(), silent);
+			}
+			
+			punishment.commit(sender);
 			punishment.broadcast();
 			time.finish(sender);
-			
-			boolean uwu = true;
-			return uwu;
+			debug.print("Command completed");
+		} catch (Exception e ){ 
+			e.printStackTrace();
+			sender.sendMessage(getPlugin().getLocaleProvider().getDefaultTranslation("serverError"));
 		}
-		
+		return true;
 	}
 }

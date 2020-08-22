@@ -43,29 +43,33 @@ command-complete: "{PREFIX}&bDone! &f{MILLISECONDS}ms."
 cannot-punish-operator: "{PREFIX}&cYou may not punish &f{PLAYER} &cas they are an operator!"
 
 discord:
+  username: "{ARBITERNAME}"
   # The large picture shown on the right side of the embed (Can be full body render, just the player head, etc.)
-  thumbnail-pictures: "https://crafatar.com/renders/head/{PLAYERUUID}?overlay&default=MHF_Steve"
+  thumbnail: "https://crafatar.com/renders/head/{PLAYERUUID}?overlay&default=MHF_Steve"
   # The picture shown in the footer of the embed
-  avatar-pictures: "https://crafatar.com/renders/head/{PLAYERUUID}?overlay&default=MHF_Steve"
+  avatar: "https://crafatar.com/renders/head/{PLAYERUUID}?overlay&default=MHF_Steve"
   # Profile picture to set for the CONSOLE user
   console-profile-picture: "https://crafatar.com/renders/head/f78a4d8d-d51b-4b39-98a3-230f2de0c670?overlay&default=MHF_Steve"
+  # The footer image
+  footer-image: 
   # Simple message style is just lines of text sent as a messgage instead of an embed.
   simple:
+    enabled: false
     message-ban: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}banned **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    message-ip-ban: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}ip-banned **{CENSOREDIPADDRESS}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
+    message-regex-ban: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}banned expression **{REGEX}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
     message-mute: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}muted **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
     message-kick: ":boot: **{ARBITERNAME}** kicked **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
     message-warn: ":hammer: **{ARBITERNAME}** {APPEALED|empty_if_false:\"un\"}warned **{PlayerName}** for **{REASON}**{SILENT:empty_if_false:\" *[SILENT]*\"} [#*{PUNISHID}*]"
     banwave-add: ":wave: **{ARBITERNAME}** added **{PLAYERNAME}** to the next ban wave."
     banwave-start: ":hammer: **{ARBITERNAME}** started a ban wave which bans the following users:\n```\n{USERLIST}\n```"
-    report: ":orange_book: **{ARBITERNAME}** reported **{PLAYERNAME}**: `{REASON}` [{REPORTTYPE} - #{PUNISHID}]"
+    report: ":orange_book: **{ARBITERNAME}** reported **{PLAYERNAME}**: `{REASON}` [#{PUNISHID}]"
     ban-object: ":hammer: **{ARBITERNAME}** banned `{OBJECT}`{EXPIRY|empty_if_none:\" which expires on \"}{EXPIRY|datetime:\"**EEE, MMM d yyyy HH:mm:ss**\"}"
 
   # Embedded discord messages.
   embed:  
-    title: "{punished_by_name} {APPEALED|empty_if_false:\"un\"{punishment_type} {player_name}"
-    descrption: "{REASON"
+    description: "{REASON}"
     footer: "{PLAYERNAME} was {punishment_type}"
-    footer-image:
     # You can have up to 25 fields
     fields:
       1:
@@ -76,6 +80,8 @@ discord:
         content: "{EXPIRY}"
       
     ban-title: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}banned {PLAYERNAME}"
+    ip-ban-title: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}ip-banned {CENSOREDIPADDRESS}"
+    regex-ban-title: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}banned expression {REGEX}"
     kick-title: "{ARBITERNAME} kicked {PLAYERNAME}"
     mute-title: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}muted {PLAYERNAME}"
     warn-title: "{ARBITERNAME} {APPEALED|empty_if_false:\"un\"}warned {PLAYERNAME}"

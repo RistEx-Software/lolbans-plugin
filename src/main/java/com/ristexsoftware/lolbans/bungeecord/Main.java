@@ -21,9 +21,6 @@ package com.ristexsoftware.lolbans.bungeecord;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.UUID;
 
 import com.ristexsoftware.knappy.util.Version;
@@ -35,10 +32,6 @@ import com.ristexsoftware.lolbans.bungeecord.Listeners.PingEvent;
 import com.ristexsoftware.lolbans.bungeecord.Listeners.PlayerEventListener;
 import com.ristexsoftware.lolbans.bungeecord.provider.BungeeConfigProvider;
 import com.ristexsoftware.lolbans.bungeecord.provider.BungeeUserProvider;
-import com.ristexsoftware.lolbans.common.commands.ban.*;
-import com.ristexsoftware.lolbans.common.commands.history.*;
-import com.ristexsoftware.lolbans.common.commands.misc.*;
-import com.ristexsoftware.lolbans.common.commands.mute.Mute;
 
 import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
@@ -79,24 +72,7 @@ public class Main extends Plugin {
         if (!Database.initDatabase())
             return;
 
-        CommandUtil.BungeeCord.registerBungeeCommand(new Ban.BanCommand(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new Ban.UnbanCommand(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new Mute.MuteCommand(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new Mute.UnmuteCommand(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new IPBan.Ban(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new IPBan.Unban(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new RegexBan.Ban(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new RegexBan.Unban(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new BanWave(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new History(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new PruneHistory(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new Rollback(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new Kick(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new Warn.WarnCommand(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new Warn.UnwarnCommand(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new Warn.AcknowledgeWarnCommand(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new Maintenance(LolBans.getPlugin()));
-        CommandUtil.BungeeCord.registerBungeeCommand(new com.ristexsoftware.lolbans.common.commands.misc.LolBans(LolBans.getPlugin()));
+        CommandUtil.registerAllCommands();
 
         getProxy().getPluginManager().registerListener(this, new ConnectionListener());
         getProxy().getPluginManager().registerListener(this, new PlayerEventListener());
