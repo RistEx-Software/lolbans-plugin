@@ -68,30 +68,6 @@ public class Main extends JavaPlugin {
         if (!Database.initDatabase())
             return;
 
-        // System.out.println("aaaa ur gay");
-        // CommandUtil.Bukkit.registerBukkitCommand(new Ban.BanCommand(LolBans.getPlugin()));
-        // CommandUtil.Bukkit.registerBukkitCommand(new Ban.UnbanCommand(LolBans.getPlugin()));
-
-        // CommandUtil.Bukkit.registerBukkitCommand(new IPBan.Ban(LolBans.getPlugin()));
-        // CommandUtil.Bukkit.registerBukkitCommand(new IPBan.Unban(LolBans.getPlugin()));    
-
-        // CommandUtil.Bukkit.registerBukkitCommand(new RegexBan.Ban(LolBans.getPlugin()));
-        // CommandUtil.Bukkit.registerBukkitCommand(new RegexBan.Unban(LolBans.getPlugin()));
-
-        // CommandUtil.Bukkit.registerBukkitCommand(new BanWave(LolBans.getPlugin()));
-
-        // CommandUtil.Bukkit.registerBukkitCommand(new History(LolBans.getPlugin()));
-        // CommandUtil.Bukkit.registerBukkitCommand(new PruneHistory(LolBans.getPlugin()));
-        // CommandUtil.Bukkit.registerBukkitCommand(new Rollback(LolBans.getPlugin()));
-
-        // CommandUtil.Bukkit.registerBukkitCommand(new Kick(LolBans.getPlugin()));
-
-        // CommandUtil.Bukkit.registerBukkitCommand(new Warn.WarnCommand(LolBans.getPlugin()));
-        // CommandUtil.Bukkit.registerBukkitCommand(new Warn.UnwarnCommand(LolBans.getPlugin()));
-        // CommandUtil.Bukkit.registerBukkitCommand(new Warn.AcknowledgeWarnCommand(LolBans.getPlugin()));
-
-        // CommandUtil.Bukkit.registerBukkitCommand(new Maintenance(LolBans.getPlugin()));
-
         CommandUtil.registerAllCommands();
 
         getServer().getPluginManager().registerEvents(new ConnectionListener(), this);
