@@ -33,31 +33,36 @@ import lombok.Setter;
  * Represents a report sent by a user.
  */
 public class Report {
-    @Getter String reportId;
-    @Getter User target;
-    @Getter @Setter String message;
-    @Getter User reportedBy;
-    @Getter Timestamp reportedAt;
-    @Getter @Setter Boolean claimed;
-    @Getter User claimedBy;
-    @Getter Timestamp claimedAt;
-    @Getter @Setter Boolean closed;
-    @Getter @Setter PunishmentType resolution;
-    @Getter @Setter String reference;
+    @Getter
+    String reportId;
+    @Getter
+    User target;
+    @Getter
+    @Setter
+    String message;
+    @Getter
+    User reportedBy;
+    @Getter
+    Timestamp reportedAt;
+    @Getter
+    @Setter
+    Boolean claimed;
+    @Getter
+    User claimedBy;
+    @Getter
+    Timestamp claimedAt;
+    @Getter
+    @Setter
+    Boolean closed;
+    @Getter
+    @Setter
+    PunishmentType resolution;
+    @Getter
+    @Setter
+    String reference;
 
-    public Report(
-        String reportId,
-        User target,
-        String message,
-        User reportedBy,
-        Timestamp reportedAt,
-        Boolean claimed,
-        User claimedBy,
-        Timestamp claimedAt,
-        Boolean closed,
-        PunishmentType resolution,
-        String reference
-    ) {
+    public Report(String reportId, User target, String message, User reportedBy, Timestamp reportedAt, Boolean claimed,
+            User claimedBy, Timestamp claimedAt, Boolean closed, PunishmentType resolution, String reference) {
         this.reportId = reportId;
         this.target = target;
         this.message = message;

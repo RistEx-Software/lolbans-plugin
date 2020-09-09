@@ -21,6 +21,7 @@ package com.ristexsoftware.lolbans.bukkit.provider;
 
 import com.ristexsoftware.lolbans.api.provider.UserProvider;
 import com.ristexsoftware.lolbans.bukkit.Main;
+import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
 
 import java.net.InetSocketAddress;
@@ -100,5 +101,10 @@ public class BukkitUserProvider implements UserProvider {
         Player player = getPlayer(user);
         player.spigot().sendMessage(content);
 
+    }
+
+    @Override
+    public String getServer(User user) {
+        return LolBans.getPlugin().getConfigProvider().getConfig().getString("general.server-name");
     }
 }

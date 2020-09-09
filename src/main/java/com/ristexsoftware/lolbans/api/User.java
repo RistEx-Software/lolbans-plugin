@@ -35,11 +35,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.regex.Pattern;
-// import java.net.InetSocketAddress;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
+import com.ristexsoftware.knappy.configuration.ConfigurationSection;
+import com.ristexsoftware.knappy.translation.Translation;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 import com.ristexsoftware.lolbans.api.utils.Cacheable;
@@ -47,11 +47,6 @@ import com.ristexsoftware.lolbans.api.utils.TimeUtil;
 import com.ristexsoftware.lolbans.common.utils.Debug;
 
 import inet.ipaddr.IPAddress;
-import inet.ipaddr.IPAddressString;
-
-import com.ristexsoftware.knappy.configuration.ConfigurationSection;
-import com.ristexsoftware.knappy.translation.Translation;
-
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -496,7 +491,7 @@ public class User implements Cacheable {
 
     public Timestamp getTimeGroup() {
 
-        Timestamp defaultTime = TimeUtil.toTimestamp(LolBans.getPlugin().getConfig().getString("max-time.default"));
+        Timestamp defaultTime = TimeUtil.toTimestamp(LolBans.getPlugin().getConfig().getString("max-time.default", "7d"));
         ConfigurationSection configTimeGroups = LolBans.getPlugin().getConfig().getConfigurationSection("max-time");
         ArrayList<String> timeGroups = new ArrayList<String>();
         
@@ -509,6 +504,6 @@ public class User implements Cacheable {
             }
         }
 
-        return defaultTime == null ? TimeUtil.toTimestamp("7d") : defaultTime;
+        return defaultTime;
     }
 }

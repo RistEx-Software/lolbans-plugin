@@ -128,7 +128,7 @@ public class Arguments {
 
         return this;
     }
-
+    
     /**
      * Create an optional sentence argument, with its length defaulting to the remaining length of
      * current unparsed arguments.

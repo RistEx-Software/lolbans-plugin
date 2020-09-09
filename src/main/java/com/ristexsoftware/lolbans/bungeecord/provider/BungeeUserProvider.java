@@ -96,4 +96,9 @@ public class BungeeUserProvider implements UserProvider {
         if (proxiedPlayer != null)
             proxiedPlayer.sendMessage(content);
     }
+
+    @Override
+    public String getServer(User user) {
+        return getProxiedPlayer(user).getServer().getInfo().getName();
+    }
 }

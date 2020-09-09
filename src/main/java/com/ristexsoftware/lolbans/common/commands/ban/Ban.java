@@ -24,23 +24,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import com.google.common.collect.ImmutableList;
-import com.ristexsoftware.knappy.util.Debugger;
+import com.ristexsoftware.knappy.arguments.CommandLine;
+import com.ristexsoftware.knappy.arguments.DefaultParser;
+import com.ristexsoftware.knappy.arguments.Options;
+import com.ristexsoftware.knappy.arguments.Option;
 import com.ristexsoftware.lolbans.api.LolBans;
 import com.ristexsoftware.lolbans.api.User;
 import com.ristexsoftware.lolbans.api.command.AsyncCommand;
-import com.ristexsoftware.lolbans.api.configuration.InvalidConfigurationException;
 import com.ristexsoftware.lolbans.api.punishment.Punishment;
 import com.ristexsoftware.lolbans.api.punishment.PunishmentType;
 import com.ristexsoftware.lolbans.api.command.Arguments;
-import com.ristexsoftware.lolbans.api.utils.TimeUtil;
 import com.ristexsoftware.lolbans.common.utils.Debug;
 import com.ristexsoftware.lolbans.common.utils.Timing;
 
+import com.google.common.collect.ImmutableList;
+
 public class Ban extends AsyncCommand {
+
+	private DefaultParser parser = new DefaultParser();
+	private Options opts = new Options();
 
 	public Ban(LolBans plugin) {
 		super("ban", plugin);
@@ -48,6 +51,9 @@ public class Ban extends AsyncCommand {
 		setPermission("lolbans.ban");
 		setAliases(Arrays.asList(new String[] { "eban", "tempban" }));
 		setSyntax(plugin.getLocaleProvider().get("syntax.ban"));
+
+		opts.addOption(Option.builder("s").argName("silent").optionalArg(true).build());
+		opts.addOption("s", "silent", false, "Create a silent punishment");
 	}
 
 	@Override
@@ -100,12 +106,17 @@ public class Ban extends AsyncCommand {
 		// show up otherwise.
 		if (!sender.hasPermission("lolbans.ban"))
 			return sender.permissionDenied("lolbans.ban");
+
+		
+
 		
 		// Let's start timing how long this command takes
 		Debug debug = new Debug(getClass());
 		Timing time = new Timing();
 
 		try {
+			CommandLine cmd = this.parser.parse(opts, args);
+			
 			Arguments a = new Arguments(args);
 			a.optionalFlag("silent", "-s");
 			a.optionalFlag("overwrite", "-o");
@@ -116,7 +127,7 @@ public class Ban extends AsyncCommand {
 			if (!a.valid()) 
 				return false;
 			
-			boolean silent = a.getFlag("silent");
+			boolean silent = cmd.hasOption("silent");
 			boolean overwrite = a.getFlag("overwrite");
 			String username = a.get("username");
 			Timestamp expiry = !a.exists("expiry") ? null : a.getTimestamp("expiry");

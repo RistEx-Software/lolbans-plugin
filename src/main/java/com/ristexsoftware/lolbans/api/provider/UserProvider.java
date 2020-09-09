@@ -54,4 +54,9 @@ public interface UserProvider {
      * Test whether the specified user has the given permission node.
      */
     public boolean hasPermission(User user, String permissionNode);
+
+    /**
+     * Get the user's current server
+     */
+    public String getServer(User user);
 }

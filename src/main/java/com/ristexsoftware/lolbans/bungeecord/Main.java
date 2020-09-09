@@ -52,15 +52,6 @@ public class Main extends Plugin {
         if (!getDataFolder().exists())
             getDataFolder().mkdir();
 
-        // // TODO: Move this to BungeeConfigProvider!!
-        // File file = new File(getDataFolder(), "config.yml");
-        // if (!file.exists()) {
-        //     try (InputStream in = getResourceAsStream("config.yml")) {
-        //         Files.copy(in, file.toPath());
-        //     } catch (IOException e) {
-        //         e.printStackTrace();
-        //     }
-        // }
         plugin = this;
         isEnabled = true;
         try {

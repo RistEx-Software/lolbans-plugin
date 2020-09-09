@@ -23,7 +23,7 @@
 hs_err_pid*
 
 # Text files
-# *.txt
+*.txt
 # additional ignores
 *.iml
 .classpath
